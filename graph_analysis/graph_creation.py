@@ -42,9 +42,11 @@ for index, pair in enumerate(data['Pattern Graph Edges']):
     edge_type = get_edge_type(data=data, index=index)
     df_original[edge_type] = edge_type
     df_temp = df_original[[pair[0], pair[1], edge_type]]
+    Graph_temp = nx.DiGraph()
     Graph_temp = nx.from_pandas_edgelist(
         df=df_temp, source=pair[0],
-        target=pair[1], edge_attr=edge_type)
+        target=pair[1], edge_attr=edge_type,
+        create_using=Graph_temp)
     edge_label_dict = {'edge type': edge_type}
     G.add_nodes_from(Graph_temp)
     G.add_edges_from(Graph_temp.edges, attr=edge_label_dict)
@@ -54,6 +56,4 @@ nx.draw_networkx(G, arrowsize=50, node_size=1000)
 # edge_labels = nx.get_edge_attributes(G, 'edge type')
 # nx.draw_networkx_edge_labels(G, pos, labels=edge_labels)
 # plt.savefig('TestGraph.png')
-# print(G['hub'])
-print(G.get_edge_data('Car', 'hub'))
 plt.show()
