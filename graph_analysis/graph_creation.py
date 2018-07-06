@@ -49,7 +49,6 @@ for index, pair in enumerate(data['Pattern Graph Edges']):
     G.add_nodes_from(Graph_temp)
     G.add_edges_from(Graph_temp.edges, attr=edge_label_dict)
 
-# print(len(G.nodes))
 # pos = nx.spring_layout(G)
 nx.draw_networkx(G, arrowsize=50, node_size=1000)
 # edge_labels = nx.get_edge_attributes(G, 'edge type')
