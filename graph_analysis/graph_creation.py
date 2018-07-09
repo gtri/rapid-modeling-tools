@@ -42,14 +42,14 @@ for index, pair in enumerate(data['Pattern Graph Edges']):
     edge_type = get_edge_type(data=data, index=index)
     df_original[edge_type] = edge_type
     df_temp = df_original[[pair[0], pair[1], edge_type]]
-    Graph_temp = nx.DiGraph()
-    Graph_temp = nx.from_pandas_edgelist(
+    GraphTemp = nx.DiGraph()
+    GraphTemp = nx.from_pandas_edgelist(
         df=df_temp, source=pair[0],
         target=pair[1], edge_attr=edge_type,
-        create_using=Graph_temp)
+        create_using=GraphTemp)
     edge_label_dict = {'edge type': edge_type}
-    G.add_nodes_from(Graph_temp)
-    G.add_edges_from(Graph_temp.edges, attr=edge_label_dict)
+    G.add_nodes_from(GraphTemp)
+    G.add_edges_from(GraphTemp.edges, attr=edge_label_dict)
 
 # pos = nx.spring_layout(G)
 nx.draw_networkx(G, arrowsize=50, node_size=1000)
