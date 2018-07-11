@@ -1,8 +1,22 @@
 from graph_objects import Vertex
 
 
+UML_ID = {
+    'count': 0
+}
+
+
 def get_edge_type(data=None, index=None):
     return data['Pattern Graph Edge Labels'][index]
+
+
+def get_uml_id(node_name=None):
+    if node_name in UML_ID.keys():
+        return UML_ID[node_name]
+    else:
+        UML_ID.update({node_name: 'new_{0}'.format(UML_ID['count'])})
+        UML_ID['count'] += 1
+        return UML_ID[node_name]
 
 
 def get_composite_owner_names(prefix=None, data=None):
@@ -44,17 +58,29 @@ def create_vertex_objects(df=None, graph=None):
     return vertex_list
 
 
-def get_spanning_tree(root_node=None,
-                      root_node_type=None,
-                      tree_pattern=None,
-                      tree_edge_pattern=None):
-    pass
-    # assuming that tree_pattern and tree_edge_pattern are the values behind
-    # the JSON keys that describe this pattern
-    # 'Pattern Spanning Tree Edges' and 'Pattern Spanning Tree Edge Labels'
-    span_tree = [(tuple(pair), tree_edge_pattern[index])
-                 for index, pair in enumerate(tree_pattern)]
+# def get_spanning_tree(root_node=None,
+#                       root_node_type=None,
+#                       tree_pattern=None,
+#                       tree_edge_pattern=None):
+#     pass
+#     # assuming that tree_pattern and tree_edge_pattern are the values behind
+#     # the JSON keys that describe this pattern
+#     # 'Pattern Spanning Tree Edges' and 'Pattern Spanning Tree Edge Labels'
+#     span_tree = [(tuple(pair), tree_edge_pattern[index])
+#                  for index, pair in enumerate(tree_pattern)]
+#     span_tree_set = set(span_tree)
+#
+#     branch_set = set()
 
+    # for branch in span_tree:
+    #     if root_node_type in branch[0][0]:
+    #         pass
+    #         # then we need to search its sucessors for nodes of the same type
+    #         # with the same edge edge_attribute
+    #     elif root_node_type in branch[0][1]:
+    #         pass
+    # then we need to search for predecessors for nodes of the same
+    # type with the same edge_attribute as the tuple.
     # find which tuple contains my root node and the position of
     # the deisred root node type in my tuple i.e. is it position 0 or 1
     # position 1 means that I must find the predecessor of this node in the 0

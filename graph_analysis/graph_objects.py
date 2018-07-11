@@ -1,3 +1,7 @@
+UML_ID = {}
+UML_METACLASS = {}
+
+
 class Vertex(object):
 
     def __init__(self, name=None, node_types=set(),

@@ -3,7 +3,8 @@ import json
 import pandas as pd
 import networkx as nx
 
-from utils import (get_edge_type, get_composite_owner_names,
+from utils import (UML_ID, get_edge_type, get_uml_id,
+                   get_composite_owner_names,
                    get_a_composite_owner_names,
                    create_vertex_objects)
 from graph_objects import Vertex
@@ -18,6 +19,16 @@ class TestUtils(unittest.TestCase):
     def test_edge_type(self):
         self.assertEqual('type',
                          get_edge_type(data=self.data, index=0))
+
+    def test_get_uml_id(self):
+        node_names = ['zeroth', 'first', 'second', 'zeroth']
+        uml_id_names = []
+        for node_name in node_names:
+            uml_id_names.append(get_uml_id(node_name=node_name))
+
+        expected_uml_names = ['new_0', 'new_1', 'new_2', 'new_0']
+        self.assertListEqual(expected_uml_names, uml_id_names)
+        self.assertEqual(3, UML_ID['count'])
 
     def test_get_composite_owner_names(self):
         composite_data = pd.Series({'Car': 1, 'Wheel': 1, 'Engine': 1})
@@ -74,6 +85,51 @@ class TestUtils(unittest.TestCase):
 
         for index, vertex in enumerate(verticies):
             self.assertDictEqual(vertex_dicts[index], vertex.to_dict())
+            print(vertex.to_dict())
+
+    # def test_get_spanning_tree(self):
+    #     # So far incomplete test and subject to change.
+    #     span_nodes = self.data['Pattern Spanning Tree Edges']
+    #     span_edges = self.data['Pattern Spanning Tree Edge Labels']
+    #     span_tree = [(tuple(pair), span_edges[index])
+    #                  for index, pair in enumerate(span_nodes)]
+    #     span_tree_set = set(span_tree)
+    #
+    #     node_attr_dict = {
+    #         'A': 'Composite Thing',
+    #         'B': 'component',
+    #         'C': 'Atomic Thing',
+    #         'D': 'A_"composite owner"_component',
+    #         'E': 'composite owner'
+    #     }
+    #     Tree_Graph = nx.DiGraph()
+    #
+    #     for key in node_attr_dict:
+    #         Tree_Graph.add_node(key, vertex_attribute=node_attr_dict[key])
+    #
+    #     Tree_Graph.add_edge('B', 'A', edge_attribute='owner')
+    #     Tree_Graph.add_edge('B', 'C', edge_attribute='type')
+    #     Tree_Graph.add_edge('D', 'B', edge_attribute='memberEnd')
+    #     Tree_Graph.add_edge('E', 'D', edge_attribute='owner')
+    #
+    #     # vertex_list = []
+    #     for vertex in Tree_Graph.nodes:
+    #         vert = Vertex(
+    #             name=vertex,
+    #             node_types=nx.get_node_attributes(Tree_Graph,
+    #                                               'vertex_attribute')[
+    #                                               vertex],
+    #             successors=Tree_Graph.succ[vertex],
+    #             predecessors=Tree_Graph.pred[vertex])
+    #         # vertex_list.append(vert)
+    #
+    #     # root_node_a = next((
+    #     #   node for node in vertex_list if node.name == 'A'))
+    #     spanning_tree = get_spanning_tree(
+    #         root_node='A',
+    #         root_node_type='Composite Thing',
+    #         tree_pattern=span_nodes,
+    #         tree_edge_pattern=span_edges)
 
 
 if __name__ == '__main__':
