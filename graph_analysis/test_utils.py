@@ -9,18 +9,6 @@ from utils import (get_edge_type, get_composite_owner_names,
 from graph_objects import Vertex
 
 
-# class CustomAssertions:
-#
-#     def assertVertexPropertiesEqual(
-#             self, vertex_1=None, vertex_2=None):
-#         if vertex_1.name == vertex_2.name:
-#
-#             pass
-#             # check properties
-#         else:
-#             raise AssertionError('Object names are not equal or DNE')
-
-
 class TestUtils(unittest.TestCase):
 
     def setUp(self):
@@ -77,11 +65,11 @@ class TestUtils(unittest.TestCase):
                          'node types': {'Component', 'Position'},
                          'successors': {'engine': {'edge_attribute': 'owner'}},
                          'predecessors': {'engine':
-                                          {'edge_attribute': 'owner'}}}
+                                          {'edge_attribute': 'type'}}}
         vertex_2_dict = {'name': 'engine',
                          'node types': {'Component', 'Position'},
                          'successors': {'Car': {'edge_attribute': 'type'}},
-                         'predecessors': {'Car': {'edge_attribute': 'type'}}}
+                         'predecessors': {'Car': {'edge_attribute': 'owner'}}}
         vertex_dicts = [vertex_1_dict, vertex_2_dict]
 
         for index, vertex in enumerate(verticies):

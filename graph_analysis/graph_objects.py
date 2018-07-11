@@ -11,6 +11,9 @@ class Vertex(object):
     def connections(self):
         pass
 
+    def spanning_tree(self, pattern=None):
+        pass
+
     def to_dict(self):
         return {'name': self.name,
                 'node types': self.node_types,

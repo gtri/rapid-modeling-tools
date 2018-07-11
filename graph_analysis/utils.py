@@ -33,14 +33,34 @@ def create_vertex_objects(df=None, graph=None):
     vertex_list = []
     for node in graph.nodes:
         mask = df == node
-        print(df[mask])
         node_type_columns = df[mask].dropna(
             axis=1, how='all').columns
         node_types = {col for col in node_type_columns}
-        successors = graph.succ[node]
-        predecessors = graph.succ[node]
         vertex = Vertex(name=node, node_types=node_types,
-                        successors=successors, predecessors=predecessors)
+                        successors=graph.succ[node],
+                        predecessors=graph.pred[node])
         vertex_list.append(vertex)
 
     return vertex_list
+
+
+def get_spanning_tree(root_node=None,
+                      root_node_type=None,
+                      tree_pattern=None,
+                      tree_edge_pattern=None):
+    pass
+    # assuming that tree_pattern and tree_edge_pattern are the values behind
+    # the JSON keys that describe this pattern
+    # 'Pattern Spanning Tree Edges' and 'Pattern Spanning Tree Edge Labels'
+    span_tree = [(tuple(pair), tree_edge_pattern[index])
+                 for index, pair in enumerate(tree_pattern)]
+
+    # find which tuple contains my root node and the position of
+    # the deisred root node type in my tuple i.e. is it position 0 or 1
+    # position 1 means that I must find the predecessor of this node in the 0
+    # position of that has the same edge type as I would have
+    # Once I know that I am looking for a predecessor, call back to the vertex
+    # object and compare my neghiborhood for verticies of the type i am seeking
+    # and for for edges of the specified type given by the span_tree.
+    # continue like this until we have iterated the entire spanning tree or
+    # we are unable to find any more connected nodes.

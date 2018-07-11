@@ -36,11 +36,11 @@ class TestGraphCreation(unittest.TestCase):
                          'node types': {'Component', 'Position'},
                          'successors': {'engine': {'edge_attribute': 'owner'}},
                          'predecessors': {'engine':
-                                          {'edge_attribute': 'owner'}}}
+                                          {'edge_attribute': 'type'}}}
         vertex_2_dict = {'name': 'engine',
                          'node types': {'Component', 'Position'},
                          'successors': {'Car': {'edge_attribute': 'type'}},
-                         'predecessors': {'Car': {'edge_attribute': 'type'}}}
+                         'predecessors': {'Car': {'edge_attribute': 'owner'}}}
         vertex_dicts = [vertex_1_dict, vertex_2_dict]
 
         for index, vertex in enumerate(verticies):
@@ -48,3 +48,7 @@ class TestGraphCreation(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+
+if __name__ == '__main__':
+    unittest.main()
