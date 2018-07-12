@@ -1,6 +1,24 @@
-# from graph_creation import UML_METATYPE
+import json
 
-UML_METATYPE = {}
+# TODO: implement DATA or the PATH to the DATA as a global.
+# Better implemented with either the DIRECTORY and ROOT as globals or
+# with the DATA itself as a global
+with open('../data/PathMasterExpanded.json') as f:
+    data = json.load(f)
+
+
+try:
+    UML_METATYPE = data['Vertex MetaTypes']
+except KeyError:
+    UML_METATYPE = {
+        'Composite Thing': 'Class',
+        'Atomic Thing': 'Class',
+        'composite owner': 'Property',
+        'component': 'Property',
+        'A_"composite owner"_component': 'Association'
+    }
+
+
 UML_ID = {
     'count': 0
 }
@@ -50,7 +68,8 @@ class Vertex(object):
     def to_uml_json(self):
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
-        node_uml_json_list = []
+        node_types_list = list(self.node_types)
+        node_uml_list = []
         node_uml_dict = {
             'id': get_uml_id(name=self.name),
             'ops': [
@@ -58,15 +77,15 @@ class Vertex(object):
                     'op': 'create',
                     'path': None,
                     'metatype': UML_METATYPE[
-                        self.node_types[0]],
+                        node_types_list[0]],
                 }
             ]
         }
 
-        node_uml.append(node_uml_json_list)
+        node_uml_list.append(node_uml_dict)
 
         # check the connections.
-        edge_uml_json_list = []
+        edge_uml_list = []
         for connection in self.connections:
             edge_uml_dict = {
                 'id': get_uml_id(name=connection['node_name']),
@@ -78,5 +97,6 @@ class Vertex(object):
                     }
                 ]
             }
-            edge_uml_json_list.append(edge_uml_dict)
-            return node_uml_json_list, edge_uml_json_list
+            edge_uml_list.append(edge_uml_dict)
+
+        return node_uml_list, edge_uml_list

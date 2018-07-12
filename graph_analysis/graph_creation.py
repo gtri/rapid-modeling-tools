@@ -7,16 +7,9 @@ from utils import (get_edge_type, get_composite_owner_names,
                    get_a_composite_owner_names)
 
 
-# UML_METATYPE = {}
-
-
 with open('../data/PathMasterExpanded.json') as f:
     data = json.load(f)
 
-# if not data['Vertex MetaTypes']:
-#     UML_METATYPE = {}
-# else:
-#     UML_METATYPE = data['Vertex MetaTypes']
 
 df_original = pd.read_excel('../data/Composition Example.xlsx')
 df_original.dropna(how='all', inplace=True)

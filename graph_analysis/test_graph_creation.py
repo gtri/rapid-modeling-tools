@@ -32,15 +32,15 @@ class TestGraphCreation(unittest.TestCase):
         self.assertEqual(5, UML_ID['count'])
 
     def test_connections(self):
-        data_dict = {'Component': ['Car', 'engine'],
-                     'Position': ['engine', 'Car'],
+        data_dict = {'component': ['Car', 'engine'],
+                     'Atomic Thing': ['engine', 'Car'],
                      'edge type': ['owner', 'type']}
         test_graph_df = pd.DataFrame(data=data_dict)
         Test_Graph = nx.DiGraph()
         Temp_Graph = nx.DiGraph()
         Temp_Graph = nx.from_pandas_edgelist(
-            df=test_graph_df, source='Component',
-            target='Position', edge_attr='edge type',
+            df=test_graph_df, source='component',
+            target='Atomic Thing', edge_attr='edge type',
             create_using=Temp_Graph)
         edge_label_dict = {'edge type': 'owner'}
         Test_Graph.add_nodes_from(Temp_Graph)
@@ -67,15 +67,15 @@ class TestGraphCreation(unittest.TestCase):
 
     def test_vertex_to_dict(self):
         # This also tests the Vertex.to_dict() method in a round about way
-        data_dict = {'Component': ['Car', 'engine'],
-                     'Position': ['engine', 'Car'],
+        data_dict = {'component': ['Car', 'engine'],
+                     'Atomic Thing': ['engine', 'Car'],
                      'edge type': ['owner', 'type']}
         test_graph_df = pd.DataFrame(data=data_dict)
         Test_Graph = nx.DiGraph()
         Temp_Graph = nx.DiGraph()
         Temp_Graph = nx.from_pandas_edgelist(
-            df=test_graph_df, source='Component',
-            target='Position', edge_attr='edge type',
+            df=test_graph_df, source='component',
+            target='Atomic Thing', edge_attr='edge type',
             create_using=Temp_Graph)
         edge_label_dict = {'edge type': 'owner'}
         Test_Graph.add_nodes_from(Temp_Graph)
@@ -87,12 +87,12 @@ class TestGraphCreation(unittest.TestCase):
             df=test_graph_df, graph=Test_Graph)
 
         vertex_1_dict = {'name': 'Car',
-                         'node types': {'Component', 'Position'},
+                         'node types': {'component', 'Atomic Thing'},
                          'successors': {'engine': {'edge_attribute': 'owner'}},
                          'predecessors': {'engine':
                                           {'edge_attribute': 'type'}}}
         vertex_2_dict = {'name': 'engine',
-                         'node types': {'Component', 'Position'},
+                         'node types': {'component', 'Atomic Thing'},
                          'successors': {'Car': {'edge_attribute': 'type'}},
                          'predecessors': {'Car': {'edge_attribute': 'owner'}}}
         vertex_dicts = [vertex_1_dict, vertex_2_dict]
@@ -101,14 +101,98 @@ class TestGraphCreation(unittest.TestCase):
             self.assertDictEqual(vertex_dicts[index], vertex.to_dict())
 
     def test_to_uml_json(self):
-        pass
-        UML_METATYPE = {
-            'Composite Thing': 'Class',
-            'Atomic Thing': 'Class',
-            'composite owner': 'Property',
-            'component': 'Property',
-            'A_"composite owner"_component': 'Association'
-        }
+        vertex_car = Vertex(
+            name='Car',
+            node_types={'Atomic Thing'},
+            successors={'engine': {
+                'edge_attribute': 'owner'}},
+            predecessors={'engine': {
+                'edge_attribute': 'type'
+            }}
+        )
+        vertex_car_uml, edge_car_uml = vertex_car.to_uml_json()
+
+        vertex_engine = Vertex(
+            name='engine',
+            node_types={'component'},
+            successors={'Car': {
+                'edge_attribute': 'type'}},
+            predecessors={'Car': {
+                'edge_attribute': 'owner'}}
+        )
+        vertex_engine_uml, edge_engine_uml = vertex_engine.to_uml_json()
+
+        car_node_uml = [{
+            'id': 'new_0',
+            'ops': [
+                {
+                    'op': 'create',
+                    'path': None,
+                    'metatype': 'Class',
+                }
+            ]
+        }]
+
+        self.assertListEqual(car_node_uml, vertex_car_uml)
+
+        car_edge_uml = [{
+            'id': 'new_1',
+            'ops': [
+                {
+                    'op': 'replace',
+                    'path': 'new_2',
+                    'value': 'new_0',
+                }
+            ]
+        },
+            {
+            'id': 'new_1',
+            'ops': [
+                {
+                    'op': 'replace',
+                    'path': 'new_3',
+                    'value': 'new_0',
+                }
+            ]
+        }]
+
+        self.assertListEqual(car_edge_uml, edge_car_uml)
+
+        engine_node_uml = [{
+            'id': 'new_1',
+            'ops': [
+                {
+                    'op': 'create',
+                    'path': None,
+                    'metatype': 'Property',
+                }
+            ]
+        }]
+
+        self.assertListEqual(vertex_engine_uml, engine_node_uml)
+
+        engine_edge_uml = [{
+            'id': 'new_0',
+            'ops': [
+                {
+                    'op': 'replace',
+                    'path': 'new_3',
+                    'value': 'new_1',
+                }
+            ]
+        },
+            {
+            'id': 'new_0',
+            'ops': [
+                {
+                    'op': 'replace',
+                    'path': 'new_2',
+                    'value': 'new_1',
+                }
+            ]
+        }]
+
+        self.assertListEqual(edge_engine_uml, engine_edge_uml)
 
     def tearDown(self):
         pass

@@ -44,6 +44,10 @@ def create_vertex_objects(df=None, graph=None):
     return vertex_list
 
 
+def aggregate_change_json():
+    pass
+
+
 # def get_spanning_tree(root_node=None,
 #                       root_node_type=None,
 #                       tree_pattern=None,
