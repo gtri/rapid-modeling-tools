@@ -1,0 +1,243 @@
+{
+    "Columns to Navigation Map": {
+        "System Value": [
+            "blockValue"
+        ],
+        "Binds To": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "C_value_blockValue",
+            "owner",
+            "C_value_blockValue_end2",
+            "role",
+            "value"
+        ],
+        "Constraint": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "constUse",
+            "type",
+            "My Constraint",
+            "owner",
+            "Constraint Spec"
+        ],
+        "Constraint Name": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "constUse",
+            "type",
+            "My Constraint"
+        ],
+        "System Value Unit": [
+            "blockValue",
+            "type",
+            "blockValueType"
+        ],
+        "Bound Value Unit": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "C_value_blockValue",
+            "owner",
+            "C_value_blockValue_end2",
+            "role",
+            "value",
+            "type",
+            "valueType"
+        ]
+    },
+    "Pattern Graph Vertices": [
+        "Parametric Context",
+        "blockValue",
+        "C_value_blockValue",
+        "value",
+        "constUse",
+        "My Constraint",
+        "blockValueType",
+        "valueType",
+        "context1",
+        "context2",
+        "A_context1_blockValue",
+        "A_context2_constUse",
+        "C_value_blockValue_end1",
+        "C_value_blockValue_end2",
+        "Constraint Spec"
+    ],
+    "Pattern Graph Edge Labels": [
+        "type",
+        "type",
+        "type",
+        "type",
+        "owner",
+        "owner",
+        "owner",
+        "owner",
+        "owner",
+        "owner",
+        "owner",
+        "role",
+        "role",
+        "owner",
+        "owner",
+        "type"
+    ],
+    "Pattern Graph Edges": [
+        [
+            "context1",
+            "Parametric Context"
+        ],
+        [
+            "context2",
+            "Parametric Context"
+        ],
+        [
+            "blockValue",
+            "blockValueType"
+        ],
+        [
+            "value",
+            "valueType"
+        ],
+        [
+            "context1",
+            "A_context1_blockValue"
+        ],
+        [
+            "context2",
+            "A_context2_constUse"
+        ],
+        [
+            "blockValue",
+            "Parametric Context"
+        ],
+        [
+            "value",
+            "My Constraint"
+        ],
+        [
+            "C_value_blockValue_end1",
+            "C_value_blockValue"
+        ],
+        [
+            "C_value_blockValue_end2",
+            "C_value_blockValue"
+        ],
+        [
+            "constUse",
+            "Parametric Context"
+        ],
+        [
+            "C_value_blockValue_end1",
+            "blockValue"
+        ],
+        [
+            "C_value_blockValue_end2",
+            "value"
+        ],
+        [
+            "C_value_blockValue",
+            "Parametric Context"
+        ],
+        [
+            "Constraint Spec",
+            "My Constraint"
+        ],
+        [
+            "constUse",
+            "My Constraint"
+        ]
+    ],
+    "Pattern Spanning Tree Edges": [
+        [
+            "context1",
+            "Parametric Context"
+        ],
+        [
+            "context2",
+            "Parametric Context"
+        ],
+        [
+            "value",
+            "valueType"
+        ],
+        [
+            "context1",
+            "A_context1_blockValue"
+        ],
+        [
+            "context2",
+            "A_context2_constUse"
+        ],
+        [
+            "blockValue",
+            "Parametric Context"
+        ],
+        [
+            "C_value_blockValue_end1",
+            "C_value_blockValue"
+        ],
+        [
+            "C_value_blockValue_end2",
+            "C_value_blockValue"
+        ],
+        [
+            "constUse",
+            "Parametric Context"
+        ],
+        [
+            "C_value_blockValue_end1",
+            "blockValue"
+        ],
+        [
+            "C_value_blockValue_end2",
+            "value"
+        ],
+        [
+            "Constraint Spec",
+            "My Constraint"
+        ],
+        [
+            "constUse",
+            "My Constraint"
+        ]
+    ],
+    "Pattern Spanning Tree Edge Labels": [
+        "type",
+        "type",
+        "type",
+        "owner",
+        "owner",
+        "owner",
+        "owner",
+        "owner",
+        "owner",
+        "role",
+        "role",
+        "owner",
+        "type"
+    ],
+    "Vertex MetaTypes": {
+        "Parametric Context": "Class",
+        "blockValue": "Property",
+        "C_value_blockValue": "Connector",
+        "value": "Port",
+        "constUse": "Property",
+        "My Constraint": "Class",
+        "blockValueType": "DataType",
+        "valueType": "DataType",
+        "context1": "Property",
+        "context2": "Property",
+        "A_context1_blockValue": "Association",
+        "A_context2_constUse": "Association",
+        "C_value_blockValue_end1": "ConnectorEnd",
+        "C_value_blockValue_end2": "ConnectorEnd",
+        "Constraint Spec": "Constraint"
+    }
+}

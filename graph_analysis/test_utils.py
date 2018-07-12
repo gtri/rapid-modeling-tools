@@ -3,11 +3,11 @@ import json
 import pandas as pd
 import networkx as nx
 
-from utils import (UML_ID, get_edge_type, get_uml_id,
+from utils import (get_edge_type,
                    get_composite_owner_names,
                    get_a_composite_owner_names,
                    create_vertex_objects)
-from graph_objects import Vertex
+from graph_objects import UML_ID, Vertex, get_uml_id
 
 
 class TestUtils(unittest.TestCase):
@@ -19,16 +19,6 @@ class TestUtils(unittest.TestCase):
     def test_edge_type(self):
         self.assertEqual('type',
                          get_edge_type(data=self.data, index=0))
-
-    def test_get_uml_id(self):
-        node_names = ['zeroth', 'first', 'second', 'zeroth']
-        uml_id_names = []
-        for node_name in node_names:
-            uml_id_names.append(get_uml_id(node_name=node_name))
-
-        expected_uml_names = ['new_0', 'new_1', 'new_2', 'new_0']
-        self.assertListEqual(expected_uml_names, uml_id_names)
-        self.assertEqual(3, UML_ID['count'])
 
     def test_get_composite_owner_names(self):
         composite_data = pd.Series({'Car': 1, 'Wheel': 1, 'Engine': 1})
@@ -85,7 +75,12 @@ class TestUtils(unittest.TestCase):
 
         for index, vertex in enumerate(verticies):
             self.assertDictEqual(vertex_dicts[index], vertex.to_dict())
-            print(vertex.to_dict())
+            # print(('Vertex {0}: \n{{succ node: '
+            #        + '{{edge_attribute: edge_name}}}}').format(
+            #     vertex.name))
+            # print(vertex.successors)
+            # print('{pred node: ' '{{edge_attribute: edge_name}}')
+            # print(vertex.predecessors)
 
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.

@@ -1,22 +1,8 @@
 from graph_objects import Vertex
 
 
-UML_ID = {
-    'count': 0
-}
-
-
 def get_edge_type(data=None, index=None):
     return data['Pattern Graph Edge Labels'][index]
-
-
-def get_uml_id(node_name=None):
-    if node_name in UML_ID.keys():
-        return UML_ID[node_name]
-    else:
-        UML_ID.update({node_name: 'new_{0}'.format(UML_ID['count'])})
-        UML_ID['count'] += 1
-        return UML_ID[node_name]
 
 
 def get_composite_owner_names(prefix=None, data=None):
