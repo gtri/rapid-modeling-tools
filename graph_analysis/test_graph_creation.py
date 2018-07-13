@@ -1,4 +1,5 @@
 import unittest
+import json
 import pandas as pd
 import networkx as nx
 
@@ -127,6 +128,7 @@ class TestGraphCreation(unittest.TestCase):
             'ops': [
                 {
                     'op': 'create',
+                    'name': 'Car',
                     'path': None,
                     'metatype': 'Class',
                 }
@@ -140,7 +142,7 @@ class TestGraphCreation(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': 'new_2',
+                    'path': '/owner',
                     'value': 'new_0',
                 }
             ]
@@ -150,7 +152,7 @@ class TestGraphCreation(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': 'new_3',
+                    'path': '/type',
                     'value': 'new_0',
                 }
             ]
@@ -163,6 +165,7 @@ class TestGraphCreation(unittest.TestCase):
             'ops': [
                 {
                     'op': 'create',
+                    'name': 'engine',
                     'path': None,
                     'metatype': 'Property',
                 }
@@ -176,7 +179,7 @@ class TestGraphCreation(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': 'new_3',
+                    'path': '/type',
                     'value': 'new_1',
                 }
             ]
@@ -186,13 +189,20 @@ class TestGraphCreation(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': 'new_2',
+                    'path': '/owner',
                     'value': 'new_1',
                 }
             ]
         }]
 
         self.assertListEqual(edge_engine_uml, engine_edge_uml)
+        json_out = []
+        json_out.extend(vertex_car_uml)
+        json_out.extend(vertex_engine_uml)
+        json_out.extend(edge_car_uml)
+        json_out.extend(engine_edge_uml)
+        with open('changes_uml.json', 'w') as outfile:
+            json.dump(json_out, outfile)
 
     def tearDown(self):
         pass

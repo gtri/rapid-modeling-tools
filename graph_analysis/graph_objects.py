@@ -75,6 +75,7 @@ class Vertex(object):
             'ops': [
                 {
                     'op': 'create',
+                    'name': self.name,
                     'path': None,
                     'metatype': UML_METATYPE[
                         node_types_list[0]],
@@ -92,7 +93,7 @@ class Vertex(object):
                 'ops': [
                     {
                         'op': 'replace',
-                        'path': get_uml_id(name=connection['edge_attribute']),
+                        'path': '/' + connection['edge_attribute'],
                         'value': get_uml_id(name=self.name),
                     }
                 ]
