@@ -12,26 +12,6 @@ class TestGraphCreation(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_get_uml_id(self):
-        node_names = ['zeroth', 'first', 'second', 'zeroth']
-        uml_id_names = []
-        for node_name in node_names:
-            uml_id_names.append(get_uml_id(name=node_name))
-
-        expected_uml_names = ['new_0', 'new_1', 'new_2', 'new_0']
-        self.assertListEqual(expected_uml_names, uml_id_names)
-        self.assertEqual(3, UML_ID['count'])
-
-        edge_names = ['type', 'owner', 'type']
-        edge_id_names = []
-        for edge_name in edge_names:
-            edge_id_names.append(get_uml_id(name=edge_name))
-
-        expected_uml_edge_names = ['new_3', 'new_4', 'new_3']
-        self.assertListEqual(
-            expected_uml_edge_names, edge_id_names)
-        self.assertEqual(5, UML_ID['count'])
-
     def test_connections(self):
         data_dict = {'component': ['Car', 'engine'],
                      'Atomic Thing': ['engine', 'Car'],
@@ -196,13 +176,33 @@ class TestGraphCreation(unittest.TestCase):
         }]
 
         self.assertListEqual(edge_engine_uml, engine_edge_uml)
-        json_out = []
-        json_out.extend(vertex_car_uml)
-        json_out.extend(vertex_engine_uml)
-        json_out.extend(edge_car_uml)
-        json_out.extend(engine_edge_uml)
-        with open('changes_uml.json', 'w') as outfile:
-            json.dump(json_out, outfile)
+        # json_out = []
+        # json_out.extend(vertex_car_uml)
+        # json_out.extend(vertex_engine_uml)
+        # json_out.extend(edge_car_uml)
+        # json_out.extend(engine_edge_uml)
+        # with open('changes_uml.json', 'w') as outfile:
+        #     json.dump(json_out, outfile)
+
+    def test_get_uml_id(self):
+        node_names = ['Car', 'engine', 'Car']
+        uml_id_names = []
+        for node_name in node_names:
+            uml_id_names.append(get_uml_id(name=node_name))
+
+        expected_uml_names = ['new_0', 'new_1', 'new_0']
+        self.assertListEqual(expected_uml_names, uml_id_names)
+        self.assertEqual(2, UML_ID['count'])
+
+        edge_names = ['type', 'owner', 'type']
+        edge_id_names = []
+        for edge_name in edge_names:
+            edge_id_names.append(get_uml_id(name=edge_name))
+
+        expected_uml_edge_names = ['new_2', 'new_3', 'new_2']
+        self.assertListEqual(
+            expected_uml_edge_names, edge_id_names)
+        self.assertEqual(4, UML_ID['count'])
 
     def tearDown(self):
         pass
