@@ -101,3 +101,11 @@ class Vertex(object):
             edge_uml_list.append(edge_uml_dict)
 
         return node_uml_list, edge_uml_list
+
+
+class DiEdge(object):
+
+    def __init__(self, source=None, target=None, edge_attribute=None):
+        self.source = source
+        self.target = target
+        self.edge_attribute = edge_attribute
