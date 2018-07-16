@@ -104,6 +104,10 @@ class Vertex(object):
 
 
 class DiEdge(object):
+    """Source and Target should be Vertex Objects.
+    The DiEdge object's primary role is to return a triple describing
+    the tail of the edge, tip of the edge and the type of the edge that
+    connects two nodes"""
 
     def __init__(self, source=None, target=None, edge_attribute=None):
         self.source = source
@@ -118,6 +122,34 @@ class DiEdge(object):
 class PropertyDiGraph(nx.DiGraph):
 
     def __init__(self, incoming_graph_data=None, **attr):
-        super().__init__(incoming_graph_data, **attr)
-        self.verticies = None
-        self.edges = None
+        super().__init__()
+        self.vertex_set = set()
+        self.edge_set = set()
+
+    @property
+    def vertex_set(self):
+        return self.vertex_set
+
+    @property
+    def edge_set(self):
+        return self.edge_set
+
+    def create_vertex_set(self, df=None):
+        for node in self.nodes:
+            mask = df == node
+            node_type_columns = df[mask].dropna(
+                axis=1, how='all').columns
+            node_types = {col for col in node_type_columns}
+            vertex = Vertex(name=node, node_types=node_types,
+                            successors=self.succ[node],
+                            predecessors=self.pred[node])
+            self.vertex_set.add(vertex)
+
+        return self.vertex_set
+
+    def get_vertex_set_named(self):
+        vert_set_named = set()
+        for vert in self.vertex_set:
+            vert_set_named.add(vert.name)
+
+        return vert_set_named

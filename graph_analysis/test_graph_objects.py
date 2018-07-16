@@ -7,7 +7,7 @@ from utils import create_vertex_objects
 from graph_objects import Vertex, get_uml_id, UML_ID
 
 
-class TestGraphCreation(unittest.TestCase):
+class TestGraphObjects(unittest.TestCase):
 
     def setUp(self):
         pass
