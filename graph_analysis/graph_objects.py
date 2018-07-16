@@ -109,3 +109,15 @@ class DiEdge(object):
         self.source = source
         self.target = target
         self.edge_attribute = edge_attribute
+
+    @property
+    def edge_props(self):
+        return (self.source, self.target, self.edge_attribute)
+
+
+class PropertyDiGraph(nx.DiGraph):
+
+    def __init__(self, incoming_graph_data=None, **attr):
+        super().__init__(incoming_graph_data, **attr)
+        self.verticies = None
+        self.edges = None

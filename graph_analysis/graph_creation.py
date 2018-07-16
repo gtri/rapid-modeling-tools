@@ -57,3 +57,17 @@ nx.draw_networkx(G, arrowsize=50, node_size=1000)
 # nx.draw_networkx_edge_labels(G, pos, labels=edge_labels)
 # plt.savefig('TestGraph.png')
 # plt.show()
+
+
+class Comparison(object):
+
+    def __init__(self, excel_path=[], json_path=None):
+        self.excel_path = excel_path
+        self.json_path = json_path
+        self.json_data = None
+
+    def build_df(self):
+        pass
+
+    def get_json_data(self):
+        pass
