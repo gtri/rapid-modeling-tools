@@ -1,4 +1,5 @@
 import json
+import networkx as nx
 
 # TODO: implement DATA or the PATH to the DATA as a global.
 # Better implemented with either the DIRECTORY and ROOT as globals or
@@ -31,6 +32,62 @@ def get_uml_id(name=None):
         UML_ID.update({name: 'new_{0}'.format(UML_ID['count'])})
         UML_ID['count'] += 1
         return UML_ID[name]
+
+
+class PropertyDiGraph(nx.DiGraph):
+
+    def __init__(self, incoming_graph_data=None, **attr):
+        super().__init__()
+        # TODO: these two attribtues caused my Evaluator tests to fail
+        # TODO: figure out a way to set these attrs without creating in init
+        # self.vertex_set = set()
+        # self.edge_set = set()
+
+    @property
+    def vertex_set(self):
+        return self.vertex_set
+
+    @property
+    def edge_set(self):
+        return self.edge_set
+
+    def create_edge_set(self):
+        for node in self.nodes:
+            # if pred (source=pred node key, targ=self, edge_attr)
+            for pred_node in self.pred[node]:
+                edge = DiEdge(source=pred_node,
+                              target=node,
+                              edge_attribute=self[node][
+                                  pred_node]['edge_attribute'])
+                self.edge_set.add(edge)
+
+            for succ_node in self.succ[node]:
+                edge = DiEdge(source=node,
+                              target=succ_node,
+                              edge_attribute=self[node][
+                                  succ_node]['edge_attribute'])
+                self.edge_set.add(edge)
+
+    def create_vertex_set(self, df=None):
+        for node in self.nodes:
+            mask = df == node
+            node_type_columns = df[mask].dropna(
+                axis=1, how='all').columns
+            node_types = {col for col in node_type_columns}
+            vertex = Vertex(name=node, node_types=node_types,
+                            successors=self.succ[node],
+                            predecessors=self.pred[node])
+            self.vertex_set.add(vertex)
+
+        return self.vertex_set
+
+    @property
+    def named_vertex_set(self):
+        vert_set_named = set()
+        for vert in self.vertex_set:
+            vert_set_named.add(vert.name)
+
+        return vert_set_named
 
 
 class Vertex(object):
@@ -115,41 +172,15 @@ class DiEdge(object):
         self.edge_attribute = edge_attribute
 
     @property
-    def edge_props(self):
+    def edge_triple_named(self):
+        return (self.source.name, self.target.name, self.edge_attribute)
+
+    @property
+    def edge_vert_type_triple(self):
+        return (self.source.node_type,
+                self.target.node_type,
+                self.edge_attribute)
+
+    @property
+    def edge_triple(self):
         return (self.source, self.target, self.edge_attribute)
-
-
-class PropertyDiGraph(nx.DiGraph):
-
-    def __init__(self, incoming_graph_data=None, **attr):
-        super().__init__()
-        self.vertex_set = set()
-        self.edge_set = set()
-
-    @property
-    def vertex_set(self):
-        return self.vertex_set
-
-    @property
-    def edge_set(self):
-        return self.edge_set
-
-    def create_vertex_set(self, df=None):
-        for node in self.nodes:
-            mask = df == node
-            node_type_columns = df[mask].dropna(
-                axis=1, how='all').columns
-            node_types = {col for col in node_type_columns}
-            vertex = Vertex(name=node, node_types=node_types,
-                            successors=self.succ[node],
-                            predecessors=self.pred[node])
-            self.vertex_set.add(vertex)
-
-        return self.vertex_set
-
-    def get_vertex_set_named(self):
-        vert_set_named = set()
-        for vert in self.vertex_set:
-            vert_set_named.add(vert.name)
-
-        return vert_set_named

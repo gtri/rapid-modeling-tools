@@ -4,10 +4,31 @@ import pandas as pd
 import networkx as nx
 
 from utils import create_vertex_objects
+from graph_creation import DATA_DIRECTORY
 from graph_objects import Vertex, get_uml_id, UML_ID
 
 
-class TestGraphObjects(unittest.TestCase):
+class TestPropertyDiGraph(unittest.TestCase):
+
+    def setUp(self):
+        with open(os.path.join(DATA_DIRECTORY,
+                               'PathMasterExpanded.json')) as f:
+            data = json.load(f)
+
+        self.evaluator = Evaluator(
+            excel_file=os.path.join(
+                DATA_DIRECTORY, 'Composition Example.xlsx'),
+            json_data=data)
+        self.evaluator.rename_excel_columns()
+        self.evaluator.add_missing_columns()
+        self.evaluator.to_property_di_graph()
+        self.property_di_draph = self.evaluator.prop_di_graph
+
+    def tearDown(self):
+        pass
+
+
+class TestVertex(unittest.TestCase):
 
     def setUp(self):
         pass

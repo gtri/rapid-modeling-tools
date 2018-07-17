@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from utils import (get_edge_type, get_composite_owner_names,
                    get_a_composite_owner_names)
+from graph_objects import PropertyDiGraph
 
 
 # with open('../data/PathMasterExpanded.json') as f:
@@ -72,18 +73,13 @@ class Manager(object):
         self.evaluators = []
 
     def get_json_data(self):
-        with open(json_path) as f:
+        with open(self.json_path) as f:
             self.json_data = json.load(f)
 
     def create_evaluators(self):
-        # Evaluatior 0 is the baseline
-        baseline = Evaluator(
-            excel_file=excel_path[0], json_data=self.json_data)
-        self.evaluators.append(baseline)
-
-        for excel_file in range(1, len(excel_path)):
+        for excel_file in self.excel_path:
             self.evaluators.append(
-                Evaluator(excel_file=excel_path[excel_file],
+                Evaluator(excel_file=excel_file,
                           json_data=self.json_data))
 
 
@@ -100,19 +96,12 @@ class Evaluator(object):
             new_column_name = self.json_data[
                 'Columns to Navigation Map'][column][-1]
             self.df.rename(columns={column: new_column_name}, inplace=True)
-        # TODO: make data agnostic
-        for col in columns_to_create:
-            if col == 'composite owner':
-                self.df[col] = get_composite_owner_names(
-                    prefix=col, data=composite_thing_series)
-            elif col == 'A_"composite owner"_component':
-                self.df[col] = get_a_composite_owner_names(
-                    prefix=col, data=composite_thing_series)
 
     def add_missing_columns(self):
+        # TODO: make data agnostic
         columns_to_create = set(self.json_data[
             'Pattern Graph Vertices']).difference(
-            set(df_original.columns))
+            set(self.df.columns))
 
         composite_thing_series = self.df['Composite Thing'].value_counts(
             sort=False)
@@ -137,9 +126,9 @@ class Evaluator(object):
                 df=df_temp, source=pair[0],
                 target=pair[1], edge_attr=edge_type,
                 create_using=GraphTemp)
-            prop_di_graph.add_nodes_from(GraphTemp)
-            prop_di_graph.add_edges_from(GraphTemp.edges,
-                                         edge_attribute=edge_type)
+            self.prop_di_graph.add_nodes_from(GraphTemp)
+            self.prop_di_graph.add_edges_from(GraphTemp.edges,
+                                              edge_attribute=edge_type)
 
     @property
     def named_vertex_set(self):
