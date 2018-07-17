@@ -30,8 +30,8 @@ class TestPropertyDiGraph(unittest.TestCase):
         columns_to_create = set(data['Pattern Graph Vertices']).difference(
             set(self.df.columns))
 
-        composite_thing_series = self.df['Composite Thing'].value_counts(
-            sort=False)
+        composite_thing_series = self.df['Composite Thing']
+        print(composite_thing_series)
 
         for col in columns_to_create:
             if col == 'composite owner':
@@ -42,10 +42,12 @@ class TestPropertyDiGraph(unittest.TestCase):
                     prefix=col, data=composite_thing_series)
 
         self.Graph = PropertyDiGraph()
+        # print(self.df)
         for index, pair in enumerate(data['Pattern Graph Edges']):
             edge_type = get_edge_type(data=data, index=index)
             self.df[edge_type] = edge_type
             df_temp = self.df[[pair[0], pair[1], edge_type]]
+            print(df_temp)
             GraphTemp = nx.DiGraph()
             GraphTemp = nx.from_pandas_edgelist(
                 df=df_temp, source=pair[0],
@@ -81,6 +83,14 @@ class TestPropertyDiGraph(unittest.TestCase):
         for vertex in self.Graph.vertex_set:
             self.assertIsInstance(vertex, Vertex)
             self.assertIn(vertex.name, expected_vertex_set)
+
+    def test_create_edge_set(self):
+        # check each element of edge_set is infact a DiEdge then that it should
+        # be an edge at all.
+        print(self.Graph.edges)
+        self.assertTrue(False)
+        # print(self.Graph.edges)
+        expected_edge_set = {}
 
     def tearDown(self):
         pass

@@ -51,8 +51,7 @@ class Evaluator(object):
             'Pattern Graph Vertices']).difference(
             set(self.df.columns))
 
-        composite_thing_series = self.df['Composite Thing'].value_counts(
-            sort=False)
+        composite_thing_series = self.df['Composite Thing']
 
         for col in columns_to_create:
             # TODO: find a better way

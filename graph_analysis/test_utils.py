@@ -21,7 +21,7 @@ class TestUtils(unittest.TestCase):
                          get_edge_type(data=self.data, index=0))
 
     def test_get_composite_owner_names(self):
-        composite_data = pd.Series({'Car': 1, 'Wheel': 1, 'Engine': 1})
+        composite_data = ['Car', 'Wheel', 'Engine']
         composite_owner_output = get_composite_owner_names(
             prefix='composite owner', data=composite_data)
         composite_data_list = ['composite owner Car',
@@ -33,7 +33,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(3, len(new_composite_names))
 
     def test_get_a_composite_owner_name(self):
-        composite_data = pd.Series({'Car': 1, 'Wheel': 1, 'Engine': 1})
+        composite_data = ['Car', 'Wheel', 'Engine']
         composite_owner_output = get_a_composite_owner_names(
             prefix='A_thing_component', data=composite_data)
         composite_data_list = ['A_Car_component',
