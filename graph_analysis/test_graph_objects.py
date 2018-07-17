@@ -1,11 +1,14 @@
 import unittest
 import json
+import os
 import pandas as pd
 import networkx as nx
 
-from utils import create_vertex_objects
-from graph_creation import DATA_DIRECTORY
-from graph_objects import Vertex, get_uml_id, UML_ID
+from utils import (create_vertex_objects, get_edge_type,
+                   get_composite_owner_names,
+                   get_a_composite_owner_names)
+from test_graph_creation import DATA_DIRECTORY
+from graph_objects import Vertex, get_uml_id, UML_ID, PropertyDiGraph
 
 
 class TestPropertyDiGraph(unittest.TestCase):
@@ -15,14 +18,69 @@ class TestPropertyDiGraph(unittest.TestCase):
                                'PathMasterExpanded.json')) as f:
             data = json.load(f)
 
-        self.evaluator = Evaluator(
-            excel_file=os.path.join(
-                DATA_DIRECTORY, 'Composition Example.xlsx'),
-            json_data=data)
-        self.evaluator.rename_excel_columns()
-        self.evaluator.add_missing_columns()
-        self.evaluator.to_property_di_graph()
-        self.property_di_draph = self.evaluator.prop_di_graph
+        # Create Baby dataset to deal with manual checking
+        data_dict = {'Composite Thing': ['Car', 'Car',
+                                         'Wheel', 'Engine'],
+                     'component': ['engine', 'rear driver',
+                                   'hub', 'drive output'],
+                     'Atomic Thing': ['Engine', 'Wheel',
+                                      'Hub', 'Drive Output']}
+        self.df = pd.DataFrame(data=data_dict)
+
+        columns_to_create = set(data['Pattern Graph Vertices']).difference(
+            set(self.df.columns))
+
+        composite_thing_series = self.df['Composite Thing'].value_counts(
+            sort=False)
+
+        for col in columns_to_create:
+            if col == 'composite owner':
+                self.df[col] = get_composite_owner_names(
+                    prefix=col, data=composite_thing_series)
+            elif col == 'A_"composite owner"_component':
+                self.df[col] = get_a_composite_owner_names(
+                    prefix=col, data=composite_thing_series)
+
+        self.Graph = PropertyDiGraph()
+        for index, pair in enumerate(data['Pattern Graph Edges']):
+            edge_type = get_edge_type(data=data, index=index)
+            self.df[edge_type] = edge_type
+            df_temp = self.df[[pair[0], pair[1], edge_type]]
+            GraphTemp = nx.DiGraph()
+            GraphTemp = nx.from_pandas_edgelist(
+                df=df_temp, source=pair[0],
+                target=pair[1], edge_attr=edge_type,
+                create_using=GraphTemp)
+            self.Graph.add_nodes_from(GraphTemp)
+            self.Graph.add_edges_from(
+                GraphTemp.edges, edge_attribute=edge_type)
+
+    def test_named_vertex_set(self):
+        expected_vertex_set = {'composite owner Wheel', 'Car',
+                               'composite owner Car', 'Wheel',
+                               'composite owner Engine', 'Engine',
+                               'engine', 'rear driver', 'hub', 'Hub',
+                               'drive output', 'Drive Output',
+                               'A_Wheel_component', 'A_Car_component',
+                               'A_Engine_component'}
+        self.Graph.create_vertex_set(df=self.df)
+        self.assertSetEqual(expected_vertex_set, self.Graph.named_vertex_set)
+
+    def test_create_vertex_set(self):
+        # idea is to check that the vertex_set contains the vert objects expect
+        # check that each element in the vertex_set is a vertex object and
+        # then check their names.
+        expected_vertex_set = {'composite owner Wheel', 'Car',
+                               'composite owner Car', 'Wheel',
+                               'composite owner Engine', 'Engine',
+                               'engine', 'rear driver', 'hub', 'Hub',
+                               'drive output', 'Drive Output',
+                               'A_Wheel_component', 'A_Car_component',
+                               'A_Engine_component'}
+        self.Graph.create_vertex_set(df=self.df)
+        for vertex in self.Graph.vertex_set:
+            self.assertIsInstance(vertex, Vertex)
+            self.assertIn(vertex.name, expected_vertex_set)
 
     def tearDown(self):
         pass

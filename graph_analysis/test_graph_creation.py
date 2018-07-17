@@ -40,6 +40,9 @@ class TestManager(unittest.TestCase):
 
 
 class TestEvaluator(unittest.TestCase):
+    # TODO: Make sure all additional graph objects that are desired are
+    # created by the graph creation logic.
+    # TODO: Test the PROCESS of some of these functions.
 
     def setUp(self):
         with open(os.path.join(DATA_DIRECTORY,
