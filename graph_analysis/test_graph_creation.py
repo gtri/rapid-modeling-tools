@@ -9,13 +9,44 @@ from graph_objects import PropertyDiGraph
 DATA_DIRECTORY = '../data/'
 
 
+# class TestProduceJson(unittest.TestCase):
+#     def setUp(self):
+#         pass
+#
+#     def test_json_creation(self):
+#         manager = Manager(excel_path=[os.path.join(
+#             DATA_DIRECTORY, 'Composition Example.xlsx')],
+#             json_path=os.path.join(DATA_DIRECTORY, 'PathMasterExpanded.json'))
+#         manager.get_json_data()
+#         manager.create_evaluators()
+#         manager.evaluators[0].rename_excel_columns()
+#         manager.evaluators[0].add_missing_columns()
+#         manager.evaluators[0].to_property_di_graph()
+#         manager.evaluators[0].prop_di_graph.create_vertex_set(
+#             df=manager.evaluators[0].df)
+#         vert_set = manager.evaluators[0].prop_di_graph.vertex_set
+#         json_out = {'modification targets': []}
+#         edge_json = []
+#         for vertex in vert_set:
+#             vert_uml, edge_uml = vertex.to_uml_json()
+#             json_out['modification targets'].extend(vert_uml)
+#             edge_json.extend(edge_uml)
+#
+#         json_out['modification targets'].extend(edge_json)
+#         with open('changes_uml.json', 'w') as outfile:
+#             json.dump(json_out, outfile, indent=4)
+#
+#     def tearDown(self):
+#         pass
+
+
 class TestManager(unittest.TestCase):
 
     def setUp(self):
         self.manager = Manager(
             excel_path=[os.path.join(
-                        DATA_DIRECTORY, 'Composition Example.xlsx')
-                        for i in range(3)],
+                DATA_DIRECTORY, 'Composition Example.xlsx')
+                for i in range(3)],
             json_path=os.path.join(DATA_DIRECTORY, 'PathMasterExpanded.json'))
 
     def test_get_json_data(self):
@@ -34,6 +65,8 @@ class TestManager(unittest.TestCase):
         # weak test
         self.manager.create_evaluators()
         self.assertEqual(3, len(self.manager.evaluators))
+        for eval in self.manager.evaluators:
+            self.assertIsInstance(eval, Evaluator)
 
     def tearDown(self):
         pass

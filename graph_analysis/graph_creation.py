@@ -41,6 +41,7 @@ class Evaluator(object):
 
     def rename_excel_columns(self):
         for column in self.df.columns:
+            # print(self.json_data['Columns to Navigation Map'])
             new_column_name = self.json_data[
                 'Columns to Navigation Map'][column][-1]
             self.df.rename(columns={column: new_column_name}, inplace=True)
