@@ -37,6 +37,7 @@ def get_uml_id(name=None):
 class PropertyDiGraph(nx.DiGraph):
 
     def __init__(self, incoming_graph_data=None, **attr):
+        self.vertex_dict = {}
         self.vertex_set = set()
         self.edge_set = set()
         super().__init__(incoming_graph_data=None, **attr)
@@ -60,26 +61,22 @@ class PropertyDiGraph(nx.DiGraph):
             vertex = Vertex(name=node, node_types=node_types,
                             successors=self.succ[node],
                             predecessors=self.pred[node])
+            self.vertex_dict.update({node: vertex})
             self.vertex_set.add(vertex)
 
         return self.vertex_set
 
     def create_edge_set(self):
-        for node in self.nodes:
-            # if pred (source=pred node key, targ=self, edge_attr)
-            for pred_node in self.pred[node]:
-                edge = DiEdge(source=pred_node,
-                              target=node,
-                              edge_attribute=self[node][
-                                  pred_node]['edge_attribute'])
-                self.edge_set.add(edge)
-
-            for succ_node in self.succ[node]:
-                edge = DiEdge(source=node,
-                              target=succ_node,
-                              edge_attribute=self[node][
-                                  succ_node]['edge_attribute'])
-                self.edge_set.add(edge)
+        edge_pair_attr_dict = nx.get_edge_attributes(self, 'edge_attribute')
+        for edge_pair in edge_pair_attr_dict:
+            # if I wanted objects, I could use a get_obj() to get the Verts
+            # I could keep a Vertex Dict where key is name value is obj
+            source_vert = self.vertex_dict[edge_pair[0]]
+            target_vert = self.vertex_dict[edge_pair[1]]
+            edge = DiEdge(source=source_vert,
+                          target=target_vert,
+                          edge_attribute=edge_pair_attr_dict[edge_pair])
+            self.edge_set.add(edge)
 
 
 class Vertex(object):
@@ -104,9 +101,6 @@ class Vertex(object):
             temp_dict.update(self.predecessors[node_name])
             connections.append(temp_dict)
         return connections
-
-    def spanning_tree(self, pattern=None):
-        pass
 
     def to_dict(self):
         return {'name': self.name,
@@ -159,18 +153,19 @@ class DiEdge(object):
     connects two nodes"""
 
     def __init__(self, source=None, target=None, edge_attribute=None):
+        # Source, Target and attr are actually strings not objects.
         self.source = source
         self.target = target
         self.edge_attribute = edge_attribute
 
     @property
-    def edge_triple_named(self):
+    def named_edge_triple(self):
         return (self.source.name, self.target.name, self.edge_attribute)
 
     @property
     def edge_vert_type_triple(self):
-        return (self.source.node_type,
-                self.target.node_type,
+        return (self.source.node_types,
+                self.target.node_types,
                 self.edge_attribute)
 
     @property

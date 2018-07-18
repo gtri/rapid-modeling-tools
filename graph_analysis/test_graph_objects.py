@@ -8,7 +8,7 @@ from utils import (create_vertex_objects, get_edge_type,
                    get_composite_owner_names,
                    get_a_composite_owner_names)
 from test_graph_creation import DATA_DIRECTORY
-from graph_objects import Vertex, get_uml_id, UML_ID, PropertyDiGraph
+from graph_objects import Vertex, get_uml_id, UML_ID, PropertyDiGraph, DiEdge
 
 
 class TestPropertyDiGraph(unittest.TestCase):
@@ -31,7 +31,6 @@ class TestPropertyDiGraph(unittest.TestCase):
             set(self.df.columns))
 
         composite_thing_series = self.df['Composite Thing']
-        print(composite_thing_series)
 
         for col in columns_to_create:
             if col == 'composite owner':
@@ -42,12 +41,10 @@ class TestPropertyDiGraph(unittest.TestCase):
                     prefix=col, data=composite_thing_series)
 
         self.Graph = PropertyDiGraph()
-        # print(self.df)
         for index, pair in enumerate(data['Pattern Graph Edges']):
             edge_type = get_edge_type(data=data, index=index)
             self.df[edge_type] = edge_type
             df_temp = self.df[[pair[0], pair[1], edge_type]]
-            print(df_temp)
             GraphTemp = nx.DiGraph()
             GraphTemp = nx.from_pandas_edgelist(
                 df=df_temp, source=pair[0],
@@ -87,10 +84,40 @@ class TestPropertyDiGraph(unittest.TestCase):
     def test_create_edge_set(self):
         # check each element of edge_set is infact a DiEdge then that it should
         # be an edge at all.
-        print(self.Graph.edges)
-        self.assertTrue(False)
-        # print(self.Graph.edges)
-        expected_edge_set = {}
+        # TODO: Find a way to use the self.Graph.edges tuples with the
+        # edge attr because these show up as source, targ.
+        expected_edge_set = {('composite owner Car', 'Car', 'type'),
+                             ('composite owner Car', 'A_Car_component',
+                              'owner'),
+                             ('composite owner Wheel', 'Wheel', 'type'),
+                             ('composite owner Wheel',
+                              'A_Wheel_component', 'owner'),
+                             ('composite owner Engine', 'Engine', 'type'),
+                             ('composite owner Engine',
+                              'A_Engine_component', 'owner'),
+                             ('engine', 'Engine', 'type'),
+                             ('engine', 'Car', 'owner'),
+                             ('rear driver', 'Wheel', 'type'),
+                             ('rear driver', 'Car', 'owner'),
+                             ('hub', 'Hub', 'type',),
+                             ('hub', 'Wheel', 'owner'),
+                             ('drive output', 'Drive Output', 'type'),
+                             ('drive output', 'Engine', 'owner'),
+                             ('A_Car_component', 'composite owner Car',
+                              'memberEnd'),
+                             ('A_Car_component', 'engine', 'memberEnd'),
+                             ('A_Car_component', 'rear driver', 'memberEnd'),
+                             ('A_Wheel_component', 'composite owner Wheel',
+                              'memberEnd'),
+                             ('A_Wheel_component', 'hub', 'memberEnd'),
+                             ('A_Engine_component', 'composite owner Engine',
+                              'memberEnd'),
+                             ('A_Engine_component', 'drive output',
+                              'memberEnd')}
+        self.Graph.create_edge_set()
+        for edge in self.Graph.edge_set:
+            self.assertIsInstance(edge, DiEdge)
+            self.assertIn(edge.edge_triple, expected_edge_set)
 
     def tearDown(self):
         pass
@@ -271,7 +298,7 @@ class TestVertex(unittest.TestCase):
         # json_out.extend(edge_car_uml)
         # json_out.extend(engine_edge_uml)
         # with open('changes_uml.json', 'w') as outfile:
-        #     json.dump(json_out, outfile)
+        #     json.dump(json_out, outfile, indent=4)
 
     def test_get_uml_id(self):
         node_names = ['Car', 'engine', 'Car']
@@ -292,6 +319,44 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(
             expected_uml_edge_names, edge_id_names)
         self.assertEqual(4, UML_ID['count'])
+
+    def tearDown(self):
+        pass
+
+
+class TestDiEdge(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_property_edge_triple(self):
+        Car = Vertex(name='Car')
+        car = Vertex(name='car')
+        edge = DiEdge(source=Car,
+                      target=car,
+                      edge_attribute='owner')
+        expected_triple = (Car, car, 'owner')
+        self.assertTupleEqual(expected_triple, edge.edge_triple)
+
+    def test_property_edge_vert_type_triple(self):
+        Car = Vertex(name='Car', node_types={'Composite Thing'})
+        car = Vertex(name='car', node_types={'component'})
+        edge = DiEdge(source=Car,
+                      target=car,
+                      edge_attribute='owner')
+
+        expected_triple = ({'Composite Thing'}, {'component'}, 'owner')
+        self.assertTupleEqual(expected_triple, edge.edge_vert_type_triple)
+
+    def test_property_named_edge_triple(self):
+        Car = Vertex(name='Car')
+        car = Vertex(name='car')
+        edge = DiEdge(source=Car,
+                      target=car,
+                      edge_attribute='owner')
+
+        expected_triple = ('Car', 'car', 'owner')
+        self.assertTupleEqual(expected_triple, edge.named_edge_triple)
 
     def tearDown(self):
         pass
