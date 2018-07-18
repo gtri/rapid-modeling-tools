@@ -8,7 +8,8 @@ from utils import (create_vertex_objects, get_edge_type,
                    get_composite_owner_names,
                    get_a_composite_owner_names)
 from test_graph_creation import DATA_DIRECTORY
-from graph_objects import Vertex, get_uml_id, UML_ID, PropertyDiGraph, DiEdge
+from graph_objects import (Vertex, PropertyDiGraph, DiEdge,
+                           get_uml_id, UML_ID, )
 
 
 class TestPropertyDiGraph(unittest.TestCase):
@@ -81,11 +82,16 @@ class TestPropertyDiGraph(unittest.TestCase):
             self.assertIsInstance(vertex, Vertex)
             self.assertIn(vertex.name, expected_vertex_set)
 
+        dict_keys_set = set(self.Graph.vertex_dict.keys())
+        self.assertSetEqual(expected_vertex_set, dict_keys_set)
+
     def test_create_edge_set(self):
         # check each element of edge_set is infact a DiEdge then that it should
         # be an edge at all.
         # TODO: Find a way to use the self.Graph.edges tuples with the
         # edge attr because these show up as source, targ.
+        self.Graph.create_vertex_set(df=self.df)
+        self.Graph.create_edge_set()
         expected_edge_set = {('composite owner Car', 'Car', 'type'),
                              ('composite owner Car', 'A_Car_component',
                               'owner'),
@@ -114,10 +120,9 @@ class TestPropertyDiGraph(unittest.TestCase):
                               'memberEnd'),
                              ('A_Engine_component', 'drive output',
                               'memberEnd')}
-        self.Graph.create_edge_set()
         for edge in self.Graph.edge_set:
             self.assertIsInstance(edge, DiEdge)
-            self.assertIn(edge.edge_triple, expected_edge_set)
+            self.assertIn(edge.named_edge_triple, expected_edge_set)
 
     def tearDown(self):
         pass

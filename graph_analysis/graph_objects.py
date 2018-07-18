@@ -43,6 +43,8 @@ class PropertyDiGraph(nx.DiGraph):
         super().__init__(incoming_graph_data=None, **attr)
         # TODO: these two attribtues caused my Evaluator tests to fail
         # TODO: figure out a way to set these attrs without creating in init
+        # self.create_vertex_set()
+        # self.create_edge_set()
 
     @property
     def named_vertex_set(self):
@@ -69,8 +71,6 @@ class PropertyDiGraph(nx.DiGraph):
     def create_edge_set(self):
         edge_pair_attr_dict = nx.get_edge_attributes(self, 'edge_attribute')
         for edge_pair in edge_pair_attr_dict:
-            # if I wanted objects, I could use a get_obj() to get the Verts
-            # I could keep a Vertex Dict where key is name value is obj
             source_vert = self.vertex_dict[edge_pair[0]]
             target_vert = self.vertex_dict[edge_pair[1]]
             edge = DiEdge(source=source_vert,
