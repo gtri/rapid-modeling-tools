@@ -153,13 +153,17 @@ class TestVertex(unittest.TestCase):
         verticies = create_vertex_objects(
             df=test_graph_df, graph=Test_Graph)
 
-        vertex_1_connections = [{'node_name': 'engine',
+        vertex_1_connections = [{'source': 'Car',
+                                 'target': 'engine',
                                  'edge_attribute': 'owner'},
-                                {'node_name': 'engine',
+                                {'source': 'engine',
+                                 'target': 'Car',
                                  'edge_attribute': 'type'}]
-        vertex_2_connections = [{'node_name': 'Car',
+        vertex_2_connections = [{'source': 'engine',
+                                 'target': 'Car',
                                  'edge_attribute': 'type'},
-                                {'node_name': 'Car',
+                                {'source': 'Car',
+                                 'target': 'engine',
                                  'edge_attribute': 'owner'}]
         vertex_connections_dict = {0: vertex_1_connections,
                                    1: vertex_2_connections}
@@ -297,13 +301,6 @@ class TestVertex(unittest.TestCase):
         }]
 
         self.assertListEqual(edge_engine_uml, engine_edge_uml)
-        # json_out = []
-        # json_out.extend(vertex_car_uml)
-        # json_out.extend(vertex_engine_uml)
-        # json_out.extend(edge_car_uml)
-        # json_out.extend(engine_edge_uml)
-        # with open('changes_uml.json', 'w') as outfile:
-        #     json.dump(json_out, outfile, indent=4)
 
     def test_get_uml_id(self):
         node_names = ['Car', 'engine', 'Car']

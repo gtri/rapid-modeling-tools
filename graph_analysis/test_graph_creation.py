@@ -16,7 +16,8 @@ DATA_DIRECTORY = '../data/'
 #     def test_json_creation(self):
 #         manager = Manager(excel_path=[os.path.join(
 #             DATA_DIRECTORY, 'Composition Example.xlsx')],
-#             json_path=os.path.join(DATA_DIRECTORY, 'PathMasterExpanded.json'))
+#             json_path=os.path.join(DATA_DIRECTORY,
+#                                    'PathMasterExpanded.json'))
 #         manager.get_json_data()
 #         manager.create_evaluators()
 #         manager.evaluators[0].rename_excel_columns()

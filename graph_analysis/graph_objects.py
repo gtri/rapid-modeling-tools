@@ -93,11 +93,13 @@ class Vertex(object):
         connections = []
         # {'<node name>' : {'edge_attribute': 'edge type'}}
         for node_name in self.successors:
-            temp_dict = {'node_name': node_name}
+            temp_dict = {'source': self.name,
+                         'target': node_name}
             temp_dict.update(self.successors[node_name])
             connections.append(temp_dict)
         for node_name in self.predecessors:
-            temp_dict = {'node_name': node_name}
+            temp_dict = {'source': node_name,
+                         'target': self.name}
             temp_dict.update(self.predecessors[node_name])
             connections.append(temp_dict)
         return connections
@@ -132,12 +134,12 @@ class Vertex(object):
         edge_uml_list = []
         for connection in self.connections:
             edge_uml_dict = {
-                'id': get_uml_id(name=connection['node_name']),
+                'id': get_uml_id(name=connection['source']),
                 'ops': [
                     {
                         'op': 'replace',
                         'path': '/' + connection['edge_attribute'],
-                        'value': get_uml_id(name=self.name),
+                        'value': get_uml_id(name=connection['target']),
                     }
                 ]
             }
