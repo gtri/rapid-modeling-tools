@@ -31,15 +31,16 @@ class TestPropertyDiGraph(unittest.TestCase):
         columns_to_create = set(data['Pattern Graph Vertices']).difference(
             set(self.df.columns))
 
-        composite_thing_series = self.df['Composite Thing']
+        root_node = data['Root Node']
+        root_node_values = self.df[root_node]
 
         for col in columns_to_create:
             if col == 'composite owner':
                 self.df[col] = get_composite_owner_names(
-                    prefix=col, data=composite_thing_series)
+                    prefix=col, data=root_node_values)
             elif col == 'A_"composite owner"_component':
                 self.df[col] = get_a_composite_owner_names(
-                    prefix=col, data=composite_thing_series)
+                    prefix=col, data=root_node_values)
 
         self.Graph = PropertyDiGraph()
         for index, pair in enumerate(data['Pattern Graph Edges']):
@@ -56,13 +57,14 @@ class TestPropertyDiGraph(unittest.TestCase):
                 GraphTemp.edges, edge_attribute=edge_type)
 
     def test_named_vertex_set(self):
-        expected_vertex_set = {'composite owner Wheel', 'Car',
-                               'composite owner Car', 'Wheel',
-                               'composite owner Engine', 'Engine',
+        expected_vertex_set = {'composite owner engine', 'Car',
+                               'composite owner rear driver', 'Wheel',
+                               'composite owner hub', 'Engine',
                                'engine', 'rear driver', 'hub', 'Hub',
                                'drive output', 'Drive Output',
-                               'A_Wheel_component', 'A_Car_component',
-                               'A_Engine_component'}
+                               'A_engine_component', 'A_rear driver_component',
+                               'A_hub_component', 'A_drive output_component',
+                               'composite owner drive output'}
         self.Graph.create_vertex_set(df=self.df)
         self.assertSetEqual(expected_vertex_set, self.Graph.named_vertex_set)
 
@@ -70,13 +72,14 @@ class TestPropertyDiGraph(unittest.TestCase):
         # idea is to check that the vertex_set contains the vert objects expect
         # check that each element in the vertex_set is a vertex object and
         # then check their names.
-        expected_vertex_set = {'composite owner Wheel', 'Car',
-                               'composite owner Car', 'Wheel',
-                               'composite owner Engine', 'Engine',
+        expected_vertex_set = {'composite owner engine', 'Car',
+                               'composite owner rear driver', 'Wheel',
+                               'composite owner hub', 'Engine',
                                'engine', 'rear driver', 'hub', 'Hub',
                                'drive output', 'Drive Output',
-                               'A_Wheel_component', 'A_Car_component',
-                               'A_Engine_component'}
+                               'A_engine_component', 'A_rear driver_component',
+                               'A_hub_component', 'A_drive output_component',
+                               'composite owner drive output'}
         self.Graph.create_vertex_set(df=self.df)
         for vertex in self.Graph.vertex_set:
             self.assertIsInstance(vertex, Vertex)
@@ -92,34 +95,50 @@ class TestPropertyDiGraph(unittest.TestCase):
         # edge attr because these show up as source, targ.
         self.Graph.create_vertex_set(df=self.df)
         self.Graph.create_edge_set()
-        expected_edge_set = {('composite owner Car', 'Car', 'type'),
-                             ('composite owner Car', 'A_Car_component',
-                              'owner'),
-                             ('composite owner Wheel', 'Wheel', 'type'),
-                             ('composite owner Wheel',
-                              'A_Wheel_component', 'owner'),
-                             ('composite owner Engine', 'Engine', 'type'),
-                             ('composite owner Engine',
-                              'A_Engine_component', 'owner'),
+        data_dict = {'Composite Thing': ['Car', 'Car',
+                                         'Wheel', 'Engine'],
+                     'component': ['engine', 'rear driver',
+                                   'hub', 'drive output'],
+                     'Atomic Thing': ['Engine', 'Wheel',
+                                      'Hub', 'Drive Output']}
+        expected_edge_set = {('composite owner engine', 'Car', 'type'),
+                             ('composite owner rear driver', 'Car', 'type'),
+                             ('composite owner hub', 'Wheel', 'type'),
+                             ('composite owner drive output', 'Engine',
+                              'type'),
                              ('engine', 'Engine', 'type'),
-                             ('engine', 'Car', 'owner'),
                              ('rear driver', 'Wheel', 'type'),
-                             ('rear driver', 'Car', 'owner'),
-                             ('hub', 'Hub', 'type',),
-                             ('hub', 'Wheel', 'owner'),
+                             ('hub', 'Hub', 'type'),
                              ('drive output', 'Drive Output', 'type'),
+                             ('A_engine_component', 'composite owner engine',
+                              'memberEnd'),
+                             ('A_rear driver_component',
+                              'composite owner rear driver', 'memberEnd'),
+                             ('A_hub_component', 'composite owner hub',
+                              'memberEnd'),
+                             ('A_drive output_component',
+                              'composite owner drive output', 'memberEnd'),
+                             ('A_engine_component', 'engine',
+                              'memberEnd'),
+                             ('A_rear driver_component',
+                              'rear driver', 'memberEnd'),
+                             ('A_hub_component', 'hub',
+                              'memberEnd'),
+                             ('A_drive output_component',
+                              'drive output', 'memberEnd'),
+                             ('engine', 'Car', 'owner'),
+                             ('rear driver', 'Car', 'owner'),
+                             ('hub', 'Wheel', 'owner'),
                              ('drive output', 'Engine', 'owner'),
-                             ('A_Car_component', 'composite owner Car',
-                              'memberEnd'),
-                             ('A_Car_component', 'engine', 'memberEnd'),
-                             ('A_Car_component', 'rear driver', 'memberEnd'),
-                             ('A_Wheel_component', 'composite owner Wheel',
-                              'memberEnd'),
-                             ('A_Wheel_component', 'hub', 'memberEnd'),
-                             ('A_Engine_component', 'composite owner Engine',
-                              'memberEnd'),
-                             ('A_Engine_component', 'drive output',
-                              'memberEnd')}
+                             ('composite owner engine',
+                              'A_engine_component', 'owner'),
+                             ('composite owner rear driver',
+                              'A_rear driver_component', 'owner'),
+                             ('composite owner hub',
+                              'A_hub_component', 'owner'),
+                             ('composite owner drive output',
+                              'A_drive output_component',
+                              'owner')}
         for edge in self.Graph.edge_set:
             self.assertIsInstance(edge, DiEdge)
             self.assertIn(edge.named_edge_triple, expected_edge_set)
