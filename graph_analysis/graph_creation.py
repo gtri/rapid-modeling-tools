@@ -51,17 +51,17 @@ class Evaluator(object):
         columns_to_create = set(self.json_data[
             'Pattern Graph Vertices']).difference(
             set(self.df.columns))
-
-        composite_thing_series = self.df['Composite Thing']
+        root_node = self.json_data['Root Node']
+        root_node_values = self.df[root_node]
 
         for col in columns_to_create:
             # TODO: find a better way
             if col == 'composite owner':
                 self.df[col] = get_composite_owner_names(
-                    prefix=col, data=composite_thing_series)
+                    prefix=col, data=root_node_values)
             elif col == 'A_"composite owner"_component':
                 self.df[col] = get_a_composite_owner_names(
-                    prefix=col, data=composite_thing_series)
+                    prefix=col, data=root_node_values)
 
     def to_property_di_graph(self):
         self.prop_di_graph = PropertyDiGraph()

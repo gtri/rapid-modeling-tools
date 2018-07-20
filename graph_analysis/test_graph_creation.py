@@ -102,6 +102,7 @@ class TestEvaluator(unittest.TestCase):
         self.assertListEqual(expected_cols, list(self.evaluator.df.columns))
 
     def test_add_missing_columns(self):
+        # TODO: explicitly check that the new columns are made.
         self.evaluator.rename_excel_columns()
         expected_cols = {'Composite Thing',
                          'component',
@@ -110,6 +111,42 @@ class TestEvaluator(unittest.TestCase):
                          'A_"composite owner"_component'}
         self.evaluator.add_missing_columns()
         self.assertSetEqual(expected_cols, set(self.evaluator.df.columns))
+        comp_owner = list(self.evaluator.df['composite owner'])
+        a_comp_comp = list(self.evaluator.df['A_"composite owner"_component'])
+        expected_comp_owner = ['composite owner engine',
+                               'composite owner chassis',
+                               'composite owner driveshaft',
+                               'composite owner front passenger',
+                               'composite owner front driver',
+                               'composite owner rear passenger',
+                               'composite owner rear driver',
+                               'composite owner hub',
+                               'composite owner tire',
+                               'composite owner lug nut',
+                               'composite owner one',
+                               'composite owner two',
+                               'composite owner three',
+                               'composite owner four',
+                               'composite owner drive output',
+                               'composite owner mount']
+        expected_a_comp_comp = ['A_engine_component',
+                                'A_chassis_component',
+                                'A_driveshaft_component',
+                                'A_front passenger_component',
+                                'A_front driver_component',
+                                'A_rear passenger_component',
+                                'A_rear driver_component',
+                                'A_hub_component',
+                                'A_tire_component',
+                                'A_lug nut_component',
+                                'A_one_component',
+                                'A_two_component',
+                                'A_three_component',
+                                'A_four_component',
+                                'A_drive output_component',
+                                'A_mount_component']
+        self.assertListEqual(expected_comp_owner, comp_owner)
+        self.assertListEqual(expected_a_comp_comp, a_comp_comp)
 
     def test_to_property_di_graph(self):
         # the goal is to create a graph object.
