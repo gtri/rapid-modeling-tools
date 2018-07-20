@@ -1,16 +1,14 @@
 {
     "Columns to Navigation Map": {
         "Component": [
+            "component",
+            "owner",
             "Composite Thing"
         ],
         "Position": [
-            "Composite Thing",
-            "owner",
             "component"
         ],
         "Part": [
-            "Composite Thing",
-            "owner",
             "component",
             "type",
             "Atomic Thing"
@@ -81,6 +79,7 @@
         "owner",
         "owner"
     ],
+    "Root Node": "component",
     "Vertex MetaTypes": {
         "Composite Thing": "Class",
         "Atomic Thing": "Class",

@@ -17,7 +17,7 @@ DATA_DIRECTORY = '../data/'
 #         manager = Manager(excel_path=[os.path.join(
 #             DATA_DIRECTORY, 'Composition Example.xlsx')],
 #             json_path=os.path.join(DATA_DIRECTORY,
-#                                    'PathMasterExpanded.json'))
+#                                    'CompositionGraphMaster.json'))
 #         manager.get_json_data()
 #         manager.create_evaluators()
 #         manager.evaluators[0].rename_excel_columns()
@@ -48,7 +48,8 @@ class TestManager(unittest.TestCase):
             excel_path=[os.path.join(
                 DATA_DIRECTORY, 'Composition Example.xlsx')
                 for i in range(3)],
-            json_path=os.path.join(DATA_DIRECTORY, 'PathMasterExpanded.json'))
+            json_path=os.path.join(DATA_DIRECTORY,
+                                   'CompositionGraphMaster.json'))
 
     def test_get_json_data(self):
         self.manager.get_json_data()
@@ -57,7 +58,9 @@ class TestManager(unittest.TestCase):
                          'Pattern Graph Edge Labels',
                          'Pattern Graph Edges',
                          'Pattern Spanning Tree Edges',
-                         'Pattern Spanning Tree Edge Labels']
+                         'Pattern Spanning Tree Edge Labels',
+                         'Root Node',
+                         'Vertex MetaTypes']
 
         self.assertListEqual(expected_keys, list(
             self.manager.json_data.keys()))
@@ -80,7 +83,7 @@ class TestEvaluator(unittest.TestCase):
 
     def setUp(self):
         with open(os.path.join(DATA_DIRECTORY,
-                               'PathMasterExpanded.json')) as f:
+                               'CompositionGraphMaster.json')) as f:
             data = json.load(f)
 
         self.evaluator = Evaluator(

@@ -4,7 +4,7 @@ import networkx as nx
 # TODO: implement DATA or the PATH to the DATA as a global.
 # Better implemented with either the DIRECTORY and ROOT as globals or
 # with the DATA itself as a global
-with open('../data/PathMasterExpanded.json') as f:
+with open('../data/CompositionGraphMaster.json') as f:
     data = json.load(f)
 
 

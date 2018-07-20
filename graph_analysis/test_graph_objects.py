@@ -16,7 +16,7 @@ class TestPropertyDiGraph(unittest.TestCase):
 
     def setUp(self):
         with open(os.path.join(DATA_DIRECTORY,
-                               'PathMasterExpanded.json')) as f:
+                               'CompositionGraphMaster.json')) as f:
             data = json.load(f)
 
         # Create Baby dataset to deal with manual checking
@@ -243,12 +243,12 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(car_node_uml, vertex_car_uml)
 
         car_edge_uml = [{
-            'id': 'new_1',
+            'id': 'new_0',
             'ops': [
                 {
                     'op': 'replace',
                     'path': '/owner',
-                    'value': 'new_0',
+                    'value': 'new_1',
                 }
             ]
         },
@@ -280,12 +280,12 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(vertex_engine_uml, engine_node_uml)
 
         engine_edge_uml = [{
-            'id': 'new_0',
+            'id': 'new_1',
             'ops': [
                 {
                     'op': 'replace',
                     'path': '/type',
-                    'value': 'new_1',
+                    'value': 'new_0',
                 }
             ]
         },

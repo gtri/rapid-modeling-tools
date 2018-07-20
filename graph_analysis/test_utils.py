@@ -13,7 +13,7 @@ from graph_objects import UML_ID, Vertex, get_uml_id
 class TestUtils(unittest.TestCase):
 
     def setUp(self):
-        with open('../data/PathMasterExpanded.json') as f:
+        with open('../data/CompositionGraphMaster.json') as f:
             self.data = json.load(f)
 
     def test_edge_type(self):
