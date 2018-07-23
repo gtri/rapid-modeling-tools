@@ -3,8 +3,7 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 
-from utils import (get_edge_type, get_composite_owner_names,
-                   get_a_composite_owner_names)
+from utils import (get_edge_type, create_column_values)
 from graph_objects import PropertyDiGraph
 
 
@@ -51,17 +50,14 @@ class Evaluator(object):
         columns_to_create = set(self.json_data[
             'Pattern Graph Vertices']).difference(
             set(self.df.columns))
-        root_node = self.json_data['Root Node']
-        root_node_values = self.df[root_node]
+        column_data_values = self.df.iloc[:, 0]
+        auxillary_col_data = self.df.iloc[:, 1]
 
         for col in columns_to_create:
             # TODO: find a better way
-            if col == 'composite owner':
-                self.df[col] = get_composite_owner_names(
-                    prefix=col, data=root_node_values)
-            elif col == 'A_"composite owner"_component':
-                self.df[col] = get_a_composite_owner_names(
-                    prefix=col, data=root_node_values)
+            self.df[col] = create_column_values(
+                col_name=col, data=column_data_values,
+                aux_data=auxillary_col_data)
 
     def to_property_di_graph(self):
         self.prop_di_graph = PropertyDiGraph()

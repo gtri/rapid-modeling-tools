@@ -4,8 +4,7 @@ import pandas as pd
 import networkx as nx
 
 from utils import (get_edge_type,
-                   get_composite_owner_names,
-                   get_a_composite_owner_names,
+                   create_column_values,
                    create_vertex_objects)
 from graph_objects import UML_ID, Vertex, get_uml_id
 
@@ -20,26 +19,22 @@ class TestUtils(unittest.TestCase):
         self.assertEqual('type',
                          get_edge_type(data=self.data, index=0))
 
-    def test_get_composite_owner_names(self):
-        composite_data = ['Car', 'Wheel', 'Engine']
-        composite_owner_output = get_composite_owner_names(
-            prefix='composite owner', data=composite_data)
-        composite_data_list = ['composite owner Car',
-                               'composite owner Wheel',
-                               'composite owner Engine']
-        self.assertListEqual(composite_data_list, composite_owner_output)
-        new_composite_names = get_composite_owner_names(
-            prefix='composite owner', data=composite_data)
-        self.assertEqual(3, len(new_composite_names))
-
-    def test_get_a_composite_owner_name(self):
-        composite_data = ['Car', 'Wheel', 'Engine']
-        composite_owner_output = get_a_composite_owner_names(
-            prefix='A_thing_component', data=composite_data)
-        composite_data_list = ['A_Car_component',
-                               'A_Wheel_component',
-                               'A_Engine_component']
-        self.assertListEqual(composite_data_list, composite_owner_output)
+    def test_create_column_values(self):
+        data = ['Car', 'Wheel', 'Engine']
+        data_2 = ['chassis', 'hub', 'drive output']
+        columns = ['A_"composite owner"_component', 'composite owner']
+        expected_output = {'A_"composite owner"_component':
+                           ['A_car_chassis', 'A_wheel_hub',
+                            'A_engine_drive output'],
+                           'composite owner':
+                           ['car qua chassis context',
+                            'wheel qua hub context',
+                            'engine qua drive output context']
+                           }
+        for col in columns:
+            list_out = create_column_values(col_name=col, data=data,
+                                            aux_data=data_2)
+            self.assertListEqual(expected_output[col], list_out)
 
     def test_create_vertex_objects(self):
         # This also tests the Vertex.to_dict() method in a round about way

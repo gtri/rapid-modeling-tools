@@ -10,6 +10,7 @@ DATA_DIRECTORY = '../data/'
 
 
 # class TestProduceJson(unittest.TestCase):
+#
 #     def setUp(self):
 #         pass
 #
@@ -34,7 +35,8 @@ DATA_DIRECTORY = '../data/'
 #             edge_json.extend(edge_uml)
 #
 #         json_out['modification targets'].extend(edge_json)
-#         with open('changes_uml.json', 'w') as outfile:
+#         with open(os.path.join(DATA_DIRECTORY,
+#                                'changes_uml.json'), 'w') as outfile:
 #             json.dump(json_out, outfile, indent=4)
 #
 #     def tearDown(self):
@@ -113,38 +115,38 @@ class TestEvaluator(unittest.TestCase):
         self.assertSetEqual(expected_cols, set(self.evaluator.df.columns))
         comp_owner = list(self.evaluator.df['composite owner'])
         a_comp_comp = list(self.evaluator.df['A_"composite owner"_component'])
-        expected_comp_owner = ['composite owner engine',
-                               'composite owner chassis',
-                               'composite owner driveshaft',
-                               'composite owner front passenger',
-                               'composite owner front driver',
-                               'composite owner rear passenger',
-                               'composite owner rear driver',
-                               'composite owner hub',
-                               'composite owner tire',
-                               'composite owner lug nut',
-                               'composite owner one',
-                               'composite owner two',
-                               'composite owner three',
-                               'composite owner four',
-                               'composite owner drive output',
-                               'composite owner mount']
-        expected_a_comp_comp = ['A_engine_component',
-                                'A_chassis_component',
-                                'A_driveshaft_component',
-                                'A_front passenger_component',
-                                'A_front driver_component',
-                                'A_rear passenger_component',
-                                'A_rear driver_component',
-                                'A_hub_component',
-                                'A_tire_component',
-                                'A_lug nut_component',
-                                'A_one_component',
-                                'A_two_component',
-                                'A_three_component',
-                                'A_four_component',
-                                'A_drive output_component',
-                                'A_mount_component']
+        expected_comp_owner = ['car qua engine context',
+                               'car qua chassis context',
+                               'car qua driveshaft context',
+                               'car qua front passenger context',
+                               'car qua front driver context',
+                               'car qua rear passenger context',
+                               'car qua rear driver context',
+                               'wheel qua hub context',
+                               'wheel qua tire context',
+                               'wheel qua lug nut context',
+                               'engine qua one context',
+                               'engine qua two context',
+                               'engine qua three context',
+                               'engine qua four context',
+                               'engine qua drive output context',
+                               'engine qua mount context']
+        expected_a_comp_comp = ['A_car_engine',
+                                'A_car_chassis',
+                                'A_car_driveshaft',
+                                'A_car_front passenger',
+                                'A_car_front driver',
+                                'A_car_rear passenger',
+                                'A_car_rear driver',
+                                'A_wheel_hub',
+                                'A_wheel_tire',
+                                'A_wheel_lug nut',
+                                'A_engine_one',
+                                'A_engine_two',
+                                'A_engine_three',
+                                'A_engine_four',
+                                'A_engine_drive output',
+                                'A_engine_mount']
         self.assertListEqual(expected_comp_owner, comp_owner)
         self.assertListEqual(expected_a_comp_comp, a_comp_comp)
 

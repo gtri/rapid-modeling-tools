@@ -5,27 +5,34 @@ def get_edge_type(data=None, index=None):
     return data['Pattern Graph Edge Labels'][index]
 
 
-def get_composite_owner_names(prefix=None, data=None):
-    # This seems like column_values will remember the items on multiple calls
-    # tested and this is not an issue
+def create_column_values(col_name=None, data=None, aux_data=None):
     column_values = []
-    for item in data:
-        tmp_list = [prefix + ' ' + item]
-        column_values.extend(tmp_list)
-    return column_values
-
-
-def get_a_composite_owner_names(prefix=None, data=None):
-    # This seems like column_values will remember the items on multiple calls
-    column_values = []
-    under = '_'
-    chopped_str = prefix.split(sep='_')
-    for item in data:
-        tmp_list = [chopped_str[0] + under
-                    + item + under
-                    + chopped_str[-1]]
-        column_values.extend(tmp_list)
-    return column_values
+    # check prefix for an underscore
+    if '_' in col_name:
+        # for the A_composite owner_component column and any with an _
+        under = '_'
+        chopped_str = col_name.split(sep='_')
+        for count, item in enumerate(data):
+            tmp_list = [chopped_str[0]
+                        + under
+                        + item.lower()
+                        + under
+                        + aux_data[count]]
+            column_values.extend(tmp_list)
+        return column_values
+    else:
+        # for the composite owner column and i guess all others...
+        space = ' '
+        for count, item in enumerate(data):
+            tmp_list = [item.lower()
+                        + space
+                        + 'qua'
+                        + space
+                        + aux_data[count].lower()
+                        + space
+                        + 'context']
+            column_values.extend(tmp_list)
+        return column_values
 
 
 def create_vertex_objects(df=None, graph=None):
