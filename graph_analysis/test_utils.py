@@ -1,10 +1,8 @@
 import unittest
-import json
 import pandas as pd
 import networkx as nx
 
-from utils import (get_edge_type,
-                   create_column_values,
+from utils import (create_column_values,
                    create_vertex_objects)
 from graph_objects import UML_ID, Vertex, get_uml_id
 
@@ -12,12 +10,7 @@ from graph_objects import UML_ID, Vertex, get_uml_id
 class TestUtils(unittest.TestCase):
 
     def setUp(self):
-        with open('../data/CompositionGraphMaster.json') as f:
-            self.data = json.load(f)
-
-    def test_edge_type(self):
-        self.assertEqual('type',
-                         get_edge_type(data=self.data, index=0))
+        pass
 
     def test_create_column_values(self):
         data = ['Car', 'Wheel', 'Engine']
@@ -120,6 +113,9 @@ class TestUtils(unittest.TestCase):
     #         root_node_type='Composite Thing',
     #         tree_pattern=span_nodes,
     #         tree_edge_pattern=span_edges)
+
+    def tearDown(self):
+        pass
 
 
 if __name__ == '__main__':

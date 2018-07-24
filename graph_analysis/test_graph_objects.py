@@ -4,11 +4,12 @@ import os
 import pandas as pd
 import networkx as nx
 
-from utils import (create_vertex_objects, get_edge_type,
+from utils import (create_vertex_objects,
                    create_column_values)
 from test_graph_creation import DATA_DIRECTORY
 from graph_objects import (Vertex, PropertyDiGraph, DiEdge,
                            get_uml_id, UML_ID, )
+from graph_creation import MDTranslator
 
 
 class TestPropertyDiGraph(unittest.TestCase):
@@ -17,6 +18,8 @@ class TestPropertyDiGraph(unittest.TestCase):
         with open(os.path.join(DATA_DIRECTORY,
                                'CompositionGraphMaster.json')) as f:
             data = json.load(f)
+
+        self.translator = MDTranslator(json_data=data)
 
         # Create Baby dataset to deal with manual checking
         data_dict = {'Composite Thing': ['Car', 'Car',
@@ -40,7 +43,7 @@ class TestPropertyDiGraph(unittest.TestCase):
 
         self.Graph = PropertyDiGraph()
         for index, pair in enumerate(data['Pattern Graph Edges']):
-            edge_type = get_edge_type(data=data, index=index)
+            edge_type = self.translator.get_edge_type(index=index)
             self.df[edge_type] = edge_type
             df_temp = self.df[[pair[0], pair[1], edge_type]]
             GraphTemp = nx.DiGraph()
@@ -150,7 +153,11 @@ class TestPropertyDiGraph(unittest.TestCase):
 class TestVertex(unittest.TestCase):
 
     def setUp(self):
-        pass
+        with open(os.path.join(DATA_DIRECTORY,
+                               'CompositionGraphMaster.json')) as f:
+            data = json.load(f)
+
+        self.translator = MDTranslator(json_data=data)
 
     def test_connections(self):
         data_dict = {'component': ['Car', 'engine'],
@@ -235,7 +242,9 @@ class TestVertex(unittest.TestCase):
                 'edge_attribute': 'type'
             }}
         )
-        vertex_car_uml, edge_car_uml = vertex_car.to_uml_json()
+        vertex_car_uml, edge_car_uml = vertex_car.to_uml_json(
+            translator=self.translator
+        )
 
         vertex_engine = Vertex(
             name='engine',
@@ -245,7 +254,9 @@ class TestVertex(unittest.TestCase):
             predecessors={'Car': {
                 'edge_attribute': 'owner'}}
         )
-        vertex_engine_uml, edge_engine_uml = vertex_engine.to_uml_json()
+        vertex_engine_uml, edge_engine_uml = vertex_engine.to_uml_json(
+            translator=self.translator
+        )
 
         car_node_uml = [{
             'id': 'new_0',
@@ -255,6 +266,8 @@ class TestVertex(unittest.TestCase):
                     'name': 'Car',
                     'path': None,
                     'metatype': 'Class',
+                    'stereotype': 'Block',
+                    'settings': None,
                 }
             ]
         }]
@@ -292,6 +305,8 @@ class TestVertex(unittest.TestCase):
                     'name': 'engine',
                     'path': None,
                     'metatype': 'Property',
+                    'stereotype': 'PartProperty',
+                    'settings': 'composite',
                 }
             ]
         }]

@@ -1,23 +1,4 @@
-import json
 import networkx as nx
-
-# TODO: implement DATA or the PATH to the DATA as a global.
-# Better implemented with either the DIRECTORY and ROOT as globals or
-# with the DATA itself as a global
-with open('../data/CompositionGraphMaster.json') as f:
-    data = json.load(f)
-
-
-try:
-    UML_METATYPE = data['Vertex MetaTypes']
-except KeyError:
-    UML_METATYPE = {
-        'Composite Thing': 'Class',
-        'Atomic Thing': 'Class',
-        'composite owner': 'Property',
-        'component': 'Property',
-        'A_"composite owner"_component': 'Association'
-    }
 
 
 UML_ID = {
@@ -110,7 +91,7 @@ class Vertex(object):
                 'successors': self.successors,
                 'predecessors': self.predecessors}
 
-    def to_uml_json(self):
+    def to_uml_json(self, translator=None):
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
         node_types_list = list(self.node_types)
@@ -119,11 +100,15 @@ class Vertex(object):
             'id': get_uml_id(name=self.name),
             'ops': [
                 {
-                    'op': 'create',
+                    'op': 'create',  # evaluator will replace with fn input.
                     'name': self.name,
                     'path': None,
-                    'metatype': UML_METATYPE[
-                        node_types_list[0]],
+                    'metatype': translator.get_uml_metatype(
+                        node_key=node_types_list[0]),
+                    'stereotype': translator.get_uml_stereotype(
+                        node_key=node_types_list[0]),
+                    'settings': translator.get_uml_settings(
+                        node_key=node_types_list[0]),
                 }
             ]
         }

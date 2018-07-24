@@ -223,6 +223,7 @@
         "owner",
         "type"
     ],
+    "Root Node": "blockValue",
     "Vertex MetaTypes": {
         "Parametric Context": "Class",
         "blockValue": "Property",
@@ -239,5 +240,43 @@
         "C_value_blockValue_end1": "ConnectorEnd",
         "C_value_blockValue_end2": "ConnectorEnd",
         "Constraint Spec": "Constraint"
+    },
+    "Vertex Stereotypes": {
+        "Parametric Context": "Block",
+        "blockValue": "ValueProperty",
+        "C_value_blockValue": null,
+        "value": "ConstraintParameter",
+        "constUse": "ConstraintProperty",
+        "My Constraint": "ConstraintBlock",
+        "blockValueType": "ValueType",
+        "valueType": "ValueType",
+        "context1": null,
+        "context2": null,
+        "A_context1_blockValue": null,
+        "A_context2_constUse": null,
+        "C_value_blockValue_end1": "NestedConnectorEnd",
+        "C_value_blockValue_end2": null,
+        "Constraint Spec": null
+    },
+    "Vertex Settings": {
+        "Parametric Context": null,
+        "blockValue": null,
+        "C_value_blockValue": null,
+        "value": null,
+        "constUse": {
+            "aggregation": "composite"
+        },
+        "My Constraint": null,
+        "blockValueType": null,
+        "valueType": null,
+        "context1": null,
+        "context2": null,
+        "A_context1_blockValue": null,
+        "A_context2_constUse": null,
+        "C_value_blockValue_end1": {
+            "propertyPath": "id(constUse)"
+        },
+        "C_value_blockValue_end2": null,
+        "Constraint Spec": null
     }
 }

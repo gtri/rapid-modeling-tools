@@ -1,8 +1,6 @@
+import json
+import os
 from graph_objects import Vertex
-
-
-def get_edge_type(data=None, index=None):
-    return data['Pattern Graph Edge Labels'][index]
 
 
 def create_column_values(col_name=None, data=None, aux_data=None):

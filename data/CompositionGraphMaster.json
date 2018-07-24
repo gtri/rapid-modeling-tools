@@ -86,5 +86,21 @@
         "composite owner": "Property",
         "component": "Property",
         "A_\"composite owner\"_component": "Association"
+    },
+    "Vertex Stereotypes": {
+        "Composite Thing": "Block",
+        "Atomic Thing": "Block",
+        "composite owner": null,
+        "component": "PartProperty",
+        "A_\"composite owner\"_component": null
+    },
+    "Vertex Settings": {
+        "Composite Thing": null,
+        "Atomic Thing": null,
+        "composite owner": null,
+        "component": {
+            "aggregation": "composite"
+        },
+        "A_\"composite owner\"_component": null
     }
 }
