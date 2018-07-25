@@ -9,39 +9,39 @@ from graph_objects import PropertyDiGraph
 DATA_DIRECTORY = '../data/'
 
 
-class TestProduceJson(unittest.TestCase):
-
-    def setUp(self):
-        pass
-
-    def test_json_creation(self):
-        manager = Manager(excel_path=[os.path.join(
-            DATA_DIRECTORY, 'Composition Example.xlsx')],
-            json_path=os.path.join(DATA_DIRECTORY,
-                                   'CompositionGraphMaster.json'))
-        translator = manager.translator
-        evaluator = manager.evaluators[0]
-        evaluator.rename_excel_columns()
-        evaluator.add_missing_columns()
-        evaluator.to_property_di_graph()
-        property_di_graph = evaluator.prop_di_graph
-        property_di_graph.create_vertex_set(
-            df=evaluator.df)
-        vert_set = property_di_graph.vertex_set
-        json_out = {'modification targets': []}
-        edge_json = []
-        for vertex in vert_set:
-            vert_uml, edge_uml = vertex.to_uml_json(translator=translator)
-            json_out['modification targets'].extend(vert_uml)
-            edge_json.extend(edge_uml)
-
-        json_out['modification targets'].extend(edge_json)
-        with open(os.path.join(DATA_DIRECTORY,
-                               'changes_uml.json'), 'w') as outfile:
-            json.dump(json_out, outfile, indent=4)
-
-    def tearDown(self):
-        pass
+# class TestProduceJson(unittest.TestCase):
+#
+#     def setUp(self):
+#         pass
+#
+#     def test_json_creation(self):
+#         manager = Manager(excel_path=[os.path.join(
+#             DATA_DIRECTORY, 'Composition Example.xlsx')],
+#             json_path=os.path.join(DATA_DIRECTORY,
+#                                    'CompositionGraphMaster.json'))
+#         translator = manager.translator
+#         evaluator = manager.evaluators[0]
+#         evaluator.rename_excel_columns()
+#         evaluator.add_missing_columns()
+#         evaluator.to_property_di_graph()
+#         property_di_graph = evaluator.prop_di_graph
+#         property_di_graph.create_vertex_set(
+#             df=evaluator.df)
+#         vert_set = property_di_graph.vertex_set
+#         json_out = {'modification targets': []}
+#         edge_json = []
+#         for vertex in vert_set:
+#             vert_uml, edge_uml = vertex.to_uml_json(translator=translator)
+#             json_out['modification targets'].extend(vert_uml)
+#             edge_json.extend(edge_uml)
+#
+#         json_out['modification targets'].extend(edge_json)
+#         with open(os.path.join(DATA_DIRECTORY,
+#                                'changes_uml.json'), 'w') as outfile:
+#             json.dump(json_out, outfile, indent=4)
+#
+#     def tearDown(self):
+#         pass
 
 
 class TestManager(unittest.TestCase):
@@ -212,15 +212,16 @@ class TestMDTranslator(unittest.TestCase):
         self.assertEqual(None, stereotype_2)
 
     def test_get_uml_settings(self):
-        setting = self.translator.get_uml_settings(
+        path, setting = self.translator.get_uml_settings(
             node_key='Composite Thing'
         )
-        self.assertEqual(None, setting)
+        self.assertTupleEqual(('Composite Thing', None), (path, setting))
 
-        setting_2 = self.translator.get_uml_settings(
+        path_comp, setting_comp = self.translator.get_uml_settings(
             node_key='component'
         )
-        self.assertEqual('composite', setting_2)
+        self.assertEqual(('aggregation', 'composite'),
+                         (path_comp, setting_comp))
 
     def tearDown(self):
         pass

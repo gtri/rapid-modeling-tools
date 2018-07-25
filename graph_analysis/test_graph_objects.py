@@ -235,7 +235,7 @@ class TestVertex(unittest.TestCase):
     def test_to_uml_json(self):
         vertex_car = Vertex(
             name='Car',
-            node_types={'Atomic Thing'},
+            node_types=['Atomic Thing', 'Composite Thing'],
             successors={'engine': {
                 'edge_attribute': 'owner'}},
             predecessors={'engine': {
@@ -248,7 +248,7 @@ class TestVertex(unittest.TestCase):
 
         vertex_engine = Vertex(
             name='engine',
-            node_types={'component'},
+            node_types=['component', 'component'],
             successors={'Car': {
                 'edge_attribute': 'type'}},
             predecessors={'Car': {
@@ -267,8 +267,7 @@ class TestVertex(unittest.TestCase):
                     'path': None,
                     'metatype': 'Class',
                     'stereotype': 'Block',
-                    'settings': None,
-                }
+                },
             ]
         }]
 
@@ -303,10 +302,15 @@ class TestVertex(unittest.TestCase):
                 {
                     'op': 'create',
                     'name': 'engine',
-                    'path': None,
+                    'path': 'aggregation',
                     'metatype': 'Property',
                     'stereotype': 'PartProperty',
-                    'settings': 'composite',
+                    'value': 'composite'
+                },
+                {
+                    'op': 'replace',
+                    'path': 'aggregation',
+                    'value': 'composite'
                 }
             ]
         }]

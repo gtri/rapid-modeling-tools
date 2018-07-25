@@ -94,24 +94,39 @@ class Vertex(object):
     def to_uml_json(self, translator=None):
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
-        node_types_list = list(self.node_types)
         node_uml_list = []
-        node_uml_dict = {
-            'id': get_uml_id(name=self.name),
-            'ops': [
-                {
-                    'op': 'create',  # evaluator will replace with fn input.
-                    'name': self.name,
-                    'path': None,
-                    'metatype': translator.get_uml_metatype(
-                        node_key=node_types_list[0]),
-                    'stereotype': translator.get_uml_stereotype(
-                        node_key=node_types_list[0]),
-                    'settings': translator.get_uml_settings(
-                        node_key=node_types_list[0]),
+
+        for count, node_type in enumerate(self.node_types):
+            if count == 0:
+                node_uml_dict = {
+                    'id': get_uml_id(name=self.name),
+                    'ops': [
+                        {
+                            'op': 'create',  # evaluator replace with fn input.
+                            'name': self.name,
+                            'path': None,
+                            'metatype': translator.get_uml_metatype(
+                                node_key=node_type),
+                            'stereotype': translator.get_uml_stereotype(
+                                node_key=node_type),
+                        }
+                    ]
                 }
-            ]
-        }
+            path_val, settings_val = translator.get_uml_settings(
+                node_key=node_type)
+            if settings_val and count != 0:
+                decorations_dict = {
+                    'op': 'replace',
+                    'path': path_val,
+                    'value': settings_val,
+                }
+                node_uml_dict['ops'].append(decorations_dict)
+            elif settings_val and count == 0:
+                node_uml_dict['ops'][0].update({'path': path_val,
+                                                'value': settings_val})
+                continue
+            else:
+                continue
 
         node_uml_list.append(node_uml_dict)
 

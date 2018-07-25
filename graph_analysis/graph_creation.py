@@ -117,6 +117,7 @@ class MDTranslator(object):
         try:
             uml_phrase.keys()
         except AttributeError:
-            return uml_phrase
+            return node_key, uml_phrase
 
-        return next(iter(uml_phrase.values()))
+        key = next(iter(uml_phrase))
+        return key, uml_phrase[key]
