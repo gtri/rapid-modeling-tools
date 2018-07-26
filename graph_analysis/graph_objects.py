@@ -71,6 +71,8 @@ class Vertex(object):
 
     @property
     def connections(self):
+        """
+        """
         connections = []
         # {'<node name>' : {'edge_attribute': 'edge type'}}
         for node_name in self.successors:
@@ -86,12 +88,25 @@ class Vertex(object):
         return connections
 
     def to_dict(self):
+        """
+        Produce a dictionary for the attributes. Primarily used to test that
+        the object was created properly.
+        """
         return {'name': self.name,
                 'node types': self.node_types,
                 'successors': self.successors,
                 'predecessors': self.predecessors}
 
     def to_uml_json(self, translator=None):
+        """
+        Produce a dictionary emulating the JSON format required by the
+        Java Plugin for MagicDraw.
+
+        *Keyword arguments*:
+            *translator -- A MDTranslator object that prvoides access to the
+            JSON data file that translates the information from the Python
+            meanigns here to MagicDraw terminology.
+        """
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
         node_uml_list = []
@@ -124,7 +139,6 @@ class Vertex(object):
             elif settings_val and count == 0:
                 node_uml_dict['ops'][0].update({'path': path_val,
                                                 'value': settings_val})
-                continue
             else:
                 continue
 
@@ -149,10 +163,18 @@ class Vertex(object):
 
 
 class DiEdge(object):
-    """Source and Target should be Vertex Objects.
-    The DiEdge object's primary role is to return a triple describing
-    the tail of the edge, tip of the edge and the type of the edge that
-    connects two nodes"""
+    """
+    A Directed Edge object that stores the source and target vertex objects
+    along with the edge attribute connecting the two.
+        * This Class was created to facilitate the graph difference exploration
+        * The Directed Edges are returned as triples:
+            * (source, target, edge_attribtue)
+
+    *Keyword arguments*:
+        * source: The Vertex at the tail of the directed edge
+        * target: The Vertex at the tip fo the directed edge
+        * edge_attribute: The string that describes the edge type
+    """
 
     def __init__(self, source=None, target=None, edge_attribute=None):
         # Source, Target and attr are actually strings not objects.
