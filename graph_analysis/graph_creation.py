@@ -43,7 +43,7 @@ class Evaluator(object):
         self.df.dropna(how='all', inplace=True)
         self.prop_di_graph = None
 
-    def rename_excel_columns(self):
+    def rename_columns(self):
         for column in self.df.columns:
             # print(self.json_data['Columns to Navigation Map'])
             new_column_name = self.translator.get_col_uml_names(column=column)

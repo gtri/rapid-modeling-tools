@@ -1,6 +1,7 @@
 import unittest
 import os
 import json
+import pandas as pd
 
 from graph_creation import (Manager, Evaluator, MDTranslator)
 from graph_objects import PropertyDiGraph
@@ -21,7 +22,7 @@ DATA_DIRECTORY = '../data/'
 #                                    'CompositionGraphMaster.json'))
 #         translator = manager.translator
 #         evaluator = manager.evaluators[0]
-#         evaluator.rename_excel_columns()
+#         evaluator.rename_columns()
 #         evaluator.add_missing_columns()
 #         evaluator.to_property_di_graph()
 #         property_di_graph = evaluator.prop_di_graph
@@ -95,19 +96,35 @@ class TestEvaluator(unittest.TestCase):
                 DATA_DIRECTORY, 'Composition Example.xlsx'),
             translator=self.translator)
 
-    def test_rename_excel_columns(self):
+        data_dict = {
+            'Component': ['Car', 'Car', 'Car', 'Car', 'Car', 'Car',
+                          'Car', 'Wheel', 'Wheel', 'Wheel', 'Engine',
+                          'Engine', 'Engine', 'Engine', 'Engine', 'Engine', ],
+            'Position': ['engine', 'chassis', 'driveshaft', 'front passenger',
+                         'front driver', 'rear passenger', 'rear driver',
+                         'hub', 'tire', 'lug nut', 'one', 'two', 'three',
+                         'four', 'drive output', 'mount'],
+            'Part': ['Engine', 'Chassis', 'Driveshaft', 'Wheel', 'Wheel',
+                     'Wheel', 'Wheel', 'Hub', 'Tire', 'Lug Nut', 'Cylinder',
+                     'Cylinder', 'Cylinder', 'Cylinder', 'Drive Output',
+                     'Mount']
+        }
+        self.evaluator.df = pd.DataFrame(data=data_dict)
+
+    def test_rename_columns(self):
         # just need to test that the columns are as expected.
         # utils tests the two auxillary functions that rename df entries.
         expected_cols = ['Composite Thing',
                          'component',
                          'Atomic Thing',
                          ]
-        self.evaluator.rename_excel_columns()
+        self.evaluator.rename_columns()
         self.assertListEqual(expected_cols, list(self.evaluator.df.columns))
 
     def test_add_missing_columns(self):
         # TODO: explicitly check that the new columns are made.
-        self.evaluator.rename_excel_columns()
+        # TODO: remove reliance on excelfile data.
+        self.evaluator.rename_columns()
         expected_cols = {'Composite Thing',
                          'component',
                          'Atomic Thing',
@@ -157,7 +174,7 @@ class TestEvaluator(unittest.TestCase):
         # networkx provides the functionality to get the data into the graph
         # the graph itself will be tested so I should just test that a graph
         # obj exists.
-        self.evaluator.rename_excel_columns()
+        self.evaluator.rename_columns()
         self.evaluator.add_missing_columns()
         self.evaluator.to_property_di_graph()
         self.assertTrue(self.evaluator.prop_di_graph)
@@ -173,6 +190,7 @@ class TestEvaluator(unittest.TestCase):
 class TestMDTranslator(unittest.TestCase):
 
     def setUp(self):
+        # TODO: Note that this relies on CompositionGraphMaster.json
         with open(os.path.join(DATA_DIRECTORY,
                                'CompositionGraphMaster.json')) as f:
             data = json.load(f)
