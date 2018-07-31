@@ -42,7 +42,7 @@ class Evaluator(object):
         self.df = pd.read_excel(excel_file)
         self.df.dropna(how='all', inplace=True)
         self.prop_di_graph = None
-        self.root_node_attr_columns = {}
+        self.root_node_attr_columns = set()
 
     # def validate_cols_keys_map(self):
     #     df_cols = set(self.df.columns)
@@ -68,9 +68,7 @@ class Evaluator(object):
             set(self.df.columns))
         # 1 below represents the root node
         column_data_values = self.df.iloc[:, 0]
-        print(column_data_values)
         auxillary_col_data = self.df.iloc[:, 1]
-        print(auxillary_col_data)
 
         for col in columns_to_create:
             # TODO: find a better way
@@ -95,12 +93,6 @@ class Evaluator(object):
             self.prop_di_graph.add_nodes_from(GraphTemp)
             self.prop_di_graph.add_edges_from(GraphTemp.edges,
                                               edge_attribute=edge_type)
-
-        # for attr_col in self.root_node_attr_columns:
-        #     temp_df = self.df[root_node, attr_col]
-        #     for row_data in temp_df.iterrows():
-        #         self.prop_di_graph.
-        #     pass
 
     @property
     def named_vertex_set(self):

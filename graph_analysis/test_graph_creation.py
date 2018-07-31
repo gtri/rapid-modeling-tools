@@ -120,6 +120,7 @@ class TestEvaluator(unittest.TestCase):
                          ]
         self.evaluator.rename_df_columns()
         self.assertListEqual(expected_cols, list(self.evaluator.df.columns))
+        self.assertEqual(set(), self.evaluator.root_node_attr_columns)
 
     def test_add_missing_columns(self):
         # TODO: explicitly check that the new columns are made.
@@ -197,7 +198,16 @@ class TestMDTranslator(unittest.TestCase):
 
         self.translator = MDTranslator(json_data=data)
 
-    def get_pattern_graph(self):
+    def test_get_root_node(self):
+        root_node = 'component'
+        self.assertEqual(root_node, self.translator.get_root_node())
+
+    def test_get_cols_to_nav_map(self):
+        cols_to_nav = ['Component', 'Position', 'Part']
+        self.assertListEqual(
+            cols_to_nav, self.translator.get_cols_to_nav_map())
+
+    def test_get_pattern_graph(self):
         pattern_graph = ['Composite Thing',
                          'Atomic Thing',
                          'A_\"compsoite owner\"_component',
@@ -206,7 +216,7 @@ class TestMDTranslator(unittest.TestCase):
         self.assertListEqual(pattern_graph,
                              self.translator.get_pattern_graph())
 
-    def get_pattern_graph_edges(self):
+    def test_get_pattern_graph_edges(self):
         node_pairs_list = self.translator.get_pattern_graph_edges().keys()
         self.assertEqual(6, node_pairs_list)
 
