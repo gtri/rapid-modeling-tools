@@ -17,11 +17,12 @@ def get_uml_id(name=None):
 
 class PropertyDiGraph(nx.DiGraph):
 
-    def __init__(self, incoming_graph_data=None, **attr):
+    def __init__(self, incoming_graph_data=None,
+                 root_attr_columns=None, ** attr):
         self.vertex_dict = {}
         self.vertex_set = set()
         self.edge_set = set()
-        super().__init__(incoming_graph_data=None, **attr)
+        super().__init__(incoming_graph_data=None)
         # TODO: these two attribtues caused my Evaluator tests to fail
         # TODO: figure out a way to set these attrs without creating in init
         # self.create_vertex_set()
@@ -32,12 +33,25 @@ class PropertyDiGraph(nx.DiGraph):
         vert_set_named = set()
         for vert in self.vertex_set:
             vert_set_named.add(vert.name)
-
         return vert_set_named
 
-    def create_vertex_set(self, df=None):
+    @property
+    def named_edge_set(self):
+        edge_set_named = set()
+        for edge in self.edge_set:
+            edge_set_named.add(edge.named_edge_triple)
+
+    def create_vertex_set(self, df=None, root_node_type=None):
         for node in self.nodes:
             mask = df == node
+            mask_df = df[mask]
+            # test_mask = ['component', 'Atomic Thing']
+            # mask_test_df = mask_df[test_mask]
+            # # print(mask_test_df)
+            # print(mask_test_df.dropna(
+            #     axis=1, how='all').dropna(axis=0, how='all').to_dict(
+            #     'records'
+            # ))
             node_type_columns = df[mask].dropna(
                 axis=1, how='all').columns
             node_types = {col for col in node_type_columns}

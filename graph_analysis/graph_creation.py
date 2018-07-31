@@ -42,20 +42,35 @@ class Evaluator(object):
         self.df = pd.read_excel(excel_file)
         self.df.dropna(how='all', inplace=True)
         self.prop_di_graph = None
+        self.root_node_attr_columns = {}
+
+    # def validate_cols_keys_map(self):
+    #     df_cols = set(self.df.columns)
+    #     data_keys = set(translator.get_cols_to_nav_map())
+    #     try:
+    #         df_cols == data_keys
 
     def rename_df_columns(self):
         for column in self.df.columns:
-            # print(self.json_data['Columns to Navigation Map'])
-            new_column_name = self.translator.get_col_uml_names(column=column)
-            self.df.rename(columns={column: new_column_name}, inplace=True)
+            try:
+                new_column_name = self.translator.get_col_uml_names(
+                    column=column)
+                self.df.rename(columns={column: new_column_name}, inplace=True)
+            except KeyError:
+                # We continue because these columns are additional data
+                # that we will associate to the Vertex as attrs.
+                self.root_node_attr_columns.add(column)
 
     def add_missing_columns(self):
         # TODO: make data agnostic, getting there
         columns_to_create = set(
             self.translator.get_pattern_graph()).difference(
             set(self.df.columns))
+        # 1 below represents the root node
         column_data_values = self.df.iloc[:, 0]
+        print(column_data_values)
         auxillary_col_data = self.df.iloc[:, 1]
+        print(auxillary_col_data)
 
         for col in columns_to_create:
             # TODO: find a better way
@@ -64,7 +79,9 @@ class Evaluator(object):
                 aux_data=auxillary_col_data)
 
     def to_property_di_graph(self):
-        self.prop_di_graph = PropertyDiGraph()
+        self.prop_di_graph = PropertyDiGraph(
+            root_attr_columns=self.root_node_attr_columns
+        )
         for index, pair in enumerate(
                 self.translator.get_pattern_graph_edges()):
             edge_type = self.translator.get_edge_type(index=index)
@@ -79,6 +96,12 @@ class Evaluator(object):
             self.prop_di_graph.add_edges_from(GraphTemp.edges,
                                               edge_attribute=edge_type)
 
+        # for attr_col in self.root_node_attr_columns:
+        #     temp_df = self.df[root_node, attr_col]
+        #     for row_data in temp_df.iterrows():
+        #         self.prop_di_graph.
+        #     pass
+
     @property
     def named_vertex_set(self):
         return self.prop_di_graph.get_vertex_set_named(df=self.df)
@@ -92,6 +115,12 @@ class MDTranslator(object):
 
     def __init__(self, json_data=None):
         self.data = json_data
+
+    def get_root_node(self):
+        return self.data['Root Node']
+
+    def get_cols_to_nav_map(self):
+        return self.data['Columns to Navigation Map']
 
     def get_pattern_graph(self):
         return self.data['Pattern Graph Vertices']

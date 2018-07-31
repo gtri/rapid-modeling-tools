@@ -21,7 +21,7 @@
             "owner",
             "constUse",
             "type",
-            "My Constraint",
+            "Constraint Block",
             "owner",
             "Constraint Spec"
         ],
@@ -32,7 +32,7 @@
             "owner",
             "constUse",
             "type",
-            "My Constraint"
+            "Constraint Block"
         ],
         "System Value Unit": [
             "blockValue",
@@ -51,6 +51,11 @@
             "value",
             "type",
             "valueType"
+        ],
+        "Context": [
+            "blockValue",
+            "owner",
+            "Parametric Context"
         ]
     },
     "Pattern Graph Vertices": [
@@ -59,7 +64,7 @@
         "C_value_blockValue",
         "value",
         "constUse",
-        "My Constraint",
+        "Constraint Block",
         "blockValueType",
         "valueType",
         "context1",
@@ -119,7 +124,7 @@
         ],
         [
             "value",
-            "My Constraint"
+            "Constraint Block"
         ],
         [
             "C_value_blockValue_end1",
@@ -147,11 +152,11 @@
         ],
         [
             "Constraint Spec",
-            "My Constraint"
+            "Constraint Block"
         ],
         [
             "constUse",
-            "My Constraint"
+            "Constraint Block"
         ]
     ],
     "Pattern Spanning Tree Edges": [
@@ -201,11 +206,11 @@
         ],
         [
             "Constraint Spec",
-            "My Constraint"
+            "Constraint Block"
         ],
         [
             "constUse",
-            "My Constraint"
+            "Constraint Block"
         ]
     ],
     "Pattern Spanning Tree Edge Labels": [
@@ -230,7 +235,7 @@
         "C_value_blockValue": "Connector",
         "value": "Port",
         "constUse": "Property",
-        "My Constraint": "Class",
+        "Constraint Block": "Class",
         "blockValueType": "DataType",
         "valueType": "DataType",
         "context1": "Property",
@@ -247,7 +252,7 @@
         "C_value_blockValue": null,
         "value": "ConstraintParameter",
         "constUse": "ConstraintProperty",
-        "My Constraint": "ConstraintBlock",
+        "Constraint Block": "ConstraintBlock",
         "blockValueType": "ValueType",
         "valueType": "ValueType",
         "context1": null,
@@ -266,7 +271,7 @@
         "constUse": {
             "aggregation": "composite"
         },
-        "My Constraint": null,
+        "Constraint Block": null,
         "blockValueType": null,
         "valueType": null,
         "context1": null,

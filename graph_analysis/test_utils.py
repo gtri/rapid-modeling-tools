@@ -3,7 +3,8 @@ import pandas as pd
 import networkx as nx
 
 from utils import (create_column_values,
-                   create_vertex_objects)
+                   create_vertex_objects,
+                   get_node_types_attrs)
 from graph_objects import UML_ID, Vertex, get_uml_id
 
 
@@ -69,6 +70,27 @@ class TestUtils(unittest.TestCase):
             # print(vertex.successors)
             # print('{pred node: ' '{{edge_attribute: edge_name}}')
             # print(vertex.predecessors)
+
+    def test_get_node_types_attrs(self):
+        data_dict = {
+            'component': ['car', 'wheel', 'engine'],
+            'Atomic Thing': ['Car', 'Wheel', 'Car'],
+            'edge attribute': ['owner', 'owner', 'owner'],
+            'Notes': ['little car to big Car',
+                      6,
+                      2]
+        }
+        df = pd.DataFrame(data=data_dict)
+
+        node_type_cols, node_attr_dict = get_node_types_attrs(
+            df=df, node='Car',
+            root_node_type='Atomic Thing',
+            root_attr_columns={'Notes'})
+
+        attr_list = [{'Notes': 'little car to big Car'}, {'Notes': 2}]
+        self.assertEqual({'Atomic Thing'}, node_type_cols)
+        self.assertListEqual(attr_list,
+                             node_attr_dict)
 
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.

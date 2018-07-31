@@ -33,6 +33,25 @@ def create_column_values(col_name=None, data=None, aux_data=None):
         return column_values
 
 
+def get_node_types_attrs(df=None, node=None,
+                         root_node_type=None, root_attr_columns=None):
+    node_attr_dict = {}
+    mask = df == node
+    node_mask_columns = df[mask].dropna(axis=1, how='all').columns
+    node_type_columns = set(node_mask_columns).difference(
+        root_attr_columns)
+
+    root_attribute_list = list(root_attr_columns)
+
+    # want to check if node in root nodes.values the column not the attrs.
+    if node in df[root_node_type].values:
+        root_node_df = df.loc[df[root_node_type] == node]
+        node_attr_dict = root_node_df[root_attribute_list].dropna(
+            axis=1, how='all').dropna(axis=0, how='all').to_dict('records')
+
+    return node_type_columns, node_attr_dict
+
+
 def create_vertex_objects(df=None, graph=None):
     vertex_list = []
     for node in graph.nodes:
