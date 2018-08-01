@@ -22,6 +22,7 @@ class PropertyDiGraph(nx.DiGraph):
         self.vertex_dict = {}
         self.vertex_set = set()
         self.edge_set = set()
+        self.root_attr_columns = root_attr_columns
         super().__init__(incoming_graph_data=None)
         # TODO: these two attribtues caused my Evaluator tests to fail
         # TODO: figure out a way to set these attrs without creating in init
@@ -43,21 +44,17 @@ class PropertyDiGraph(nx.DiGraph):
 
     def create_vertex_set(self, df=None, root_node_type=None):
         for node in self.nodes:
-            mask = df == node
-            mask_df = df[mask]
-            # test_mask = ['component', 'Atomic Thing']
-            # mask_test_df = mask_df[test_mask]
-            # # print(mask_test_df)
-            # print(mask_test_df.dropna(
-            #     axis=1, how='all').dropna(axis=0, how='all').to_dict(
-            #     'records'
-            # ))
-            node_type_columns = df[mask].dropna(
-                axis=1, how='all').columns
+            node_type_columns, node_attr_dict = get_node_types_attrs(
+                df=df,
+                node=node,
+                root_node_type=root_node_type,
+                root_attr_columns=self.root_attr_columns)
+
             node_types = {col for col in node_type_columns}
             vertex = Vertex(name=node, node_types=node_types,
                             successors=self.succ[node],
-                            predecessors=self.pred[node])
+                            predecessors=self.pred[node],
+                            attributes=node_attr_dict)
             self.vertex_dict.update({node: vertex})
             self.vertex_set.add(vertex)
 
@@ -77,11 +74,13 @@ class PropertyDiGraph(nx.DiGraph):
 class Vertex(object):
 
     def __init__(self, name=None, node_types=set(),
-                 successors=None, predecessors=None):
+                 successors=None, predecessors=None,
+                 attributes=None):
         self.name = name
         self.node_types = node_types
         self.successors = successors
         self.predecessors = predecessors
+        self.attriutes = attributes
 
     @property
     def connections(self):

@@ -3,6 +3,59 @@ import os
 from graph_objects import Vertex
 
 
+def create_column_values_under(prefix=None,
+                               first_node_data=None,
+                               second_node_data=None,
+                               suffix=''):
+    under = '_'
+    dash = '-'
+    column_values = []
+    for count, first_data in enumerate(first_node_data):
+        tmp_list = [prefix
+                    + under
+                    + first_data.lower()
+                    + under
+                    + second_node_data[count].lower()
+                    + suffix
+                    ]
+
+        column_values.extend(tmp_list)
+
+    return column_values
+
+
+def create_column_values_space(first_node_data=None,
+                               second_node_data=None):
+    space = ' '
+    column_values = []
+    for count, first_data in enumerate(first_node_data):
+        tmp_list = [first_data.lower()
+                    + space
+                    + 'qua'
+                    + space
+                    + second_node_data[count].lower()
+                    + space
+                    + 'context'
+                    ]
+        column_values.extend(tmp_list)
+
+    return column_values
+
+
+def create_column_values_singleton(first_node_data=None,
+                                   second_node_data=None):
+    space = ' '
+    column_values = []
+    for count, first_data in enumerate(first_node_data):
+        tmp_list = [first_data.lower()
+                    + space
+                    + second_node_data[count].lower()
+                    ]
+        column_values.extend(tmp_list)
+
+    return column_values
+
+
 def create_column_values(col_name=None, data=None, aux_data=None):
     column_values = []
     # check prefix for an underscore

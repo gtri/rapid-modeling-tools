@@ -2,7 +2,10 @@ import unittest
 import pandas as pd
 import networkx as nx
 
-from utils import (create_column_values,
+from utils import (create_column_values_under,
+                   create_column_values_space,
+                   create_column_values_singleton,
+                   create_column_values,
                    create_vertex_objects,
                    get_node_types_attrs)
 from graph_objects import UML_ID, Vertex, get_uml_id
@@ -12,6 +15,53 @@ class TestUtils(unittest.TestCase):
 
     def setUp(self):
         pass
+
+    def test_create_column_values_under(self):
+        data_dict = {
+            'blockValue': ['Apple', 'Orange'],
+            'value': ['Core', 'Skin'],
+        }
+        df = pd.DataFrame(data=data_dict)
+        column_vals = create_column_values_under(
+            prefix='C',
+            first_node_data=df.loc[:, 'value'],
+            second_node_data=df.loc[:, 'blockValue'],
+        )
+        expect_no_suffix = ['C_core_apple', 'C_skin_orange']
+        self.assertListEqual(expect_no_suffix, column_vals)
+
+        col_vals_suff = create_column_values_under(
+            prefix='A',
+            first_node_data=df.loc[:, 'value'],
+            second_node_data=df.loc[:, 'blockValue'],
+            suffix='-end1'
+        )
+        expect_suffix = ['A_core_apple-end1', 'A_skin_orange-end1']
+        self.assertListEqual(expect_suffix, col_vals_suff)
+
+    def test_create_column_values_space(self):
+        data_dict = {
+            'composite owner': ['Car', 'Wheel'],
+            'component': ['chassis', 'hub']
+        }
+        df = pd.DataFrame(data=data_dict)
+        created_cols = create_column_values_space(
+            first_node_data=df.loc[:, 'composite owner'],
+            second_node_data=df.loc[:, 'component']
+        )
+        expect_space = ['car qua chassis context',
+                        'wheel qua hub context']
+        self.assertListEqual(expect_space, created_cols)
+
+    def test_create_column_values_singleton(self):
+        first_node_data = ['green', 'blue']
+        second_node_data = ['context1', 'context1']
+        created_cols = create_column_values_singleton(
+            first_node_data=first_node_data,
+            second_node_data=second_node_data
+        )
+        expectation = ['green context1', 'blue context1']
+        self.assertListEqual(expectation, created_cols)
 
     def test_create_column_values(self):
         data = ['Car', 'Wheel', 'Engine']

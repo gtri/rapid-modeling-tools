@@ -62,19 +62,70 @@ class Evaluator(object):
                 self.root_node_attr_columns.add(column)
 
     def add_missing_columns(self):
-        # TODO: make data agnostic, getting there
-        columns_to_create = set(
+        # from a collection of vertex pairs, create all of the columns for
+        # for which data is required but not present in the excel.
+        # TODO: Figure out a way to bypass the order of creation problem for
+        # the Compsotion Excel Example where A_composite owner_component
+        # depends on the creation of composite owner first.
+        columns_to_create = list(set(
             self.translator.get_pattern_graph()).difference(
-            set(self.df.columns))
-        # 1 below represents the root node
-        column_data_values = self.df.iloc[:, 0]
-        auxillary_col_data = self.df.iloc[:, 1]
+            set(self.df.columns)))
+        # TODO: Weak solution to the creation order problem.
+        columns_to_create = sorted(columns_to_create, key=len)
 
+        under = '_'
+        space = ' '
+        dash = '-'
+
+        # TODO: make a fn like arrange_columns_to_create() to put all
+        # singeltons first, then spaces second then underscored names last.
+        # TODO (Note): make fn like get_create_col_values() that takes the df
+        # and the column name and returns the first and second node data
+        # function will have to rerun the check on the column name
         for col in columns_to_create:
-            # TODO: find a better way
-            self.df[col] = create_column_values(
-                col_name=col, data=column_data_values,
-                aux_data=auxillary_col_data)
+            if under in col:
+                if dash in col:
+                    col_data_vals = col.split(sep=under)
+                    suffix = col_data_vals[-1].split(sep=dash)
+                    first_node_data = self.df.loc[:, col_data_vals[1]]
+                    second_node_data = self.df.loc[:, suffix[0]]
+                    suff = dash + suffix[-1]
+                    self.df[col] = create_column_values_under(
+                        prefix=col_data_vals[0],
+                        first_node_data=first_node_type,
+                        second_node_data=second_node_data,
+                        suffix=suff
+                    )
+                else:
+                    col_data_vals = col.split(sep=under)
+                    first_node_data = self.df.loc[:, col_data_vals[1]]
+                    second_node_data = self.df.loc[:, col_data_vals[2]]
+                    self.df[col] = create_column_values_under(
+                        prefix=col_data_vals[0],
+                        first_node_data=first_node_type,
+                        second_node_data=second_node_data,
+                        suffix=''
+                    )
+            elif space in col:
+                col_data_vals = col.split(sep=space)
+                root_col_name = translator.get_root_node()
+                # TODO: Update this with rule from Bjorn.
+                first_node_data = self.df.loc[:, 0]
+                second_node_data = self.df.loc[:, root_col_name]
+                self.df[col] = create_column_values_space(
+                    first_node_data=first_node_data,
+                    second_node_data=second_node_data
+                )
+            else:
+                col_data_vals = col
+                root_col_name = translator.get_root_node()
+                first_node_data = self.df.loc[:, root_col_name]
+                second_node_data = [
+                    col for count in range(len(first_node_data))]
+                self.df[col] = create_column_values_singleton(
+                    first_node_data=first_node_data,
+                    second_node_data=second_node_data
+                )
 
     def to_property_di_graph(self):
         self.prop_di_graph = PropertyDiGraph(
