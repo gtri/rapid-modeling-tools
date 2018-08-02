@@ -17,7 +17,7 @@
     "Pattern Graph Vertices": [
         "Composite Thing",
         "Atomic Thing",
-        "A_\"composite owner\"_component",
+        "A_composite owner_component",
         "composite owner",
         "component"
     ],
@@ -39,11 +39,11 @@
             "Atomic Thing"
         ],
         [
-            "A_\"composite owner\"_component",
+            "A_composite owner_component",
             "composite owner"
         ],
         [
-            "A_\"composite owner\"_component",
+            "A_composite owner_component",
             "component"
         ],
         [
@@ -52,7 +52,7 @@
         ],
         [
             "composite owner",
-            "A_\"composite owner\"_component"
+            "A_composite owner_component"
         ]
     ],
     "Pattern Spanning Tree Edges": [
@@ -61,7 +61,7 @@
             "Atomic Thing"
         ],
         [
-            "A_\"composite owner\"_component",
+            "A_composite owner_component",
             "component"
         ],
         [
@@ -70,7 +70,7 @@
         ],
         [
             "composite owner",
-            "A_\"composite owner\"_component"
+            "A_composite owner_component"
         ]
     ],
     "Pattern Spanning Tree Edge Labels": [
@@ -85,14 +85,14 @@
         "Atomic Thing": "Class",
         "composite owner": "Property",
         "component": "Property",
-        "A_\"composite owner\"_component": "Association"
+        "A_composite owner_component": "Association"
     },
     "Vertex Stereotypes": {
         "Composite Thing": "Block",
         "Atomic Thing": "Block",
         "composite owner": null,
         "component": "PartProperty",
-        "A_\"composite owner\"_component": null
+        "A_composite owner_component": null
     },
     "Vertex Settings": {
         "Composite Thing": null,
@@ -101,6 +101,6 @@
         "component": {
             "aggregation": "composite"
         },
-        "A_\"composite owner\"_component": null
+        "A_composite owner_component": null
     }
 }

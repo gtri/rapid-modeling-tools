@@ -125,50 +125,39 @@ class TestEvaluator(unittest.TestCase):
     def test_add_missing_columns(self):
         # TODO: explicitly check that the new columns are made.
         # TODO: remove reliance on excelfile data.
-        self.evaluator.rename_df_columns()
+        # TODO: This is an incomplete test because it does not test for
+        # the case of no space column to be created.
+        evaluator = Evaluator(
+            excel_file=os.path.join(
+                DATA_DIRECTORY, 'Composition Example.xlsx'),
+            translator=self.translator)
+        data_dict = {
+            'Composite Thing': ['Car', 'Wheel', 'Engine'],
+            'component': ['chassis', 'tire', 'mount'],
+            'Atomic Thing': ['Chassis', 'Tire', 'Mount']
+        }
+        df = pd.DataFrame(data=data_dict)
+        evaluator.df = df
+        evaluator.rename_df_columns()
         expected_cols = {'Composite Thing',
                          'component',
                          'Atomic Thing',
                          'composite owner',
-                         'A_"composite owner"_component'}
-        self.evaluator.add_missing_columns()
-        self.assertSetEqual(expected_cols, set(self.evaluator.df.columns))
-        comp_owner = list(self.evaluator.df['composite owner'])
-        a_comp_comp = list(self.evaluator.df['A_"composite owner"_component'])
-        expected_comp_owner = ['car qua engine context',
-                               'car qua chassis context',
-                               'car qua driveshaft context',
-                               'car qua front passenger context',
-                               'car qua front driver context',
-                               'car qua rear passenger context',
-                               'car qua rear driver context',
-                               'wheel qua hub context',
-                               'wheel qua tire context',
-                               'wheel qua lug nut context',
-                               'engine qua one context',
-                               'engine qua two context',
-                               'engine qua three context',
-                               'engine qua four context',
-                               'engine qua drive output context',
-                               'engine qua mount context']
-        expected_a_comp_comp = ['A_car_engine',
-                                'A_car_chassis',
-                                'A_car_driveshaft',
-                                'A_car_front passenger',
-                                'A_car_front driver',
-                                'A_car_rear passenger',
-                                'A_car_rear driver',
-                                'A_wheel_hub',
-                                'A_wheel_tire',
-                                'A_wheel_lug nut',
-                                'A_engine_one',
-                                'A_engine_two',
-                                'A_engine_three',
-                                'A_engine_four',
-                                'A_engine_drive output',
-                                'A_engine_mount']
-        self.assertListEqual(expected_comp_owner, comp_owner)
-        self.assertListEqual(expected_a_comp_comp, a_comp_comp)
+                         'A_composite owner_component'}
+        evaluator.add_missing_columns()
+        self.assertSetEqual(expected_cols, set(evaluator.df.columns))
+
+        expected_composite_owner = ['car qua chassis context',
+                                    'wheel qua tire context',
+                                    'engine qua mount context']
+        expected_comp_owner_comp = ['A_car qua chassis context_chassis',
+                                    'A_wheel qua tire context_tire',
+                                    'A_engine qua mount context_mount']
+        self.assertListEqual(expected_composite_owner,
+                             list(evaluator.df['composite owner']))
+        self.assertListEqual(expected_comp_owner_comp,
+                             list(evaluator.df[
+                                 'A_composite owner_component']))
 
     def test_to_property_di_graph(self):
         # the goal is to create a graph object.
@@ -205,20 +194,20 @@ class TestMDTranslator(unittest.TestCase):
     def test_get_cols_to_nav_map(self):
         cols_to_nav = ['Component', 'Position', 'Part']
         self.assertListEqual(
-            cols_to_nav, self.translator.get_cols_to_nav_map())
+            cols_to_nav, list(self.translator.get_cols_to_nav_map().keys()))
 
     def test_get_pattern_graph(self):
         pattern_graph = ['Composite Thing',
                          'Atomic Thing',
-                         'A_\"compsoite owner\"_component',
+                         'A_composite owner_component',
                          'composite owner',
                          'component']
         self.assertListEqual(pattern_graph,
                              self.translator.get_pattern_graph())
 
     def test_get_pattern_graph_edges(self):
-        node_pairs_list = self.translator.get_pattern_graph_edges().keys()
-        self.assertEqual(6, node_pairs_list)
+        node_pairs_list = self.translator.get_pattern_graph_edges()
+        self.assertEqual(6, len(node_pairs_list))
 
     def test_get_edge_type(self):
         self.assertEqual('type', self.translator.get_edge_type(index=0))

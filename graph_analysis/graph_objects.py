@@ -1,5 +1,7 @@
 import networkx as nx
 
+from utils import get_node_types_attrs
+
 
 UML_ID = {
     'count': 0
@@ -13,6 +15,21 @@ def get_uml_id(name=None):
         UML_ID.update({name: 'new_{0}'.format(UML_ID['count'])})
         UML_ID['count'] += 1
         return UML_ID[name]
+
+
+def create_vertex_objects(df=None, graph=None):
+    vertex_list = []
+    for node in graph.nodes:
+        mask = df == node
+        node_type_columns = df[mask].dropna(
+            axis=1, how='all').columns
+        node_types = {col for col in node_type_columns}
+        vertex = Vertex(name=node, node_types=node_types,
+                        successors=graph.succ[node].copy(),
+                        predecessors=graph.pred[node].copy())
+        vertex_list.append(vertex)
+
+    return vertex_list
 
 
 class PropertyDiGraph(nx.DiGraph):
@@ -80,7 +97,7 @@ class Vertex(object):
         self.node_types = node_types
         self.successors = successors
         self.predecessors = predecessors
-        self.attriutes = attributes
+        self.attributes = attributes
 
     @property
     def connections(self):
@@ -108,7 +125,8 @@ class Vertex(object):
         return {'name': self.name,
                 'node types': self.node_types,
                 'successors': self.successors,
-                'predecessors': self.predecessors}
+                'predecessors': self.predecessors,
+                'attributes': self.attributes}
 
     def to_uml_json(self, translator=None):
         """
@@ -137,6 +155,7 @@ class Vertex(object):
                                 node_key=node_type),
                             'stereotype': translator.get_uml_stereotype(
                                 node_key=node_type),
+                            'attributes': self.attributes
                         }
                     ]
                 }

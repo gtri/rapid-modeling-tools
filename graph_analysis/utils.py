@@ -1,6 +1,5 @@
 import json
 import os
-from graph_objects import Vertex
 
 
 def create_column_values_under(prefix=None,
@@ -103,21 +102,6 @@ def get_node_types_attrs(df=None, node=None,
             axis=1, how='all').dropna(axis=0, how='all').to_dict('records')
 
     return node_type_columns, node_attr_dict
-
-
-def create_vertex_objects(df=None, graph=None):
-    vertex_list = []
-    for node in graph.nodes:
-        mask = df == node
-        node_type_columns = df[mask].dropna(
-            axis=1, how='all').columns
-        node_types = {col for col in node_type_columns}
-        vertex = Vertex(name=node, node_types=node_types,
-                        successors=graph.succ[node],
-                        predecessors=graph.pred[node])
-        vertex_list.append(vertex)
-
-    return vertex_list
 
 
 def aggregate_change_json():

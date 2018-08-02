@@ -3,7 +3,9 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 
-from utils import (create_column_values)
+from utils import (create_column_values_under,
+                   create_column_values_space,
+                   create_column_values_singleton)
 from graph_objects import PropertyDiGraph
 
 
@@ -102,15 +104,15 @@ class Evaluator(object):
                     second_node_data = self.df.loc[:, col_data_vals[2]]
                     self.df[col] = create_column_values_under(
                         prefix=col_data_vals[0],
-                        first_node_data=first_node_type,
+                        first_node_data=first_node_data,
                         second_node_data=second_node_data,
                         suffix=''
                     )
             elif space in col:
                 col_data_vals = col.split(sep=space)
-                root_col_name = translator.get_root_node()
+                root_col_name = self.translator.get_root_node()
                 # TODO: Update this with rule from Bjorn.
-                first_node_data = self.df.loc[:, 0]
+                first_node_data = self.df.iloc[:, 0]
                 second_node_data = self.df.loc[:, root_col_name]
                 self.df[col] = create_column_values_space(
                     first_node_data=first_node_data,
@@ -118,7 +120,7 @@ class Evaluator(object):
                 )
             else:
                 col_data_vals = col
-                root_col_name = translator.get_root_node()
+                root_col_name = self.translator.get_root_node()
                 first_node_data = self.df.loc[:, root_col_name]
                 second_node_data = [
                     col for count in range(len(first_node_data))]

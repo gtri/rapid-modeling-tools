@@ -6,7 +6,6 @@ from utils import (create_column_values_under,
                    create_column_values_space,
                    create_column_values_singleton,
                    create_column_values,
-                   create_vertex_objects,
                    get_node_types_attrs)
 from graph_objects import UML_ID, Vertex, get_uml_id
 
@@ -79,47 +78,6 @@ class TestUtils(unittest.TestCase):
             list_out = create_column_values(col_name=col, data=data,
                                             aux_data=data_2)
             self.assertListEqual(expected_output[col], list_out)
-
-    def test_create_vertex_objects(self):
-        # This also tests the Vertex.to_dict() method in a round about way
-        data_dict = {'Component': ['Car', 'engine'],
-                     'Position': ['engine', 'Car'],
-                     'edge type': ['owner', 'type']}
-        test_graph_df = pd.DataFrame(data=data_dict)
-        Test_Graph = nx.DiGraph()
-        Temp_Graph = nx.DiGraph()
-        Temp_Graph = nx.from_pandas_edgelist(
-            df=test_graph_df, source='Component',
-            target='Position', edge_attr='edge type',
-            create_using=Temp_Graph)
-        edge_label_dict = {'edge type': 'owner'}
-        Test_Graph.add_nodes_from(Temp_Graph)
-        Test_Graph.add_edge('Car', 'engine', edge_attribute='owner')
-        Test_Graph.add_edge('engine', 'Car',
-                            edge_attribute='type')
-
-        verticies = create_vertex_objects(
-            df=test_graph_df, graph=Test_Graph)
-
-        vertex_1_dict = {'name': 'Car',
-                         'node types': {'Component', 'Position'},
-                         'successors': {'engine': {'edge_attribute': 'owner'}},
-                         'predecessors': {'engine':
-                                          {'edge_attribute': 'type'}}}
-        vertex_2_dict = {'name': 'engine',
-                         'node types': {'Component', 'Position'},
-                         'successors': {'Car': {'edge_attribute': 'type'}},
-                         'predecessors': {'Car': {'edge_attribute': 'owner'}}}
-        vertex_dicts = [vertex_1_dict, vertex_2_dict]
-
-        for index, vertex in enumerate(verticies):
-            self.assertDictEqual(vertex_dicts[index], vertex.to_dict())
-            # print(('Vertex {0}: \n{{succ node: '
-            #        + '{{edge_attribute: edge_name}}}}').format(
-            #     vertex.name))
-            # print(vertex.successors)
-            # print('{pred node: ' '{{edge_attribute: edge_name}}')
-            # print(vertex.predecessors)
 
     def test_get_node_types_attrs(self):
         data_dict = {
