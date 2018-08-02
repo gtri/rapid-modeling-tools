@@ -66,9 +66,6 @@ class Evaluator(object):
     def add_missing_columns(self):
         # from a collection of vertex pairs, create all of the columns for
         # for which data is required but not present in the excel.
-        # TODO: Figure out a way to bypass the order of creation problem for
-        # the Compsotion Excel Example where A_composite owner_component
-        # depends on the creation of composite owner first.
         columns_to_create = list(set(
             self.translator.get_pattern_graph()).difference(
             set(self.df.columns)))
@@ -79,11 +76,6 @@ class Evaluator(object):
         space = ' '
         dash = '-'
 
-        # TODO: make a fn like arrange_columns_to_create() to put all
-        # singeltons first, then spaces second then underscored names last.
-        # TODO (Note): make fn like get_create_col_values() that takes the df
-        # and the column name and returns the first and second node data
-        # function will have to rerun the check on the column name
         for col in columns_to_create:
             if under in col:
                 if dash in col:
