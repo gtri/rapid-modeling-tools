@@ -53,6 +53,10 @@ class Evaluator(object):
     #         df_cols == data_keys
 
     def rename_df_columns(self):
+        """Returns renamed DataFrame columns from their Excel name to their
+        MagicDraw name. Any columns in the Excel DataFrame that are not in the
+        json are recorded as attribute columns.
+        """
         for column in self.df.columns:
             try:
                 new_column_name = self.translator.get_col_uml_names(
