@@ -11,20 +11,20 @@ def create_column_values_under(prefix=None,
 
     Parameters
     ----------
-    prefix: string
+    prefix : string
         the characters that appear in the column name before the first '_'
 
-    first_node_data: list
+    first_node_data : list
         List of data with a length equal to the number of rows in the dataframe
         determined by picking the dataframe column with the same name as the
         string between the first underscore and the second.
 
-    second_node_data: list
+    second_node_data : list
         List of data with a length equal to the number of rows in the dataframe
         determined by picking the dataframe column with the same name as the
         string after the second underscore.
 
-    suffix: string
+    suffix : string
         If the inferred column name contained a '-' followed by additional
         characters then those are treated as the suffix. Otherwise, it
         initalizes the the empty string and does nothing.
@@ -62,12 +62,12 @@ def create_column_values_space(first_node_data=None,
 
     Parameters
     ----------
-    first_node_data: list
+    first_node_data : list
         List of data with a length equal to the number of rows in the dataframe
         determined by picking the first dataframe column. This will change
         once a more appropriate rule has been decided.
 
-    second_node_data: list
+    second_node_data : list
         List of data with a length equal to the number of rows in the dataframe
         determined by picking the dataframe column with the same name as the
         string after the space.
@@ -103,13 +103,13 @@ def create_column_values_singleton(first_node_data=None,
 
     Parameters
     ----------
-    first_node_data: list
+    first_node_data : list
         List of data with a length equal to the number of rows in the dataframe
         determined by picking the dataframe column corresponding to the
         root node. This may change once a more appropriate rule has been
         decided.
 
-    second_node_data: list
+    second_node_data : list
         List of data with a length equal to the number of rows in the dataframe
         built by repeating the desired column name until it has
         the same length as first_node_data.
@@ -175,19 +175,19 @@ def get_node_types_attrs(df=None, node=None,
 
     Parameters
     ----------
-    df: Pandas DataFrame
+    df : Pandas DataFrame
         The DataFrame that is read in from Excel and that creates the Graph.
 
-    node: string
+    node : string
         The name of the graph vertex object that the node_types should be
         associated with.
 
-    root_node_type: string
+    root_node_type : string
         The name of the root node type, which is the same as the column
         header for the DataFrame and the value behind the rootNode key in the
         json file.
 
-    root_attr_columns: list of dictionaries
+    root_attr_columns : list of dictionaries
         The list of dictionaries created form the additional columns present
         in the excel file that are not part of the 'Columns to Navigation
         Map' and that should be associated to a node if that node is a root
