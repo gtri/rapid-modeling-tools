@@ -10,10 +10,35 @@ from graph_objects import PropertyDiGraph
 
 
 class Manager(object):
-    """Assume the first filepath in excel_path is the "baseline" and all
-    subsequent list indecies are ancestors of the baseline. The json_path
-    contains the map to associate the columns of the Excel sheet to the
-    dataframe columns, edge types and any missing columns."""
+    """Class for raw data input and distribution to other classes.
+
+    The Manager takes in a list of n excel filepaths and a single json_path.
+    The first Excel file in the excel_path input variable is assumed to be the
+    baseline to which all subsequent excel paths will be compared as ancestors.
+    A single json_path is taken because all of the input excel files are
+    assumed to be of the same type and thus to correspond to the same set of
+    data keys.
+
+    Attribtues
+    ----------
+    excel_path : list
+        list of paths to Excel Files.
+
+    json_path : string
+        string representing a path to a *.json file that is the key to decoding
+        the Excel inputs into MagicDraw compatiable outputs.
+
+    json_data : dictionary
+        The json data associated with the json_path.
+
+    translator : MDTranslator
+        The MDTranslator object which can be passed to classes that require its
+        functionality.
+
+    evaluators : Evaluator
+        list of the Evaluators created for each Excel file in the excel_path.
+        len(evaluators) == len(excel_path)
+    """
 
     def __init__(self, excel_path=[], json_path=None):
         self.excel_path = excel_path
@@ -36,6 +61,46 @@ class Manager(object):
 
 
 class Evaluator(object):
+    """Class for creating the PropertyDiGraph from the Excel data with the help
+    of the MDTranslator.
+
+    Evaluator produces a Pandas DataFrame from the Excel path provided by the
+    Manager. The Evaluator then updates the DataFrame with column headers
+    compliant with MagidDraw and infers required columns from the data stored
+    in the MDTranslator. With the filled out DataFrame the Evaluator produces
+    the PropertyDiGraph.
+
+    Parameters
+    ----------
+    excel_file : string
+        String to an Excel File
+
+    translator : MDTranslator
+        MDTranslator object that holds the data from the *.json file
+        associated with this type of Excel File.
+
+    Attributes
+    ----------
+    df : Pandas DataFrame
+        DataFrame constructed from reading the Excel File.
+
+    prop_di_graph : PropertyDiGraph
+        PropertyDiGraph constructed from the data in the df.
+
+    root_node_attr_columns : set
+        Set of column names in the initial read of the Excel file that do not
+        appear as Vertices in the MDTranslator definition of the expected
+        Vertices. The columns collected here will later be associated to the
+        corresponding root node as additional attributes.
+
+    Properties
+    ----------
+    named_vertex_set : set
+        Returns the named vertex set from the PropertyDiGraph.
+
+    vertex_set : set
+        Returns the vertex set from the PropertyDiGraph
+    """
 
     # TODO: Consider moving function calls into init since they should be run
     # then
@@ -53,6 +118,10 @@ class Evaluator(object):
     #         df_cols == data_keys
 
     def rename_df_columns(self):
+        """Returns renamed DataFrame columns from their Excel name to their
+        MagicDraw name. Any columns in the Excel DataFrame that are not in the
+        json are recorded as attribute columns.
+        """
         for column in self.df.columns:
             try:
                 new_column_name = self.translator.get_col_uml_names(
@@ -64,6 +133,28 @@ class Evaluator(object):
                 self.root_node_attr_columns.add(column)
 
     def add_missing_columns(self):
+        """Adds the missing column to the dataframe. These columns are ones
+        required to fillout the pattern in the MDTranslator that were not
+        specified by the user. The MDTranslator provides a template for naming
+        these inferred columns.
+
+        Notes
+        -----
+        Stepping through the function, first a list of column names that
+        appear in the JSON but not the Excel are compiled by computing the
+        difference between the expected column set from the Translator and the
+        initial dataframe columns. Then those columns are sorted by length
+        to ensure that longer column names constructed of multiple shorter
+        columns do not fail when searching the dataframe.
+            e.g. Suppose we need to construct the column
+            A_composite owner_component. Sorting by length ensures that
+            columns_to_create = ['component', 'composite owner',
+            'A_composite owner_component']
+        Then for each column name in columns to create, the column name is
+        checked for particular string properties and the inferred column values
+        are determined based on the desired column name.
+
+        """
         # from a collection of vertex pairs, create all of the columns for
         # for which data is required but not present in the excel.
         columns_to_create = list(set(
@@ -122,6 +213,12 @@ class Evaluator(object):
                 )
 
     def to_property_di_graph(self):
+        """Creates a PropertyDiGraph from the completely filled out dataframe.
+        To achieve this, we loop over the Pattern Graph Edges defined in the
+        JSON and take each pair of columns and the edge type as a source,
+        target pair with the edge attribute corresponding to the edge type
+        defined in the JSON.
+        """
         self.prop_di_graph = PropertyDiGraph(
             root_attr_columns=self.root_node_attr_columns
         )
@@ -149,6 +246,21 @@ class Evaluator(object):
 
 
 class MDTranslator(object):
+    """
+    Class to serve as the Rosetta Stone for taking column headers from the
+    Excel input to the MagicDraw compatible output. More specifically, this
+    class provides access to data in the JSON file allowing the Evaluator to
+    determine which columns are required to fill out the pattern that are
+    missing in the input Excel and to associate edge types along the directed
+    edges. Furthermore, while the Vertex is packaged in to_uml_json() the
+    translator provides metadata information required by MagicDraw for block
+    creation keyed by the node_type.
+
+    Parameters
+    ----------
+    data : dictionary
+        The JSON data saved off when the Manager accessed the JSON file.
+    """
 
     def __init__(self, json_data=None):
         self.data = json_data
