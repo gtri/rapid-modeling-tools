@@ -246,5 +246,3 @@ dependencies:
     - tqdm==4.18.0
     - virtualenv==16.0.0
     - virtualenv-clone==0.3.0
-prefix: C:\Users\sconnelly7-gtri\AppData\Local\conda\conda\envs\Ingrid_Nerdman
-
