@@ -1,7 +1,6 @@
 import json
 import pandas as pd
 import networkx as nx
-import matplotlib.pyplot as plt
 
 from utils import (create_column_values_under,
                    create_column_values_space,
