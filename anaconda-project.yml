@@ -8,7 +8,7 @@ channels:
 
 commands:
   test:
-    windows: cd graph_analysis && pytest
+    windows: cd test_graph_analysis && pytest
 
 env_specs:
   default:
