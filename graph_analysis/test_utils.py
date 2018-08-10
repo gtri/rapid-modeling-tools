@@ -2,12 +2,12 @@ import unittest
 import pandas as pd
 import networkx as nx
 
-from utils import (create_column_values_under,
-                   create_column_values_space,
-                   create_column_values_singleton,
-                   create_column_values,
-                   get_node_types_attrs)
-from graph_objects import UML_ID, Vertex, get_uml_id
+from .utils import (create_column_values_under,
+                    create_column_values_space,
+                    create_column_values_singleton,
+                    create_column_values,
+                    get_node_types_attrs)
+from .graph_objects import UML_ID, Vertex, get_uml_id
 
 
 class TestUtils(unittest.TestCase):

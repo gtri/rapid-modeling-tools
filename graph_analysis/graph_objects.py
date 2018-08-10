@@ -1,6 +1,6 @@
 import networkx as nx
 
-from utils import get_node_types_attrs
+from .utils import get_node_types_attrs
 
 
 UML_ID = {

@@ -4,11 +4,11 @@ import os
 import pandas as pd
 import networkx as nx
 
-from utils import (create_column_values)
-from test_graph_creation import DATA_DIRECTORY
-from graph_objects import (Vertex, PropertyDiGraph, DiEdge,
-                           get_uml_id, UML_ID, create_vertex_objects)
-from graph_creation import MDTranslator, Evaluator
+from .utils import (create_column_values)
+from .test_graph_creation import DATA_DIRECTORY
+from .graph_objects import (Vertex, PropertyDiGraph, DiEdge,
+                            get_uml_id, UML_ID, create_vertex_objects)
+from .graph_creation import MDTranslator, Evaluator
 
 
 class TestPropertyDiGraph(unittest.TestCase):
