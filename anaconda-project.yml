@@ -10,6 +10,12 @@ commands:
   test:
     windows: cd test_graph_analysis && pytest
 
+  jupyter:
+    windows: cd notebooks && jupyter
+
+  setup:
+    windows: python -m pip install -e . --no-deps --ignore-installed
+
 env_specs:
   default:
     packages:
@@ -17,6 +23,8 @@ env_specs:
     - pandas
     - networkx >=2.1,<2.2
     - pytest
+    - jupyter
+    - jupyterlab
     - xlrd >=0.9.0
     - python >=3.6,<3.7
 skip_imports:
