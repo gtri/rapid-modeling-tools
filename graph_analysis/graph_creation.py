@@ -176,7 +176,7 @@ class Evaluator(object):
                     suff = dash + suffix[-1]
                     self.df[col] = create_column_values_under(
                         prefix=col_data_vals[0],
-                        first_node_data=first_node_type,
+                        first_node_data=first_node_data,
                         second_node_data=second_node_data,
                         suffix=suff
                     )

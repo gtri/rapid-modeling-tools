@@ -10,7 +10,7 @@
             "owner",
             "C_value_blockValue",
             "owner",
-            "C_value_blockValue_end2",
+            "C_value_blockValue-end2",
             "role",
             "value"
         ],
@@ -46,7 +46,7 @@
             "owner",
             "C_value_blockValue",
             "owner",
-            "C_value_blockValue_end2",
+            "C_value_blockValue-end2",
             "role",
             "value",
             "type",
@@ -71,8 +71,8 @@
         "context2",
         "A_context1_blockValue",
         "A_context2_constUse",
-        "C_value_blockValue_end1",
-        "C_value_blockValue_end2",
+        "C_value_blockValue-end1",
+        "C_value_blockValue-end2",
         "Constraint Spec"
     ],
     "Pattern Graph Edge Labels": [
@@ -127,11 +127,11 @@
             "Constraint Block"
         ],
         [
-            "C_value_blockValue_end1",
+            "C_value_blockValue-end1",
             "C_value_blockValue"
         ],
         [
-            "C_value_blockValue_end2",
+            "C_value_blockValue-end2",
             "C_value_blockValue"
         ],
         [
@@ -139,11 +139,11 @@
             "Parametric Context"
         ],
         [
-            "C_value_blockValue_end1",
+            "C_value_blockValue-end1",
             "blockValue"
         ],
         [
-            "C_value_blockValue_end2",
+            "C_value_blockValue-end2",
             "value"
         ],
         [
@@ -185,11 +185,11 @@
             "Parametric Context"
         ],
         [
-            "C_value_blockValue_end1",
+            "C_value_blockValue-end1",
             "C_value_blockValue"
         ],
         [
-            "C_value_blockValue_end2",
+            "C_value_blockValue-end2",
             "C_value_blockValue"
         ],
         [
@@ -197,11 +197,11 @@
             "Parametric Context"
         ],
         [
-            "C_value_blockValue_end1",
+            "C_value_blockValue-end1",
             "blockValue"
         ],
         [
-            "C_value_blockValue_end2",
+            "C_value_blockValue-end2",
             "value"
         ],
         [
@@ -242,8 +242,8 @@
         "context2": "Property",
         "A_context1_blockValue": "Association",
         "A_context2_constUse": "Association",
-        "C_value_blockValue_end1": "ConnectorEnd",
-        "C_value_blockValue_end2": "ConnectorEnd",
+        "C_value_blockValue-end1": "ConnectorEnd",
+        "C_value_blockValue-end2": "ConnectorEnd",
         "Constraint Spec": "Constraint"
     },
     "Vertex Stereotypes": {
@@ -259,8 +259,8 @@
         "context2": null,
         "A_context1_blockValue": null,
         "A_context2_constUse": null,
-        "C_value_blockValue_end1": "NestedConnectorEnd",
-        "C_value_blockValue_end2": null,
+        "C_value_blockValue-end1": "NestedConnectorEnd",
+        "C_value_blockValue-end2": null,
         "Constraint Spec": null
     },
     "Vertex Settings": {
@@ -278,10 +278,10 @@
         "context2": null,
         "A_context1_blockValue": null,
         "A_context2_constUse": null,
-        "C_value_blockValue_end1": {
+        "C_value_blockValue-end1": {
             "propertyPath": "id(constUse)"
         },
-        "C_value_blockValue_end2": null,
+        "C_value_blockValue-end2": null,
         "Constraint Spec": null
     }
 }
