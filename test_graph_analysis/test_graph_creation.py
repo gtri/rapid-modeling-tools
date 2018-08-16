@@ -3,8 +3,8 @@ import os
 import json
 import pandas as pd
 
-from graph_creation import (Manager, Evaluator, MDTranslator)
-from graph_objects import PropertyDiGraph
+from graph_analysis.graph_creation import (Manager, Evaluator, MDTranslator)
+from graph_analysis.graph_objects import PropertyDiGraph
 
 
 DATA_DIRECTORY = '../data/'

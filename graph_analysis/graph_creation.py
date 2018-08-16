@@ -2,10 +2,10 @@ import json
 import pandas as pd
 import networkx as nx
 
-from utils import (create_column_values_under,
-                   create_column_values_space,
-                   create_column_values_singleton)
-from graph_objects import PropertyDiGraph
+from .utils import (create_column_values_under,
+                    create_column_values_space,
+                    create_column_values_singleton)
+from .graph_objects import PropertyDiGraph
 
 
 class Manager(object):
