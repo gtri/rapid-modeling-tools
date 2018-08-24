@@ -91,7 +91,11 @@
         "role",
         "owner",
         "owner",
-        "type"
+        "type",
+        "memberEnd",
+        "memberEnd",
+        "memberEnd",
+        "memberEnd"
     ],
     "Pattern Graph Edges": [
         [
@@ -157,6 +161,22 @@
         [
             "constUse",
             "Constraint Block"
+        ],
+        [
+            "A_context1_blockValue",
+            "context1"
+        ],
+        [
+            "A_context1_blockValue",
+            "blockValue"
+        ],
+        [
+            "A_context2_constUse",
+            "context2"
+        ],
+        [
+            "A_context2_constUse",
+            "constUse"
         ]
     ],
     "Pattern Spanning Tree Edges": [
