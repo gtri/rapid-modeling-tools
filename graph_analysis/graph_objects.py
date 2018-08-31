@@ -326,6 +326,7 @@ class Vertex(object):
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
         node_uml_list = []
+        node_decorations = []
 
         for count, node_type in enumerate(self.node_types):
             if count == 0:
@@ -348,11 +349,16 @@ class Vertex(object):
                 node_key=node_type)
             if settings_val and count != 0:
                 decorations_dict = {
-                    'op': 'replace',
-                    'path': path_val,
-                    'value': settings_val,
+                    'id': get_uml_id(name=self.name),
+                    'ops': [
+                        {
+                            'op': 'replace',
+                            'path': path_val,
+                            'value': settings_val,
+                        }
+                    ]
                 }
-                node_uml_dict['ops'].append(decorations_dict)
+                node_decorations.append(decorations_dict)
             elif settings_val and count == 0:
                 node_uml_dict['ops'][0].update({'path': path_val,
                                                 'value': settings_val})
@@ -376,7 +382,7 @@ class Vertex(object):
             }
             edge_uml_list.append(edge_uml_dict)
 
-        return node_uml_list, edge_uml_list
+        return node_uml_list, node_decorations, edge_uml_list
 
 
 class DiEdge(object):

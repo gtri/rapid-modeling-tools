@@ -266,7 +266,7 @@ class TestVertex(unittest.TestCase):
             }},
             attributes=[{'Notes': 'Test Note'}]
         )
-        vertex_car_uml, edge_car_uml = vertex_car.to_uml_json(
+        vertex_car_uml, car_decs, edge_car_uml = vertex_car.to_uml_json(
             translator=self.translator
         )
 
@@ -278,7 +278,7 @@ class TestVertex(unittest.TestCase):
             predecessors={'Car': {
                 'edge_attribute': 'owner'}}
         )
-        vertex_engine_uml, edge_engine_uml = vertex_engine.to_uml_json(
+        ver_engine_uml, engi_decs, edge_engine_uml = vertex_engine.to_uml_json(
             translator=self.translator
         )
 
@@ -333,15 +333,22 @@ class TestVertex(unittest.TestCase):
                     'value': 'composite',
                     'attributes': None
                 },
+            ]
+        }]
+
+        engine_decoration_uml = {
+            'id': 'new_1',
+            'ops': [
                 {
                     'op': 'replace',
                     'path': 'aggregation',
                     'value': 'composite'
                 }
             ]
-        }]
+        }
 
-        self.assertListEqual(vertex_engine_uml, engine_node_uml)
+        self.assertListEqual(ver_engine_uml, engine_node_uml)
+        self.assertDictEqual(engi_decs[0], engine_decoration_uml)
 
         engine_edge_uml = [{
             'id': 'new_1',

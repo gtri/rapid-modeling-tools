@@ -31,11 +31,15 @@ DATA_DIRECTORY = '../data/'
 #         vert_set = property_di_graph.vertex_set
 #         json_out = {'modification targets': []}
 #         edge_json = []
+#         node_decs_json = []
 #         for vertex in vert_set:
-#             vert_uml, edge_uml = vertex.to_uml_json(translator=translator)
+#             vert_uml, node_decorations, edge_uml = vertex.to_uml_json(
+# translator=translator)
 #             json_out['modification targets'].extend(vert_uml)
+#             node_decs_json.extend(node_decorations)
 #             edge_json.extend(edge_uml)
 #
+#         json_out['modification targets'].extend(node_decs_json)
 #         json_out['modification targets'].extend(edge_json)
 #         with open(os.path.join(DATA_DIRECTORY,
 #                                'changes_uml.json'), 'w') as outfile:
