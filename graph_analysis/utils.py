@@ -210,5 +210,13 @@ def get_node_types_attrs(df=None, node=None,
     return node_type_columns, node_attr_dict
 
 
+def get_setting_node_name_from_df(df=None, column=None, node=None):
+    pass
+    mask = df == node
+    masked_df = df[mask].dropna(axis=0, how='all')
+
+    return df.where(masked_df.isnull()).dropna(axis=0, how='all')[column]
+
+
 def aggregate_change_json():
     pass

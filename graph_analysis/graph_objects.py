@@ -1,6 +1,6 @@
 import networkx as nx
 
-from .utils import get_node_types_attrs
+from .utils import get_node_types_attrs, get_setting_node_name_from_df
 
 
 UML_ID = {
@@ -162,7 +162,7 @@ class PropertyDiGraph(nx.DiGraph):
         for edge in self.edge_set:
             edge_set_named.add(edge.named_edge_triple)
 
-    def create_vertex_set(self, df=None, root_node_type=None):
+    def create_vertex_set(self, df=None, translator=None):
         """Returns a vertex_set containing all of the vertex objects created
         from the Graph.nodes attribute.
 
@@ -172,7 +172,7 @@ class PropertyDiGraph(nx.DiGraph):
             The Evaluator.df to type the nodes based on all of the columns a
             particular node is found under.
 
-        root_node_type : set
+        translator : MDTranslator change
             The Evaluator.root_node_attr_columns attribute that lists all of
             the columns present in the DataFrame that do not show up in the
             JSON as part of the pattern graph. These columns are assumed to be
@@ -190,10 +190,29 @@ class PropertyDiGraph(nx.DiGraph):
             node_type_columns, node_attr_dict = get_node_types_attrs(
                 df=df,
                 node=node,
-                root_node_type=root_node_type,
+                root_node_type=translator.get_root_node(),
                 root_attr_columns=self.root_attr_columns)
 
             node_types = {col for col in node_type_columns}
+
+            for node_type in node_type_columns:
+                vert_type, settings_val = translator.get_uml_settings(
+                    node_key=node_type)
+                if settings_val and 'id' in settings_val:
+                    settings_value = get_setting_node_name_from_df(
+                        df=df,
+                        column=settings_val.split('-')[-1],
+                        node=node)
+                    vertex = Vertex(name=node, node_types=node_types,
+                                    successors=self.succ[node],
+                                    predecessors=self.pred[node],
+                                    attributes=node_attr_dict,
+                                    settings_node=settings_value)
+                    self.vertex_dict.update({node: vertex})
+                    self.vertex_set.add(vertex)
+                else:
+                    continue
+
             vertex = Vertex(name=node, node_types=node_types,
                             successors=self.succ[node],
                             predecessors=self.pred[node],
@@ -259,12 +278,14 @@ class Vertex(object):
 
     def __init__(self, name=None, node_types=set(),
                  successors=None, predecessors=None,
-                 attributes=None):
+                 attributes=None,
+                 settings_node=None):
         self.name = name
         self.node_types = node_types
         self.successors = successors
         self.predecessors = predecessors
         self.attributes = attributes
+        self.settings_node = settings_node
 
     @property
     def connections(self):
@@ -354,7 +375,8 @@ class Vertex(object):
                         {
                             'op': 'replace',
                             'path': path_val,
-                            'value': settings_val,
+                            'value': settings_val if not self.settings_node
+                            else get_uml_id(name=(self.settings_node)),
                         }
                     ]
                 }

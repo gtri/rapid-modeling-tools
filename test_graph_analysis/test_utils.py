@@ -6,7 +6,8 @@ from graph_analysis.utils import (create_column_values_under,
                                   create_column_values_space,
                                   create_column_values_singleton,
                                   create_column_values,
-                                  get_node_types_attrs)
+                                  get_node_types_attrs,
+                                  get_setting_node_name_from_df)
 from graph_analysis.graph_objects import UML_ID, Vertex, get_uml_id
 
 
@@ -99,6 +100,23 @@ class TestUtils(unittest.TestCase):
         self.assertEqual({'Atomic Thing'}, node_type_cols)
         self.assertListEqual(attr_list,
                              node_attr_dict)
+
+    def test_get_setting_node_name_from_df(self):
+        data_dict = {
+            'component': ['car', 'wheel', 'engine'],
+            'Atomic Thing': ['Car', 'Wheel', 'Car'],
+            'edge attribute': ['owner', 'owner', 'owner'],
+            'Notes': ['little car to big Car',
+                      6,
+                      2]
+        }
+        df = pd.DataFrame(data=data_dict)
+
+        setting_node = get_setting_node_name_from_df(df=df,
+                                                     column='Atomic Thing',
+                                                     node='wheel')
+
+        self.assertEqual('Wheel', setting_node[1])
 
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.

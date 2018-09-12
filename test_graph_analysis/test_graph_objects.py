@@ -51,7 +51,7 @@ class TestPropertyDiGraph(unittest.TestCase):
                            'wheel qua hub context'}
         self.Graph.create_vertex_set(
             df=self.evaluator.df,
-            root_node_type=self.translator.get_root_node())
+            translator=self.translator)
         self.assertSetEqual(expect_vert_set, self.Graph.named_vertex_set)
 
     def test_create_vertex_set(self):
@@ -70,7 +70,7 @@ class TestPropertyDiGraph(unittest.TestCase):
                            'wheel qua hub context'}
         self.Graph.create_vertex_set(
             df=self.evaluator.df,
-            root_node_type=self.translator.get_root_node())
+            translator=self.translator)
         for vertex in self.Graph.vertex_set:
             self.assertIsInstance(vertex, Vertex)
             self.assertIn(vertex.name, expect_vert_set)
@@ -83,9 +83,9 @@ class TestPropertyDiGraph(unittest.TestCase):
         # be an edge at all.
         # TODO: Find a way to use the self.Graph.edges tuples with the
         # edge attr because these show up as source, targ.
-        translat = self.translator
+        translator = self.translator
         self.Graph.create_vertex_set(df=self.evaluator.df,
-                                     root_node_type=translat.get_root_node())
+                                     translator=self.translator)
         self.Graph.create_edge_set()
         data_dict = {'Composite Thing': ['Car', 'Car',
                                          'Wheel', 'Engine'],
@@ -276,7 +276,8 @@ class TestVertex(unittest.TestCase):
             successors={'Car': {
                 'edge_attribute': 'type'}},
             predecessors={'Car': {
-                'edge_attribute': 'owner'}}
+                'edge_attribute': 'owner'}},
+            settings_node='Car'
         )
         ver_engine_uml, engi_decs, edge_engine_uml = vertex_engine.to_uml_json(
             translator=self.translator
@@ -342,7 +343,7 @@ class TestVertex(unittest.TestCase):
                 {
                     'op': 'replace',
                     'path': 'aggregation',
-                    'value': 'composite'
+                    'value': 'new_0'
                 }
             ]
         }
