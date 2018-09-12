@@ -211,7 +211,6 @@ def get_node_types_attrs(df=None, node=None,
 
 
 def get_setting_node_name_from_df(df=None, column=None, node=None):
-    pass
     mask = df == node
     masked_df = df[mask].dropna(axis=0, how='all')
 
