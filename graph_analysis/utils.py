@@ -247,7 +247,7 @@ def match_changes(change_dict=None):
 
     match_keys_set = set(matches.keys())
     no_matches = reject.difference(
-            match_keys_set).difference(set(change_dict.keys()))
+        match_keys_set).difference(set(change_dict.keys()))
     if 'no matches' in matches.keys():
         matches['no matches'].extend(no_matches)
     else:
@@ -258,7 +258,7 @@ def match_changes(change_dict=None):
 def match(current=None, clone=None):
     if current[2] == clone[2]:
         if (current[0] == clone[0]) or (current[1] == clone[1]):
-            # check subgraph
+            # TODO: check subgraph
             # if subgraph is isomorphic then return 2
             return 1
         else:
@@ -267,8 +267,8 @@ def match(current=None, clone=None):
         return -1
         # move entry to end of the array
     else:  # this would be edge attribute of current is shorter than of clone
-        #move to beginning of array
-        return -1
+        # move to beginning of array
+        return -2
 
 
 def aggregate_change_json():

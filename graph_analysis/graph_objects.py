@@ -208,8 +208,8 @@ class PropertyDiGraph(nx.DiGraph):
         """
         edge_pair_attr_dict = nx.get_edge_attributes(self, 'edge_attribute')
         for edge_pair in edge_pair_attr_dict:
-            source_vert = self.vertex_dict[edge_pair[0]]
-            target_vert = self.vertex_dict[edge_pair[1]]
+            source_vert = self.vertex_dict[edge_pair[0]]  # the object
+            target_vert = self.vertex_dict[edge_pair[1]]  # the object
             edge = DiEdge(source=source_vert,
                           target=target_vert,
                           edge_attribute=edge_pair_attr_dict[edge_pair])

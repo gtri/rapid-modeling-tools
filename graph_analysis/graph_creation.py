@@ -2,6 +2,8 @@ import json
 import pandas as pd
 import networkx as nx
 
+from itertools import combinations
+
 from .utils import (create_column_values_under,
                     create_column_values_space,
                     create_column_values_singleton)
@@ -59,6 +61,16 @@ class Manager(object):
                           translator=self.translator))
 
     def get_pattern_graph_diff(self):
+        evaluator_dict = {evaluator: index for evaluator, index in enumerate(
+            self.evaluators
+        )}
+        evaluator_change_dict = {}
+        for pair in combinations(self.evaluators, 2):
+            pass
+            eval_one_unmatched = pair[0].edge_set.difference
+            # evaluator_change_dict['{0} and {1}'.format(pair[0], pair[1])] =
+            # first_matches = match_changes(chagne_dict=)
+
         pass
 
 
@@ -245,6 +257,10 @@ class Evaluator(object):
     @property
     def vertex_set(self):
         return self.prop_di_graph.vertex_set
+
+    @property
+    def edge_set(self):
+        return self.prop_di_graph.edge_set
 
 
 class MDTranslator(object):

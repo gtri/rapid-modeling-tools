@@ -100,6 +100,27 @@ class TestUtils(unittest.TestCase):
         self.assertListEqual(attr_list,
                              node_attr_dict)
 
+    def test_match_changes(self):
+        pass
+
+    def test_match(self):
+        # Case 1: Rename
+        current = ('source', 'target', 'type')
+        clone = ('new source', 'target', 'type')
+        self.assertEqual(1, match(current=current, clone=clone))
+        # Case 2: Same edge different otherwise
+        current = ('source', 'target', 'type')
+        clone = ('new source', 'new target', 'type')
+        self.assertEqual(0, match(current=current, clone=clone))
+        # Case 3: Edge of current longer than edge of clone
+        current = ('source', 'target', 'owner')
+        clone = ('new source', 'new target', 'type')
+        self.assertEqual(-1, match(current=current, clone=clone))
+        # Case 4: Edge of current shorter than edge of clone
+        current = ('source', 'target', 'type')
+        clone = ('new source', 'new target', 'memberEnd')
+        self.assertEqual(-2, match(current=current, clone=clone))
+
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.
     #     span_nodes = self.data['Pattern Spanning Tree Edges']
