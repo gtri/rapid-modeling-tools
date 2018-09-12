@@ -210,5 +210,66 @@ def get_node_types_attrs(df=None, node=None,
     return node_type_columns, node_attr_dict
 
 
+def match_changes(change_dict=None):
+    matches = {}
+    scores = {}
+    reject = set()
+    for key in change_dict:
+        if not change_dict[key]:
+            matches['no matches'] = [key]
+        for value in change_dict[key]:
+            preference = match(current=key, clone=value)
+            if preference > 0:  # this type of line might be making nuts
+                # and bolts algorithms wrong!!
+                # TODO: investigate this sort of if condition in nuts and bolts
+                # change to be clearer so that I not getting faulty matches
+                if key in scores:
+                    if value in matches.keys() and scores[key] < preference:
+                        scores[key] = preference
+                        matches[value] = key
+                        continue
+                    else:
+                        reject.add(value)
+
+                    scores[key] = preference
+                    matches[value] = key
+                    continue
+
+                else:
+                    scores[key] = preference
+                    matches[value] = key
+                    continue
+
+                scores[key] = preference
+                matches[value] = key
+            else:
+                reject.add(value)
+
+    match_keys_set = set(matches.keys())
+    no_matches = reject.difference(
+            match_keys_set).difference(set(change_dict.keys()))
+    if 'no matches' in matches.keys():
+        matches['no matches'].extend(no_matches)
+    else:
+        matches['no matches'] = list(no_matches)
+    return matches
+
+
+def match(current=None, clone=None):
+    if current[2] == clone[2]:
+        if (current[0] == clone[0]) or (current[1] == clone[1]):
+            # check subgraph
+            # if subgraph is isomorphic then return 2
+            return 1
+        else:
+            return 0
+    elif current[2] > clone[2]:
+        return -1
+        # move entry to end of the array
+    else:  # this would be edge attribute of current is shorter than of clone
+        #move to beginning of array
+        return -1
+
+
 def aggregate_change_json():
     pass

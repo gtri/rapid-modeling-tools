@@ -58,6 +58,9 @@ class Manager(object):
                 Evaluator(excel_file=excel_file,
                           translator=self.translator))
 
+    def get_pattern_graph_diff(self):
+        pass
+
 
 class Evaluator(object):
     """Class for creating the PropertyDiGraph from the Excel data with the help
