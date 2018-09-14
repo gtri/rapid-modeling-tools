@@ -6,8 +6,10 @@ from graph_analysis.utils import (create_column_values_under,
                                   create_column_values_space,
                                   create_column_values_singleton,
                                   create_column_values,
-                                  get_node_types_attrs)
-from graph_analysis.graph_objects import UML_ID, Vertex, get_uml_id
+                                  get_node_types_attrs,
+                                  match,
+                                  match_changes)
+from graph_analysis.graph_objects import DiEdge, UML_ID, Vertex, get_uml_id
 
 
 class TestUtils(unittest.TestCase):
@@ -104,22 +106,61 @@ class TestUtils(unittest.TestCase):
         pass
 
     def test_match(self):
-        # Case 1: Rename
-        current = ('source', 'target', 'type')
-        clone = ('new source', 'target', 'type')
-        self.assertEqual(1, match(current=current, clone=clone))
-        # Case 2: Same edge different otherwise
-        current = ('source', 'target', 'type')
-        clone = ('new source', 'new target', 'type')
-        self.assertEqual(0, match(current=current, clone=clone))
-        # Case 3: Edge of current longer than edge of clone
-        current = ('source', 'target', 'owner')
-        clone = ('new source', 'new target', 'type')
-        self.assertEqual(-1, match(current=current, clone=clone))
-        # Case 4: Edge of current shorter than edge of clone
-        current = ('source', 'target', 'type')
-        clone = ('new source', 'new target', 'memberEnd')
-        self.assertEqual(-2, match(current=current, clone=clone))
+        # # Case 1: Rename
+        # current = ('source', 'target', 'type')
+        # clone = ('new source', 'target', 'type')
+        # self.assertEqual(1, match(current=current, clone=clone))
+        # # Case 2: Same edge different otherwise
+        # current = ('source', 'target', 'type')
+        # clone = ('new source', 'new target', 'type')
+        # self.assertEqual(0, match(current=current, clone=clone))
+        # # Case 3: Edge of current longer than edge of clone
+        # current = ('source', 'target', 'owner')
+        # clone = ('new source', 'new target', 'type')
+        # self.assertEqual(-1, match(current=current, clone=clone))
+        # # Case 4: Edge of current shorter than edge of clone
+        # current = ('source', 'target', 'type')
+        # clone = ('new source', 'new target', 'memberEnd')
+        # self.assertEqual(-2, match(current=current, clone=clone))
+        car = Vertex(name='Car')
+        engine = Vertex(name='engine')
+        wheel = Vertex(name='wheel')
+
+        # need a test for when I implement the 'edge type equivalence'
+        # This would address a case like: Suppose the edge attribtue 'type'
+        # was in the edge set of Original_edge_attributes but 'type' was not
+        # in the edge set of Change_edge_attribtues and instead 'new type' was
+        # there. Then I would want a way to say type -> new type.
+        og_edge = DiEdge(source=car, target=engine, edge_attribute='owner')
+
+        # case: different target
+        match_edge = DiEdge(source=car, target=wheel,
+                            edge_attribute='owner')
+        match_val = match(current=og_edge, clone=match_edge)
+        self.assertEqual(1, match_val)
+
+        # case: different source
+        match_edge2 = DiEdge(source=wheel, target=engine,
+                             edge_attribute='owner')
+        match_val = match(current=og_edge, clone=match_edge2)
+        self.assertEqual(1, match_val)
+
+        # case: same edge type different otherwise
+        match_edge3 = DiEdge(source=wheel, target=car,
+                             edge_attribute='owner')
+        match_val = match(current=og_edge, clone=match_edge3)
+        self.assertEqual(0, match_val)
+
+        # case: original edge type longer than change
+        short_edge = DiEdge(source=car, target=engine, edge_attribute='type')
+        match_val = match(current=og_edge, clone=short_edge)
+        self.assertEqual(-1, match_val)
+
+        # case: original edge type shorter than chagne
+        long_edge = DiEdge(source=car, target=engine,
+                           edge_attribute='memberEnd')
+        match_val = match(current=og_edge, clone=long_edge)
+        self.assertEqual(-2, match_val)
 
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.

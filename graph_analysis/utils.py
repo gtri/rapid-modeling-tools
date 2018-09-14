@@ -256,18 +256,17 @@ def match_changes(change_dict=None):
 
 
 def match(current=None, clone=None):
-    if current[2] == clone[2]:
-        if (current[0] == clone[0]) or (current[1] == clone[1]):
+    if current.edge_attribute == clone.edge_attribute:
+        if ((current.source.name == clone.source.name)
+                or (current.target.name == clone.target.name)):
             # TODO: check subgraph
             # if subgraph is isomorphic then return 2
             return 1
         else:
             return 0
-    elif current[2] > clone[2]:
+    elif len(current.edge_attribute) > len(clone.edge_attribute):
         return -1
-        # move entry to end of the array
     else:  # this would be edge attribute of current is shorter than of clone
-        # move to beginning of array
         return -2
 
 
