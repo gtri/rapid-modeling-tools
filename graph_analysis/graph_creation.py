@@ -65,13 +65,53 @@ class Manager(object):
             self.evaluators
         )}
         evaluator_change_dict = {}
-        for pair in combinations(self.evaluators, 2):
-            pass
-            eval_one_unmatched = pair[0].edge_set.difference
-            # evaluator_change_dict['{0} and {1}'.format(pair[0], pair[1])] =
-            # first_matches = match_changes(chagne_dict=)
 
-        pass
+        for pair in combinations(self.evaluators, 2):
+            eval_1_e_dict = pair[0].prop_di_graph.edge_dict
+            eval_2_e_dict = pair[1].prop_di_graph.edge_dict
+
+            edge_set_one = pair[0].named_edge_set  # get Parent edge set
+            edge_set_two = pair[1].named_edge_set  # get the ancestor edge set
+
+            # remove common edges
+            # have to do this with named edges.
+            eval_one_unmatched = list(edge_set_one.difference(edge_set_two))
+            eval_two_unmatched = list(edge_set_two.difference(edge_set_one))
+
+            eval_one_unmatch_map = dict((edge[2], list())
+                                        for edge in edge_one_unmatched)
+            eval_two_unmatch_map = dict((edge[2], list())
+                                        for edge in edge_two_unmatched)
+
+            # possible optimization is to append the edge
+            for item in eval_one_unmatched:
+                eval_one_unmatch_map[item[2]].append(eval_1_e_dict[item])
+            for item in eval_two_unmatched:
+                eval_two_unmatch_map[item[2]].append(eval_2_e_dict[item])
+
+            eval_one_unmatch_pref = {}
+            eval_two_unmatch_pref = {}
+            for edge in eval_one_unmatched:
+                eval_one_unmatch_pref[edge] = eval_two_unmatch_map[
+                    edge[2]]
+            for edge in eval_two_unmatched:
+                if edge.edge_attribute not in eval_one_unmatch_map.keys():
+                    eval_two_unmatch_pref[edge] = []
+                else:
+                    eval_two_unmatch_pref[edge] = eval_one_unmatch_map[
+                        edge[2]]
+
+            eval_one_matches = match_changes(change_dict=eval_one_unmatch_pref)
+            eval_two_matches = match_changes(change_dict=eval_two_unmatch_pref)
+
+            for no_match in eval_one_matches['no matches']:
+                eval_two_matches['no matches'].append(no_match)
+
+            key = '{0} and {1}'.format(evaluator_dict[pair[0]],
+                                       evaluator_dict[pair[1]])
+            evaluator_change_dict.update({key: eval_two_matches})
+
+        return evaluator_change_dict
 
 
 class Evaluator(object):
@@ -257,6 +297,10 @@ class Evaluator(object):
     @property
     def vertex_set(self):
         return self.prop_di_graph.vertex_set
+
+    @property
+    def named_edge_set(self):
+        return self.prop_di_graph.named_edge_set
 
     @property
     def edge_set(self):

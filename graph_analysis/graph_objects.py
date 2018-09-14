@@ -134,6 +134,7 @@ class PropertyDiGraph(nx.DiGraph):
     def __init__(self, incoming_graph_data=None,
                  root_attr_columns=None, ** attr):
         self.vertex_dict = {}
+        self.edge_dict = {}
         self.vertex_set = set()
         self.edge_set = set()
         self.root_attr_columns = root_attr_columns
@@ -158,9 +159,7 @@ class PropertyDiGraph(nx.DiGraph):
         """Returns a set of named edge triples of the form (source name,
         target name, edge attribute) from the edge objects in the edge_set.
         """
-        edge_set_named = set()
-        for edge in self.edge_set:
-            edge_set_named.add(edge.named_edge_triple)
+        return {edge.named_edge_triple for edge in self.edge_set}
 
     def create_vertex_set(self, df=None, root_node_type=None):
         """Returns a vertex_set containing all of the vertex objects created
@@ -213,6 +212,9 @@ class PropertyDiGraph(nx.DiGraph):
             edge = DiEdge(source=source_vert,
                           target=target_vert,
                           edge_attribute=edge_pair_attr_dict[edge_pair])
+            self.edge_dict.update(
+                {(source_vert.name, target_vert.name,
+                    edge_pair_attr_dict[edge_pair]): edge})
             self.edge_set.add(edge)
 
 
