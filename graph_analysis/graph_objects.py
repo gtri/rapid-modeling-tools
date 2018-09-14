@@ -382,6 +382,10 @@ class Vertex(object):
                 }
                 node_decorations.append(decorations_dict)
             elif settings_val and count == 0:
+                if not self.settings_node:
+                    pass
+                else:
+                    settings_val = get_uml_id(name=self.settings_node)
                 node_uml_dict['ops'][0].update({'path': path_val,
                                                 'value': settings_val})
             else:
