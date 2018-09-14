@@ -328,16 +328,15 @@ class TestVertex(unittest.TestCase):
                 {
                     'op': 'create',
                     'name': 'engine',
-                    'path': 'aggregation',
+                    'path': None,
                     'metatype': 'Property',
                     'stereotype': 'PartProperty',
-                    'value': ['new_0'],
                     'attributes': None
                 },
             ]
         }]
 
-        engine_decoration_uml = {
+        engine_decoration_uml = [{
             'id': 'new_1',
             'ops': [
                 {
@@ -346,10 +345,22 @@ class TestVertex(unittest.TestCase):
                     'value': ['new_0'],
                 }
             ]
-        }
+        },
+            {
+            'id': 'new_1',
+            'ops': [
+                {
+                    'op': 'replace',
+                    'path': 'aggregation',
+                    'value': ['new_0'],
+                }
+            ]
+        }]
 
         self.assertDictEqual(ver_engine_uml[0], engine_node_uml[0])
-        self.assertDictEqual(engi_decs[0], engine_decoration_uml)
+
+        for count, decs_dict in enumerate(engine_decoration_uml):
+            self.assertDictEqual(engi_decs[count], decs_dict)
 
         engine_edge_uml = [{
             'id': 'new_1',

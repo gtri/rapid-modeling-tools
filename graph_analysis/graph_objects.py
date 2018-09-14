@@ -387,8 +387,17 @@ class Vertex(object):
                 if self.settings_node:
                     settings_val = [get_uml_id(name=node)
                                     for node in self.settings_node]
-                node_uml_dict['ops'][0].update({'path': path_val,
-                                                'value': settings_val})
+                decorations_dict = {
+                    'id': get_uml_id(name=self.name),
+                    'ops': [
+                        {
+                            'op': 'replace',
+                            'path': path_val,
+                            'value': settings_val,
+                        }
+                    ]
+                }
+                node_decorations.append(decorations_dict)
             else:
                 continue
 
