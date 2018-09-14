@@ -4,3 +4,4 @@ doc
 .pytest_cache
 envs
 graph_analysis.egg-info
+notebooks
