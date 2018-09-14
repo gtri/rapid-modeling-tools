@@ -375,10 +375,8 @@ class Vertex(object):
                 node_key=node_type)
             if settings_val:
                 if self.settings_node:
-                    settings_val = [get_uml_id(name=node)
-                                    for node in self.settings_node]
-                if 'id-constUse' in settings_val:
-                    print(settings_val)
+                    settings_val = list(set(get_uml_id(name=node)
+                                            for node in self.settings_node))
                 decorations_dict = {
                     'id': get_uml_id(name=self.name),
                     'ops': [
