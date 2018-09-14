@@ -277,7 +277,7 @@ class TestVertex(unittest.TestCase):
                 'edge_attribute': 'type'}},
             predecessors={'Car': {
                 'edge_attribute': 'owner'}},
-            settings_node='Car'
+            settings_node=['Car']
         )
         ver_engine_uml, engi_decs, edge_engine_uml = vertex_engine.to_uml_json(
             translator=self.translator
@@ -331,7 +331,7 @@ class TestVertex(unittest.TestCase):
                     'path': 'aggregation',
                     'metatype': 'Property',
                     'stereotype': 'PartProperty',
-                    'value': 'new_0',
+                    'value': ['new_0'],
                     'attributes': None
                 },
             ]
@@ -343,12 +343,12 @@ class TestVertex(unittest.TestCase):
                 {
                     'op': 'replace',
                     'path': 'aggregation',
-                    'value': 'new_0'
+                    'value': ['new_0'],
                 }
             ]
         }
 
-        self.assertListEqual(ver_engine_uml, engine_node_uml)
+        self.assertDictEqual(ver_engine_uml[0], engine_node_uml[0])
         self.assertDictEqual(engi_decs[0], engine_decoration_uml)
 
         engine_edge_uml = [{

@@ -111,12 +111,11 @@ class TestUtils(unittest.TestCase):
                       2]
         }
         df = pd.DataFrame(data=data_dict)
-
         setting_node = get_setting_node_name_from_df(df=df,
                                                      column='Atomic Thing',
                                                      node='wheel')
 
-        self.assertEqual('Wheel', setting_node[1])
+        self.assertListEqual(['Wheel'], setting_node)
 
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.
