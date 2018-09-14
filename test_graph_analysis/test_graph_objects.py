@@ -331,7 +331,7 @@ class TestVertex(unittest.TestCase):
                     'path': 'aggregation',
                     'metatype': 'Property',
                     'stereotype': 'PartProperty',
-                    'value': 'composite',
+                    'value': 'new_0',
                     'attributes': None
                 },
             ]
