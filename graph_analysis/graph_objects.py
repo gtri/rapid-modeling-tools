@@ -370,7 +370,6 @@ class Vertex(object):
                 node_key=node_type)
             if settings_val and count != 0:
                 if self.settings_node:
-                    for node in self.settings_node:
                     settings_val = [get_uml_id(name=node)
                                     for node in self.settings_node]
                 decorations_dict = {
