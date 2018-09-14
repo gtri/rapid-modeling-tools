@@ -368,22 +368,7 @@ class Vertex(object):
                 }
             path_val, settings_val = translator.get_uml_settings(
                 node_key=node_type)
-            if settings_val and count != 0:
-                if self.settings_node:
-                    settings_val = [get_uml_id(name=node)
-                                    for node in self.settings_node]
-                decorations_dict = {
-                    'id': get_uml_id(name=self.name),
-                    'ops': [
-                        {
-                            'op': 'replace',
-                            'path': path_val,
-                            'value': settings_val,
-                        }
-                    ]
-                }
-                node_decorations.append(decorations_dict)
-            elif settings_val and count == 0:
+            if settings_val:
                 if self.settings_node:
                     settings_val = [get_uml_id(name=node)
                                     for node in self.settings_node]
