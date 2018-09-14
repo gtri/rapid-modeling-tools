@@ -195,6 +195,8 @@ class PropertyDiGraph(nx.DiGraph):
 
             node_types = {col for col in node_type_columns}
 
+            settings = False
+
             for node_type in node_type_columns:
                 vert_type, settings_val = translator.get_uml_settings(
                     node_key=node_type)
@@ -203,22 +205,25 @@ class PropertyDiGraph(nx.DiGraph):
                         df=df,
                         column=settings_val.split('-')[-1],
                         node=node)
-                    vertex = Vertex(name=node, node_types=node_types,
-                                    successors=self.succ[node],
-                                    predecessors=self.pred[node],
-                                    attributes=node_attr_dict,
-                                    settings_node=settings_value)
-                    self.vertex_dict.update({node: vertex})
-                    self.vertex_set.add(vertex)
+                    settings = True
                 else:
                     continue
 
-            vertex = Vertex(name=node, node_types=node_types,
-                            successors=self.succ[node],
-                            predecessors=self.pred[node],
-                            attributes=node_attr_dict)
-            self.vertex_dict.update({node: vertex})
-            self.vertex_set.add(vertex)
+            if settings:
+                vertex = Vertex(name=node, node_types=node_types,
+                                successors=self.succ[node],
+                                predecessors=self.pred[node],
+                                attributes=node_attr_dict,
+                                settings_node=settings_value)
+                self.vertex_dict.update({node: vertex})
+                self.vertex_set.add(vertex)
+            else:
+                vertex = Vertex(name=node, node_types=node_types,
+                                successors=self.succ[node],
+                                predecessors=self.pred[node],
+                                attributes=node_attr_dict,)
+                self.vertex_dict.update({node: vertex})
+                self.vertex_set.add(vertex)
 
         return self.vertex_set
 
@@ -372,6 +377,8 @@ class Vertex(object):
                 if self.settings_node:
                     settings_val = [get_uml_id(name=node)
                                     for node in self.settings_node]
+                if 'id-constUse' in settings_val:
+                    print(settings_val)
                 decorations_dict = {
                     'id': get_uml_id(name=self.name),
                     'ops': [

@@ -299,7 +299,7 @@
         "A_context1_blockValue": null,
         "A_context2_constUse": null,
         "C_value_blockValue-end1": {
-            "propertyPath": "id(constUse)"
+            "propertyPath": "id-constUse"
         },
         "C_value_blockValue-end2": null,
         "Constraint Spec": null
