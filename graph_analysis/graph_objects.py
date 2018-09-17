@@ -173,10 +173,14 @@ class PropertyDiGraph(nx.DiGraph):
             particular node is found under.
 
         translator : MDTranslator change
-            The Evaluator.root_node_attr_columns attribute that lists all of
+            The translator provides access to the
+            Evaluator.root_node_attr_columns attribute that lists all of
             the columns present in the DataFrame that do not show up in the
             JSON as part of the pattern graph. These columns are assumed to be
             additional attributes attached to the root node.
+            Furthermore, the translator is used in the function
+            get_setting_node_name_from_df for the cases when the
+            vertex settings field requires and ID.
 
         Notes
         -----
@@ -207,23 +211,15 @@ class PropertyDiGraph(nx.DiGraph):
                         node=node)
                     settings = True
                 else:
-                    continue
+                    settings_value = None
 
-            if settings:
-                vertex = Vertex(name=node, node_types=node_types,
-                                successors=self.succ[node],
-                                predecessors=self.pred[node],
-                                attributes=node_attr_dict,
-                                settings_node=settings_value)
-                self.vertex_dict.update({node: vertex})
-                self.vertex_set.add(vertex)
-            else:
-                vertex = Vertex(name=node, node_types=node_types,
-                                successors=self.succ[node],
-                                predecessors=self.pred[node],
-                                attributes=node_attr_dict,)
-                self.vertex_dict.update({node: vertex})
-                self.vertex_set.add(vertex)
+            vertex = Vertex(name=node, node_types=node_types,
+                            successors=self.succ[node],
+                            predecessors=self.pred[node],
+                            attributes=node_attr_dict,
+                            settings_node=settings_value)
+            self.vertex_dict.update({node: vertex})
+            self.vertex_set.add(vertex)
 
         return self.vertex_set
 
@@ -341,13 +337,17 @@ class Vertex(object):
         node_type attribute encountered (regardless of its value), the metadata
         associated with that node_type is recorded. Subsequent loop iterations
         provide additional node_type information.
+        While iterating the node_type information, the function checks
+        for nodes with settings values under the vertex settings key in the
+        JSON. If a node has a settings value then the ID of the associated
+        settings node is retreived and associated to the node_decorations list.
         Next, the edge_uml_list is built using the connections property. From
         there, a source and target id are identified from the connections
         information and the get_uml_id function.
-        With both of these lists populated, the function returns the
-        node_uml_list and the edge_uml_list to be packaged for the final JSON
-        output. The JSON file contains all of the vertex data first followed by
-        the edge data.
+        With all of these lists populated, the function returns the
+        node_uml_list, node_decorations, and the edge_uml_list to be packaged
+        for the final JSON output. The JSON file contains all of the vertex
+        data first followed by the edge data.
         """
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
