@@ -104,8 +104,18 @@ class TestUtils(unittest.TestCase):
 
     def test_match_changes(self):
         pass
+        car = Vertex(name='Car')
+        engine = Vertex(name='engine')
+        wheel = Vertex(name='wheel')
+        base_edges = [DiEdge(source=car, target=engine,
+                             edge_attribute='owner'),
+                      DiEdge(source=wheel, target=engine,
+                             edge_attribute='owner'),
+                      DiEdge(source=car, target=engine,
+                             edge_attribute='owner'), ]
 
     def test_match(self):
+        # TODO: Remove the string or obj tests depending on which match uses.
         # # Case 1: Rename
         # current = ('source', 'target', 'type')
         # clone = ('new source', 'target', 'type')
