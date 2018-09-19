@@ -6,7 +6,8 @@ from itertools import combinations
 
 from .utils import (create_column_values_under,
                     create_column_values_space,
-                    create_column_values_singleton)
+                    create_column_values_singleton,
+                    match_changes,)
 from .graph_objects import PropertyDiGraph
 
 
@@ -61,7 +62,7 @@ class Manager(object):
                           translator=self.translator))
 
     def get_pattern_graph_diff(self):
-        evaluator_dict = {evaluator: index for evaluator, index in enumerate(
+        evaluator_dict = {index: evaluator for evaluator, index in enumerate(
             self.evaluators
         )}
         evaluator_change_dict = {}
@@ -70,36 +71,41 @@ class Manager(object):
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
             eval_2_e_dict = pair[1].prop_di_graph.edge_dict
 
-            edge_set_one = pair[0].named_edge_set  # get Parent edge set
-            edge_set_two = pair[1].named_edge_set  # get the ancestor edge set
+            edge_set_one = pair[0].edge_set  # get Parent edge set
+            edge_set_two = pair[1].edge_set  # get the ancestor edge set
 
             # remove common edges
             # have to do this with named edges.
             eval_one_unmatched = list(edge_set_one.difference(edge_set_two))
             eval_two_unmatched = list(edge_set_two.difference(edge_set_one))
 
-            eval_one_unmatch_map = dict((edge[2], list())
-                                        for edge in edge_one_unmatched)
-            eval_two_unmatch_map = dict((edge[2], list())
-                                        for edge in edge_two_unmatched)
+            eval_one_unmatch_map = dict((edge.edge_attribute, list())
+                                        for edge in eval_one_unmatched)
+            eval_two_unmatch_map = dict((edge.edge_attribute, list())
+                                        for edge in eval_two_unmatched)
 
             # possible optimization is to append the edge
-            for item in eval_one_unmatched:
-                eval_one_unmatch_map[item[2]].append(eval_1_e_dict[item])
-            for item in eval_two_unmatched:
-                eval_two_unmatch_map[item[2]].append(eval_2_e_dict[item])
+            for edge in eval_one_unmatched:
+                eval_one_unmatch_map[edge.edge_attribute].append(
+                    edge)
+            for edge in eval_two_unmatched:
+                eval_two_unmatch_map[edge.edge_attribute].append(
+                    edge)
 
             eval_one_unmatch_pref = {}
             eval_two_unmatch_pref = {}
             for edge in eval_one_unmatched:
-                eval_one_unmatch_pref[edge] = eval_two_unmatch_map[
-                    edge[2]]
+                if edge.edge_attribute not in eval_two_unmatch_map.keys():
+                    eval_one_unmatch_pref[edge] = []
+                else:
+                    eval_one_unmatch_pref[edge] = eval_two_unmatch_map[
+                        edge.edge_attribute]
             for edge in eval_two_unmatched:
                 if edge.edge_attribute not in eval_one_unmatch_map.keys():
                     eval_two_unmatch_pref[edge] = []
                 else:
                     eval_two_unmatch_pref[edge] = eval_one_unmatch_map[
-                        edge[2]]
+                        edge.edge_attribute]
 
             eval_one_matches = match_changes(change_dict=eval_one_unmatch_pref)
             eval_two_matches = match_changes(change_dict=eval_two_unmatch_pref)

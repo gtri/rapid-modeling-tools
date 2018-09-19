@@ -103,22 +103,38 @@ class TestUtils(unittest.TestCase):
                              node_attr_dict)
 
     def test_match_changes(self):
-        base_inputs = {('s1', 't1', 'type'), ('s2', 't2', 'type'),
-                        ('s3', 't3', 'owner'), ('s4', 't4', 'owner'),
-                        ('s5', 't5', 'memberEnd'), ('s6', 't6', 'memberEnd'),
-                        ('s7', 't7', 'type'), ('s8', 't8', 'type'),
-                        ('s9', 't9', 'owner'), ('s10', 't10', 'owner'),
-                        ('s11', 't11', 'memberEnd'), ('s12', 't12', 'memberEnd'),
-                        ('song', 'tiger', 'blue'),}
+        # this is a bad function and an improper test.
+        # The test ignores the obvious problem of non-unique matchings
+        # TODO: develop a stronger algorithm that ensures unique pairings
+        # and lists nonunique pairings.
+        base_inputs = [('s1', 't1', 'type'), ('s2', 't2', 'type'),
+                       ('s3', 't3', 'owner'), ('s4', 't4', 'owner'),
+                       ('s5', 't5', 'memberEnd'), ('s6', 't6', 'memberEnd'),
+                       ('s7', 't7', 'type'), ('s8', 't8', 'type'),
+                       ('s9', 't9', 'owner'), ('s10', 't10', 'owner'),
+                       ('s11', 't11', 'memberEnd'),
+                       ('s12', 't12', 'memberEnd'),
+                       ('song', 'tiger', 'blue'), ]
 
-        ancestor = {('as1', 't1', 'type'), ('s1', 'at2', 'type'),
+        ancestor = [('as1', 't1', 'type'), ('s2', 'at2', 'type'),
                     ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
                     ('as5', 't5', 'memberEnd'),
                     ('s6', 'at6', 'memberEnd'),
                     ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
                     ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
                     ('as11', 't11', 'memberEnd'),
-                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')}
+                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+
+        # this will cause to fail because matching is not unique.
+        # ancestor = [('as1', 't1', 'type'), ('s1', 'at2', 'type'),
+        #             ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
+        #             ('as5', 't5', 'memberEnd'),
+        #             ('s6', 'at6', 'memberEnd'),
+        #             ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
+        #             ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
+        #             ('as11', 't11', 'memberEnd'),
+        #             ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+
         base_edges = []
         ancestor_edges = []
 
@@ -136,25 +152,69 @@ class TestUtils(unittest.TestCase):
                           edge_attribute=edge_tuple[2])
             ancestor_edges.append(edge)
 
-        base_map = dict((ea.edge_attribtue, list()) for ea in base_edges)
+        base_map = dict((ea.edge_attribute, list()) for ea in base_edges)
 
         ance_map = dict((ea.edge_attribute, list()) for ea in ancestor_edges)
 
-        for item in base_edges:
-            base_map[item.edge_attribute].append(item)
-        for item in ancestor_edges:
-            ance_map[item.edge_attribute].append(item)
+        for edge in base_edges:
+            base_map[edge.edge_attribute].append(edge)
+        for edge in ancestor_edges:
+            ance_map[edge.edge_attribute].append(edge)
 
         base_preference = {}
         ancestor_preference = {}
 
         for edge in base_edges:
-            base_preference[edge] = ance_map[edge[2]]
+            if edge.edge_attribute not in ance_map.keys():
+                base_preference[edge] = []
+            else:
+                base_preference[edge] = base_map[edge.edge_attribute]
         for edge in ancestor_edges:
             if edge.edge_attribute not in base_map.keys():
                 ancestor_preference[edge] = []
             else:
                 ancestor_preference[edge] = base_map[edge.edge_attribute]
+
+        base_matches = match_changes(change_dict=base_preference)
+        ance_matches = match_changes(change_dict=ancestor_preference)
+
+        for no_match in base_matches['no matches']:
+            ance_matches['no matches'].append(no_match)
+
+        match_dict = {}
+        for key in ance_matches.keys():
+            if key != 'no matches':
+                match_dict.update({key: ance_matches[key]})
+
+        expected_matches = {('s1', 't1', 'type'): ('as1', 't1', 'type'),
+                            ('s2', 't2', 'type'): ('s2', 'at2', 'type'),
+                            ('s3', 't3', 'owner'): ('as3', 't3', 'owner'),
+                            ('s4', 't4', 'owner'): ('s4', 'at4', 'owner'),
+                            ('s5', 't5', 'memberEnd'): ('as5',
+                                                        't5', 'memberEnd'),
+                            ('s6', 't6', 'memberEnd'): ('s6',
+                                                        'at6', 'memberEnd'),
+                            ('s7', 't7', 'type'): ('as7', 't7', 'type'),
+                            ('s8', 't8', 'type'): ('s8', 'at8', 'type'),
+                            ('s9', 't9', 'owner'): ('as9', 't9', 'owner'),
+                            ('s10', 't10', 'owner'): ('s10', 'at10', 'owner'),
+                            ('s11', 't11', 'memberEnd'): ('as11',
+                                                          't11', 'memberEnd'),
+                            ('s12', 't12', 'memberEnd'): ('s12',
+                                                          'at12', 'memberEnd'),
+                            'no matches': [('b', 'c', 'orange'),
+                                           ('song', 'tiger', 'blue')]}
+        match_dict_str = dict((key.named_edge_triple,
+                               match_dict[key].named_edge_triple)
+                              for key in match_dict.keys())
+        match_dict_str.update({'no matches': ance_matches['no matches']})
+        no_match_to_str = []
+        for value in match_dict_str['no matches']:
+            no_match_to_str.append(value.named_edge_triple)
+
+        match_dict_str.update({'no matches': no_match_to_str})
+
+        self.assertDictEqual(expected_matches, match_dict_str)
 
     def test_match(self):
         # TODO: Remove the string or obj tests depending on which match uses.

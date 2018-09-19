@@ -4,7 +4,7 @@ import json
 import pandas as pd
 
 from graph_analysis.graph_creation import (Manager, Evaluator, MDTranslator)
-from graph_analysis.graph_objects import PropertyDiGraph
+from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
 
 
 DATA_DIRECTORY = '../data/'
@@ -51,7 +51,7 @@ class TestManager(unittest.TestCase):
         self.manager = Manager(
             excel_path=[os.path.join(
                 DATA_DIRECTORY, 'Composition Example.xlsx')
-                for i in range(3)],
+                for i in range(2)],
             json_path=os.path.join(DATA_DIRECTORY,
                                    'CompositionGraphMaster.json'))
 
@@ -72,9 +72,103 @@ class TestManager(unittest.TestCase):
 
     def test_create_evaluators(self):
         # weak test: create_evaluators() run during init
-        self.assertEqual(3, len(self.manager.evaluators))
+        self.assertEqual(2, len(self.manager.evaluators))
         for eval in self.manager.evaluators:
             self.assertIsInstance(eval, Evaluator)
+
+    def test_get_pattern_graph_diff(self):
+        # this is a bad function and an improper test.
+        # The test ignores the obvious problem of non-unique matchings
+        # TODO: develop a stronger algorithm that ensures unique pairings
+        # and lists nonunique pairings.
+        base_inputs = [('s1', 't1', 'type'),
+                       ('s12', 't12', 'memberEnd'),
+                       ('song', 'tiger', 'blue'), ]
+
+        ancestor = [('as1', 't1', 'type'),
+                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+
+        # this will cause to fail because matching is not unique.
+        # ancestor = [('as1', 't1', 'type'), ('s1', 'at2', 'type'),
+        #             ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
+        #             ('as5', 't5', 'memberEnd'),
+        #             ('s6', 'at6', 'memberEnd'),
+        #             ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
+        #             ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
+        #             ('as11', 't11', 'memberEnd'),
+        #             ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+
+        base_edges = []
+        ancestor_edges = []
+
+        for edge_tuple in base_inputs:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            base_edges.append(edge)
+
+        for edge_tuple in ancestor:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            ancestor_edges.append(edge)
+
+        self.manager.evaluators[0].prop_di_graph = PropertyDiGraph()
+        self.manager.evaluators[1].prop_di_graph = PropertyDiGraph()
+        self.manager.evaluators[0].prop_di_graph.edge_set = set(base_edges)
+        self.manager.evaluators[1].prop_di_graph.edge_set = set(ancestor_edges)
+
+        # base_map = dict((ea.edge_attribute, list()) for ea in base_edges)
+        #
+        # ance_map = dict((ea.edge_attribute, list()) for ea in ancestor_edges)
+        #
+        # for edge in base_edges:
+        #     base_map[edge.edge_attribute].append(edge)
+        # for edge in ancestor_edges:
+        #     ance_map[edge.edge_attribute].append(edge)
+        #
+        # base_preference = {}
+        # ancestor_preference = {}
+        #
+        # for edge in base_edges:
+        #     if edge.edge_attribute not in ance_map.keys():
+        #         base_preference[edge] = []
+        #     else:
+        #         base_preference[edge] = base_map[edge.edge_attribute]
+        # for edge in ancestor_edges:
+        #     if edge.edge_attribute not in base_map.keys():
+        #         ancestor_preference[edge] = []
+        #     else:
+        #         ancestor_preference[edge] = base_map[edge.edge_attribute]
+        #
+        # base_matches = match_changes(change_dict=base_preference)
+        # ance_matches = match_changes(change_dict=ancestor_preference)
+        #
+        # for no_match in base_matches['no matches']:
+        #     ance_matches['no matches'].append(no_match)
+        #
+        match_dict = self.manager.get_pattern_graph_diff()
+        match_dict_str = {}
+        for key in match_dict['0 and 1'].keys():
+            if key != 'no matches':
+                match_dict_str.update(
+                    {key.named_edge_triple: match_dict[
+                        '0 and 1'][key].named_edge_triple})
+        # match_dict_str.update({'no matches': match_dict['no matches']})
+        no_match_to_str = []
+        for value in match_dict['0 and 1']['no matches']:
+            no_match_to_str.append(value.named_edge_triple)
+
+        match_dict_str.update({'no matches': no_match_to_str})
+
+        expected_matches = {('s1', 't1', 'type'): ('as1', 't1', 'type'),
+                            ('s12', 't12', 'memberEnd'): ('s12',
+                                                          'at12', 'memberEnd'),
+                            'no matches': [('b', 'c', 'orange'),
+                                           ('song', 'tiger', 'blue')]}
+        self.assertDictEqual(expected_matches, match_dict_str)
 
     def tearDown(self):
         pass
