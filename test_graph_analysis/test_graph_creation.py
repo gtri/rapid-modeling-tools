@@ -120,35 +120,6 @@ class TestManager(unittest.TestCase):
         self.manager.evaluators[0].prop_di_graph.edge_set = set(base_edges)
         self.manager.evaluators[1].prop_di_graph.edge_set = set(ancestor_edges)
 
-        # base_map = dict((ea.edge_attribute, list()) for ea in base_edges)
-        #
-        # ance_map = dict((ea.edge_attribute, list()) for ea in ancestor_edges)
-        #
-        # for edge in base_edges:
-        #     base_map[edge.edge_attribute].append(edge)
-        # for edge in ancestor_edges:
-        #     ance_map[edge.edge_attribute].append(edge)
-        #
-        # base_preference = {}
-        # ancestor_preference = {}
-        #
-        # for edge in base_edges:
-        #     if edge.edge_attribute not in ance_map.keys():
-        #         base_preference[edge] = []
-        #     else:
-        #         base_preference[edge] = base_map[edge.edge_attribute]
-        # for edge in ancestor_edges:
-        #     if edge.edge_attribute not in base_map.keys():
-        #         ancestor_preference[edge] = []
-        #     else:
-        #         ancestor_preference[edge] = base_map[edge.edge_attribute]
-        #
-        # base_matches = match_changes(change_dict=base_preference)
-        # ance_matches = match_changes(change_dict=ancestor_preference)
-        #
-        # for no_match in base_matches['no matches']:
-        #     ance_matches['no matches'].append(no_match)
-        #
         match_dict = self.manager.get_pattern_graph_diff()
         match_dict_str = {}
         for key in match_dict['0 and 1'].keys():
