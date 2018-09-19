@@ -103,16 +103,58 @@ class TestUtils(unittest.TestCase):
                              node_attr_dict)
 
     def test_match_changes(self):
-        pass
-        car = Vertex(name='Car')
-        engine = Vertex(name='engine')
-        wheel = Vertex(name='wheel')
-        base_edges = [DiEdge(source=car, target=engine,
-                             edge_attribute='owner'),
-                      DiEdge(source=wheel, target=engine,
-                             edge_attribute='owner'),
-                      DiEdge(source=car, target=engine,
-                             edge_attribute='owner'), ]
+        base_inputs = {('s1', 't1', 'type'), ('s2', 't2', 'type'),
+                        ('s3', 't3', 'owner'), ('s4', 't4', 'owner'),
+                        ('s5', 't5', 'memberEnd'), ('s6', 't6', 'memberEnd'),
+                        ('s7', 't7', 'type'), ('s8', 't8', 'type'),
+                        ('s9', 't9', 'owner'), ('s10', 't10', 'owner'),
+                        ('s11', 't11', 'memberEnd'), ('s12', 't12', 'memberEnd'),
+                        ('song', 'tiger', 'blue'),}
+
+        ancestor = {('as1', 't1', 'type'), ('s1', 'at2', 'type'),
+                    ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
+                    ('as5', 't5', 'memberEnd'),
+                    ('s6', 'at6', 'memberEnd'),
+                    ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
+                    ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
+                    ('as11', 't11', 'memberEnd'),
+                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')}
+        base_edges = []
+        ancestor_edges = []
+
+        for edge_tuple in base_inputs:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            base_edges.append(edge)
+
+        for edge_tuple in ancestor:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            ancestor_edges.append(edge)
+
+        base_map = dict((ea.edge_attribtue, list()) for ea in base_edges)
+
+        ance_map = dict((ea.edge_attribute, list()) for ea in ancestor_edges)
+
+        for item in base_edges:
+            base_map[item.edge_attribute].append(item)
+        for item in ancestor_edges:
+            ance_map[item.edge_attribute].append(item)
+
+        base_preference = {}
+        ancestor_preference = {}
+
+        for edge in base_edges:
+            base_preference[edge] = ance_map[edge[2]]
+        for edge in ancestor_edges:
+            if edge.edge_attribute not in base_map.keys():
+                ancestor_preference[edge] = []
+            else:
+                ancestor_preference[edge] = base_map[edge.edge_attribute]
 
     def test_match(self):
         # TODO: Remove the string or obj tests depending on which match uses.
