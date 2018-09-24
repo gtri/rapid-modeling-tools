@@ -25,6 +25,13 @@
             "owner",
             "Constraint Spec"
         ],
+        "Constraint Use": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "constUse"
+        ],
         "Constraint Name": [
             "blockValue",
             "owner",
@@ -279,8 +286,8 @@
         "context2": null,
         "A_context1_blockValue": null,
         "A_context2_constUse": null,
-        "C_value_blockValue-end1": "NestedConnectorEnd",
-        "C_value_blockValue-end2": null,
+        "C_value_blockValue-end1": null,
+        "C_value_blockValue-end2": "NestedConnectorEnd",
         "Constraint Spec": null
     },
     "Vertex Settings": {
@@ -298,10 +305,10 @@
         "context2": null,
         "A_context1_blockValue": null,
         "A_context2_constUse": null,
-        "C_value_blockValue-end1": {
+        "C_value_blockValue-end1": null,
+        "C_value_blockValue-end2": {
             "propertyPath": "id-constUse"
         },
-        "C_value_blockValue-end2": null,
         "Constraint Spec": null
     }
 }
