@@ -26,6 +26,7 @@ def get_uml_id(name=None):
     new_<ith new number> key and the value behind that will be the UUID created
     by MagicDraw.
     """
+    # TODO: make this a generator function
     if name in UML_ID.keys():
         return UML_ID[name]
     else:
