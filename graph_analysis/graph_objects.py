@@ -382,7 +382,7 @@ class Vertex(object):
                     'ops': [
                         {
                             'op': 'replace',
-                            'path': path_val,
+                            'path': '/' + path_val,
                             'value': settings_val,
                         }
                     ]

@@ -341,7 +341,7 @@ class TestVertex(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': 'aggregation',
+                    'path': '/aggregation',
                     'value': ['new_0'],
                 }
             ]
@@ -351,7 +351,7 @@ class TestVertex(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': 'aggregation',
+                    'path': '/aggregation',
                     'value': ['new_0'],
                 }
             ]
