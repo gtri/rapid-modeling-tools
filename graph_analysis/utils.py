@@ -1,6 +1,8 @@
 import json
 import os
 
+from random import shuffle
+
 
 def create_column_values_under(prefix=None,
                                first_node_data=None,
@@ -210,49 +212,59 @@ def get_node_types_attrs(df=None, node=None,
     return node_type_columns, node_attr_dict
 
 
-def match_changes(change_dict=None):
-    matches = {}
-    scores = {}
-    reject = set()
-    for key in change_dict:
-        if not change_dict[key]:
-            matches['no matches'] = [key]
-        for value in change_dict[key]:
-            preference = match(current=key, clone=value)
-            if preference > 0:  # this type of line might be making nuts
-                # and bolts algorithms wrong!!
-                # TODO: investigate this sort of if condition in nuts and bolts
-                # change to be clearer so that I not getting faulty matches
-                if key in scores:
-                    if value in matches.keys() and scores[key] < preference:
-                        scores[key] = preference
-                        matches[value] = key
-                        continue
-                    else:
-                        reject.add(value)
+def match_changes(change_dict=None, score=None, match_ancestors=None):
+    count = 0
+    unstable_pairing = {}
 
-                    scores[key] = preference
-                    matches[value] = key
-                    continue
+    # this is running a version of the stable marriage algorithm
+    # suitors are keys in the change_dict looking for engagements to the
+    # values they contian.
+    for suitor in change_dict:
+        if suitor == 'no matching':  # TODO: generalize key skip method
+            count += 1
+            continue
 
-                else:
-                    scores[key] = preference
-                    matches[value] = key
-                    continue
+        if suitor not in score.keys():  # initialize a score
+            preference = match(current=suitor, clone=change_dict[suitor][0])
+            score[suitor] = preference
+            match_ancestors.update({change_dict[suitor][0]: suitor})
 
-                scores[key] = preference
-                matches[value] = key
+        if len(change_dict[suitor]) > 1:  # loop over suitors for engagements
+            preference = match(current=suitor, clone=change_dict[suitor][1])
+
+            if preference > score[suitor]:  # match with node in 1th position
+                if match_ancestors[change_dict[suitor][0]] == suitor:
+                    match_ancestors.update({change_dict[suitor][0]: None})
+                    # record how the values match to the keys.
+
+                # remove previous engagement as more favorable pairing found
+                change_dict[suitor].pop(0)
+                score[suitor] = preference
+                match_ancestors.update({change_dict[suitor][0]: suitor})
+            elif preference < score[suitor]:  # do nothing 1th node less likely
+                change_dict[suitor].pop(1)
+            elif preference == score[suitor] and preference < 1:
+                # because this is an imperfect application of stable marriage
+                # when a favorable pariing is found but there are still suitors
+                # in the list, shuffle the list to try to remove remaining
+                score.pop(suitor, None)
+                shuffle(change_dict[suitor])
             else:
-                reject.add(value)
+                unstable_pairing.update({suitor: change_dict[suitors]})
+                # at least two likely pairs but shuffle to try to reduce the
+                # list to the minimal pairing.
+                shuffle(change_dict[suitor])
+                # could rerun the checks using the unstable pairing dict
+                count += 1
+        else:
+            match_ancestors.update({change_dict[suitor][0]: suitor})
+            count += 1
 
-    match_keys_set = set(matches.keys())
-    no_matches = reject.difference(
-        match_keys_set).difference(set(change_dict.keys()))
-    if 'no matches' in matches.keys():
-        matches['no matches'].extend(no_matches)
-    else:
-        matches['no matches'] = list(no_matches)
-    return matches
+    if count == len(suitors.keys()):
+        return (change_dict, score, unstable_pairing)
+    else:  # This function alone responsible for returning probably matchings
+        match_changes(change_dict=change_dict, score=score,
+                      match_ancestors=match_ancestors)
 
 
 def match(current=None, clone=None):

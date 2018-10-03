@@ -2,6 +2,8 @@ import unittest
 import pandas as pd
 import networkx as nx
 
+from copy import copy
+
 from graph_analysis.utils import (create_column_values_under,
                                   create_column_values_space,
                                   create_column_values_singleton,
