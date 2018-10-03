@@ -21,6 +21,7 @@ env_specs:
     packages:
     - numpy
     - pandas
+    - scipy
     - networkx >=2.1,<2.2
     - pytest
     - jupyter
