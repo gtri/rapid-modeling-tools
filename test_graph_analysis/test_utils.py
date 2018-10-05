@@ -105,13 +105,10 @@ class TestUtils(unittest.TestCase):
                              node_attr_dict)
 
     def test_match_changes(self):
-        # this is a bad function and an improper test.
-        # The test ignores the obvious problem of non-unique matchings
-        # TODO: develop a stronger algorithm that ensures unique pairings
-        # and lists nonunique pairings.
         base_inputs = [('s1', 't1', 'type'), ('s2', 't2', 'type'),
                        ('s3', 't3', 'owner'), ('s4', 't4', 'owner'),
-                       ('s5', 't5', 'memberEnd'), ('s6', 't6', 'memberEnd'),
+                       ('s5', 't5', 'memberEnd'),
+                       ('s6', 't6', 'memberEnd'),
                        ('s7', 't7', 'type'), ('s8', 't8', 'type'),
                        ('s9', 't9', 'owner'), ('s10', 't10', 'owner'),
                        ('s11', 't11', 'memberEnd'),
@@ -125,17 +122,8 @@ class TestUtils(unittest.TestCase):
                     ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
                     ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
                     ('as11', 't11', 'memberEnd'),
-                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
-
-        # this will cause to fail because matching is not unique.
-        # ancestor = [('as1', 't1', 'type'), ('s1', 'at2', 'type'),
-        #             ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
-        #             ('as5', 't5', 'memberEnd'),
-        #             ('s6', 'at6', 'memberEnd'),
-        #             ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
-        #             ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
-        #             ('as11', 't11', 'memberEnd'),
-        #             ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange'),
+                    ('s1', 'at1', 'type')]
 
         base_edges = []
         ancestor_edges = []
@@ -156,7 +144,8 @@ class TestUtils(unittest.TestCase):
 
         base_map = dict((ea.edge_attribute, list()) for ea in base_edges)
 
-        ance_map = dict((ea.edge_attribute, list()) for ea in ancestor_edges)
+        ance_map = dict((ea.edge_attribute, list())
+                        for ea in ancestor_edges)
 
         for edge in base_edges:
             base_map[edge.edge_attribute].append(edge)
@@ -166,60 +155,82 @@ class TestUtils(unittest.TestCase):
         base_preference = {}
         ancestor_preference = {}
 
+        ance_keys_not_in_base = set(
+            ance_map.keys()).difference(set(base_map.keys()))
+
+        base_preference['no matching'] = []
+        for edge_type in ance_keys_not_in_base:
+            base_preference['no matching'].extend(ance_map[edge_type])
+
         for edge in base_edges:
             if edge.edge_attribute not in ance_map.keys():
-                base_preference[edge] = []
+                base_preference['no matching'].append(edge)
             else:
-                base_preference[edge] = base_map[edge.edge_attribute]
+                base_preference[edge] = copy(
+                    ance_map[edge.edge_attribute])
+
         for edge in ancestor_edges:
             if edge.edge_attribute not in base_map.keys():
                 ancestor_preference[edge] = []
             else:
-                ancestor_preference[edge] = base_map[edge.edge_attribute]
+                ancestor_preference[edge] = copy(
+                    base_map[edge.edge_attribute])
 
-        base_matches = match_changes(change_dict=base_preference)
-        ance_matches = match_changes(change_dict=ancestor_preference)
+        match_dict = match_changes(change_dict=base_preference, score={},
+                                   match_ancestors={})
 
-        for no_match in base_matches['no matches']:
-            ance_matches['no matches'].append(no_match)
-
-        match_dict = {}
-        for key in ance_matches.keys():
-            if key != 'no matches':
-                match_dict.update({key: ance_matches[key]})
-
-        expected_matches = {('s1', 't1', 'type'): ('as1', 't1', 'type'),
-                            ('s2', 't2', 'type'): ('s2', 'at2', 'type'),
+        expected_matches = {('s2', 't2', 'type'): ('s2', 'at2', 'type'),
                             ('s3', 't3', 'owner'): ('as3', 't3', 'owner'),
                             ('s4', 't4', 'owner'): ('s4', 'at4', 'owner'),
-                            ('s5', 't5', 'memberEnd'): ('as5',
-                                                        't5', 'memberEnd'),
-                            ('s6', 't6', 'memberEnd'): ('s6',
-                                                        'at6', 'memberEnd'),
+                            ('s5', 't5', 'memberEnd'):
+                                ('as5', 't5', 'memberEnd'),
+                            ('s6', 't6', 'memberEnd'):
+                                ('s6', 'at6', 'memberEnd'),
                             ('s7', 't7', 'type'): ('as7', 't7', 'type'),
                             ('s8', 't8', 'type'): ('s8', 'at8', 'type'),
                             ('s9', 't9', 'owner'): ('as9', 't9', 'owner'),
-                            ('s10', 't10', 'owner'): ('s10', 'at10', 'owner'),
-                            ('s11', 't11', 'memberEnd'): ('as11',
-                                                          't11', 'memberEnd'),
-                            ('s12', 't12', 'memberEnd'): ('s12',
-                                                          'at12', 'memberEnd'),
-                            'no matches': [('b', 'c', 'orange'),
-                                           ('song', 'tiger', 'blue')]}
-        match_dict_str = dict((key.named_edge_triple,
-                               match_dict[key].named_edge_triple)
-                              for key in match_dict.keys())
-        match_dict_str.update({'no matches': ance_matches['no matches']})
-        no_match_to_str = []
-        for value in match_dict_str['no matches']:
-            no_match_to_str.append(value.named_edge_triple)
+                            ('s10', 't10', 'owner'):
+                                ('s10', 'at10', 'owner'),
+                            ('s11', 't11', 'memberEnd'):
+                                ('as11', 't11', 'memberEnd'),
+                            ('s12', 't12', 'memberEnd'):
+                                ('s12', 'at12', 'memberEnd'),
+                            'no matching': [('b', 'c', 'orange'),
+                                            ('song', 'tiger', 'blue')]}
 
-        match_dict_str.update({'no matches': no_match_to_str})
+        expected_unstable = {('s1', 't1', 'type'):
+                             [('as1', 't1', 'type'),
+                              ('s1', 'at1', 'type')],
+                             }
+        pairings = match_dict[0]
+        unstable_pairs = match_dict[1]
+        pairings_str = {}
+        pairings_str.update({'no matching': []})
 
-        self.assertDictEqual(expected_matches, match_dict_str)
+        unstable_keys = set(unstable_pairs.keys()).intersection(
+            set(pairings.keys()))
+
+        for key in pairings.keys():
+            if key in unstable_keys:
+                continue
+            elif key is not "no matching":
+                pairings_str.update({key.named_edge_triple:
+                                     pairings[key][0].named_edge_triple})
+            else:
+                for edge in pairings[key]:
+                    pairings_str[key].append(edge.named_edge_triple)
+
+        self.assertDictEqual(expected_matches, pairings_str)
+
+        for key in unstable_keys:
+            unstable_key_vals = {
+                edge.named_edge_triple for edge in unstable_pairs[key]}
+            self.assertEqual(
+                set(expected_unstable[key.named_edge_triple]),
+                unstable_key_vals)
 
     def test_match(self):
-        # TODO: Remove the string or obj tests depending on which match uses.
+        # TODO: Remove string or obj tests depending on which match uses.
         # # Case 1: Rename
         # current = ('source', 'target', 'type')
         # clone = ('new source', 'target', 'type')
@@ -241,11 +252,12 @@ class TestUtils(unittest.TestCase):
         wheel = Vertex(name='wheel')
 
         # need a test for when I implement the 'edge type equivalence'
-        # This would address a case like: Suppose the edge attribtue 'type'
-        # was in the edge set of Original_edge_attributes but 'type' was not
+        # This would address a case: Suppose the edge attribtue 'type'
+        # was in the edge set of Original_edge_attributes but 'type'not
         # in the edge set of Change_edge_attribtues and instead 'new type' was
         # there. Then I would want a way to say type -> new type.
-        og_edge = DiEdge(source=car, target=engine, edge_attribute='owner')
+        og_edge = DiEdge(source=car, target=engine,
+                         edge_attribute='owner')
 
         # case: different target
         match_edge = DiEdge(source=car, target=wheel,

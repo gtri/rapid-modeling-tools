@@ -215,12 +215,17 @@ def get_node_types_attrs(df=None, node=None,
 def match_changes(change_dict=None, score=None, match_ancestors=None):
     count = 0
     unstable_pairing = {}
+    if not score:
+        score = {}
+    if not match_ancestors:
+        match_ancestors = {}
 
     # this is running a version of the stable marriage algorithm
     # suitors are keys in the change_dict looking for engagements to the
     # values they contian.
     for suitor in change_dict:
-        if suitor == 'no matching':  # TODO: generalize key skip method
+        # TODO: generalize key skip method
+        if suitor == 'no matching' or not change_dict[suitor]:
             count += 1
             continue
 
@@ -250,7 +255,7 @@ def match_changes(change_dict=None, score=None, match_ancestors=None):
                 score.pop(suitor, None)
                 shuffle(change_dict[suitor])
             else:
-                unstable_pairing.update({suitor: change_dict[suitors]})
+                unstable_pairing.update({suitor: change_dict[suitor]})
                 # at least two likely pairs but shuffle to try to reduce the
                 # list to the minimal pairing.
                 shuffle(change_dict[suitor])
@@ -260,11 +265,11 @@ def match_changes(change_dict=None, score=None, match_ancestors=None):
             match_ancestors.update({change_dict[suitor][0]: suitor})
             count += 1
 
-    if count == len(suitors.keys()):
-        return (change_dict, score, unstable_pairing)
+    if count == len(change_dict.keys()):
+        return (change_dict, unstable_pairing, score)
     else:  # This function alone responsible for returning probably matchings
-        match_changes(change_dict=change_dict, score=score,
-                      match_ancestors=match_ancestors)
+        return match_changes(change_dict=change_dict, score=score,
+                             match_ancestors=match_ancestors)
 
 
 def match(current=None, clone=None):
@@ -280,6 +285,24 @@ def match(current=None, clone=None):
         return -1
     else:  # this would be edge attribute of current is shorter than of clone
         return -2
+
+
+def object_dict_view(cipher=None):
+    decoded = {}
+    for key in cipher.keys():
+        try:
+            if len(cipher[key]) > 1:
+                decoded.update({key.named_edge_triple:
+                                [item.named_edge_triple
+                                 for item in cipher[key]]})
+            else:
+                decoded.update({key.named_edge_triple:
+                                cipher[key].named_edge_triple})
+        except AttributeError:
+            decoded.update({key: [
+                item.named_edge_triple for item in cipher[key]]})
+
+    return decoded
 
 
 def aggregate_change_json():

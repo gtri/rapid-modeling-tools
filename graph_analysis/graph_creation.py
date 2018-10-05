@@ -2,6 +2,7 @@ import json
 import pandas as pd
 import networkx as nx
 
+from copy import copy
 from itertools import combinations
 
 from .utils import (create_column_values_under,
@@ -42,7 +43,7 @@ class Manager(object):
         len(evaluators) == len(excel_path)
     """
 
-    def __init__(self, excel_path=[], json_path=None):
+    def __init__(self, excel_path=None, json_path=None):
         self.excel_path = excel_path
         self.json_path = json_path
         self.json_data = None
@@ -62,10 +63,11 @@ class Manager(object):
                           translator=self.translator))
 
     def get_pattern_graph_diff(self):
-        evaluator_dict = {index: evaluator for evaluator, index in enumerate(
+        evaluator_dict = {evaluator: index for index, evaluator in enumerate(
             self.evaluators
         )}
         evaluator_change_dict = {}
+        print(evaluator_dict)
 
         for pair in combinations(self.evaluators, 2):
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
@@ -94,28 +96,36 @@ class Manager(object):
 
             eval_one_unmatch_pref = {}
             eval_two_unmatch_pref = {}
+
+            ance_keys_not_in_base = set(
+                eval_two_unmatch_map.keys()).difference(
+                    set(eval_one_unmatch_map))
+
+            eval_one_unmatch_pref['no matching'] = []
+            for edge_type in ance_keys_not_in_base:
+                eval_one_unmatch_pref['no matching'].extend(
+                    eval_two_unmatch_map[edge_type])
+
             for edge in eval_one_unmatched:
                 if edge.edge_attribute not in eval_two_unmatch_map.keys():
-                    eval_one_unmatch_pref[edge] = []
+                    eval_one_unmatch_pref['no matching'].append(edge)
                 else:
-                    eval_one_unmatch_pref[edge] = eval_two_unmatch_map[
-                        edge.edge_attribute]
+                    eval_one_unmatch_pref[edge] = copy(eval_two_unmatch_map[
+                        edge.edge_attribute])
             for edge in eval_two_unmatched:
                 if edge.edge_attribute not in eval_one_unmatch_map.keys():
                     eval_two_unmatch_pref[edge] = []
                 else:
-                    eval_two_unmatch_pref[edge] = eval_one_unmatch_map[
-                        edge.edge_attribute]
+                    eval_two_unmatch_pref[edge] = copy(eval_one_unmatch_map[
+                        edge.edge_attribute])
 
             eval_one_matches = match_changes(change_dict=eval_one_unmatch_pref)
-            eval_two_matches = match_changes(change_dict=eval_two_unmatch_pref)
-
-            for no_match in eval_one_matches['no matches']:
-                eval_two_matches['no matches'].append(no_match)
 
             key = '{0} and {1}'.format(evaluator_dict[pair[0]],
                                        evaluator_dict[pair[1]])
-            evaluator_change_dict.update({key: eval_two_matches})
+            evaluator_change_dict.update(
+                {key: {'Changes': eval_one_matches[0],
+                       'Unstable Pairs': eval_one_matches[1]}})
 
         return evaluator_change_dict
 
@@ -166,8 +176,9 @@ class Evaluator(object):
     # then
     def __init__(self, excel_file=None, translator=None):
         self.translator = translator
-        self.df = pd.read_excel(excel_file)
-        self.df.dropna(how='all', inplace=True)
+        # self.df = None
+        self.sheets_to_dataframe(excel_file=excel_file)
+        # self.df.dropna(how='all', inplace=True)
         self.prop_di_graph = None
         self.root_node_attr_columns = set()
 
@@ -176,6 +187,22 @@ class Evaluator(object):
     #     data_keys = set(translator.get_cols_to_nav_map())
     #     try:
     #         df_cols == data_keys
+    def sheets_to_dataframe(self, excel_file=None):
+        # TODO: Generalize/Standardize this function
+        xls = pd.ExcelFile(excel_file, on_demand=True)
+        if len(xls.sheet_names) > 1:
+            for sheet in xls.sheet_names:
+                if 'Composition' == sheet:
+                    self.df = pd.read_excel(excel_file, sheet_name=sheet)
+                    self.df.dropna(how='all', inplace=True)
+                elif 'Composition IDs' == sheet:
+                    df_ids = pd.read_excel(excel_file, sheet_name=sheet)
+                    df_ids.set_index(df_ids.columns[0], inplace=True)
+                    self.translator.uml_id.update(
+                        df_ids.to_dict(orient='dict')[df_ids.columns[0]])
+        else:
+            self.df = pd.read_excel(excel_file)
+            self.df.dropna(how='all', inplace=True)
 
     def rename_df_columns(self):
         """Returns renamed DataFrame columns from their Excel name to their
@@ -332,6 +359,7 @@ class MDTranslator(object):
 
     def __init__(self, json_data=None):
         self.data = json_data
+        self.uml_id = {}
 
     def get_root_node(self):
         return self.data['Root Node']

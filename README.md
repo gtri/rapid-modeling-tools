@@ -3,6 +3,9 @@
 * Enter the top level directory containing the `anaconda-project.yml` file
 * `activate <path to miniconda3>`
 * The environment should boot up
+* If the environment does not boot through this method:
+    * `activate envs\default`
+    * or `activate envs\defaults`
 
 **Using Jupyter Lab**
 * create a ```notebooks``` directory in the top level

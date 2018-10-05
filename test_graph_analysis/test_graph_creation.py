@@ -5,44 +5,80 @@ import pandas as pd
 
 from graph_analysis.graph_creation import (Manager, Evaluator, MDTranslator)
 from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
+from graph_analysis.utils import object_dict_view
 
 
 DATA_DIRECTORY = '../data/'
 
 
-# class TestProduceJson(unittest.TestCase):
-#
-#     def setUp(self):
-#         pass
-#
-#     def test_json_creation(self):
-#         manager = Manager(excel_path=[os.path.join(
-#             DATA_DIRECTORY, 'Sample Equations.xlsx')],
-#             json_path=os.path.join(DATA_DIRECTORY,
-#                                    'ParametricGraphMaster.json'))
-#         translator = manager.translator
-#         evaluator = manager.evaluators[0]
-#         evaluator.rename_df_columns()
-#         evaluator.add_missing_columns()
-#         evaluator.to_property_di_graph()
-#         property_di_graph = evaluator.prop_di_graph
-#         property_di_graph.create_vertex_set(
-#             df=evaluator.df, root_node_type=translator.get_root_node())
-#         vert_set = property_di_graph.vertex_set
-#         json_out = {'modification targets': []}
-#         edge_json = []
-#         for vertex in vert_set:
-#             vert_uml, edge_uml = vertex.to_uml_json(translator=translator)
-#             json_out['modification targets'].extend(vert_uml)
-#             edge_json.extend(edge_uml)
-#
-#         json_out['modification targets'].extend(edge_json)
-#         with open(os.path.join(DATA_DIRECTORY,
-#                                'changes_uml.json'), 'w') as outfile:
-#             json.dump(json_out, outfile, indent=4)
-#
-#     def tearDown(self):
-#         pass
+class TestProduceJson(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_json_creation(self):
+        manager = Manager(excel_path=[os.path.join(
+            DATA_DIRECTORY, 'Sample Equations.xlsx')],
+            json_path=os.path.join(DATA_DIRECTORY,
+                                   'ParametricGraphMaster.json'))
+        translator = manager.translator
+        evaluator = manager.evaluators[0]
+        evaluator.rename_df_columns()
+        evaluator.add_missing_columns()
+        evaluator.to_property_di_graph()
+        property_di_graph = evaluator.prop_di_graph
+        property_di_graph.create_vertex_set(
+            df=evaluator.df, root_node_type=translator.get_root_node())
+        vert_set = property_di_graph.vertex_set
+        json_out = {'modification targets': []}
+        edge_json = []
+        for vertex in vert_set:
+            vert_uml, edge_uml = vertex.to_uml_json(translator=translator)
+            json_out['modification targets'].extend(vert_uml)
+            edge_json.extend(edge_uml)
+
+        json_out['modification targets'].extend(edge_json)
+        with open(os.path.join(DATA_DIRECTORY,
+                               'changes_uml.json'), 'w') as outfile:
+            json.dump(json_out, outfile, indent=4)
+
+    def test_change_excel_json_creation(self):
+        excel_files = [os.path.join(DATA_DIRECTORY,
+                                    'Composition Example Model Baseline.xlsx'),
+                       os.path.join(DATA_DIRECTORY,
+                                    'Composition Example Model Changed.xlsx')]
+        manager = Manager(excel_path=excel_files,
+                          json_path=os.path.join(DATA_DIRECTORY,
+                                                 'CompositionGraphMaster.json')
+                          )
+
+        translator = manager.translator
+        print(manager.evaluators)
+        for evaluator in manager.evaluators:
+            evaluator.rename_df_columns()
+            evaluator.add_missing_columns()
+            evaluator.to_property_di_graph()
+            property_di_graph = evaluator.prop_di_graph
+            property_di_graph.create_vertex_set(
+                df=evaluator.df, root_node_type=translator.get_root_node())
+            property_di_graph.create_edge_set()
+            vertex_set = property_di_graph.vertex_set
+
+        eval_change_dict = manager.get_pattern_graph_diff()
+        decoded = object_dict_view(
+            cipher=eval_change_dict['0 and 1']['Changes'])
+        # print(eval_change_dict['0 and 1']['Unstable Pairs'])
+        # print(decoded)
+        message = ("Everything is on fire. Check if the Changes dict "
+                   + "is the same length as the unstable pairs dict"
+                   + " need to do some post processing on the nodes that"
+                   + " change. Such as check if a particular node and all of"
+                   + " its connections have changed then that would mean"
+                   + " name change/replace and so on.")
+        self.assertTrue(False, msg=message)
+
+    def tearDown(self):
+        pass
 
 
 class TestManager(unittest.TestCase):
@@ -88,16 +124,6 @@ class TestManager(unittest.TestCase):
         ancestor = [('as1', 't1', 'type'),
                     ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
 
-        # this will cause to fail because matching is not unique.
-        # ancestor = [('as1', 't1', 'type'), ('s1', 'at2', 'type'),
-        #             ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
-        #             ('as5', 't5', 'memberEnd'),
-        #             ('s6', 'at6', 'memberEnd'),
-        #             ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
-        #             ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
-        #             ('as11', 't11', 'memberEnd'),
-        #             ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
-
         base_edges = []
         ancestor_edges = []
 
@@ -122,23 +148,30 @@ class TestManager(unittest.TestCase):
 
         match_dict = self.manager.get_pattern_graph_diff()
         match_dict_str = {}
-        for key in match_dict['0 and 1'].keys():
-            if key != 'no matches':
+        print(match_dict['0 and 1'][0].keys())
+        no_match_to_str = []
+        for key in match_dict['0 and 1'][0].keys():
+            if key != 'no matching':
+                if not match_dict['0 and 1'][0][key]:
+                    no_match_to_str.append(key.named_edge_triple)
+                    continue
+                print(key)
+                print(match_dict['0 and 1'][0][key])
                 match_dict_str.update(
                     {key.named_edge_triple: match_dict[
-                        '0 and 1'][key].named_edge_triple})
+                        '0 and 1'][0][key][0].named_edge_triple})
         # match_dict_str.update({'no matches': match_dict['no matches']})
-        no_match_to_str = []
-        for value in match_dict['0 and 1']['no matches']:
+
+        for value in match_dict['0 and 1'][0]['no matching']:
             no_match_to_str.append(value.named_edge_triple)
 
-        match_dict_str.update({'no matches': no_match_to_str})
+        match_dict_str.update({'no matching': no_match_to_str})
 
         expected_matches = {('s1', 't1', 'type'): ('as1', 't1', 'type'),
                             ('s12', 't12', 'memberEnd'): ('s12',
                                                           'at12', 'memberEnd'),
-                            'no matches': [('b', 'c', 'orange'),
-                                           ('song', 'tiger', 'blue')]}
+                            'no matching': [('b', 'c', 'orange'),
+                                            ('song', 'tiger', 'blue')]}
         self.assertDictEqual(expected_matches, match_dict_str)
 
     def tearDown(self):
@@ -175,6 +208,25 @@ class TestEvaluator(unittest.TestCase):
                      'Mount']
         }
         self.evaluator.df = pd.DataFrame(data=data_dict)
+
+    def test_sheets_to_dataframe(self):
+        with open(os.path.join(DATA_DIRECTORY,
+                               'CompositionGraphMaster.json')) as f:
+            data = json.load(f)
+
+        translator = MDTranslator(json_data=data)
+        evaluator = Evaluator(
+            excel_file=os.path.join(DATA_DIRECTORY,
+                                    'Composition Example Model Baseline.xlsx'),
+            translator=translator
+        )
+        file_name = 'Composition Example Model Baseline.xlsx'
+        evaluator.sheets_to_dataframe(excel_file=os.path.join(DATA_DIRECTORY,
+                                                              file_name))
+        columns_list = [col for col in evaluator.df.columns]
+        self.assertListEqual(
+            ['Component', 'Position', 'Part'], columns_list)
+        self.assertEqual(63, len(translator.uml_id))
 
     def test_rename_df_columns(self):
         # just need to test that the columns are as expected.
