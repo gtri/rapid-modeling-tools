@@ -8,7 +8,8 @@ from itertools import combinations
 from .utils import (create_column_values_under,
                     create_column_values_space,
                     create_column_values_singleton,
-                    match_changes,)
+                    match_changes, object_dict_view,
+                    )
 from .graph_objects import PropertyDiGraph
 
 
@@ -67,7 +68,6 @@ class Manager(object):
             self.evaluators
         )}
         evaluator_change_dict = {}
-        print(evaluator_dict)
 
         for pair in combinations(self.evaluators, 2):
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
@@ -78,8 +78,20 @@ class Manager(object):
 
             # remove common edges
             # have to do this with named edges.
-            eval_one_unmatched = list(edge_set_one.difference(edge_set_two))
-            eval_two_unmatched = list(edge_set_two.difference(edge_set_one))
+            edge_set_one_set = {edge.named_edge_triple
+                                for edge in edge_set_one}
+            edge_set_two_set = {edge.named_edge_triple
+                                for edge in edge_set_two}
+
+            eval_one_unmatched_named = list(edge_set_one_set.difference(
+                edge_set_two_set))
+            eval_two_unmatched_named = list(edge_set_two_set.difference(
+                edge_set_one_set
+            ))
+            eval_one_unmatched = [eval_1_e_dict[edge]
+                                  for edge in eval_one_unmatched_named]
+            eval_two_unmatched = [eval_2_e_dict[edge]
+                                  for edge in eval_two_unmatched_named]
 
             eval_one_unmatch_map = dict((edge.edge_attribute, list())
                                         for edge in eval_one_unmatched)
@@ -360,6 +372,32 @@ class MDTranslator(object):
     def __init__(self, json_data=None):
         self.data = json_data
         self.uml_id = {}
+
+    def get_uml_id(self, name=None):
+        """Returns the UML_ID for the corresponding vertex name provided. If the
+        name provided does not exist as a key in the UML_ID dictionary than a
+        new key is created using that name and the value increments with
+        new_<ith new number>.
+
+        Parameters
+        ----------
+        name : string
+            The Vertex.name attribute
+
+        Notes
+        -----
+        This will be updated to become a nested dictionary
+        with the first key being the name and the inner key will be the
+        new_<ith new number> key and the value behind that will be the UUID created
+        by MagicDraw.
+        """
+        # TODO: write test function for this
+        if name in self.uml_id.keys():
+            return self.uml_id[name]
+        else:
+            self.uml_id.update({name: 'new_{0}'.format(self.uml_id['count'])})
+            self.uml_id['count'] += 1
+            return self.uml_id[name]
 
     def get_root_node(self):
         return self.data['Root Node']

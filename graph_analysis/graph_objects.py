@@ -333,7 +333,7 @@ class Vertex(object):
         for count, node_type in enumerate(self.node_types):
             if count == 0:
                 node_uml_dict = {
-                    'id': get_uml_id(name=self.name),
+                    'id': translator.get_uml_id(name=self.name),
                     'ops': [
                         {
                             'op': 'create',  # evaluator replace with fn input.
@@ -368,12 +368,12 @@ class Vertex(object):
         edge_uml_list = []
         for connection in self.connections:
             edge_uml_dict = {
-                'id': get_uml_id(name=connection['source']),
+                'id': translator.get_uml_id(name=connection['source']),
                 'ops': [
                     {
                         'op': 'replace',
                         'path': '/' + connection['edge_attribute'],
-                        'value': get_uml_id(name=connection['target']),
+                        'value': translator.get_uml_id(name=connection['target']),
                     }
                 ]
             }

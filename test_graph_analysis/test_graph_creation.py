@@ -68,7 +68,10 @@ class TestProduceJson(unittest.TestCase):
         decoded = object_dict_view(
             cipher=eval_change_dict['0 and 1']['Changes'])
         # print(eval_change_dict['0 and 1']['Unstable Pairs'])
-        # print(decoded)
+        print(decoded)
+        decoded_unstable = object_dict_view(
+            cipher=eval_change_dict['0 and 1']['Unstable Pairs'])
+        print(decoded_unstable)
         message = ("Everything is on fire. Check if the Changes dict "
                    + "is the same length as the unstable pairs dict"
                    + " need to do some post processing on the nodes that"

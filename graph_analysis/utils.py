@@ -290,17 +290,13 @@ def match(current=None, clone=None):
 def object_dict_view(cipher=None):
     decoded = {}
     for key in cipher.keys():
-        try:
-            if len(cipher[key]) > 1:
-                decoded.update({key.named_edge_triple:
-                                [item.named_edge_triple
-                                 for item in cipher[key]]})
-            else:
-                decoded.update({key.named_edge_triple:
-                                cipher[key].named_edge_triple})
-        except AttributeError:
+        if type(key) is str:
             decoded.update({key: [
                 item.named_edge_triple for item in cipher[key]]})
+        else:
+            decoded.update({key.named_edge_triple:
+                           [item.named_edge_triple
+                            for item in cipher[key]]})
 
     return decoded
 
