@@ -72,12 +72,9 @@ class TestProduceJson(unittest.TestCase):
         decoded_unstable = object_dict_view(
             cipher=eval_change_dict['0 and 1']['Unstable Pairs'])
         print(decoded_unstable)
-        message = ("Everything is on fire. Check if the Changes dict "
-                   + "is the same length as the unstable pairs dict"
-                   + " need to do some post processing on the nodes that"
-                   + " change. Such as check if a particular node and all of"
-                   + " its connections have changed then that would mean"
-                   + " name change/replace and so on.")
+        message = ("Working on including IDs with nodes on node creation."
+                   + " By including adding nodes from list of tuples "
+                   + "given as (node_name, {id: <node_id>})")
         self.assertTrue(False, msg=message)
 
     def tearDown(self):

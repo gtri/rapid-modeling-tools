@@ -189,6 +189,7 @@ class Evaluator(object):
     def __init__(self, excel_file=None, translator=None):
         self.translator = translator
         # self.df = None
+        self.df_ids = None
         self.sheets_to_dataframe(excel_file=excel_file)
         # self.df.dropna(how='all', inplace=True)
         self.prop_di_graph = None
@@ -208,10 +209,11 @@ class Evaluator(object):
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df.dropna(how='all', inplace=True)
                 elif 'Composition IDs' == sheet:
-                    df_ids = pd.read_excel(excel_file, sheet_name=sheet)
-                    df_ids.set_index(df_ids.columns[0], inplace=True)
+                    self.df_ids = pd.read_excel(excel_file, sheet_name=sheet)
+                    self.df_ids.set_index(self.df_ids.columns[0], inplace=True)
                     self.translator.uml_id.update(
-                        df_ids.to_dict(orient='dict')[df_ids.columns[0]])
+                        self.df_ids.to_dict(
+                            orient='dict')[self.df_ids.columns[0]])
         else:
             self.df = pd.read_excel(excel_file)
             self.df.dropna(how='all', inplace=True)
@@ -331,7 +333,14 @@ class Evaluator(object):
                 df=df_temp, source=pair[0],
                 target=pair[1], edge_attr=edge_type,
                 create_using=GraphTemp)
-            self.prop_di_graph.add_nodes_from(GraphTemp)
+            nodes_to_add = GraphTemp.nodes()
+            if self.df_ids is not None:
+                nodes_to_add = associate_node_attrs(nodes=GraphTemp.nodes(),
+                                                    attr_df=self.df_ids)
+            else:
+                nodes_to_add = [(node, {'ID': get_uml_id(name=node)}
+                                for node in GraphTemp.nodes())]
+            self.prop_di_graph.add_nodes_from(nodes_to_add)
             self.prop_di_graph.add_edges_from(GraphTemp.edges,
                                               edge_attribute=edge_type)
 

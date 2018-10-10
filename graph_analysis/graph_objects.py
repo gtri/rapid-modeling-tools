@@ -1,38 +1,38 @@
 import networkx as nx
 
-from .utils import get_node_types_attrs
+from .utils import get_node_types_attrs, get_uml_id
 
 
-UML_ID = {
-    'count': 0
-}
-
-
-def get_uml_id(name=None):
-    """Returns the UML_ID for the corresponding vertex name provided. If the
-    name provided does not exist as a key in the UML_ID dictionary than a
-    new key is created using that name and the value increments with
-    new_<ith new number>.
-
-    Parameters
-    ----------
-    name : string
-        The Vertex.name attribute
-
-    Notes
-    -----
-    This will be updated to become a nested dictionary
-    with the first key being the name and the inner key will be the
-    new_<ith new number> key and the value behind that will be the UUID created
-    by MagicDraw.
-    """
-    # TODO: make this a generator function
-    if name in UML_ID.keys():
-        return UML_ID[name]
-    else:
-        UML_ID.update({name: 'new_{0}'.format(UML_ID['count'])})
-        UML_ID['count'] += 1
-        return UML_ID[name]
+# UML_ID = {
+#     'count': 0
+# }
+#
+#
+# def get_uml_id(name=None):
+#     """Returns the UML_ID for the corresponding vertex name provided. If the
+#     name provided does not exist as a key in the UML_ID dictionary than a
+#     new key is created using that name and the value increments with
+#     new_<ith new number>.
+#
+#     Parameters
+#     ----------
+#     name : string
+#         The Vertex.name attribute
+#
+#     Notes
+#     -----
+#     This will be updated to become a nested dictionary
+#     with the first key being the name and the inner key will be the
+#     new_<ith new number> key and the value behind that will be the UUID created
+#     by MagicDraw.
+#     """
+#     # TODO: make this a generator function
+#     if name in UML_ID.keys():
+#         return UML_ID[name]
+#     else:
+#         UML_ID.update({name: 'new_{0}'.format(UML_ID['count'])})
+#         UML_ID['count'] += 1
+#         return UML_ID[name]
 
 
 def create_vertex_objects(df=None, graph=None):

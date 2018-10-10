@@ -10,7 +10,9 @@ from graph_analysis.utils import (create_column_values_under,
                                   create_column_values,
                                   get_node_types_attrs,
                                   match,
-                                  match_changes)
+                                  match_changes,
+                                  associate_node_attrs,
+                                  new_integer_id_generator)
 from graph_analysis.graph_objects import DiEdge, UML_ID, Vertex, get_uml_id
 
 
@@ -287,6 +289,24 @@ class TestUtils(unittest.TestCase):
                            edge_attribute='memberEnd')
         match_val = match(current=og_edge, clone=long_edge)
         self.assertEqual(-2, match_val)
+
+    def test_associate_node_attrs(self):
+        node_id_dict = {'Element Name': ['Car', 'engine', 'orange'],
+                        'ID': [1, 2, 3]}
+        df_ids = pd.DataFrame(data=node_id_dict)
+        df_ids.set_index(df_ids.columns[0], inplace=True)
+        nodes = ['Car', 'engine', 'orange']
+        nodes_to_add = associate_node_attrs(nodes=nodes, attr_df=df_ids)
+        expected_node_info = [('Car', {'ID': 1}), ('engine', {'ID':2}),
+                              ('orange', {'ID': 3})]
+        for count, node_tup in enumerate(nodes_to_add):
+            self.assertTupleEqual(expected_node_info[count], node_tup)
+
+    def test_new_integer_id_generator(self):
+        self.assertEqual(0, next(new_integer_id_generator()))
+        self.assertEqual(1, next(new_integer_id_generator()))
+        self.assertEqual(2, next(new_integer_id_generator()))
+
 
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.

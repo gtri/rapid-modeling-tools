@@ -1,6 +1,7 @@
 import json
 import os
 
+from itertools import count
 from random import shuffle
 
 
@@ -273,6 +274,9 @@ def match_changes(change_dict=None, score=None, match_ancestors=None):
 
 
 def match(current=None, clone=None):
+    # this function should only be getting nodes with the same edges
+    # if I change this to assume nodes of the same edge attr then I can
+    # send this function "equivalent edges"
     if current.edge_attribute == clone.edge_attribute:
         if ((current.source.name == clone.source.name)
                 or (current.target.name == clone.target.name)):
@@ -285,6 +289,29 @@ def match(current=None, clone=None):
         return -1
     else:  # this would be edge attribute of current is shorter than of clone
         return -2
+
+
+def associate_node_attrs(nodes=None, attr_df=None):
+    # return a list of tuples with (node name, {id: <node id>})
+    nodes_to_add = []
+    for node in nodes:
+        if node in attr_df.index:
+            attr = attr_df.loc[node].to_dict()
+            nodes_to_add.append((node, attr))
+        else:
+            pass
+
+    return nodes_to_add
+
+
+def new_integer_id_generator():
+    try:
+        yield count
+    except UnboundedLocalError:
+        count = 0
+        yield count
+
+    count += 1
 
 
 def object_dict_view(cipher=None):
