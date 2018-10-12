@@ -40,6 +40,7 @@ class TestUtils(unittest.TestCase):
         self.assertListEqual(expect_suffix, col_vals_suff)
 
     def test_create_column_values_space(self):
+        self.assertTrue(False, msg='update this to account for if else.')
         data_dict = {
             'composite owner': ['Car', 'Wheel'],
             'component': ['chassis', 'hub']
