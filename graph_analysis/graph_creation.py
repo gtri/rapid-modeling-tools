@@ -195,7 +195,6 @@ class Evaluator(object):
             elif space in col:
                 col_data_vals = col.split(sep=space)
                 root_col_name = self.translator.get_root_node()
-                # first_node_data = self.df.loc[:, col_data_vals[0]]
                 if col_data_vals[0] in self.df.columns:
                     first_node_data = self.df.loc[:, col_data_vals[0]]
                     second_node_data = [col_data_vals[-1]
@@ -203,13 +202,6 @@ class Evaluator(object):
                 else:
                     first_node_data = self.df.iloc[:, 0]
                     second_node_data = self.df.loc[:, root_col_name]
-                # first_node_data = self.df.iloc[:, 0]
-                # second_node_data = self.df.loc[:, root_col_name]
-                # if col_data_vals[-1] in self.df.columns:
-                #     second_node_data = self.df.loc[:, col_data_vals[-1]]
-                # else:
-                #     second_node_data = [col_data_vals[-1]
-                #                         for i in range(len(first_node_data))]
                 self.df[col] = create_column_values_space(
                     first_node_data=first_node_data,
                     second_node_data=second_node_data
