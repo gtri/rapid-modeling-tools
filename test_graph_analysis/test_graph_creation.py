@@ -295,17 +295,18 @@ class TestEvaluator(unittest.TestCase):
 
         # TODO: create tests for the properties on the Evaluator class.
         data_dict = {
-            'Composite Thing': ['Car',],
-            'component': ['engine',],
+            'Composite Thing': ['Car', ],
+            'component': ['engine', ],
             'Atomic Thing': ['Drive Output']
         }
         data_id_dict = {
             'Element Names': ['Car', 'engine', 'Drive Output'],
             'ID': [123, 234, 345]
         }
-        evaluator = Evaluator(excel_file=os.path.join(DATA_DIRECTORY,
-                                'Composition Example Model Baseline.xlsx'),
-                               translator=self.translator)
+        evaluator = Evaluator(excel_file=os.path.join(
+            DATA_DIRECTORY,
+            'Composition Example Model Baseline.xlsx'),
+            translator=self.translator)
         evaluator.df = pd.DataFrame(data=data_dict)
         print(evaluator.df)
         df_ids = pd.DataFrame(data=data_id_dict)

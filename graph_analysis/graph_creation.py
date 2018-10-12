@@ -322,6 +322,7 @@ class Evaluator(object):
         target pair with the edge attribute corresponding to the edge type
         defined in the JSON.
         """
+        print(self.df_ids)
         self.prop_di_graph = PropertyDiGraph(
             root_attr_columns=self.root_node_attr_columns
         )
