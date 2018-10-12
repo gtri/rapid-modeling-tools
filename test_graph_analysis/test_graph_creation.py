@@ -294,6 +294,30 @@ class TestEvaluator(unittest.TestCase):
                               PropertyDiGraph)
 
         # TODO: create tests for the properties on the Evaluator class.
+        data_dict = {
+            'Composite Thing': ['Car',],
+            'component': ['engine',],
+            'Atomic Thing': ['Drive Output']
+        }
+        data_id_dict = {
+            'Element Names': ['Car', 'engine', 'Drive Output'],
+            'ID': [123, 234, 345]
+        }
+        evaluator = Evaluator(excel_file=os.path.join(DATA_DIRECTORY,
+                                'Composition Example Model Baseline.xlsx'),
+                               translator=self.translator)
+        evaluator.df = pd.DataFrame(data=data_dict)
+        print(evaluator.df)
+        df_ids = pd.DataFrame(data=data_id_dict)
+        df_ids.set_index(df_ids.columns[0], inplace=True)
+        evaluator.df_ids = df_ids
+        print(evaluator.df_ids)
+        evaluator.translator.uml_id.update(
+            evaluator.df_ids.to_dict(
+                orient='dict')[evaluator.df_ids.columns[0]]
+        )
+        evaluator.to_property_di_graph()
+        print(evaluator.prop_di_graph.nodes())
 
     def tearDown(self):
         pass

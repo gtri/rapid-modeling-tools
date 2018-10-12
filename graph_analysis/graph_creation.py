@@ -190,7 +190,7 @@ class Evaluator(object):
     # then
     def __init__(self, excel_file=None, translator=None):
         self.translator = translator
-        # self.df = None
+        self.df = None
         self.df_ids = None
         self.sheets_to_dataframe(excel_file=excel_file)
         # self.df.dropna(how='all', inplace=True)
@@ -327,6 +327,7 @@ class Evaluator(object):
         )
         for index, pair in enumerate(
                 self.translator.get_pattern_graph_edges()):
+            # print(pair)
             edge_type = self.translator.get_edge_type(index=index)
             self.df[edge_type] = edge_type
             df_temp = self.df[[pair[0], pair[1], edge_type]]
@@ -335,12 +336,17 @@ class Evaluator(object):
                 df=df_temp, source=pair[0],
                 target=pair[1], edge_attr=edge_type,
                 create_using=GraphTemp)
+            # print(GraphTemp.nodes())
+            if 'composite owner' in GraphTemp.nodes():
+                print('composite owner in nodes is problem')
             if self.df_ids is not None:
+                print('sending to associate nodes')
                 nodes_to_add = associate_node_ids(
                     nodes=GraphTemp.nodes(),
                     attr_df=self.df_ids,
                     uml_id_dict=self.translator.get_uml_id)
             else:
+                print('df_ids is none')
                 nodes_to_add = [
                     (node, {'ID': self.translator.get_uml_id(name=node)})
                     for node in GraphTemp.nodes()

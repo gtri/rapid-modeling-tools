@@ -330,6 +330,8 @@ def associate_node_ids(nodes=None, attr_df=None, uml_id_dict=None):
     # This could be expanded to add attrs but its really only adding ids.
     nodes_to_add = []
     for node in nodes:
+        print('in associate nodes')
+        print(node)
         if node in attr_df.index:
             attr = attr_df.loc[node].to_dict()
             nodes_to_add.append((node, attr))
