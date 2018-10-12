@@ -1,13 +1,13 @@
 import unittest
 import json
 import os
+
 import pandas as pd
 import networkx as nx
 
 from graph_analysis.utils import (create_column_values)
 from .test_graph_creation import DATA_DIRECTORY
 from graph_analysis.graph_objects import (Vertex, PropertyDiGraph, DiEdge,
-                                          get_uml_id, UML_ID,
                                           create_vertex_objects)
 from graph_analysis.graph_creation import MDTranslator, Evaluator
 
@@ -370,21 +370,21 @@ class TestVertex(unittest.TestCase):
         node_names = ['Car', 'engine', 'Car']
         uml_id_names = []
         for node_name in node_names:
-            uml_id_names.append(get_uml_id(name=node_name))
+            uml_id_names.append(self.translator.get_uml_id(name=node_name))
 
         expected_uml_names = ['new_0', 'new_1', 'new_0']
         self.assertListEqual(expected_uml_names, uml_id_names)
-        self.assertEqual(2, UML_ID['count'])
+        self.assertEqual(2, self.translator.uml_id['count'])
 
         edge_names = ['type', 'owner', 'type']
         edge_id_names = []
         for edge_name in edge_names:
-            edge_id_names.append(get_uml_id(name=edge_name))
+            edge_id_names.append(self.translator.get_uml_id(name=edge_name))
 
         expected_uml_edge_names = ['new_2', 'new_3', 'new_2']
         self.assertListEqual(
             expected_uml_edge_names, edge_id_names)
-        self.assertEqual(4, UML_ID['count'])
+        self.assertEqual(4, self.translator.uml_id['count'])
 
     def tearDown(self):
         pass

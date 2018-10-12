@@ -5,6 +5,38 @@ from itertools import count
 from random import shuffle
 
 
+UML_ID = {
+    'count': 0
+}
+
+
+def get_uml_id(name=None):
+    """Returns the UML_ID for the corresponding vertex name provided. If the
+    name provided does not exist as a key in the UML_ID dictionary than a
+    new key is created using that name and the value increments with
+    new_<ith new number>.
+
+    Parameters
+    ----------
+    name : string
+        The Vertex.name attribute
+
+    Notes
+    -----
+    This will be updated to become a nested dictionary
+    with the first key being the name and the inner key will be the
+    new_<ith new number> key and the value behind that will be the UUID created
+    by MagicDraw.
+    """
+    # TODO: make this a generator function
+    if name in UML_ID.keys():
+        return UML_ID[name]
+    else:
+        UML_ID.update({name: 'new_{0}'.format(UML_ID['count'])})
+        UML_ID['count'] += 1
+        return UML_ID[name]
+
+
 def create_column_values_under(prefix=None,
                                first_node_data=None,
                                second_node_data=None,
@@ -291,27 +323,21 @@ def match(current=None, clone=None):
         return -2
 
 
-def associate_node_attrs(nodes=None, attr_df=None):
+def associate_node_ids(nodes=None, attr_df=None, uml_id_dict=None):
     # return a list of tuples with (node name, {id: <node id>})
+    # TODO: this function should do more. Need something for the else
+    # otherwise this silently corrupts data.
+    # This could be expanded to add attrs but its really only adding ids.
     nodes_to_add = []
     for node in nodes:
         if node in attr_df.index:
             attr = attr_df.loc[node].to_dict()
             nodes_to_add.append((node, attr))
         else:
-            pass
+            attr = {'ID': uml_id_dict(name=node)}
+            nodes_to_add.append((node, attr))
 
     return nodes_to_add
-
-
-def new_integer_id_generator():
-    try:
-        yield count
-    except UnboundedLocalError:
-        count = 0
-        yield count
-
-    count += 1
 
 
 def object_dict_view(cipher=None):

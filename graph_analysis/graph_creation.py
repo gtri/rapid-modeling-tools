@@ -9,6 +9,7 @@ from .utils import (create_column_values_under,
                     create_column_values_space,
                     create_column_values_singleton,
                     match_changes, object_dict_view,
+                    associate_node_ids
                     )
 from .graph_objects import PropertyDiGraph
 
@@ -49,7 +50,8 @@ class Manager(object):
         self.json_path = json_path
         self.json_data = None
         self.get_json_data()
-        self.translator = MDTranslator(json_data=self.json_data)
+        self.translator = [MDTranslator(json_data=self.json_data)
+                           for i in range(len(self.excel_path))]
         self.evaluators = []
         self.create_evaluators()
 
@@ -58,10 +60,10 @@ class Manager(object):
             self.json_data = json.load(f)
 
     def create_evaluators(self):
-        for excel_file in self.excel_path:
+        for count, excel_file in enumerate(self.excel_path):
             self.evaluators.append(
                 Evaluator(excel_file=excel_file,
-                          translator=self.translator))
+                          translator=self.translator[count]))
 
     def get_pattern_graph_diff(self):
         evaluator_dict = {evaluator: index for index, evaluator in enumerate(
@@ -333,13 +335,16 @@ class Evaluator(object):
                 df=df_temp, source=pair[0],
                 target=pair[1], edge_attr=edge_type,
                 create_using=GraphTemp)
-            nodes_to_add = GraphTemp.nodes()
             if self.df_ids is not None:
-                nodes_to_add = associate_node_attrs(nodes=GraphTemp.nodes(),
-                                                    attr_df=self.df_ids)
+                nodes_to_add = associate_node_ids(
+                    nodes=GraphTemp.nodes(),
+                    attr_df=self.df_ids,
+                    uml_id_dict=self.translator.get_uml_id)
             else:
-                nodes_to_add = [(node, {'ID': get_uml_id(name=node)}
-                                for node in GraphTemp.nodes())]
+                nodes_to_add = [
+                    (node, {'ID': self.translator.get_uml_id(name=node)})
+                    for node in GraphTemp.nodes()
+                ]
             self.prop_di_graph.add_nodes_from(nodes_to_add)
             self.prop_di_graph.add_edges_from(GraphTemp.edges,
                                               edge_attribute=edge_type)
@@ -380,7 +385,7 @@ class MDTranslator(object):
 
     def __init__(self, json_data=None):
         self.data = json_data
-        self.uml_id = {}
+        self.uml_id = {'count': 0}
 
     def get_uml_id(self, name=None):
         """Returns the UML_ID for the corresponding vertex name provided. If the
