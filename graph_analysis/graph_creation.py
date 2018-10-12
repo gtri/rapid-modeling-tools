@@ -161,6 +161,8 @@ class Evaluator(object):
             set(self.df.columns)))
         # TODO: Weak solution to the creation order problem.
         columns_to_create = sorted(columns_to_create, key=len)
+        # print('columns: {0}'.format(self.df.columns))
+        # print('columns_to_create: {0}'.format(columns_to_create))
 
         under = '_'
         space = ' '
@@ -193,9 +195,21 @@ class Evaluator(object):
             elif space in col:
                 col_data_vals = col.split(sep=space)
                 root_col_name = self.translator.get_root_node()
-                # TODO: Update this with rule from Bjorn.
-                first_node_data = self.df.iloc[:, 0]
-                second_node_data = self.df.loc[:, root_col_name]
+                # first_node_data = self.df.loc[:, col_data_vals[0]]
+                if col_data_vals[0] in self.df.columns:
+                    first_node_data = self.df.loc[:, col_data_vals[0]]
+                    second_node_data = [col_data_vals[-1]
+                                        for i in range(len(first_node_data))]
+                else:
+                    first_node_data = self.df.iloc[:, 0]
+                    second_node_data = self.df.loc[:, root_col_name]
+                # first_node_data = self.df.iloc[:, 0]
+                # second_node_data = self.df.loc[:, root_col_name]
+                # if col_data_vals[-1] in self.df.columns:
+                #     second_node_data = self.df.loc[:, col_data_vals[-1]]
+                # else:
+                #     second_node_data = [col_data_vals[-1]
+                #                         for i in range(len(first_node_data))]
                 self.df[col] = create_column_values_space(
                     first_node_data=first_node_data,
                     second_node_data=second_node_data
@@ -203,7 +217,7 @@ class Evaluator(object):
             else:
                 col_data_vals = col
                 root_col_name = self.translator.get_root_node()
-                first_node_data = self.df.loc[:, root_col_name]
+                first_node_data = self.df.iloc[:, 0]
                 second_node_data = [
                     col for count in range(len(first_node_data))]
                 self.df[col] = create_column_values_singleton(

@@ -42,6 +42,10 @@ DATA_DIRECTORY = '../data/'
 #         json_out['modification targets'].extend(node_decs_json)
 #         json_out['modification targets'].extend(edge_json)
 #
+#         writer = pd.ExcelWriter('Sample Equations DF out.xlsx')
+#         evaluator.df.to_excel(writer)
+#         writer.save()
+#
 #         with open(os.path.join(DATA_DIRECTORY,
 #                                'changes_uml.json'), 'w') as outfile:
 #             json.dump(json_out, outfile, indent=4)
