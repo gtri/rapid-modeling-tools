@@ -162,13 +162,14 @@ class TestUtils(unittest.TestCase):
         ance_keys_not_in_base = set(
             ance_map.keys()).difference(set(base_map.keys()))
 
-        base_preference['no matching'] = []
+        base_preference['Added'] = []
+        base_preference['Deleted'] = []
         for edge_type in ance_keys_not_in_base:
-            base_preference['no matching'].extend(ance_map[edge_type])
+            base_preference['Added'].extend(ance_map[edge_type])
 
         for edge in base_edges:
             if edge.edge_attribute not in ance_map.keys():
-                base_preference['no matching'].append(edge)
+                base_preference['Deleted'].append(edge)
             else:
                 base_preference[edge] = copy(
                     ance_map[edge.edge_attribute])
@@ -199,8 +200,8 @@ class TestUtils(unittest.TestCase):
                                 ('as11', 't11', 'memberEnd'),
                             ('s12', 't12', 'memberEnd'):
                                 ('s12', 'at12', 'memberEnd'),
-                            'no matching': [('b', 'c', 'orange'),
-                                            ('song', 'tiger', 'blue')]}
+                            'Added': [('b', 'c', 'orange'), ],
+                            'Deleted': [('song', 'tiger', 'blue')]}
 
         expected_unstable = {('s1', 't1', 'type'):
                              [('as1', 't1', 'type'),
@@ -209,7 +210,8 @@ class TestUtils(unittest.TestCase):
         pairings = match_dict[0]
         unstable_pairs = match_dict[1]
         pairings_str = {}
-        pairings_str.update({'no matching': []})
+        pairings_str.update({'Deleted': []})
+        pairings_str.update({'Added': []})
 
         unstable_keys = set(unstable_pairs.keys()).intersection(
             set(pairings.keys()))
@@ -217,7 +219,7 @@ class TestUtils(unittest.TestCase):
         for key in pairings.keys():
             if key in unstable_keys:
                 continue
-            elif key is not "no matching":
+            elif key not in ('Deleted', 'Added'):
                 pairings_str.update({key.named_edge_triple:
                                      pairings[key][0].named_edge_triple})
             else:

@@ -11,74 +11,73 @@ from graph_analysis.utils import object_dict_view
 DATA_DIRECTORY = '../data/'
 
 
-# class TestProduceJson(unittest.TestCase):
-#
-#     def setUp(self):
-#         pass
-#
-#     def test_json_creation(self):
-#         manager = Manager(excel_path=[os.path.join(
-#             DATA_DIRECTORY, 'Sample Equations.xlsx')],
-#             json_path=os.path.join(DATA_DIRECTORY,
-#                                    'ParametricGraphMaster.json'))
-#         translator = manager.translator
-#         evaluator = manager.evaluators[0]
-#         evaluator.rename_df_columns()
-#         evaluator.add_missing_columns()
-#         evaluator.to_property_di_graph()
-#         property_di_graph = evaluator.prop_di_graph
-#         property_di_graph.create_vertex_set(
-#             df=evaluator.df, root_node_type=translator.get_root_node())
-#         vert_set = property_di_graph.vertex_set
-#         json_out = {'modification targets': []}
-#         edge_json = []
-#         for vertex in vert_set:
-#             vert_uml, edge_uml = vertex.to_uml_json(translator=translator)
-#             json_out['modification targets'].extend(vert_uml)
-#             edge_json.extend(edge_uml)
-#
-#         json_out['modification targets'].extend(edge_json)
-#         with open(os.path.join(DATA_DIRECTORY,
-#                                'changes_uml.json'), 'w') as outfile:
-#             json.dump(json_out, outfile, indent=4)
-#
-#     def test_change_excel_json_creation(self):
-#         excel_files = [os.path.join(DATA_DIRECTORY,
-#                                     'Composition Example Model Baseline.xlsx'),
-#                        os.path.join(DATA_DIRECTORY,
-#                                     'Composition Example Model Changed.xlsx')]
-#         manager = Manager(excel_path=excel_files,
-#                           json_path=os.path.join(DATA_DIRECTORY,
-#                                                  'CompositionGraphMaster.json')
-#                           )
-#
-#         translator = manager.translator[0]
-#         print(manager.evaluators)
-#         for evaluator in manager.evaluators:
-#             evaluator.rename_df_columns()
-#             evaluator.add_missing_columns()
-#             evaluator.to_property_di_graph()
-#             property_di_graph = evaluator.prop_di_graph
-#             property_di_graph.create_vertex_set(
-#                 df=evaluator.df, root_node_type=translator.get_root_node())
-#             property_di_graph.create_edge_set()
-#             vertex_set = property_di_graph.vertex_set
-#
-#         eval_change_dict = manager.get_pattern_graph_diff()
-#         decoded = object_dict_view(
-#             cipher=eval_change_dict['0 and 1']['Changes'])
-#         # print(eval_change_dict['0 and 1']['Unstable Pairs'])
-#         print(decoded)
-#         decoded_unstable = object_dict_view(
-#             cipher=eval_change_dict['0 and 1']['Unstable Pairs'])
-#         print(decoded_unstable)
-#         message = ("Working on including IDs with nodes on node creation."
-#                    + " By including adding nodes from list of tuples "
-#                    + "given as (node_name, {id: <node_id>})")
-#         self.assertTrue(False, msg=message)
-#
-#     def tearDown(self):
-#         pass
+class TestProduceJson(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    # def test_json_creation(self):
+    #     manager = Manager(excel_path=[os.path.join(
+    #         DATA_DIRECTORY, 'Sample Equations.xlsx')],
+    #         json_path=os.path.join(DATA_DIRECTORY,
+    #                                'ParametricGraphMaster.json'))
+    #     translator = manager.translator
+    #     evaluator = manager.evaluators[0]
+    #     evaluator.rename_df_columns()
+    #     evaluator.add_missing_columns()
+    #     evaluator.to_property_di_graph()
+    #     property_di_graph = evaluator.prop_di_graph
+    #     property_di_graph.create_vertex_set(
+    #         df=evaluator.df, root_node_type=translator.get_root_node())
+    #     vert_set = property_di_graph.vertex_set
+    #     json_out = {'modification targets': []}
+    #     edge_json = []
+    #     for vertex in vert_set:
+    #         vert_uml, edge_uml = vertex.to_uml_json(translator=translator)
+    #         json_out['modification targets'].extend(vert_uml)
+    #         edge_json.extend(edge_uml)
+    #
+    #     json_out['modification targets'].extend(edge_json)
+    #     with open(os.path.join(DATA_DIRECTORY,
+    #                            'changes_uml.json'), 'w') as outfile:
+    #         json.dump(json_out, outfile, indent=4)
+
+    def test_change_excel_json_creation(self):
+        excel_files = [os.path.join(DATA_DIRECTORY,
+                                    'Composition Example Model Baseline.xlsx'),
+                       os.path.join(DATA_DIRECTORY,
+                                    'Composition Example Model Changed.xlsx')]
+        manager = Manager(excel_path=excel_files,
+                          json_path=os.path.join(DATA_DIRECTORY,
+                                                 'CompositionGraphMaster.json')
+                          )
+
+        translator = manager.translator
+        for evaluator in manager.evaluators:
+            evaluator.rename_df_columns()
+            evaluator.add_missing_columns()
+            evaluator.to_property_di_graph()
+            property_di_graph = evaluator.prop_di_graph
+            property_di_graph.create_vertex_set(
+                df=evaluator.df, translator=translator)
+            property_di_graph.create_edge_set()
+            vertex_set = property_di_graph.vertex_set
+
+        eval_change_dict = manager.get_pattern_graph_diff()
+        decoded = object_dict_view(
+            cipher=eval_change_dict['0 and 1']['Changes'])
+        # print(eval_change_dict['0 and 1']['Unstable Pairs'])
+        print(decoded)
+        decoded_unstable = object_dict_view(
+            cipher=eval_change_dict['0 and 1']['Unstable Pairs'])
+        print(decoded_unstable)
+        message = ("work on to_excel_df and detecting which node was changed"
+                   + " First pass just output the whole edge. Second pass"
+                   + " give the node that was chagned.")
+        self.assertTrue(False, msg=message)
+
+    def tearDown(self):
+        pass
 
 
 class TestManager(unittest.TestCase):

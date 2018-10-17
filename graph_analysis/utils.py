@@ -256,9 +256,15 @@ def match_changes(change_dict=None, score=None, match_ancestors=None):
     # this is running a version of the stable marriage algorithm
     # suitors are keys in the change_dict looking for engagements to the
     # values they contian.
+    add_del = ('Added', 'Deleted')
     for suitor in change_dict:
         # TODO: generalize key skip method
-        if suitor == 'no matching' or not change_dict[suitor]:
+        if suitor in add_del or not change_dict[suitor]:
+            if not change_dict[suitor] and suitor not in add_del:
+                print(suitor)
+                deleted_set = set(change_dict['Deleted']).add(suitor)
+                update_dict = {'Deleted': deleted_set}
+                change_dict.update(update_dict)
             count += 1
             continue
 
@@ -340,7 +346,20 @@ def associate_node_ids(nodes=None, attr_df=None, uml_id_dict=None):
     return nodes_to_add
 
 
+def to_excel_df(data_dict=None, column_keys=None):
+    # Idea: df_data = {'Edit 1': [keys for the changes], 'Edit 2': [values for
+    # each key], 'Added': [all added data], 'Deleted': [all deleted data]
+    df_data = {}
+    for key in data_dict:
+        if key in column_keys:
+            df_data[key] = [val for val in data_dict[key]]
+
+    pass
+
+
 def object_dict_view(cipher=None):
+    """ Just to make my life easier
+    """
     decoded = {}
     for key in cipher.keys():
         if type(key) is str:

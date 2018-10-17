@@ -114,14 +114,15 @@ class Manager(object):
                 eval_two_unmatch_map.keys()).difference(
                     set(eval_one_unmatch_map))
 
-            eval_one_unmatch_pref['no matching'] = []
+            eval_one_unmatch_pref['Added'] = []
+            eval_one_unmatch_pref['Deleted'] = []
             for edge_type in ance_keys_not_in_base:
-                eval_one_unmatch_pref['no matching'].extend(
+                eval_one_unmatch_pref['Added'].extend(
                     eval_two_unmatch_map[edge_type])
 
             for edge in eval_one_unmatched:
                 if edge.edge_attribute not in eval_two_unmatch_map.keys():
-                    eval_one_unmatch_pref['no matching'].append(edge)
+                    eval_one_unmatch_pref['Deleted'].append(edge)
                 else:
                     eval_one_unmatch_pref[edge] = copy(eval_two_unmatch_map[
                         edge.edge_attribute])
