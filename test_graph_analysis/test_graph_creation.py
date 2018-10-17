@@ -253,6 +253,12 @@ class TestEvaluator(unittest.TestCase):
             excel_file=os.path.join(
                 DATA_DIRECTORY, 'Composition Example.xlsx'),
             translator=self.translator)
+        evaluator.translator.get_pattern_graph().append('cardinal')
+        evaluator.translator.get_pattern_graph().append('component context')
+        evaluator.translator.get_pattern_graph().append(
+            'A_composite owner_component-end1'
+        )
+        # self.assertTrue(False, msg='Extend this to get the if case in space')
         data_dict = {
             'Composite Thing': ['Car', 'Wheel', 'Engine'],
             'component': ['chassis', 'tire', 'mount'],
@@ -265,8 +271,12 @@ class TestEvaluator(unittest.TestCase):
                          'component',
                          'Atomic Thing',
                          'composite owner',
-                         'A_composite owner_component'}
+                         'A_composite owner_component',
+                         'cardinal',
+                         'component context',
+                         'A_composite owner_component-end1', }
         evaluator.add_missing_columns()
+
         self.assertSetEqual(expected_cols, set(evaluator.df.columns))
 
         expected_composite_owner = ['car qua chassis context',
@@ -275,11 +285,26 @@ class TestEvaluator(unittest.TestCase):
         expected_comp_owner_comp = ['A_car qua chassis context_chassis',
                                     'A_wheel qua tire context_tire',
                                     'A_engine qua mount context_mount']
+        expect_cardinal = ['car cardinal', 'wheel cardinal',
+                           'engine cardinal']
+        expect_space_in_df = ['chassis qua context context',
+                              'tire qua context context',
+                              'mount qua context context']
+        expect_dash = ['A_car qua chassis context_chassis-end1',
+                       'A_wheel qua tire context_tire-end1',
+                       'A_engine qua mount context_mount-end1']
         self.assertListEqual(expected_composite_owner,
                              list(evaluator.df['composite owner']))
         self.assertListEqual(expected_comp_owner_comp,
                              list(evaluator.df[
                                  'A_composite owner_component']))
+        self.assertListEqual(expect_cardinal,
+                             list(evaluator.df['cardinal']))
+        self.assertListEqual(expect_space_in_df,
+                             list(evaluator.df['component context']))
+        self.assertListEqual(expect_dash,
+                             list(evaluator.df[
+                                 'A_composite owner_component-end1']))
 
     def test_to_property_di_graph(self):
         # the goal is to create a graph object.

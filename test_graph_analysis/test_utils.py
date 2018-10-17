@@ -11,6 +11,7 @@ from graph_analysis.utils import (create_column_values_under,
                                   create_column_values_singleton,
                                   create_column_values,
                                   get_node_types_attrs,
+                                  get_setting_node_name_from_df,
                                   match,
                                   match_changes,
                                   associate_node_ids,)
@@ -299,11 +300,28 @@ class TestUtils(unittest.TestCase):
         translator = MDTranslator()
         nodes = ['Car', 'engine', 'orange', 'green']
         nodes_to_add = associate_node_ids(nodes=nodes, attr_df=df_ids,
-            uml_id_dict=translator.get_uml_id)
-        expected_node_info = [('Car', {'ID': 1}), ('engine', {'ID':2}),
-                              ('orange', {'ID': 3}), ('green', {'ID': 'new_0'})]
+                                          uml_id_dict=translator.get_uml_id)
+        expected_node_info = [('Car', {'ID': 1}), ('engine', {'ID': 2}),
+                              ('orange', {'ID': 3}),
+                              ('green', {'ID': 'new_0'})]
         for count, node_tup in enumerate(nodes_to_add):
             self.assertTupleEqual(expected_node_info[count], node_tup)
+
+    def test_get_setting_node_name_from_df(self):
+        data_dict = {
+            'component': ['car', 'wheel', 'engine'],
+            'Atomic Thing': ['Car', 'Wheel', 'Car'],
+            'edge attribute': ['owner', 'owner', 'owner'],
+            'Notes': ['little car to big Car',
+                      6,
+                      2]
+        }
+        df = pd.DataFrame(data=data_dict)
+        setting_node = get_setting_node_name_from_df(df=df,
+                                                     column='Atomic Thing',
+                                                     node='wheel')
+
+        self.assertListEqual(['Wheel'], setting_node)
 
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.

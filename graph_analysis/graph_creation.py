@@ -256,7 +256,6 @@ class Evaluator(object):
         Then for each column name in columns to create, the column name is
         checked for particular string properties and the inferred column values
         are determined based on the desired column name.
-
         """
         # from a collection of vertex pairs, create all of the columns for
         # for which data is required but not present in the excel.
@@ -280,7 +279,7 @@ class Evaluator(object):
                     suff = dash + suffix[-1]
                     self.df[col] = create_column_values_under(
                         prefix=col_data_vals[0],
-                        first_node_data=first_node_type,
+                        first_node_data=first_node_data,
                         second_node_data=second_node_data,
                         suffix=suff
                     )
@@ -297,9 +296,13 @@ class Evaluator(object):
             elif space in col:
                 col_data_vals = col.split(sep=space)
                 root_col_name = self.translator.get_root_node()
-                # TODO: Update this with rule from Bjorn.
-                first_node_data = self.df.iloc[:, 0]
-                second_node_data = self.df.loc[:, root_col_name]
+                if col_data_vals[0] in self.df.columns:
+                    first_node_data = self.df.loc[:, col_data_vals[0]]
+                    second_node_data = [col_data_vals[-1]
+                                        for i in range(len(first_node_data))]
+                else:
+                    first_node_data = self.df.iloc[:, 0]
+                    second_node_data = self.df.loc[:, root_col_name]
                 self.df[col] = create_column_values_space(
                     first_node_data=first_node_data,
                     second_node_data=second_node_data
@@ -307,7 +310,7 @@ class Evaluator(object):
             else:
                 col_data_vals = col
                 root_col_name = self.translator.get_root_node()
-                first_node_data = self.df.loc[:, root_col_name]
+                first_node_data = self.df.iloc[:, 0]
                 second_node_data = [
                     col for count in range(len(first_node_data))]
                 self.df[col] = create_column_values_singleton(

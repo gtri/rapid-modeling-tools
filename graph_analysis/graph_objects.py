@@ -23,7 +23,7 @@ from .utils import get_node_types_attrs, get_uml_id
 #     -----
 #     This will be updated to become a nested dictionary
 #     with the first key being the name and the inner key will be the
-#     new_<ith new number> key and the value behind that will be the UUID created
+#     new_<ith new number> key and the value will be the UUID created
 #     by MagicDraw.
 #     """
 #     # TODO: make this a generator function
@@ -162,7 +162,7 @@ class PropertyDiGraph(nx.DiGraph):
         """
         return {edge.named_edge_triple for edge in self.edge_set}
 
-    def create_vertex_set(self, df=None, root_node_type=None):
+    def create_vertex_set(self, df=None, translator=None):
         """Returns a vertex_set containing all of the vertex objects created
         from the Graph.nodes attribute.
 
@@ -172,11 +172,15 @@ class PropertyDiGraph(nx.DiGraph):
             The Evaluator.df to type the nodes based on all of the columns a
             particular node is found under.
 
-        root_node_type : set
-            The Evaluator.root_node_attr_columns attribute that lists all of
+        translator : MDTranslator change
+            The translator provides access to the
+            Evaluator.root_node_attr_columns attribute that lists all of
             the columns present in the DataFrame that do not show up in the
             JSON as part of the pattern graph. These columns are assumed to be
             additional attributes attached to the root node.
+            Furthermore, the translator is used in the function
+            get_setting_node_name_from_df for the cases when the
+            vertex settings field requires and ID.
 
         Notes
         -----
@@ -190,14 +194,30 @@ class PropertyDiGraph(nx.DiGraph):
             node_type_columns, node_attr_dict = get_node_types_attrs(
                 df=df,
                 node=node,
-                root_node_type=root_node_type,
+                root_node_type=translator.get_root_node(),
                 root_attr_columns=self.root_attr_columns)
 
             node_types = {col for col in node_type_columns}
+
+            settings = False
+
+            for node_type in node_type_columns:
+                vert_type, settings_val = translator.get_uml_settings(
+                    node_key=node_type)
+                if settings_val and 'id' in settings_val:
+                    settings_value = get_setting_node_name_from_df(
+                        df=df,
+                        column=settings_val.split('-')[-1],
+                        node=node)
+                    settings = True
+                else:
+                    settings_value = None
+
             vertex = Vertex(name=node, node_types=node_types,
                             successors=self.succ[node],
                             predecessors=self.pred[node],
-                            attributes=node_attr_dict)
+                            attributes=node_attr_dict,
+                            settings_node=settings_value)
             self.vertex_dict.update({node: vertex})
             self.vertex_set.add(vertex)
 
@@ -262,12 +282,14 @@ class Vertex(object):
 
     def __init__(self, name=None, node_types=set(),
                  successors=None, predecessors=None,
-                 attributes=None):
+                 attributes=None,
+                 settings_node=None):
         self.name = name
         self.node_types = node_types
         self.successors = successors
         self.predecessors = predecessors
         self.attributes = attributes
+        self.settings_node = settings_node
 
     @property
     def connections(self):
@@ -318,17 +340,22 @@ class Vertex(object):
         node_type attribute encountered (regardless of its value), the metadata
         associated with that node_type is recorded. Subsequent loop iterations
         provide additional node_type information.
+        While iterating the node_type information, the function checks
+        for nodes with settings values under the vertex settings key in the
+        JSON. If a node has a settings value then the ID of the associated
+        settings node is retreived and associated to the node_decorations list.
         Next, the edge_uml_list is built using the connections property. From
         there, a source and target id are identified from the connections
         information and the get_uml_id function.
-        With both of these lists populated, the function returns the
-        node_uml_list and the edge_uml_list to be packaged for the final JSON
-        output. The JSON file contains all of the vertex data first followed by
-        the edge data.
+        With all of these lists populated, the function returns the
+        node_uml_list, node_decorations, and the edge_uml_list to be packaged
+        for the final JSON output. The JSON file contains all of the vertex
+        data first followed by the edge data.
         """
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
         node_uml_list = []
+        node_decorations = []
 
         for count, node_type in enumerate(self.node_types):
             if count == 0:
@@ -349,16 +376,21 @@ class Vertex(object):
                 }
             path_val, settings_val = translator.get_uml_settings(
                 node_key=node_type)
-            if settings_val and count != 0:
+            if settings_val:
+                if self.settings_node:
+                    settings_val = list(set(get_uml_id(name=node)
+                                            for node in self.settings_node))
                 decorations_dict = {
-                    'op': 'replace',
-                    'path': path_val,
-                    'value': settings_val,
+                    'id': get_uml_id(name=self.name),
+                    'ops': [
+                        {
+                            'op': 'replace',
+                            'path': '/' + path_val,
+                            'value': settings_val,
+                        }
+                    ]
                 }
-                node_uml_dict['ops'].append(decorations_dict)
-            elif settings_val and count == 0:
-                node_uml_dict['ops'][0].update({'path': path_val,
-                                                'value': settings_val})
+                node_decorations.append(decorations_dict)
             else:
                 continue
 
@@ -373,13 +405,14 @@ class Vertex(object):
                     {
                         'op': 'replace',
                         'path': '/' + connection['edge_attribute'],
-                        'value': translator.get_uml_id(name=connection['target']),
+                        'value': translator.get_uml_id(
+                            name=connection['target']),
                     }
                 ]
             }
             edge_uml_list.append(edge_uml_dict)
 
-        return node_uml_list, edge_uml_list
+        return node_uml_list, node_decorations, edge_uml_list
 
 
 class DiEdge(object):
