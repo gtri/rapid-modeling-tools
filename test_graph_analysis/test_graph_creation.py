@@ -286,12 +286,12 @@ class TestEvaluator(unittest.TestCase):
         # networkx provides the functionality to get the data into the graph
         # the graph itself will be tested so I should just test that a graph
         # obj exists.
-        self.evaluator.rename_df_columns()
-        self.evaluator.add_missing_columns()
-        self.evaluator.to_property_di_graph()
-        self.assertTrue(self.evaluator.prop_di_graph)
-        self.assertIsInstance(self.evaluator.prop_di_graph,
-                              PropertyDiGraph)
+        # self.evaluator.rename_df_columns()
+        # self.evaluator.add_missing_columns()
+        # self.evaluator.to_property_di_graph()
+        # self.assertTrue(self.evaluator.prop_di_graph)
+        # self.assertIsInstance(self.evaluator.prop_di_graph,
+        #                       PropertyDiGraph)
 
         # TODO: create tests for the properties on the Evaluator class.
         data_dict = {
@@ -308,6 +308,7 @@ class TestEvaluator(unittest.TestCase):
             'Composition Example Model Baseline.xlsx'),
             translator=self.translator)
         evaluator.df = pd.DataFrame(data=data_dict)
+        print('evaluator df')
         print(evaluator.df)
         df_ids = pd.DataFrame(data=data_id_dict)
         df_ids.set_index(df_ids.columns[0], inplace=True)
@@ -317,8 +318,11 @@ class TestEvaluator(unittest.TestCase):
             evaluator.df_ids.to_dict(
                 orient='dict')[evaluator.df_ids.columns[0]]
         )
+        evaluator.rename_df_columns()
+        evaluator.add_missing_columns()
         evaluator.to_property_di_graph()
         print(evaluator.prop_di_graph.nodes())
+        self.assertTrue(False, msg='not so fast')
 
     def tearDown(self):
         pass
