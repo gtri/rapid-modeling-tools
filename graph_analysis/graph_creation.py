@@ -50,8 +50,7 @@ class Manager(object):
         self.json_path = json_path
         self.json_data = None
         self.get_json_data()
-        self.translator = [MDTranslator(json_data=self.json_data)
-                           for i in range(len(self.excel_path))]
+        self.translator = MDTranslator(json_data=self.json_data)
         self.evaluators = []
         self.create_evaluators()
 
@@ -60,10 +59,10 @@ class Manager(object):
             self.json_data = json.load(f)
 
     def create_evaluators(self):
-        for count, excel_file in enumerate(self.excel_path):
+        for excel_file in self.excel_path:
             self.evaluators.append(
                 Evaluator(excel_file=excel_file,
-                          translator=self.translator[count]))
+                          translator=self.translator))
 
     def get_pattern_graph_diff(self):
         evaluator_dict = {evaluator: index for index, evaluator in enumerate(
@@ -142,6 +141,9 @@ class Manager(object):
                        'Unstable Pairs': eval_one_matches[1]}})
 
         return evaluator_change_dict
+
+    def changes_to_excel(self):
+        pass
 
 
 class Evaluator(object):
@@ -405,7 +407,7 @@ class MDTranslator(object):
         -----
         This will be updated to become a nested dictionary
         with the first key being the name and the inner key will be the
-        new_<ith new number> key and the value behind that will be the UUID created
+        new_<ith new number> key and the value will be the UUID created
         by MagicDraw.
         """
         # TODO: write test function for this
