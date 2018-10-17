@@ -7,6 +7,7 @@ from graph_analysis.utils import (create_column_values_under,
                                   create_column_values_singleton,
                                   create_column_values,
                                   get_node_types_attrs,
+                                  get_setting_node_name_from_df,
                                   match,
                                   match_changes)
 from graph_analysis.graph_objects import DiEdge, UML_ID, Vertex, get_uml_id
@@ -273,6 +274,22 @@ class TestUtils(unittest.TestCase):
                            edge_attribute='memberEnd')
         match_val = match(current=og_edge, clone=long_edge)
         self.assertEqual(-2, match_val)
+
+    def test_get_setting_node_name_from_df(self):
+        data_dict = {
+            'component': ['car', 'wheel', 'engine'],
+            'Atomic Thing': ['Car', 'Wheel', 'Car'],
+            'edge attribute': ['owner', 'owner', 'owner'],
+            'Notes': ['little car to big Car',
+                      6,
+                      2]
+        }
+        df = pd.DataFrame(data=data_dict)
+        setting_node = get_setting_node_name_from_df(df=df,
+                                                     column='Atomic Thing',
+                                                     node='wheel')
+
+        self.assertListEqual(['Wheel'], setting_node)
 
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.

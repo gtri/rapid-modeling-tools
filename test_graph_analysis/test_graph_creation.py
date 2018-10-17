@@ -27,16 +27,25 @@ DATA_DIRECTORY = '../data/'
 #         evaluator.to_property_di_graph()
 #         property_di_graph = evaluator.prop_di_graph
 #         property_di_graph.create_vertex_set(
-#             df=evaluator.df, root_node_type=translator.get_root_node())
+#             df=evaluator.df, translator=translator)
 #         vert_set = property_di_graph.vertex_set
 #         json_out = {'modification targets': []}
 #         edge_json = []
+#         node_decs_json = []
 #         for vertex in vert_set:
-#             vert_uml, edge_uml = vertex.to_uml_json(translator=translator)
+#             vert_uml, node_decorations, edge_uml = vertex.to_uml_json(
+#                 translator=translator)
 #             json_out['modification targets'].extend(vert_uml)
+#             node_decs_json.extend(node_decorations)
 #             edge_json.extend(edge_uml)
 #
+#         json_out['modification targets'].extend(node_decs_json)
 #         json_out['modification targets'].extend(edge_json)
+#
+#         writer = pd.ExcelWriter('Sample Equations DF out.xlsx')
+#         evaluator.df.to_excel(writer)
+#         writer.save()
+#
 #         with open(os.path.join(DATA_DIRECTORY,
 #                                'changes_uml.json'), 'w') as outfile:
 #             json.dump(json_out, outfile, indent=4)
@@ -196,6 +205,12 @@ class TestEvaluator(unittest.TestCase):
             excel_file=os.path.join(
                 DATA_DIRECTORY, 'Composition Example.xlsx'),
             translator=self.translator)
+        evaluator.translator.get_pattern_graph().append('cardinal')
+        evaluator.translator.get_pattern_graph().append('component context')
+        evaluator.translator.get_pattern_graph().append(
+            'A_composite owner_component-end1'
+        )
+        # self.assertTrue(False, msg='Extend this to get the if case in space')
         data_dict = {
             'Composite Thing': ['Car', 'Wheel', 'Engine'],
             'component': ['chassis', 'tire', 'mount'],
@@ -208,8 +223,12 @@ class TestEvaluator(unittest.TestCase):
                          'component',
                          'Atomic Thing',
                          'composite owner',
-                         'A_composite owner_component'}
+                         'A_composite owner_component',
+                         'cardinal',
+                         'component context',
+                         'A_composite owner_component-end1', }
         evaluator.add_missing_columns()
+
         self.assertSetEqual(expected_cols, set(evaluator.df.columns))
 
         expected_composite_owner = ['car qua chassis context',
@@ -218,11 +237,26 @@ class TestEvaluator(unittest.TestCase):
         expected_comp_owner_comp = ['A_car qua chassis context_chassis',
                                     'A_wheel qua tire context_tire',
                                     'A_engine qua mount context_mount']
+        expect_cardinal = ['car cardinal', 'wheel cardinal',
+                           'engine cardinal']
+        expect_space_in_df = ['chassis qua context context',
+                              'tire qua context context',
+                              'mount qua context context']
+        expect_dash = ['A_car qua chassis context_chassis-end1',
+                       'A_wheel qua tire context_tire-end1',
+                       'A_engine qua mount context_mount-end1']
         self.assertListEqual(expected_composite_owner,
                              list(evaluator.df['composite owner']))
         self.assertListEqual(expected_comp_owner_comp,
                              list(evaluator.df[
                                  'A_composite owner_component']))
+        self.assertListEqual(expect_cardinal,
+                             list(evaluator.df['cardinal']))
+        self.assertListEqual(expect_space_in_df,
+                             list(evaluator.df['component context']))
+        self.assertListEqual(expect_dash,
+                             list(evaluator.df[
+                                 'A_composite owner_component-end1']))
 
     def test_to_property_di_graph(self):
         # the goal is to create a graph object.

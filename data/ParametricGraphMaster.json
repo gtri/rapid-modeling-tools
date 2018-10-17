@@ -25,6 +25,13 @@
             "owner",
             "Constraint Spec"
         ],
+        "Constraint Use": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "constUse"
+        ],
         "Constraint Name": [
             "blockValue",
             "owner",
@@ -68,9 +75,9 @@
         "blockValueType",
         "valueType",
         "context1",
-        "context2",
+        "constUse context2",
         "A_context1_blockValue",
-        "A_context2_constUse",
+        "A_constUse context2_constUse",
         "C_value_blockValue-end1",
         "C_value_blockValue-end2",
         "Constraint Spec"
@@ -103,7 +110,7 @@
             "Parametric Context"
         ],
         [
-            "context2",
+            "constUse context2",
             "Parametric Context"
         ],
         [
@@ -119,8 +126,8 @@
             "A_context1_blockValue"
         ],
         [
-            "context2",
-            "A_context2_constUse"
+            "constUse context2",
+            "A_constUse context2_constUse"
         ],
         [
             "blockValue",
@@ -171,11 +178,11 @@
             "blockValue"
         ],
         [
-            "A_context2_constUse",
-            "context2"
+            "A_constUse context2_constUse",
+            "constUse context2"
         ],
         [
-            "A_context2_constUse",
+            "A_constUse context2_constUse",
             "constUse"
         ]
     ],
@@ -185,7 +192,7 @@
             "Parametric Context"
         ],
         [
-            "context2",
+            "constUse context2",
             "Parametric Context"
         ],
         [
@@ -197,8 +204,8 @@
             "A_context1_blockValue"
         ],
         [
-            "context2",
-            "A_context2_constUse"
+            "constUse context2",
+            "A_constUse context2_constUse"
         ],
         [
             "blockValue",
@@ -259,9 +266,9 @@
         "blockValueType": "DataType",
         "valueType": "DataType",
         "context1": "Property",
-        "context2": "Property",
+        "constUse context2": "Property",
         "A_context1_blockValue": "Association",
-        "A_context2_constUse": "Association",
+        "A_constUse context2_constUse": "Association",
         "C_value_blockValue-end1": "ConnectorEnd",
         "C_value_blockValue-end2": "ConnectorEnd",
         "Constraint Spec": "Constraint"
@@ -276,11 +283,11 @@
         "blockValueType": "ValueType",
         "valueType": "ValueType",
         "context1": null,
-        "context2": null,
+        "constUse context2": null,
         "A_context1_blockValue": null,
-        "A_context2_constUse": null,
-        "C_value_blockValue-end1": "NestedConnectorEnd",
-        "C_value_blockValue-end2": null,
+        "A_constUse context2_constUse": null,
+        "C_value_blockValue-end1": null,
+        "C_value_blockValue-end2": "NestedConnectorEnd",
         "Constraint Spec": null
     },
     "Vertex Settings": {
@@ -295,13 +302,13 @@
         "blockValueType": null,
         "valueType": null,
         "context1": null,
-        "context2": null,
+        "constUse context2": null,
         "A_context1_blockValue": null,
-        "A_context2_constUse": null,
-        "C_value_blockValue-end1": {
-            "propertyPath": "id(constUse)"
+        "A_constUse context2_constUse": null,
+        "C_value_blockValue-end1": null,
+        "C_value_blockValue-end2": {
+            "propertyPath": "id-constUse"
         },
-        "C_value_blockValue-end2": null,
         "Constraint Spec": null
     }
 }

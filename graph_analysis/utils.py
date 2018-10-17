@@ -270,5 +270,42 @@ def match(current=None, clone=None):
         return -2
 
 
+def get_setting_node_name_from_df(df=None, column=None, node=None):
+    """Returns a list of nodes located under the double mask defined first by
+    masking the dataframe for the particular node of interest and dropping all
+    of the empty rows, then by pulling out the node names from non-empty rows
+    that are not equal to the input node. In other words we want to find all of
+    nodes related to ours for a particular node_type. Since we wanted to know
+    all of the nodes related to the input node of a particular node type, this
+    was believed to be better than searching the neghiborhood and throwing out
+    any nodes that did not have the same typeself.
+
+    Parameters
+    ----------
+    df : Pandas DataFrame
+        The DataFrame that is read in from Excel and that creates the Graph.
+
+    node : string
+        The name of the graph vertex object that we are interested in locating
+        the related nodes of, of a particular type.
+
+    column : string
+        The name of the column of interest that we are interested in.
+        The name of that column was stript from a vertex settings key asking
+        for an id<column name>.
+
+    Notes
+    -----
+    This function returns a python list of names of nodes that are found in the
+    dataframe under the column header 'column' and relating to the input
+    node.
+    """
+
+    mask = df == node
+    masked_df = df[mask].dropna(axis=0, how='all')
+    return df.where(
+        masked_df.isnull()).dropna(axis=0, how='all')[column].tolist()
+
+
 def aggregate_change_json():
     pass
