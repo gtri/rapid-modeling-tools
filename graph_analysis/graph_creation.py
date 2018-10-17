@@ -152,7 +152,6 @@ class Evaluator(object):
         Then for each column name in columns to create, the column name is
         checked for particular string properties and the inferred column values
         are determined based on the desired column name.
-
         """
         # from a collection of vertex pairs, create all of the columns for
         # for which data is required but not present in the excel.
@@ -161,8 +160,6 @@ class Evaluator(object):
             set(self.df.columns)))
         # TODO: Weak solution to the creation order problem.
         columns_to_create = sorted(columns_to_create, key=len)
-        # print('columns: {0}'.format(self.df.columns))
-        # print('columns_to_create: {0}'.format(columns_to_create))
 
         under = '_'
         space = ' '
