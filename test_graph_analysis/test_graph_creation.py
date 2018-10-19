@@ -63,18 +63,8 @@ class TestProduceJson(unittest.TestCase):
             property_di_graph.create_edge_set()
             vertex_set = property_di_graph.vertex_set
 
-        eval_change_dict = manager.get_pattern_graph_diff()
-        decoded = object_dict_view(
-            cipher=eval_change_dict['0-1']['Changes'])
-        # print(eval_change_dict['0-1']['Unstable Pairs'])
-        print(decoded)
-        decoded_unstable = object_dict_view(
-            cipher=eval_change_dict['0-1']['Unstable Pairs'])
-        print(decoded_unstable)
-        message = ("work on to_excel_df and detecting which node was changed"
-                   + " First pass just output the whole edge. Second pass"
-                   + " give the node that was chagned.")
-        self.assertTrue(False, msg=message)
+        manager.get_pattern_graph_diff()
+        manager.changes_to_excel()
 
     def tearDown(self):
         pass
@@ -211,7 +201,7 @@ class TestManager(unittest.TestCase):
 
         fake_datas = {'0-1': {'Changes': {'Added': [added_edge],
                                           'Deleted': [deleted_edge],
-                                          og_edge: change_edge, },
+                                          og_edge: [change_edge], },
                               'Unstable Pairs': {unstable_key: [
                                   unstable_one,
                                   unstable_two]}}}

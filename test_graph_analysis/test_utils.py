@@ -351,7 +351,7 @@ class TestUtils(unittest.TestCase):
 
         fake_datas = {'0-1': {'Changes': {'Added': [added_edge],
                                           'Deleted': [deleted_edge],
-                                          og_edge: change_edge, },
+                                          og_edge: [change_edge], },
                               'Unstable Pairs': {unstable_key: [
                                   unstable_one,
                                   unstable_two]}}}

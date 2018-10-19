@@ -366,7 +366,7 @@ def to_excel_df(data_dict=None, column_keys=None):
             df_data[edit_2].extend(multiple_vals)
         else:
             df_data[edit_1].append(key.named_edge_triple)
-            value = data_dict[key].named_edge_triple
+            value = data_dict[key][0].named_edge_triple
             df_data[edit_2].append(value)
 
     return df_data
