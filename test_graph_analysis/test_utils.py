@@ -325,6 +325,56 @@ class TestUtils(unittest.TestCase):
 
         self.assertListEqual(['Wheel'], setting_node)
 
+    def test_to_excel_df(self):
+        og_edge = DiEdge(source=Vertex(name='green'),
+                         target=Vertex(name='apple'),
+                         edge_attribute='fruit')
+        change_edge = DiEdge(source=Vertex(name='gala'),
+                             target=Vertex(name='apple'),
+                             edge_attribute='fruit')
+        added_edge = DiEdge(source=Vertex(name='blueberry'),
+                            target=Vertex(name='berry'),
+                            edge_attribute='bush')
+        deleted_edge = DiEdge(source=Vertex(name='yellow'),
+                              target=Vertex(name='delicious'),
+                              edge_attribute='apple')
+        unstable_key = DiEdge(source=Vertex(name='tomato'),
+                              target=Vertex(name='fruit'),
+                              edge_attribute='fruit')
+        unstable_one = DiEdge(source=Vertex(name='tomato'),
+                              target=Vertex(name='vegetable'),
+                              edge_attribute='fruit')
+        unstable_two = DiEdge(source=Vertex(name='tomahto'),
+                              target=Vertex(name='fruit'),
+                              edge_attribute='fruit')
+
+        fake_datas = {'0 and 1': {'Changes': {'Added': [added_edge],
+                                              'Deleted': [deleted_edge],
+                                              og_edge: change_edge,},
+                                  'Unstable Pairs': {unstable_key: [
+                                                            unstable_one,
+                                                            unstable_two]}}}
+
+        input_data = {}
+        inner_dict = fake_datas['0 and 1']
+        input_data['Added'] = inner_dict['Added']
+        input_data['Deleted'] = inner_dict['Deleted']
+        add_del = ('Added', 'Deleted')
+        for key in inner_dict:
+            if key in add_del:
+                continue
+
+        expected_data = {'Edit 1': [og_edge],
+                         'Edit 2': [change_edge],
+                         'Added': [added_edge],
+                         'Deleted': [deleted_edge]}
+
+        expected_df = pd.DataFrame(data=expected_data)
+
+        excel_df = to_excel_df(data_dict=input_data, column_keys=str_keys)
+
+        self.assertTrue(expected_df.equals(excel_df))
+
     # def test_get_spanning_tree(self):
     #     # So far incomplete test and subject to change.
     #     span_nodes = self.data['Pattern Spanning Tree Edges']

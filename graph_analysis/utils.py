@@ -325,7 +325,7 @@ def match(current=None, clone=None):
             return 0
     elif len(current.edge_attribute) > len(clone.edge_attribute):
         return -1
-    else:  # this would be edge attribute of current is shorter than of clone
+    else:  # edge attribute of current is shorter than of clone
         return -2
 
 
