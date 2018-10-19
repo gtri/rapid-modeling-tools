@@ -1,4 +1,5 @@
 import json
+import os
 import pandas as pd
 import networkx as nx
 
@@ -9,9 +10,13 @@ from .utils import (create_column_values_under,
                     create_column_values_space,
                     create_column_values_singleton,
                     match_changes, object_dict_view,
-                    associate_node_ids
+                    associate_node_ids,
+                    to_excel_df,
                     )
 from .graph_objects import PropertyDiGraph
+
+
+DATA_DIRECTORY = '../data/'
 
 
 class Manager(object):
@@ -68,7 +73,7 @@ class Manager(object):
         evaluator_dict = {evaluator: index for index, evaluator in enumerate(
             self.evaluators
         )}
-        evaluator_change_dict = {}
+        self.evaluator_change_dict = {}
 
         for pair in combinations(self.evaluators, 2):
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
@@ -135,16 +140,43 @@ class Manager(object):
 
             eval_one_matches = match_changes(change_dict=eval_one_unmatch_pref)
 
-            key = '{0} and {1}'.format(evaluator_dict[pair[0]],
-                                       evaluator_dict[pair[1]])
-            evaluator_change_dict.update(
+            key = '{0}-{1}'.format(evaluator_dict[pair[0]],
+                                   evaluator_dict[pair[1]])
+            self.evaluator_change_dict.update(
                 {key: {'Changes': eval_one_matches[0],
                        'Unstable Pairs': eval_one_matches[1]}})
 
-        return evaluator_change_dict
+        return self.evaluator_change_dict
 
     def changes_to_excel(self):
-        pass
+        # TODO: Find a more secure method. If multiple files created in one
+        # session than data will be lost and only the most recent changes
+        # will be kept.
+        # does create multiple sheets for each Manager.
+        outfile = 'Graph Model Differences.xlsx'
+        outpath = os.path.join(DATA_DIRECTORY, outfile)
+        writer = pd.ExcelWriter(outpath)
+
+        for key in self.evaluator_change_dict:
+            difference_dict = self.evaluator_change_dict[key]
+            input_dict = {}
+            evals_comp = key.split('-')
+            edit_left_dash = 'Edit {0}'.format(str(int(evals_comp[0]) + 1))
+            edit_right_dash = 'Edit {0}'.format(str(int(evals_comp[-1]) + 1))
+            column_headers = [edit_left_dash, edit_right_dash]
+
+            for in_key in difference_dict:
+                column_headers.append(in_key)
+                input_dict.update(difference_dict[in_key])
+
+            df_data = to_excel_df(data_dict=input_dict,
+                                  column_keys=column_headers)
+            df_output = pd.DataFrame(data=dict([
+                (k, pd.Series(v)) for k, v in df_data.items()
+            ]))
+            df_output.to_excel(writer, sheet_name=key, index=False)
+
+        writer.save()
 
 
 class Evaluator(object):

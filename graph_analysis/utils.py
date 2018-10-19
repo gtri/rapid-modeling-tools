@@ -349,12 +349,27 @@ def associate_node_ids(nodes=None, attr_df=None, uml_id_dict=None):
 def to_excel_df(data_dict=None, column_keys=None):
     # Idea: df_data = {'Edit 1': [keys for the changes], 'Edit 2': [values for
     # each key], 'Added': [all added data], 'Deleted': [all deleted data]
-    df_data = {}
+    edit_1 = column_keys[0]
+    edit_2 = column_keys[1]
+    df_data = {edit_1: [],
+               edit_2: [], }
     for key in data_dict:
-        if key in column_keys:
-            df_data[key] = [val for val in data_dict[key]]
+        if key in column_keys or isinstance(key, str):
+            df_data[key] = [val.named_edge_triple for val in data_dict[key]]
+            continue
+        if len(data_dict[key]) > 1:
+            repeat_key = [key.named_edge_triple for i in range(
+                len(data_dict[key]))]
+            multiple_vals = [val.named_edge_triple for val in data_dict[key]]
+            # multiple_vals = data_dict[key]
+            df_data[edit_1].extend(repeat_key)
+            df_data[edit_2].extend(multiple_vals)
+        else:
+            df_data[edit_1].append(key.named_edge_triple)
+            value = data_dict[key].named_edge_triple
+            df_data[edit_2].append(value)
 
-    pass
+    return df_data
 
 
 def object_dict_view(cipher=None):
@@ -408,7 +423,3 @@ def get_setting_node_name_from_df(df=None, column=None, node=None):
     masked_df = df[mask].dropna(axis=0, how='all')
     return df.where(
         masked_df.isnull()).dropna(axis=0, how='all')[column].tolist()
-
-
-def aggregate_change_json():
-    pass

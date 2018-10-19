@@ -412,6 +412,10 @@ class DiEdge(object):
         The Vertex at the tip fo the directed edge
     edge_attribute : string
         The string that describes the edge type
+    __len__ : Reference
+        This is intended to mean that a DiEdge object only represents a single
+        edge. If there are length issues later relating to a DiEdge then
+        setting the __len__ reference in this was is incorrect.
     """
 
     def __init__(self, source=None, target=None, edge_attribute=None):
@@ -419,6 +423,9 @@ class DiEdge(object):
         self.source = source
         self.target = target
         self.edge_attribute = edge_attribute
+
+    def __len__(self):  # TODO: Is this a snake in the grass???
+        return 1
 
     @property
     def named_edge_triple(self):

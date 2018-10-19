@@ -65,11 +65,11 @@ class TestProduceJson(unittest.TestCase):
 
         eval_change_dict = manager.get_pattern_graph_diff()
         decoded = object_dict_view(
-            cipher=eval_change_dict['0 and 1']['Changes'])
-        # print(eval_change_dict['0 and 1']['Unstable Pairs'])
+            cipher=eval_change_dict['0-1']['Changes'])
+        # print(eval_change_dict['0-1']['Unstable Pairs'])
         print(decoded)
         decoded_unstable = object_dict_view(
-            cipher=eval_change_dict['0 and 1']['Unstable Pairs'])
+            cipher=eval_change_dict['0-1']['Unstable Pairs'])
         print(decoded_unstable)
         message = ("work on to_excel_df and detecting which node was changed"
                    + " First pass just output the whole edge. Second pass"
@@ -153,27 +153,90 @@ class TestManager(unittest.TestCase):
 
         match_dict = self.manager.get_pattern_graph_diff()
         match_dict_str = {}
-        no_match_to_str = []
-        for key in match_dict['0 and 1']['Changes']:
-            if key != 'no matching':
-                if not match_dict['0 and 1']['Changes'][key]:
+        added_to_str = []
+        deleted_to_str = []
+        add_del = ('Added', 'Deleted')
+        for key in match_dict['0-1']['Changes']:
+            if key not in add_del:
+                if not match_dict['0-1']['Changes'][key]:
                     no_match_to_str.append(key.named_edge_triple)
                     continue
                 match_dict_str.update(
                     {key.named_edge_triple: match_dict[
-                        '0 and 1']['Changes'][key][0].named_edge_triple})
+                        '0-1']['Changes'][key][0].named_edge_triple})
 
-        for value in match_dict['0 and 1']['Changes']['no matching']:
-            no_match_to_str.append(value.named_edge_triple)
+        for value in match_dict['0-1']['Changes']['Added']:
+            added_to_str.append(value.named_edge_triple)
+        for value in match_dict['0-1']['Changes']['Deleted']:
+            deleted_to_str.append(value.named_edge_triple)
 
-        match_dict_str.update({'no matching': no_match_to_str})
+        match_dict_str.update({'Added': added_to_str,
+                               'Deleted': deleted_to_str})
 
         expected_matches = {('s1', 't1', 'type'): ('as1', 't1', 'type'),
                             ('s12', 't12', 'memberEnd'): ('s12',
                                                           'at12', 'memberEnd'),
-                            'no matching': [('b', 'c', 'orange'),
-                                            ('song', 'tiger', 'blue')]}
+                            'Added': [('b', 'c', 'orange'), ],
+                            'Deleted': [('song', 'tiger', 'blue'), ], }
         self.assertDictEqual(expected_matches, match_dict_str)
+
+    def test_changes_to_excel(self):
+        manager = Manager(
+            excel_path=[os.path.join(
+                DATA_DIRECTORY, 'Composition Example.xlsx')
+                for i in range(1)],
+            json_path=os.path.join(DATA_DIRECTORY,
+                                   'CompositionGraphMaster.json'))
+        og_edge = DiEdge(source=Vertex(name='green'),
+                         target=Vertex(name='apple'),
+                         edge_attribute='fruit')
+        change_edge = DiEdge(source=Vertex(name='gala'),
+                             target=Vertex(name='apple'),
+                             edge_attribute='fruit')
+        added_edge = DiEdge(source=Vertex(name='blueberry'),
+                            target=Vertex(name='berry'),
+                            edge_attribute='bush')
+        deleted_edge = DiEdge(source=Vertex(name='yellow'),
+                              target=Vertex(name='delicious'),
+                              edge_attribute='apple')
+        unstable_key = DiEdge(source=Vertex(name='tomato'),
+                              target=Vertex(name='fruit'),
+                              edge_attribute='fruit')
+        unstable_one = DiEdge(source=Vertex(name='tomato'),
+                              target=Vertex(name='vegetable'),
+                              edge_attribute='fruit')
+        unstable_two = DiEdge(source=Vertex(name='tomahto'),
+                              target=Vertex(name='fruit'),
+                              edge_attribute='fruit')
+
+        fake_datas = {'0-1': {'Changes': {'Added': [added_edge],
+                                          'Deleted': [deleted_edge],
+                                          og_edge: change_edge, },
+                              'Unstable Pairs': {unstable_key: [
+                                  unstable_one,
+                                  unstable_two]}}}
+        manager.evaluator_change_dict = fake_datas
+        manager.changes_to_excel()
+        created_file_name = 'Graph Model Differences.xlsx'
+        created_file = os.path.join(DATA_DIRECTORY, created_file_name)
+        created_df = pd.read_excel(created_file)
+        created_dict = created_df.to_dict()
+
+        expected_data = {'Edit 1': ["('green', 'apple', 'fruit')",
+                                    "('tomato', 'fruit', 'fruit')",
+                                    "('tomato', 'fruit', 'fruit')"],
+                         'Edit 2': ["('gala', 'apple', 'fruit')",
+                                    "('tomato', 'vegetable', 'fruit')",
+                                    "('tomahto', 'fruit', 'fruit')"],
+                         'Added': ["('blueberry', 'berry', 'bush')"],
+                         'Deleted': ["('yellow', 'delicious', 'apple')"]}
+
+        expected_df = pd.DataFrame(data=dict([
+            (k, pd.Series(v)) for k, v in expected_data.items()]))
+        expected_dict = expected_df.to_dict()
+
+        self.assertDictEqual(expected_dict, created_dict)
+        self.assertTrue(expected_df.equals(created_df))
 
     def tearDown(self):
         pass

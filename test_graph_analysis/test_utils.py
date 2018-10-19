@@ -14,7 +14,8 @@ from graph_analysis.utils import (create_column_values_under,
                                   get_setting_node_name_from_df,
                                   match,
                                   match_changes,
-                                  associate_node_ids,)
+                                  associate_node_ids,
+                                  to_excel_df)
 from graph_analysis.graph_objects import DiEdge, Vertex
 
 
@@ -348,76 +349,36 @@ class TestUtils(unittest.TestCase):
                               target=Vertex(name='fruit'),
                               edge_attribute='fruit')
 
-        fake_datas = {'0 and 1': {'Changes': {'Added': [added_edge],
-                                              'Deleted': [deleted_edge],
-                                              og_edge: change_edge,},
-                                  'Unstable Pairs': {unstable_key: [
-                                                            unstable_one,
-                                                            unstable_two]}}}
+        fake_datas = {'0-1': {'Changes': {'Added': [added_edge],
+                                          'Deleted': [deleted_edge],
+                                          og_edge: change_edge, },
+                              'Unstable Pairs': {unstable_key: [
+                                  unstable_one,
+                                  unstable_two]}}}
 
         input_data = {}
-        inner_dict = fake_datas['0 and 1']
-        input_data['Added'] = inner_dict['Added']
-        input_data['Deleted'] = inner_dict['Deleted']
-        add_del = ('Added', 'Deleted')
-        for key in inner_dict:
-            if key in add_del:
-                continue
+        inner_dict = fake_datas['0-1']
+        input_data.update(inner_dict['Changes'])
+        input_data.update(inner_dict['Unstable Pairs'])
+        str_keys = ['Edit 1', 'Edit 2', 'Added', 'Deleted']
 
-        expected_data = {'Edit 1': [og_edge],
-                         'Edit 2': [change_edge],
-                         'Added': [added_edge],
-                         'Deleted': [deleted_edge]}
+        expected_data = {'Edit 1': [('green', 'apple', 'fruit'),
+                                    ('tomato', 'fruit', 'fruit'),
+                                    ('tomato', 'fruit', 'fruit')],
+                         'Edit 2': [('gala', 'apple', 'fruit'),
+                                    ('tomato', 'vegetable', 'fruit'),
+                                    ('tomahto', 'fruit', 'fruit')],
+                         'Added': [('blueberry', 'berry', 'bush')],
+                         'Deleted': [('yellow', 'delicious', 'apple')]}
+        expected_df = pd.DataFrame(data=dict([
+            (k, pd.Series(v)) for k, v in expected_data.items()]))
 
-        expected_df = pd.DataFrame(data=expected_data)
+        excel_data = to_excel_df(data_dict=input_data, column_keys=str_keys)
+        self.assertDictEqual(expected_data, excel_data)
 
-        excel_df = to_excel_df(data_dict=input_data, column_keys=str_keys)
-
+        excel_df = pd.DataFrame(data=dict([
+            (k, pd.Series(v)) for k, v in excel_data.items()]))
         self.assertTrue(expected_df.equals(excel_df))
-
-    # def test_get_spanning_tree(self):
-    #     # So far incomplete test and subject to change.
-    #     span_nodes = self.data['Pattern Spanning Tree Edges']
-    #     span_edges = self.data['Pattern Spanning Tree Edge Labels']
-    #     span_tree = [(tuple(pair), span_edges[index])
-    #                  for index, pair in enumerate(span_nodes)]
-    #     span_tree_set = set(span_tree)
-    #
-    #     node_attr_dict = {
-    #         'A': 'Composite Thing',
-    #         'B': 'component',
-    #         'C': 'Atomic Thing',
-    #         'D': 'A_"composite owner"_component',
-    #         'E': 'composite owner'
-    #     }
-    #     Tree_Graph = nx.DiGraph()
-    #
-    #     for key in node_attr_dict:
-    #         Tree_Graph.add_node(key, vertex_attribute=node_attr_dict[key])
-    #
-    #     Tree_Graph.add_edge('B', 'A', edge_attribute='owner')
-    #     Tree_Graph.add_edge('B', 'C', edge_attribute='type')
-    #     Tree_Graph.add_edge('D', 'B', edge_attribute='memberEnd')
-    #     Tree_Graph.add_edge('E', 'D', edge_attribute='owner')
-    #
-    #     # vertex_list = []
-    #     for vertex in Tree_Graph.nodes:
-    #         vert = Vertex(
-    #             name=vertex,
-    #             node_types=nx.get_node_attributes(Tree_Graph,
-    #                                               'vertex_attribute')[
-    #                                               vertex],
-    #             successors=Tree_Graph.succ[vertex],
-    #             predecessors=Tree_Graph.pred[vertex])
-    #         # vertex_list.append(vert)
-    #
-    #     # root_node_a = next((
-    #     #   node for node in vertex_list if node.name == 'A'))
-    #     spanning_tree = get_spanning_tree(
-    #         root_node='A',
-    #         root_node_type='Composite Thing',
-    #         tree_pattern=span_nodes,
-    #         tree_edge_pattern=span_edges)
 
     def tearDown(self):
         pass
