@@ -271,7 +271,7 @@ class TestEvaluator(unittest.TestCase):
         translator = MDTranslator(json_data=data)
         evaluator = Evaluator(
             excel_file=os.path.join(DATA_DIRECTORY,
-                                    'Composition Example Model Baseline.xlsx'),
+                                    'Composition Example Model Changed.xlsx'),
             translator=translator
         )
         file_name = 'Composition Example Model Baseline.xlsx'
@@ -283,6 +283,11 @@ class TestEvaluator(unittest.TestCase):
 
         # 63 ids provided and 1 key for the new_i counter ids.
         self.assertEqual(64, len(translator.uml_id))
+
+        rename_dict = {'old name': ['Cylinder', 'Lug Nut'],
+                       'new name': ['Big Cylinder', 'Locking Nut']}
+        expect_rename_df = pd.DataFrame(data=rename_dict)
+        self.assertEqual(expect_rename_df.equals(evaluator.df_renames))
 
     def test_rename_df_columns(self):
         # just need to test that the columns are as expected.
