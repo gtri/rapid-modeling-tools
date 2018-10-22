@@ -287,7 +287,7 @@ class TestEvaluator(unittest.TestCase):
         rename_dict = {'old name': ['Cylinder', 'Lug Nut'],
                        'new name': ['Big Cylinder', 'Locking Nut']}
         expect_rename_df = pd.DataFrame(data=rename_dict)
-        self.assertEqual(expect_rename_df.equals(evaluator.df_renames))
+        self.assertTrue(expect_rename_df.equals(evaluator.df_renames))
 
     def test_rename_df_columns(self):
         # just need to test that the columns are as expected.

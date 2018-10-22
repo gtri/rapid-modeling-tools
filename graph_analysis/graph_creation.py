@@ -254,7 +254,6 @@ class Evaluator(object):
                 elif 'renames' == sheet.lower():
                     self.df_renames = pd.read_excel(excel_file,
                                                     sheet_name=sheet)
-                    self.df_renames.set_index(self.df_renames)
         else:
             self.df = pd.read_excel(excel_file)
             self.df.dropna(how='all', inplace=True)
