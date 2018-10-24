@@ -423,3 +423,24 @@ def get_setting_node_name_from_df(df=None, column=None, node=None):
     masked_df = df[mask].dropna(axis=0, how='all')
     return df.where(
         masked_df.isnull()).dropna(axis=0, how='all')[column].tolist()
+
+
+def detect_new_names(original_df=None, rename_df=None):
+    for column in rename_df.columns:
+        new_vals = rename_df[column].tolist()
+        masked_old = original_df.isin(new_vals)
+        original_masked = original_df[masked_old]
+        if not masked_old.any().any():
+            return column
+
+
+def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
+    old_col = set(rename_df.columns).difference({new_name})
+    old_col = list(old_col)[0]  # what happens if list of more than 2 entries?
+    for node_name in rename_df[new_name]:
+        idx = rename_df.index[rename_df[new_name] == node_name]
+        old_name = rename_df.loc[idx, old_col]
+        mask = changed_df == node_name
+        changed_df[mask] = old_name.tolist()[0]
+
+    return changed_df

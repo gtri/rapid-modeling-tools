@@ -76,6 +76,9 @@ class Manager(object):
         self.evaluator_change_dict = {}
 
         for pair in combinations(self.evaluators, 2):
+            # recast new names to be old but don't lost that info
+            # want to somehow pass back the fact that new names were recast
+            # have to update dict with new names
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
             eval_2_e_dict = pair[1].prop_di_graph.edge_dict
 

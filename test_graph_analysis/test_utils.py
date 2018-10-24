@@ -15,7 +15,9 @@ from graph_analysis.utils import (create_column_values_under,
                                   match,
                                   match_changes,
                                   associate_node_ids,
-                                  to_excel_df)
+                                  to_excel_df,
+                                  detect_new_names,
+                                  replace_new_with_old_name,)
 from graph_analysis.graph_objects import DiEdge, Vertex
 
 
@@ -379,6 +381,48 @@ class TestUtils(unittest.TestCase):
         excel_df = pd.DataFrame(data=dict([
             (k, pd.Series(v)) for k, v in excel_data.items()]))
         self.assertTrue(expected_df.equals(excel_df))
+
+    def test_detect_new_names(self):
+        og_dict = {'Composite Thing': ['Car', 'Car',
+                                         'Wheel', 'Engine'],
+                     'component': ['engine', 'rear driver',
+                                   'hub', 'drive output'],
+                     'Atomic Thing': ['Engine', 'Wheel',
+                                      'Hub', 'Drive Output']}
+        original_df = pd.DataFrame(data=og_dict)
+        rename_dict = {'old name': ['Car'],
+                       'changed name': ['Subaru']}
+        rename_df = pd.DataFrame(data=rename_dict)
+
+        new_name_col = detect_new_names(original_df=original_df,
+                                        rename_df=rename_df)
+        self.assertEqual('changed name', new_name_col)
+
+    def test_replace_new_with_old_name(self):
+        change_dict = {'Composite Thing': ['Subaru', 'Subaru',
+                                           'Wheel', 'Engine'],
+                       'component': ['engine', 'rear driver',
+                                     'hub', 'drive output'],
+                       'Atomic Thing': ['Engine', 'Wheel',
+                                        'Hub', 'Drive Output']}
+        change_df = pd.DataFrame(data=change_dict)
+        rename_dict = {'old name': ['Car'],
+                       'changed name': ['Subaru']}
+        rename_df = pd.DataFrame(data=rename_dict)
+        new_name = 'changed name'
+
+        recast_df = replace_new_with_old_name(changed_df=change_df,
+                                              rename_df=rename_df,
+                                              new_name=new_name)
+        og_dict = {'Composite Thing': ['Car', 'Car',
+                                           'Wheel', 'Engine'],
+                       'component': ['engine', 'rear driver',
+                                     'hub', 'drive output'],
+                       'Atomic Thing': ['Engine', 'Wheel',
+                                        'Hub', 'Drive Output']}
+        og_df = pd.DataFrame(data=og_dict)
+
+        self.assertTrue(og_df.equals(recast_df))
 
     def tearDown(self):
         pass
