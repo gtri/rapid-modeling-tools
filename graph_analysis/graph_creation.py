@@ -245,15 +245,18 @@ class Evaluator(object):
         xls = pd.ExcelFile(excel_file, on_demand=True)
         if len(xls.sheet_names) > 1:
             for sheet in xls.sheet_names:
-                if 'Composition' == sheet:
+                if 'composition' == sheet.lower():
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df.dropna(how='all', inplace=True)
-                elif 'Composition IDs' == sheet:
+                elif 'composition ids' == sheet.lower():
                     self.df_ids = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df_ids.set_index(self.df_ids.columns[0], inplace=True)
                     self.translator.uml_id.update(
                         self.df_ids.to_dict(
                             orient='dict')[self.df_ids.columns[0]])
+                elif 'renames' == sheet.lower():
+                    self.df_renames = pd.read_excel(excel_file,
+                                                    sheet_name=sheet)
         else:
             self.df = pd.read_excel(excel_file)
             self.df.dropna(how='all', inplace=True)
