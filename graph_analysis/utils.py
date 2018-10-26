@@ -329,6 +329,20 @@ def match(current=None, clone=None):
         return -2
 
 
+def recast_new_names_as_old(edge_dict=None, rename_df=None, new_name=None):
+    pass
+    for key in edge_dict.keys():
+        if key[0] in rename_df[new_name]:
+            pass
+            # replace key.source.name with the old name
+            # record that the change has been made
+        if key[1] in rename_df[new_name]:
+            pass
+            # replace key.target.name with old name
+            # record that the change has been made
+        # do nothing
+
+
 def associate_node_ids(nodes=None, attr_df=None, uml_id_dict=None):
     # return a list of tuples with (node name, {id: <node id>})
     # TODO: this function should do more. Need something for the else

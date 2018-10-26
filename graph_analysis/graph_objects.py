@@ -419,7 +419,7 @@ class DiEdge(object):
     """
 
     def __init__(self, source=None, target=None, edge_attribute=None):
-        # Source, Target and attr are actually strings not objects.
+        # Source, Target and attr are actually objects and attr is str.
         self.source = source
         self.target = target
         self.edge_attribute = edge_attribute

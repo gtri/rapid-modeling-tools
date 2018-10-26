@@ -82,6 +82,7 @@ class Manager(object):
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
             eval_2_e_dict = pair[1].prop_di_graph.edge_dict
 
+            print(eval_2_e_dict)
             edge_set_one = pair[0].edge_set  # get Parent edge set
             edge_set_two = pair[1].edge_set  # get the ancestor edge set
 

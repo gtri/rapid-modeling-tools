@@ -142,6 +142,7 @@ class TestManager(unittest.TestCase):
         self.manager.evaluators[1].prop_di_graph.edge_dict = ancestor_dict
 
         match_dict = self.manager.get_pattern_graph_diff()
+        self.assertTrue(False, msg='remove the print statement')
         match_dict_str = {}
         added_to_str = []
         deleted_to_str = []

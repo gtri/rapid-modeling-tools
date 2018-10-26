@@ -297,6 +297,35 @@ class TestUtils(unittest.TestCase):
         match_val = match(current=og_edge, clone=long_edge)
         self.assertEqual(-2, match_val)
 
+    def test_recast_new_names_as_old(self):
+        base_inputs = [('s1', 't1', 'type'),
+                       ('s12', 't12', 'memberEnd'),
+                       ('song', 'tiger', 'blue'), ]
+
+        ancestor = [('as1', 't1', 'type'),
+                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+
+        base_edges = []
+        base_dict = {}
+        ancestor_edges = []
+        ancestor_dict = {}
+
+        for edge_tuple in base_inputs:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            base_dict[edge_tuple] = edge
+            base_edges.append(edge)
+
+        for edge_tuple in ancestor:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            ancestor_dict[edge_tuple] = edge
+            ancestor_edges.append(edge)
+
     def test_associate_node_ids(self):
         node_id_dict = {'Element Name': ['Car', 'engine', 'orange'],
                         'ID': [1, 2, 3]}
@@ -384,11 +413,11 @@ class TestUtils(unittest.TestCase):
 
     def test_detect_new_names(self):
         og_dict = {'Composite Thing': ['Car', 'Car',
-                                         'Wheel', 'Engine'],
-                     'component': ['engine', 'rear driver',
-                                   'hub', 'drive output'],
-                     'Atomic Thing': ['Engine', 'Wheel',
-                                      'Hub', 'Drive Output']}
+                                       'Wheel', 'Engine'],
+                   'component': ['engine', 'rear driver',
+                                 'hub', 'drive output'],
+                   'Atomic Thing': ['Engine', 'Wheel',
+                                    'Hub', 'Drive Output']}
         original_df = pd.DataFrame(data=og_dict)
         rename_dict = {'old name': ['Car'],
                        'changed name': ['Subaru']}
@@ -415,11 +444,11 @@ class TestUtils(unittest.TestCase):
                                               rename_df=rename_df,
                                               new_name=new_name)
         og_dict = {'Composite Thing': ['Car', 'Car',
-                                           'Wheel', 'Engine'],
-                       'component': ['engine', 'rear driver',
-                                     'hub', 'drive output'],
-                       'Atomic Thing': ['Engine', 'Wheel',
-                                        'Hub', 'Drive Output']}
+                                       'Wheel', 'Engine'],
+                   'component': ['engine', 'rear driver',
+                                 'hub', 'drive output'],
+                   'Atomic Thing': ['Engine', 'Wheel',
+                                    'Hub', 'Drive Output']}
         og_df = pd.DataFrame(data=og_dict)
 
         self.assertTrue(og_df.equals(recast_df))
