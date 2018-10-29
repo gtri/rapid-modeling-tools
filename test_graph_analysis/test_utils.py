@@ -17,7 +17,8 @@ from graph_analysis.utils import (create_column_values_under,
                                   associate_node_ids,
                                   to_excel_df,
                                   detect_new_names,
-                                  replace_new_with_old_name,)
+                                  replace_new_with_old_name,
+                                  new_as_old,)
 from graph_analysis.graph_objects import DiEdge, Vertex
 
 
@@ -452,6 +453,31 @@ class TestUtils(unittest.TestCase):
         og_df = pd.DataFrame(data=og_dict)
 
         self.assertTrue(og_df.equals(recast_df))
+
+    def test_new_as_old(self):
+        base_inputs = [('s1', 't1', 'type'),
+                       ('s12', 't12', 'memberEnd'),
+                       ('song', 'tiger', 'blue'), ]
+
+        ancestor = [('as1', 't1', 'type'),
+                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+        changed_dict = {}
+        for count, edge in enumerate(ancestor):
+            changed_dict.update({edge: count})
+
+        new_keys = {'at12': 't12',
+                    'c': 'cyborg',
+                    'as1': 's1',}
+        output = new_as_old(main_dict=changed_dict,
+                            new_keys=new_keys)
+        expect_out_d = {('s1', 't1', 'type'): 0,
+                        ('s12', 't12', 'memberEnd'): 1,
+                        ('b', 'cyborg', 'orange'): 2}
+        expect_reverse = {'t12': 'at12',
+                          'cyborg': 'c',
+                          's1': 'as1',}
+        self.assertDictEqual(expect_out_d, output[0])
+        self.assertDictEqual(expect_reverse, output[1])
 
     def tearDown(self):
         pass

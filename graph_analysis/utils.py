@@ -1,6 +1,7 @@
 import json
 import os
 
+from copy import copy
 from itertools import count
 from random import shuffle
 
@@ -458,3 +459,29 @@ def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
         changed_df[mask] = old_name.tolist()[0]
 
     return changed_df
+
+
+def new_as_old(main_dict=None, new_keys=None):
+    # get eval_1_e_dict and new_to_old dict then
+    # loop eval_1_e_dict and if source is a
+    # new_to_old.keys() then make new key and associate the obj
+    # do the same if is target. return the new dict and a dict to
+    # replace the keys at the end
+    reverse_map = {}
+    new_key_set = {key for key in new_keys.keys()}
+    for key in main_dict:
+        if key[0] in new_key_set:
+            old_name = new_keys[key[0]]
+            new_key = copy(key)
+            new_key[0] = old_name
+            reverse_map.update({old_name: new_key})
+        elif key[1] in new_key_set:
+            old_name = new_keys[key[1]]
+            new_key = copy(key)
+            new_key[1] = key[1]
+            reverse_map.upadte({old_name: new_key})
+        main_dict[new_key] = new_dict.pop(key)
+
+    print(reverse_map)
+
+    return main_dict, reverse_map

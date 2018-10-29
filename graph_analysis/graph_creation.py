@@ -74,15 +74,54 @@ class Manager(object):
             self.evaluators
         )}
         self.evaluator_change_dict = {}
+        orig_eval = self.evaluators[0]
 
         for pair in combinations(self.evaluators, 2):
             # recast new names to be old but don't lost that info
             # want to somehow pass back the fact that new names were recast
             # have to update dict with new names
-            eval_1_e_dict = pair[0].prop_di_graph.edge_dict
-            eval_2_e_dict = pair[1].prop_di_graph.edge_dict
+            # eval_1_e_dict = pair[0].prop_di_graph.edge_dict
+            # eval_2_e_dict = pair[1].prop_di_graph.edge_dict
 
             print(eval_2_e_dict)
+            print(pair)
+            if pair[0].has_rename and pair[1].has_rename:
+                pass
+            elif pair[0].has_rename:
+                # rename pair[0]
+                # get eval_1_e_dict and new_to_old dict then
+                # loop eval_1_e_dict and if source is a
+                # new_to_old.keys() then make new key and associate the obj
+                # do the same if is target. return the new dict and a dict to
+                # replace the keys at the end.
+                eval_1_e_dict = pair[0].prop_di_graph.edge_dict
+                change_names = detect_new_names(original_df=orig_eval.df,
+                                                rename_df=pair[0].df_renames)
+                new_name_dict = pair[0].df_renames.set_index(
+                    change_names).to_dict()
+                new_to_old = next(iter(new_name_dict))
+                # iterate through keys in new_to_old changing names edge dict
+                for key in new_to_old:
+                    # need to disect this key to replace the
+                    eval_1_e_dict[key] = eval_1_e_dict.pop(key)
+                pass
+            elif pair[1].has_rename:
+                # rename pair[1]
+                eval_2_e_dict = pair[1].prop_di_graph.edge_dict
+                change_names = detect_new_names(original_df=orig_eval.df,
+                                                rename_df=pair[0].df_renames)
+                new_name_dict = pair[0].df_renames.set_index(
+                    change_names).to_dict()
+                new_to_old = next(iter(new_name_dict))
+                # iterate through keys in new_to_old changing names edge dict
+                for key in new_to_old:
+                    eval_1_e_dict[key] = eval_1_e_dict.pop(key)
+                pass
+
+            # if evaluator 0 is one of the evaluators then get the
+            # if evaluator has rename_df:
+            #   rename stuff
+            # if both evaluators have rename diff then do nothing
             edge_set_one = pair[0].edge_set  # get Parent edge set
             edge_set_two = pair[1].edge_set  # get the ancestor edge set
 
@@ -231,6 +270,7 @@ class Evaluator(object):
         self.translator = translator
         self.df = None
         self.df_ids = None
+        self.df_renames = None
         self.sheets_to_dataframe(excel_file=excel_file)
         # self.df.dropna(how='all', inplace=True)
         self.prop_di_graph = None
@@ -241,6 +281,14 @@ class Evaluator(object):
     #     data_keys = set(translator.get_cols_to_nav_map())
     #     try:
     #         df_cols == data_keys
+
+    @property
+    def has_rename(self):
+        if self.df_renames.any():
+            return True
+        else:
+            return False
+
     def sheets_to_dataframe(self, excel_file=None):
         # TODO: Generalize/Standardize this function
         xls = pd.ExcelFile(excel_file, on_demand=True)
