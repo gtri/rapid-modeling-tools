@@ -455,29 +455,55 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(og_df.equals(recast_df))
 
     def test_new_as_old(self):
-        base_inputs = [('s1', 't1', 'type'),
-                       ('s12', 't12', 'memberEnd'),
-                       ('song', 'tiger', 'blue'), ]
-
         ancestor = [('as1', 't1', 'type'),
                     ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
-        changed_dict = {}
-        for count, edge in enumerate(ancestor):
-            changed_dict.update({edge: count})
+        ancestor_edges = []
+        ancestor_dict = {}
+        for edge_tuple in ancestor:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            ancestor_dict[edge_tuple] = edge
+            ancestor_edges.append(edge)
+
+        expect_out_d = {('s1', 't1', 'type'): ancestor_dict[ancestor[0]],
+                        ('s12', 't12', 'memberEnd'): ancestor_dict[
+                            ancestor[1]],
+                        ('b', 'cyborg', 'orange'): ancestor_dict[ancestor[2]],
+                        }
 
         new_keys = {'at12': 't12',
                     'c': 'cyborg',
-                    'as1': 's1',}
-        output = new_as_old(main_dict=changed_dict,
+                    'as1': 's1', }
+
+        output = new_as_old(main_dict=ancestor_dict,
                             new_keys=new_keys)
-        expect_out_d = {('s1', 't1', 'type'): 0,
-                        ('s12', 't12', 'memberEnd'): 1,
-                        ('b', 'cyborg', 'orange'): 2}
+
         expect_reverse = {'t12': 'at12',
                           'cyborg': 'c',
-                          's1': 'as1',}
+                          's1': 'as1', }
+        # check that all of the vertex names got changed
+        vert_names = {key: key
+                      for key in expect_out_d.keys()}
+        vert_fn_names = {key: output[0][key].named_edge_triple
+                         for key in output[0]}
+
         self.assertDictEqual(expect_out_d, output[0])
         self.assertDictEqual(expect_reverse, output[1])
+        self.assertDictEqual(vert_names, vert_fn_names)
+
+        # Can I take the output and get the input?
+        new_out = new_as_old(main_dict=output[0], new_keys=output[1])
+
+        v_names = {key: key
+                   for key in ancestor_dict.keys()}
+        v_fn_names = {key: new_out[0][key].named_edge_triple
+                      for key in new_out[0]}
+
+        self.assertDictEqual(ancestor_dict, new_out[0])
+        self.assertDictEqual(new_keys, new_out[1])
+        self.assertDictEqual(v_names, v_fn_names)
 
     def tearDown(self):
         pass

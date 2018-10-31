@@ -370,7 +370,12 @@ def to_excel_df(data_dict=None, column_keys=None):
                edit_2: [], }
     for key in data_dict:
         if key in column_keys or isinstance(key, str):
-            df_data[key] = [val.named_edge_triple for val in data_dict[key]]
+            try:
+                df_data[key] = [val.named_edge_triple
+                                for val in data_dict[key]]
+            except AttributeError:
+                df_data[edit_1].append(key)
+                df_data[edit_2].append(data_dict[key])
             continue
         if len(data_dict[key]) > 1:
             repeat_key = [key.named_edge_triple for i in range(
@@ -393,8 +398,11 @@ def object_dict_view(cipher=None):
     decoded = {}
     for key in cipher.keys():
         if type(key) is str:
-            decoded.update({key: [
-                item.named_edge_triple for item in cipher[key]]})
+            try:
+                decoded.update({key: [
+                    item.named_edge_triple for item in cipher[key]]})
+            except AttributeError:
+                decoded.update({key: cipher[key]})
         else:
             decoded.update({key.named_edge_triple:
                             [item.named_edge_triple
@@ -462,26 +470,24 @@ def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
 
 
 def new_as_old(main_dict=None, new_keys=None):
-    # get eval_1_e_dict and new_to_old dict then
-    # loop eval_1_e_dict and if source is a
-    # new_to_old.keys() then make new key and associate the obj
-    # do the same if is target. return the new dict and a dict to
-    # replace the keys at the end
     reverse_map = {}
     new_key_set = {key for key in new_keys.keys()}
     for key in main_dict:
         if key[0] in new_key_set:
             old_name = new_keys[key[0]]
-            new_key = copy(key)
+            new_key = list(copy(key))
             new_key[0] = old_name
-            reverse_map.update({old_name: new_key})
+            new_key = tuple(new_key)
+            main_dict[key].source.name = old_name
+            reverse_map.update({old_name: key[0]})
+            main_dict[new_key] = main_dict.pop(key)
         elif key[1] in new_key_set:
             old_name = new_keys[key[1]]
-            new_key = copy(key)
-            new_key[1] = key[1]
-            reverse_map.upadte({old_name: new_key})
-        main_dict[new_key] = new_dict.pop(key)
-
-    print(reverse_map)
+            new_key = list(copy(key))
+            new_key[1] = old_name
+            new_key = tuple(new_key)
+            main_dict[key].target.name = old_name
+            reverse_map.update({old_name: key[1]})
+            main_dict[new_key] = main_dict.pop(key)
 
     return main_dict, reverse_map
