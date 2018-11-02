@@ -73,6 +73,9 @@ DATA_DIRECTORY = '../data/'
 class TestManager(unittest.TestCase):
 
     def setUp(self):
+        # instead of making objects that go through all these tests
+        # make the data the instance variables that I can access to make
+        # instances of the classes locally within the function scope.
         self.manager = Manager(
             excel_path=[os.path.join(
                 DATA_DIRECTORY, 'Composition Example.xlsx')
@@ -104,11 +107,22 @@ class TestManager(unittest.TestCase):
     def test_get_pattern_graph_diff(self):
         # this is a bad function and an improper test.
         # The test ignores the obvious problem of non-unique matchings
-        # TODO: develop a stronger algorithm that ensures unique pairings
-        # and lists nonunique pairings.
+        manager = Manager(
+            excel_path=[os.path.join(
+                DATA_DIRECTORY, 'Composition Example.xlsx')
+                for i in range(2)],
+            json_path=os.path.join(DATA_DIRECTORY,
+                                   'CompositionGraphMaster.json'))
         base_inputs = [('s1', 't1', 'type'),
                        ('s12', 't12', 'memberEnd'),
                        ('song', 'tiger', 'blue'), ]
+        base_df = pd.DataFrame(data={
+            'source': ['s1', 's12', 'song'],
+            'target': [edge[1] for edge in base_inputs],
+            'type': ['type' for i in range(3)],
+            'memberEnd': ['memberEnd' for i in range(3)],
+            'blue': ['blue' for i in range(3)]
+        })
 
         ancestor = [('as1', 't1', 'type'),
                     ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
@@ -134,18 +148,22 @@ class TestManager(unittest.TestCase):
             ancestor_dict[edge_tuple] = edge
             ancestor_edges.append(edge)
 
-        self.manager.evaluators[0].prop_di_graph = PropertyDiGraph()
-        self.manager.evaluators[1].prop_di_graph = PropertyDiGraph()
-        self.manager.evaluators[0].prop_di_graph.edge_set = set(base_edges)
-        self.manager.evaluators[1].prop_di_graph.edge_set = set(ancestor_edges)
-        self.manager.evaluators[0].prop_di_graph.edge_dict = base_dict
-        self.manager.evaluators[1].prop_di_graph.edge_dict = ancestor_dict
+        manager.evaluators[0].df = base_df
+        manager.evaluators[0].prop_di_graph = PropertyDiGraph()
+        manager.evaluators[1].prop_di_graph = PropertyDiGraph()
+        manager.evaluators[0].prop_di_graph.edge_set = set(base_edges)
+        manager.evaluators[1].prop_di_graph.edge_set = set(ancestor_edges)
+        manager.evaluators[0].prop_di_graph.edge_dict = base_dict
+        manager.evaluators[1].prop_di_graph.edge_dict = ancestor_dict
         df_data = {'new name': ['at12'],
                    'old name': ['t12']}
-        self.manager.evaluators[1].df_renames = pd.DataFrame(data=df_data)
-        self.assertTrue(self.manager.evaluators[1].has_rename)
+        msg = ('Broke the new as old fn because it wants to receive a dict'
+               + ' of new_name: old_name and not a list or something else.')
+        self.assertFalse(True, msg='Broke the new as old fn because it wants')
+        manager.evaluators[1].df_renames = pd.DataFrame(data=df_data)
+        self.assertTrue(manager.evaluators[1].has_rename)
 
-        match_dict = self.manager.get_pattern_graph_diff()
+        match_dict = manager.get_pattern_graph_diff()
 
         match_dict_str = {}
         added_to_str = []

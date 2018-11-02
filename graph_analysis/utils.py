@@ -448,13 +448,16 @@ def get_setting_node_name_from_df(df=None, column=None, node=None):
         masked_df.isnull()).dropna(axis=0, how='all')[column].tolist()
 
 
-def detect_new_names(original_df=None, rename_df=None):
+def get_baseline_column_name(original_df=None, rename_df=None):
+    col_set = set(rename_df.columns)
     for column in rename_df.columns:
+        other_column = col_set.difference(set(column))
+        print(col_set.difference(set(column)))
         new_vals = rename_df[column].tolist()
-        masked_old = original_df.isin(new_vals)
-        original_masked = original_df[masked_old]
-        if not masked_old.any().any():
-            return column
+        masked = original_df.isin(new_vals)
+        original_masked = original_df[masked]
+        if not masked.any().any():
+            return column, other_column
 
 
 def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
@@ -471,6 +474,7 @@ def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
 
 def new_as_old(main_dict=None, new_keys=None):
     reverse_map = {}
+    print(new_keys)
     new_key_set = {key for key in new_keys.keys()}
     for key in main_dict:
         if key[0] in new_key_set:

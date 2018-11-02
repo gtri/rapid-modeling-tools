@@ -16,7 +16,7 @@ from graph_analysis.utils import (create_column_values_under,
                                   match_changes,
                                   associate_node_ids,
                                   to_excel_df,
-                                  detect_new_names,
+                                  get_baseline_column_name,
                                   replace_new_with_old_name,
                                   new_as_old,)
 from graph_analysis.graph_objects import DiEdge, Vertex
@@ -412,7 +412,7 @@ class TestUtils(unittest.TestCase):
             (k, pd.Series(v)) for k, v in excel_data.items()]))
         self.assertTrue(expected_df.equals(excel_df))
 
-    def test_detect_new_names(self):
+    def test_get_baseline_column_name(self):
         og_dict = {'Composite Thing': ['Car', 'Car',
                                        'Wheel', 'Engine'],
                    'component': ['engine', 'rear driver',
@@ -424,9 +424,11 @@ class TestUtils(unittest.TestCase):
                        'changed name': ['Subaru']}
         rename_df = pd.DataFrame(data=rename_dict)
 
-        new_name_col = detect_new_names(original_df=original_df,
-                                        rename_df=rename_df)
-        self.assertEqual('changed name', new_name_col)
+        new_name_col = get_baseline_column_name(
+            original_df=original_df,
+            rename_df=rename_df)
+        self.assertEqual('changed name', new_name_col[0])
+        self.assertEqual('old name', new_name_col[1])
 
     def test_replace_new_with_old_name(self):
         change_dict = {'Composite Thing': ['Subaru', 'Subaru',
