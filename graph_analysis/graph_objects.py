@@ -367,12 +367,15 @@ class Vertex(object):
         # check the connections.
         edge_uml_list = []
         for connection in self.connections:
+            # There will be some notion of a flag for the 'path' key to
+            # change between m0, m1 and m2 type MD diagrams but that info is
+            # TBD
             edge_uml_dict = {
                 'id': translator.get_uml_id(name=connection['source']),
                 'ops': [
                     {
                         'op': 'replace',
-                        'path': '/' + connection['edge_attribute'],
+                        'path': '/m2/' + connection['edge_attribute'],
                         'value': translator.get_uml_id(
                             name=connection['target']),
                     }

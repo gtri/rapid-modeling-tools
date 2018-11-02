@@ -304,7 +304,7 @@ class TestVertex(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': '/owner',
+                    'path': '/m2/owner',
                     'value': 'new_1',
                 }
             ]
@@ -314,7 +314,7 @@ class TestVertex(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': '/type',
+                    'path': '/m2/type',
                     'value': 'new_0',
                 }
             ]
@@ -367,7 +367,7 @@ class TestVertex(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': '/type',
+                    'path': '/m2/type',
                     'value': 'new_0',
                 }
             ]
@@ -377,7 +377,7 @@ class TestVertex(unittest.TestCase):
             'ops': [
                 {
                     'op': 'replace',
-                    'path': '/owner',
+                    'path': '/m2/owner',
                     'value': 'new_1',
                 }
             ]
