@@ -448,16 +448,12 @@ def get_setting_node_name_from_df(df=None, column=None, node=None):
         masked_df.isnull()).dropna(axis=0, how='all')[column].tolist()
 
 
-def get_baseline_column_name(original_df=None, rename_df=None):
-    col_set = set(rename_df.columns)
+def get_new_column_name(original_df=None, rename_df=None):
     for column in rename_df.columns:
-        other_column = col_set.difference(set(column))
-        print(col_set.difference(set(column)))
         new_vals = rename_df[column].tolist()
         masked = original_df.isin(new_vals)
-        original_masked = original_df[masked]
         if not masked.any().any():
-            return column, other_column
+            return column
 
 
 def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
@@ -495,3 +491,24 @@ def new_as_old(main_dict=None, new_keys=None):
             main_dict[new_key] = main_dict.pop(key)
 
     return main_dict, reverse_map
+
+
+def to_nto_rename_dict(new_name=None, new_name_dict=None):
+    new_names_list = new_name_dict[new_name]
+    # old_names_list = [
+    #     value
+    #     for key, value in new_name_dict.items() if key is not new_name
+    #     ]
+    # Why does the above work in jupyter but not here?
+    for key, value in new_name_dict.items():
+        if key is not new_name:
+            old_names_list = value
+            old_key = key
+
+    new_to_old_dict = dict(zip(new_names_list, old_names_list))
+
+    rename_changes = {'Rename {0}'.format(new_name): new_names_list,
+                      'Rename {0}'.format(old_key): old_names_list}
+    print(rename_changes)
+
+    return new_to_old_dict, rename_changes

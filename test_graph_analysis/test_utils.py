@@ -16,9 +16,10 @@ from graph_analysis.utils import (create_column_values_under,
                                   match_changes,
                                   associate_node_ids,
                                   to_excel_df,
-                                  get_baseline_column_name,
+                                  get_new_column_name,
                                   replace_new_with_old_name,
-                                  new_as_old,)
+                                  new_as_old,
+                                  to_nto_rename_dict)
 from graph_analysis.graph_objects import DiEdge, Vertex
 
 
@@ -412,7 +413,7 @@ class TestUtils(unittest.TestCase):
             (k, pd.Series(v)) for k, v in excel_data.items()]))
         self.assertTrue(expected_df.equals(excel_df))
 
-    def test_get_baseline_column_name(self):
+    def test_get_new_column_name(self):
         og_dict = {'Composite Thing': ['Car', 'Car',
                                        'Wheel', 'Engine'],
                    'component': ['engine', 'rear driver',
@@ -424,11 +425,10 @@ class TestUtils(unittest.TestCase):
                        'changed name': ['Subaru']}
         rename_df = pd.DataFrame(data=rename_dict)
 
-        new_name_col = get_baseline_column_name(
+        new_name_col = get_new_column_name(
             original_df=original_df,
             rename_df=rename_df)
-        self.assertEqual('changed name', new_name_col[0])
-        self.assertEqual('old name', new_name_col[1])
+        self.assertEqual('changed name', new_name_col)
 
     def test_replace_new_with_old_name(self):
         change_dict = {'Composite Thing': ['Subaru', 'Subaru',
@@ -506,6 +506,21 @@ class TestUtils(unittest.TestCase):
         self.assertDictEqual(ancestor_dict, new_out[0])
         self.assertDictEqual(new_keys, new_out[1])
         self.assertDictEqual(v_names, v_fn_names)
+
+    def test_to_nto_rename_dict(self):
+        renames_dict = {
+            'change name': ['Big Cylinder', 'Locking Nut'],
+            'previous name': ['Cylinder', 'Lug Nut'],
+        }
+        new_to_old, rename_changes = to_nto_rename_dict(new_name='change name',
+            new_name_dict=renames_dict)
+        self.assertDictEqual({'Big Cylinder': 'Cylinder',
+                              'Locking Nut': 'Lug Nut'}, new_to_old)
+
+        self.assertDictEqual({'Rename change name': ['Big Cylinder',
+                                                     'Locking Nut'],
+                              'Rename previous name': ['Cylinder', 'Lug Nut']},
+                            rename_changes)
 
     def tearDown(self):
         pass

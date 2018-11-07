@@ -12,8 +12,9 @@ from .utils import (create_column_values_under,
                     match_changes, object_dict_view,
                     associate_node_ids,
                     to_excel_df,
-                    get_baseline_column_name,
+                    get_new_column_name,
                     new_as_old,
+                    to_nto_rename_dict,
                     )
 from .graph_objects import PropertyDiGraph
 
@@ -94,24 +95,30 @@ class Manager(object):
                 # new_to_old.keys() then make new key and associate the obj
                 # do the same if is target. return the new dict and a dict to
                 # replace the keys at the end.
-                baseline_col = get_baseline_column_name(
+                new_name_col = get_new_column_name(
                     original_df=orig_eval.df,
                     rename_df=pair[0].df_renames)
                 new_name_dict = pair[0].df_renames.to_dict(orient='list')
+                n_t_o, rename_changes = to_nto_rename_dict(
+                    new_name=new_name_col,
+                    new_name_dict=new_name_dict)
                 # iterate through keys in new_to_old changing names edge dict
                 eval_1_e_dict, reverse_map = new_as_old(
                     main_dict=eval_1_e_dict,
-                    new_keys=new_name_dict[baseline_col])
+                    new_keys=n_t_o)
             elif pair[1].has_rename:
                 # rename pair[1]
-                baseline_col = get_baseline_column_name(
+                new_name_col = get_new_column_name(
                     original_df=orig_eval.df,
                     rename_df=pair[1].df_renames)
                 new_name_dict = pair[1].df_renames.to_dict(orient='list')
+                n_t_o, rename_changes = to_nto_rename_dict(
+                    new_name=new_name_col,
+                    new_name_dict=new_name_dict)
                 # iterate through keys in new_to_old changing names edge dict
                 eval_2_e_dict, reverse_map = new_as_old(
                     main_dict=eval_2_e_dict,
-                    new_keys=new_name_dict[baseline_col])
+                    new_keys=n_t_o)
 
             edge_set_one = pair[0].edge_set  # get baseline edge set
             edge_set_two = pair[1].edge_set  # get the changed edge set
@@ -180,14 +187,13 @@ class Manager(object):
                 eval_1_e_dict, new_to_old = new_as_old(
                     main_dict=eval_1_e_dict,
                     new_keys=reverse_map)
-                eval_one_matches[0].update(new_name_dict)
+                eval_one_matches[0].update(rename_changes)
             elif pair[1].has_rename:
                 # undo change to nodes for comparisson purpose
                 eval_2_e_dict, new_to_old = new_as_old(
                     main_dict=eval_2_e_dict,
                     new_keys=reverse_map)
-                print(new_name_dict)
-                eval_one_matches[0].update(new_name_dict)
+                eval_one_matches[0].update(rename_changes)
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
