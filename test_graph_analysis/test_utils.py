@@ -384,7 +384,9 @@ class TestUtils(unittest.TestCase):
 
         fake_datas = {'0-1': {'Changes': {'Added': [added_edge],
                                           'Deleted': [deleted_edge],
-                                          og_edge: [change_edge], },
+                                          og_edge: [change_edge],
+                                          'Rename new name': ['new name'],
+                                          'Rename old name': ['old name'], },
                               'Unstable Pairs': {unstable_key: [
                                   unstable_one,
                                   unstable_two]}}}
@@ -402,7 +404,9 @@ class TestUtils(unittest.TestCase):
                                     ('tomato', 'vegetable', 'fruit'),
                                     ('tomahto', 'fruit', 'fruit')],
                          'Added': [('blueberry', 'berry', 'bush')],
-                         'Deleted': [('yellow', 'delicious', 'apple')]}
+                         'Deleted': [('yellow', 'delicious', 'apple')],
+                         'Rename new name': ['new name'],
+                         'Rename old name': ['old name']}
         expected_df = pd.DataFrame(data=dict([
             (k, pd.Series(v)) for k, v in expected_data.items()]))
 

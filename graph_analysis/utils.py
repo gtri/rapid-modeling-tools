@@ -368,25 +368,28 @@ def to_excel_df(data_dict=None, column_keys=None):
     df_data = {edit_1: [],
                edit_2: [], }
     for key in data_dict:
-        if key in column_keys or isinstance(key, str):
-            try:
-                df_data[key] = [val.named_edge_triple
-                                for val in data_dict[key]]
-            except AttributeError:
-                df_data[edit_1].append(key)
-                df_data[edit_2].append(data_dict[key])
-            continue
-        if len(data_dict[key]) > 1:
-            repeat_key = [key.named_edge_triple for i in range(
-                len(data_dict[key]))]
-            multiple_vals = [val.named_edge_triple for val in data_dict[key]]
-            # multiple_vals = data_dict[key]
-            df_data[edit_1].extend(repeat_key)
-            df_data[edit_2].extend(multiple_vals)
+        if isinstance(key, str):
+            if not data_dict[key]:
+                continue
+            elif isinstance(data_dict[key][0], str):
+                df_data[key] = [value
+                                for value in data_dict[key]]
+                continue
+            df_data.update({key: [val.named_edge_triple
+                                  for val in data_dict[key]]})
         else:
-            df_data[edit_1].append(key.named_edge_triple)
-            value = data_dict[key][0].named_edge_triple
-            df_data[edit_2].append(value)
+            if len(data_dict[key]) > 1:
+                repeat_key = [key.named_edge_triple for i in range(
+                    len(data_dict[key]))]
+                multiple_vals = [
+                    val.named_edge_triple for val in data_dict[key]]
+                # multiple_vals = data_dict[key]
+                df_data[edit_1].extend(repeat_key)
+                df_data[edit_2].extend(multiple_vals)
+            else:
+                df_data[edit_1].append(key.named_edge_triple)
+                value = data_dict[key][0].named_edge_triple
+                df_data[edit_2].append(value)
 
     return df_data
 

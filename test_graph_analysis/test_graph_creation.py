@@ -221,7 +221,8 @@ class TestManager(unittest.TestCase):
         fake_datas = {'0-1': {'Changes': {'Added': [added_edge],
                                           'Deleted': [deleted_edge],
                                           og_edge: [change_edge],
-                                          't12': 'at12', },
+                                          'Rename new name': ['new name'],
+                                          'Rename old name': ['old name'], },
                               'Unstable Pairs': {unstable_key: [
                                   unstable_one,
                                   unstable_two]}}}
@@ -233,20 +234,21 @@ class TestManager(unittest.TestCase):
         created_dict = created_df.to_dict()
 
         expected_data = {'Edit 1': ["('green', 'apple', 'fruit')",
-                                    "t12",
                                     "('tomato', 'fruit', 'fruit')",
                                     "('tomato', 'fruit', 'fruit')", ],
                          'Edit 2': ["('gala', 'apple', 'fruit')",
-                                    "at12",
                                     "('tomato', 'vegetable', 'fruit')",
                                     "('tomahto', 'fruit', 'fruit')", ],
                          'Added': ["('blueberry', 'berry', 'bush')"],
-                         'Deleted': ["('yellow', 'delicious', 'apple')"]}
+                         'Deleted': ["('yellow', 'delicious', 'apple')"],
+                         'Rename new name': ["new name"],
+                         'Rename old name': ["old name"], }
 
         expected_df = pd.DataFrame(data=dict([
             (k, pd.Series(v)) for k, v in expected_data.items()]))
         expected_dict = expected_df.to_dict()
-
+        print(created_dict)
+        print(expected_dict)
         self.assertDictEqual(expected_dict, created_dict)
         self.assertTrue(expected_df.equals(created_df))
 

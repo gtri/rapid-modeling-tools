@@ -221,6 +221,8 @@ class Manager(object):
             column_headers = [edit_left_dash, edit_right_dash]
 
             for in_key in difference_dict:
+                if not difference_dict[in_key]:
+                    continue
                 column_headers.append(in_key)
                 input_dict.update(difference_dict[in_key])
 
