@@ -256,6 +256,9 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(expected_dict, car_dict)
 
     def test_to_uml_json(self):
+        msg = ('Update this fn to be able to produce the json out for '
+               + 'create from single excel and for replace from excel diff')
+        self.assertTrue(False, msg=msg)
         vertex_car = Vertex(
             name='Car',
             node_types=['Atomic Thing', 'Composite Thing'],
