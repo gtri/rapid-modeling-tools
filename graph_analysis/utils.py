@@ -262,7 +262,6 @@ def match_changes(change_dict=None, score=None, match_ancestors=None):
         # TODO: generalize key skip method
         if suitor in add_del or not change_dict[suitor]:
             if not change_dict[suitor] and suitor not in add_del:
-                print(suitor)
                 deleted_set = set(change_dict['Deleted']).add(suitor)
                 update_dict = {'Deleted': deleted_set}
                 change_dict.update(update_dict)
@@ -470,7 +469,6 @@ def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
 
 def new_as_old(main_dict=None, new_keys=None):
     reverse_map = {}
-    print(new_keys)
     new_key_set = {key for key in new_keys.keys()}
     for key in main_dict:
         if key[0] in new_key_set:
@@ -509,6 +507,5 @@ def to_nto_rename_dict(new_name=None, new_name_dict=None):
 
     rename_changes = {'Rename {0}'.format(new_name): new_names_list,
                       'Rename {0}'.format(old_key): old_names_list}
-    print(rename_changes)
 
     return new_to_old_dict, rename_changes

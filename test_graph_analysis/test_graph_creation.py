@@ -157,9 +157,6 @@ class TestManager(unittest.TestCase):
         manager.evaluators[1].prop_di_graph.edge_dict = ancestor_dict
         df_data = {'new name': ['at12'],
                    'old name': ['t12']}
-        msg = ('Broke the new as old fn because it wants to receive a dict'
-               + ' of new_name: old_name and not a list or something else.')
-        self.assertFalse(True, msg='Broke the new as old fn because it wants')
         manager.evaluators[1].df_renames = pd.DataFrame(data=df_data)
         self.assertTrue(manager.evaluators[1].has_rename)
 
@@ -170,32 +167,24 @@ class TestManager(unittest.TestCase):
         deleted_to_str = []
         add_del = ('Added', 'Deleted')
         for key in match_dict['0-1']['Changes']:
-            if key not in add_del:
-                if not match_dict['0-1']['Changes'][key]:
-                    no_match_to_str.append(key.named_edge_triple)
+            if isinstance(key, str):
+                if key in add_del:
+                    match_dict_str.update({key:
+                                           [value.named_edge_triple
+                                            for value in match_dict[
+                                                '0-1']['Changes'][key]]})
                     continue
-                try:
-                    key_trip = key.named_edge_triple
-                    val_trip = match_dict[
-                        '0-1']['Changes'][key][0].named_edge_triple
-                    match_dict_str.update({key_trip: val_trip})
-                except AttributeError:
-                    key_vert = key
-                    val_vert = match_dict[
-                        '0-1']['Changes'][key]
-                    print(key_vert, val_vert)
-                    match_dict_str.update({key_vert: val_vert})
-
-        for value in match_dict['0-1']['Changes']['Added']:
-            added_to_str.append(value.named_edge_triple)
-        for value in match_dict['0-1']['Changes']['Deleted']:
-            deleted_to_str.append(value.named_edge_triple)
-
-        match_dict_str.update({'Added': added_to_str,
-                               'Deleted': deleted_to_str})
+                match_dict_str.update({key: match_dict['0-1']['Changes'][key]})
+            else:
+                match_dict_str.update({key.named_edge_triple:
+                                       match_dict[
+                                           '0-1'][
+                                           'Changes'][
+                                           key][0].named_edge_triple})
 
         expected_matches = {('s1', 't1', 'type'): ('as1', 't1', 'type'),
-                            't12': 'at12',
+                            'Rename new name': ['at12'],
+                            'Rename old name': ['t12'],
                             'Added': [('b', 'c', 'orange'), ],
                             'Deleted': [('song', 'tiger', 'blue'), ], }
         self.assertDictEqual(expected_matches, match_dict_str)

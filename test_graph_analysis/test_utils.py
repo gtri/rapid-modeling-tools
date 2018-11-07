@@ -508,19 +508,19 @@ class TestUtils(unittest.TestCase):
         self.assertDictEqual(v_names, v_fn_names)
 
     def test_to_nto_rename_dict(self):
-        renames_dict = {
+        renm_d = {
             'change name': ['Big Cylinder', 'Locking Nut'],
             'previous name': ['Cylinder', 'Lug Nut'],
         }
         new_to_old, rename_changes = to_nto_rename_dict(new_name='change name',
-            new_name_dict=renames_dict)
+                                                        new_name_dict=renm_d)
         self.assertDictEqual({'Big Cylinder': 'Cylinder',
                               'Locking Nut': 'Lug Nut'}, new_to_old)
 
         self.assertDictEqual({'Rename change name': ['Big Cylinder',
                                                      'Locking Nut'],
                               'Rename previous name': ['Cylinder', 'Lug Nut']},
-                            rename_changes)
+                             rename_changes)
 
     def tearDown(self):
         pass

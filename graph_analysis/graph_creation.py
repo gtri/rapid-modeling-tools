@@ -200,7 +200,6 @@ class Manager(object):
             self.evaluator_change_dict.update(
                 {key: {'Changes': eval_one_matches[0],
                        'Unstable Pairs': eval_one_matches[1]}})
-            print(eval_one_matches)
 
         return self.evaluator_change_dict
 
