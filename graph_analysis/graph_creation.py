@@ -235,6 +235,11 @@ class Manager(object):
 
         writer.save()
 
+    def graph_difference_to_json(self):
+        pass
+        # this is where I will use the vertex mixin to report difference
+        # change uml types.
+
 
 class Evaluator(object):
     """Class for creating the PropertyDiGraph from the Excel data with the help

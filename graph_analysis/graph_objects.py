@@ -1,6 +1,9 @@
 import networkx as nx
 
-from .utils import get_node_types_attrs, get_uml_id
+from .utils import (get_node_types_attrs, get_uml_id,
+                    get_setting_node_name_from_df,
+                    to_uml_json_decorations, to_uml_json_edge,
+                    to_uml_json_node)
 
 
 def create_vertex_objects(df=None, graph=None):
@@ -207,7 +210,120 @@ class PropertyDiGraph(nx.DiGraph):
             self.edge_set.add(edge)
 
 
-class Vertex(object):
+class VertexReporterMixin:
+    def change_node_to_uml(self, translator=None):
+        node_dict = {
+            'id': translator.get_uml_id(name=self.name),
+            'op': 'rename',
+            'name': self.name,
+            'path': None,
+            'metatype': translator.get_uml_metatype(
+                node_key=self.node_types[0]),
+            'stereotype': translator.get_uml_stereotype(
+                node_key=self.node_types[0]),
+            'attributes': self.attributes,
+        }
+        return to_uml_json_node(**node_dict)
+
+    def delete_node_to_uml(self, translator=None):
+        node_dict = {
+            'id': translator.get_uml_id(name=self.name),
+            'op': 'delete',
+            'name': self.name,
+            'path': None,
+            'metatype': translator.get_uml_metatype(
+                node_key=self.node_types[0]),
+            'stereotype': translator.get_uml_stereotype(
+                node_key=self.node_types[0]),
+            'attributes': self.attributes,
+        }
+        return to_uml_json_node(**node_dict)
+
+    def create_node_to_uml(self, translator=None):
+        """Returns two lists of dictionaries formatted for JSON output to the
+        MagicDraw interface layer. The first list returned contains the vertex
+        and its values with additional subdictionaries if that particular
+        Vertex had more than one node_type. The second list returned contains
+        all of the connections of the Vertex.
+
+        Parameters
+        ----------
+        translator : MDTranslator Object
+            A MDTranslator object that prvoides access to the
+            JSON data file that translates the information from the Python
+            meanigns here to MagicDraw terminology.
+
+        Notes
+        -----
+        First, the function loops over the node_types attribute. For the first
+        node_type attribute encountered (regardless of its value), the metadata
+        associated with that node_type is recorded. Subsequent loop iterations
+        provide additional node_type information.
+        While iterating the node_type information, the function checks
+        for nodes with settings values under the vertex settings key in the
+        JSON. If a node has a settings value then the ID of the associated
+        settings node is retreived and associated to the node_decorations list.
+        Next, the edge_uml_list is built using the connections property. From
+        there, a source and target id are identified from the connections
+        information and the get_uml_id function.
+        With all of these lists populated, the function returns the
+        node_uml_list, node_decorations, and the edge_uml_list to be packaged
+        for the final JSON output. The JSON file contains all of the vertex
+        data first followed by the edge data.
+        """
+        node_uml_list = []
+        node_decorations = []
+
+        for count, node_type in enumerate(self.node_types):
+            if count == 0:
+                node_dict = {
+                    'id': translator.get_uml_id(name=self.name),
+                    'op': 'create',  # evaluator replace with fn input.
+                    'name': self.name,
+                    'path': None,
+                    'metatype': translator.get_uml_metatype(
+                        node_key=node_type),
+                    'stereotype': translator.get_uml_stereotype(
+                        node_key=node_type),
+                    'attributes': self.attributes,
+                }
+                node_uml_dict = to_uml_json_node(**node_dict)
+            path_val, settings_val = translator.get_uml_settings(
+                node_key=node_type)
+            if settings_val:
+                if self.settings_node:
+                    settings_val = list(set(get_uml_id(name=node)
+                                            for node in self.settings_node))
+                    node_dict.update({'op': 'replace',
+                                      'path': path_val,
+                                      'value': settings_val})
+                    decorations_dict = to_uml_json_decorations(**node_dict)
+                    node_decorations.append(decorations_dict)
+            else:
+                continue
+
+        node_uml_list.append(node_uml_dict)
+
+        # check the connections.
+        edge_uml_list = []
+        for connection in self.connections:
+            # There will be some notion of a flag for the 'path' key to
+            # change between m0, m1 and m2 type MD diagrams but that info is
+            # TBD
+            edge_dict = {
+                'id': translator.get_uml_id(name=connection['source']),
+                'op': 'replace',
+                'path': connection['edge_attribute'],
+                'value': translator.get_uml_id(
+                    name=connection['target']),
+            }
+            edge_uml_dict = to_uml_json_edge(**edge_dict)
+            edge_uml_list.append(edge_uml_dict)
+
+        return node_uml_list, node_decorations, edge_uml_list
+
+
+class Vertex(VertexReporterMixin):
     """
     Class for representing the node data from the PropertyDiGraph as an object.
 

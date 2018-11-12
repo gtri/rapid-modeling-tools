@@ -19,7 +19,10 @@ from graph_analysis.utils import (create_column_values_under,
                                   get_new_column_name,
                                   replace_new_with_old_name,
                                   new_as_old,
-                                  to_nto_rename_dict)
+                                  to_nto_rename_dict,
+                                  to_uml_json_node,
+                                  to_uml_json_decorations,
+                                  to_uml_json_edge)
 from graph_analysis.graph_objects import DiEdge, Vertex
 
 
@@ -525,6 +528,69 @@ class TestUtils(unittest.TestCase):
                                                      'Locking Nut'],
                               'Rename previous name': ['Cylinder', 'Lug Nut']},
                              rename_changes)
+
+    def test_to_uml_json_node(self):
+        in_dict = {
+            'id': 0,
+            'op': 'create',
+            'name': 'test name',
+            'path': None,
+            'metatype': 'meta meta',
+            'stereotype': 'stereo',
+            'attributes': None,
+        }
+        out = {
+            'id': 0,
+            'ops': [
+                {
+                    'op': 'create',
+                    'name': 'test name',
+                    'path': None,
+                    'metatype': 'meta meta',
+                    'stereotype': 'stereo',
+                    'attributes': None,
+                }
+            ]
+        }
+        self.assertDictEqual(out, to_uml_json_node(**in_dict))
+
+    def test_to_uml_json_decorations(self):
+        info = {
+            'id': 'new 0',
+            'op': 'decoration',
+            'path': 'home',
+            'value': 'volume',
+        }
+        expect = {
+            'id': 'new 0',
+            'ops': [
+                {
+                    'op': 'decoration',
+                    'path': '/home',
+                    'value': 'volume',
+                }
+            ]
+        }
+        self.assertDictEqual(expect, to_uml_json_decorations(**info))
+
+    def test_to_uml_json_edge(self):
+        edge_info = {
+            'id': 'nal3013',
+            'op': 'O P',
+            'path': 'connector',
+            'value': None,
+        }
+        expect = {
+            'id': 'nal3013',
+            'ops': [
+                {
+                    'op': 'O P',
+                    'path': '/m2/' + 'connector',
+                    'value': None,
+                }
+            ]
+        }
+        self.assertDictEqual(expect, to_uml_json_edge(**edge_info))
 
     def tearDown(self):
         pass

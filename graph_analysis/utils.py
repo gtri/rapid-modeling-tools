@@ -512,3 +512,45 @@ def to_nto_rename_dict(new_name=None, new_name_dict=None):
                       'Rename {0}'.format(old_key): old_names_list}
 
     return new_to_old_dict, rename_changes
+
+
+def to_uml_json_node(**kwargs):
+    return {
+        'id': kwargs['id'],
+        'ops': [
+            {
+                'op': kwargs['op'],
+                'name': kwargs['name'],
+                'path': kwargs['path'],
+                'metatype': kwargs['metatype'],
+                'stereotype': kwargs['stereotype'],
+                'attributes': kwargs['attributes'],
+            }
+        ]
+    }
+
+
+def to_uml_json_decorations(**kwargs):
+    return {
+        'id': kwargs['id'],
+        'ops': [
+            {
+                'op': kwargs['op'],
+                'path': '/' + kwargs['path'],
+                'value': kwargs['value'],
+            }
+        ]
+    }
+
+
+def to_uml_json_edge(**kwargs):
+    return {
+        'id': kwargs['id'],
+        'ops': [
+            {
+                'op': kwargs['op'],
+                'path': '/m2/' + kwargs['path'],
+                'value': kwargs['value']
+            }
+        ]
+    }

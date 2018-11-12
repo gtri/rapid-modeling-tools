@@ -255,10 +255,7 @@ class TestVertex(unittest.TestCase):
         }
         self.assertDictEqual(expected_dict, car_dict)
 
-    def test_to_uml_json(self):
-        msg = ('Update this fn to be able to produce the json out for '
-               + 'create from single excel and for replace from excel diff')
-        self.assertTrue(False, msg=msg)
+    def test_create_node_to_uml(self):
         vertex_car = Vertex(
             name='Car',
             node_types=['Atomic Thing', 'Composite Thing'],
@@ -269,7 +266,7 @@ class TestVertex(unittest.TestCase):
             }},
             attributes=[{'Notes': 'Test Note'}]
         )
-        vertex_car_uml, car_decs, edge_car_uml = vertex_car.to_uml_json(
+        vertex_car_uml, car_decs, edge_car_uml = vertex_car.create_node_to_uml(
             translator=self.translator
         )
 
@@ -282,7 +279,7 @@ class TestVertex(unittest.TestCase):
                 'edge_attribute': 'owner'}},
             settings_node=['Car']
         )
-        ver_engine_uml, engi_decs, edge_engine_uml = vertex_engine.to_uml_json(
+        engine_uml = vertex_engine.create_node_to_uml(
             translator=self.translator
         )
 
@@ -360,10 +357,10 @@ class TestVertex(unittest.TestCase):
             ]
         }]
 
-        self.assertDictEqual(ver_engine_uml[0], engine_node_uml[0])
+        self.assertDictEqual(engine_uml[0][0], engine_node_uml[0])
 
         for count, decs_dict in enumerate(engine_decoration_uml):
-            self.assertDictEqual(engi_decs[count], decs_dict)
+            self.assertDictEqual(engine_uml[1][count], decs_dict)
 
         engine_edge_uml = [{
             'id': 'new_1',
@@ -386,7 +383,69 @@ class TestVertex(unittest.TestCase):
             ]
         }]
 
-        self.assertListEqual(edge_engine_uml, engine_edge_uml)
+        self.assertListEqual(engine_uml[2], engine_edge_uml)
+
+    def test_change_node_to_uml(self):
+        vertex_car = Vertex(
+            name='Car',
+            node_types=['Atomic Thing', 'Composite Thing'],
+            successors={'engine': {
+                'edge_attribute': 'owner'}},
+            predecessors={'engine': {
+                'edge_attribute': 'type'
+            }},
+            attributes=[{'Notes': 'Test Note'}]
+        )
+
+        car_rename_uml = [{
+            'id': 'new_0',
+            'ops': [
+                {
+                    'op': 'rename',
+                    'name': 'Car',
+                    'path': None,
+                    'metatype': 'Class',
+                    'stereotype': 'Block',
+                    'attributes': [{'Notes': 'Test Note'}]
+                },
+            ]
+        }]
+
+        rename_json = vertex_car.change_node_to_uml(
+            translator=self.translator)
+
+        self.assertDictEqual(car_rename_uml[0], rename_json)
+
+    def test_delete_node_to_uml(self):
+        vertex_car = Vertex(
+            name='Car',
+            node_types=['Atomic Thing', 'Composite Thing'],
+            successors={'engine': {
+                'edge_attribute': 'owner'}},
+            predecessors={'engine': {
+                'edge_attribute': 'type'
+            }},
+            attributes=[{'Notes': 'Test Note'}]
+        )
+
+        car_delete_uml = [{
+            'id': 'new_0',
+            'ops': [
+                {
+                    'op': 'delete',
+                    'name': 'Car',
+                    'path': None,
+                    'metatype': 'Class',
+                    'stereotype': 'Block',
+                    'attributes': [{'Notes': 'Test Note'}]
+                },
+            ]
+        }]
+
+        delete_json = vertex_car.delete_node_to_uml(
+            translator=self.translator)
+
+        self.assertDictEqual(car_delete_uml[0], delete_json)
 
     def test_get_uml_id(self):
         node_names = ['Car', 'engine', 'Car']
