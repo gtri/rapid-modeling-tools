@@ -1,15 +1,16 @@
-import unittest
 import json
 import os
+import unittest
 
-import pandas as pd
 import networkx as nx
+import pandas as pd
 
-from graph_analysis.utils import (create_column_values)
-from .test_graph_creation import DATA_DIRECTORY
-from graph_analysis.graph_objects import (Vertex, PropertyDiGraph, DiEdge,
+from graph_analysis.graph_creation import Evaluator, MDTranslator
+from graph_analysis.graph_objects import (DiEdge, PropertyDiGraph, Vertex,
                                           create_vertex_objects)
-from graph_analysis.graph_creation import MDTranslator, Evaluator
+from graph_analysis.utils import create_column_values
+
+from .test_graph_creation import DATA_DIRECTORY
 
 
 class TestPropertyDiGraph(unittest.TestCase):

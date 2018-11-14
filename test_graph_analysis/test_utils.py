@@ -1,29 +1,22 @@
 import unittest
-import pandas as pd
-import networkx as nx
-
 from copy import copy
 
-from graph_analysis.graph_creation import MDTranslator
+import networkx as nx
+import pandas as pd
 
-from graph_analysis.utils import (create_column_values_under,
-                                  create_column_values_space,
-                                  create_column_values_singleton,
-                                  create_column_values,
-                                  get_node_types_attrs,
-                                  get_setting_node_name_from_df,
-                                  match,
-                                  match_changes,
-                                  associate_node_ids,
-                                  to_excel_df,
-                                  get_new_column_name,
-                                  replace_new_with_old_name,
-                                  new_as_old,
-                                  to_nto_rename_dict,
-                                  to_uml_json_node,
-                                  to_uml_json_decorations,
-                                  to_uml_json_edge)
+from graph_analysis.graph_creation import MDTranslator
 from graph_analysis.graph_objects import DiEdge, Vertex
+from graph_analysis.utils import (associate_node_ids, create_column_values,
+                                  create_column_values_singleton,
+                                  create_column_values_space,
+                                  create_column_values_under,
+                                  distill_edges_to_nodes, get_new_column_name,
+                                  get_node_types_attrs,
+                                  get_setting_node_name_from_df, match,
+                                  match_changes, new_as_old,
+                                  replace_new_with_old_name, to_excel_df,
+                                  to_nto_rename_dict, to_uml_json_decorations,
+                                  to_uml_json_edge, to_uml_json_node)
 
 
 class TestUtils(unittest.TestCase):
@@ -498,9 +491,14 @@ class TestUtils(unittest.TestCase):
         vert_fn_names = {key: output[0][key].named_edge_triple
                          for key in output[0]}
 
+        new_v_o_map = {'as1': ancestor_edges[0].source,
+                       'at12': ancestor_edges[1].target,
+                       'c': ancestor_edges[2].target, }
+
         self.assertDictEqual(expect_out_d, output[0])
         self.assertDictEqual(expect_reverse, output[1])
         self.assertDictEqual(vert_names, vert_fn_names)
+        self.assertDictEqual(new_v_o_map, output[2])
 
         # Can I take the output and get the input?
         new_out = new_as_old(main_dict=output[0], new_keys=output[1])
@@ -528,6 +526,44 @@ class TestUtils(unittest.TestCase):
                                                      'Locking Nut'],
                               'Rename previous name': ['Cylinder', 'Lug Nut']},
                              rename_changes)
+
+    def test_distill_edges_to_nodes(self):
+        base_inputs = [('s1', 't1', 'type'),
+                       ('s12', 't12', 'memberEnd'),
+                       ('song', 'tiger', 'blue'), ]
+
+        ancestor = [('as1', 't1', 'type'),
+                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+        base_edges = []
+        base_dict = {}
+        ancestor_edges = []
+        ancestor_dict = {}
+        for edge_tuple in base_inputs:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            base_dict[edge_tuple] = edge
+            base_edges.append(edge)
+        for edge_tuple in ancestor:
+            source = Vertex(name=edge_tuple[0])
+            target = Vertex(name=edge_tuple[1])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            ancestor_dict[edge_tuple] = edge
+            ancestor_edges.append(edge)
+
+        matched_dict = {'Added': [ancestor_edges[2]],
+                        'Deleted': [base_edges[2]],
+                        ancestor_edges[0]: [base_edges[0]],
+                        ancestor_edges[1]: [base_edges[1]], }
+        distilled_outs = distill_edges_to_nodes(edge_matches=matched_dict)
+
+        expected_dict = {'Added': [ancestor_edges[2]],
+                         'Deleted': [base_edges[2]],
+                         ancestor_edges[0].source: base_edges[0].source,
+                         ancestor_edges[1].target: base_edges[1].target, }
+        self.assertDictEqual(expected_dict, distilled_outs)
 
     def test_to_uml_json_node(self):
         in_dict = {

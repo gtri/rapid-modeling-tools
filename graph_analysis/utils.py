@@ -1,10 +1,8 @@
 import json
 import os
-
 from copy import copy
 from itertools import count
 from random import shuffle
-
 
 UML_ID = {
     'count': 0
@@ -473,28 +471,33 @@ def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
 def new_as_old(main_dict=None, new_keys=None):
     reverse_map = {}
     new_key_set = {key for key in new_keys.keys()}
+    vert_obj_map = {}
     for key in main_dict:
         if key[0] in new_key_set:
             old_name = new_keys[key[0]]
             new_key = list(copy(key))
             new_key[0] = old_name
             new_key = tuple(new_key)
+            vert_obj_map[key[0]] = main_dict[key].source
             main_dict[key].source.name = old_name
             reverse_map.update({old_name: key[0]})
             main_dict[new_key] = main_dict.pop(key)
+            # print(new_key, main_dict[new_key].named_edge_triple)
         elif key[1] in new_key_set:
             old_name = new_keys[key[1]]
             new_key = list(copy(key))
             new_key[1] = old_name
             new_key = tuple(new_key)
+            vert_obj_map[key[1]] = main_dict[key].target
             main_dict[key].target.name = old_name
             reverse_map.update({old_name: key[1]})
             main_dict[new_key] = main_dict.pop(key)
 
-    return main_dict, reverse_map
+    return main_dict, reverse_map, vert_obj_map
 
 
-def to_nto_rename_dict(new_name=None, new_name_dict=None):
+def to_nto_rename_dict(new_name=None, new_name_dict=None,
+                       str_to_obj_map=None):
     new_names_list = new_name_dict[new_name]
     # old_names_list = [
     #     value
@@ -503,15 +506,56 @@ def to_nto_rename_dict(new_name=None, new_name_dict=None):
     # Why does the above work in jupyter but not here?
     for key, value in new_name_dict.items():
         if key is not new_name:
+            if str_to_obj_map:
+                old_obj_list = [str_to_obj_map[val] for val in value]
+                new_obj_list = [str_to_obj_map[val] for val in new_names_list]
             old_names_list = value
             old_key = key
 
     new_to_old_dict = dict(zip(new_names_list, old_names_list))
 
-    rename_changes = {'Rename {0}'.format(new_name): new_names_list,
-                      'Rename {0}'.format(old_key): old_names_list}
+    if str_to_obj_map:
+        rename_changes = {'Rename {0}'.format(new_name): new_obj_list,
+                          'Rename {0}'.format(old_key): old_obj_list}
+    else:
+        rename_changes = {'Rename {0}'.format(new_name): new_names_list,
+                          'Rename {0}'.format(old_key): old_names_list}
 
     return new_to_old_dict, rename_changes
+
+
+def distill_edges_to_nodes(edge_matches=None):
+    print(len(edge_matches.keys()))
+    for key in edge_matches:
+        print(edge_matches.keys())
+        if not isinstance(key, str):
+            # print(key)
+            # print(edge_matches[key])
+            source_cond = key.source.name == edge_matches[key][0].source.name
+            target_cond = key.target.name == edge_matches[key][0].target.name
+            if source_cond and target_cond:
+                source_value = edge_matches[key][0].source
+                target_value = edge_matches[key][0].target
+                source_key = key.source
+                target_key = key.target
+                edge_matches[key] = source_value
+                edge_matches[source_key] = edge_matches.pop(key)
+                edge_matches[target_key] = target_value
+            elif source_cond:
+                # replace the key here with key.target and val with
+                # value.target
+                target_value = edge_matches[key][0].target
+                nk = key.target
+                edge_matches[key] = target_value
+                edge_matches[nk] = edge_matches.pop(key)
+            elif target_cond:
+                # replace key with key.source and value with
+                # with value.target
+                source_value = edge_matches[key][0].source
+                nk = key.source
+                edge_matches[key] = source_value
+                edge_matches[nk] = edge_matches.pop(key)
+    return edge_matches
 
 
 def to_uml_json_node(**kwargs):

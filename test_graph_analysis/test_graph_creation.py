@@ -1,12 +1,12 @@
-import unittest
-import os
 import json
+import os
+import unittest
+
 import pandas as pd
 
-from graph_analysis.graph_creation import (Manager, Evaluator, MDTranslator)
-from graph_analysis.graph_objects import (DiEdge, PropertyDiGraph, Vertex,)
+from graph_analysis.graph_creation import Evaluator, Manager, MDTranslator
+from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
 from graph_analysis.utils import object_dict_view
-
 
 DATA_DIRECTORY = '../data/'
 
@@ -165,6 +165,8 @@ class TestManager(unittest.TestCase):
         self.assertTrue(manager.evaluators[1].has_rename)
 
         match_dict = manager.get_pattern_graph_diff()
+        print(match_dict)
+        self.assertTrue(False)
 
         match_dict_str = {}
         added_to_str = []
@@ -178,7 +180,8 @@ class TestManager(unittest.TestCase):
                                             for value in match_dict[
                                                 '0-1']['Changes'][key]]})
                     continue
-                match_dict_str.update({key: match_dict['0-1']['Changes'][key]})
+                match_dict_str.update(
+                    {key: match_dict['0-1']['Changes'][key]})
             else:
                 match_dict_str.update({key.named_edge_triple:
                                        match_dict[

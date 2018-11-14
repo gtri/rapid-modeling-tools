@@ -1,8 +1,7 @@
 import networkx as nx
 
-from .utils import (get_node_types_attrs, get_uml_id,
-                    get_setting_node_name_from_df,
-                    to_uml_json_decorations, to_uml_json_edge,
+from .utils import (get_node_types_attrs, get_setting_node_name_from_df,
+                    get_uml_id, to_uml_json_decorations, to_uml_json_edge,
                     to_uml_json_node)
 
 

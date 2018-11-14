@@ -1,23 +1,17 @@
 import json
 import os
-import pandas as pd
-import networkx as nx
-
 from copy import copy
 from itertools import combinations
 
-from .utils import (create_column_values_under,
-                    create_column_values_space,
-                    create_column_values_singleton,
-                    match_changes, object_dict_view,
-                    associate_node_ids,
-                    to_excel_df,
-                    get_new_column_name,
-                    new_as_old,
-                    to_nto_rename_dict,
-                    )
-from .graph_objects import PropertyDiGraph
+import networkx as nx
+import pandas as pd
 
+from .graph_objects import PropertyDiGraph
+from .utils import (associate_node_ids, create_column_values_singleton,
+                    create_column_values_space, create_column_values_under,
+                    distill_edges_to_nodes, get_new_column_name, match_changes,
+                    new_as_old, object_dict_view, to_excel_df,
+                    to_nto_rename_dict)
 
 DATA_DIRECTORY = '../data/'
 
@@ -103,9 +97,10 @@ class Manager(object):
                     new_name=new_name_col,
                     new_name_dict=new_name_dict)
                 # iterate through keys in new_to_old changing names edge dict
-                eval_1_e_dict, reverse_map = new_as_old(
+                eval_1_e_dict, reverse_map, vert_obj_map = new_as_old(
                     main_dict=eval_1_e_dict,
                     new_keys=n_t_o)
+                print(vert_obj_map)
             elif pair[1].has_rename:
                 # rename pair[1]
                 new_name_col = get_new_column_name(
@@ -116,7 +111,7 @@ class Manager(object):
                     new_name=new_name_col,
                     new_name_dict=new_name_dict)
                 # iterate through keys in new_to_old changing names edge dict
-                eval_2_e_dict, reverse_map = new_as_old(
+                eval_2_e_dict, reverse_map, vert_obj_map = new_as_old(
                     main_dict=eval_2_e_dict,
                     new_keys=n_t_o)
 
@@ -178,33 +173,49 @@ class Manager(object):
                     eval_two_unmatch_pref[edge] = copy(eval_one_unmatch_map[
                         edge.edge_attribute])
 
-            eval_one_matches = match_changes(change_dict=eval_one_unmatch_pref)
+            eval_one_matches = match_changes(
+                change_dict=eval_one_unmatch_pref)
+
+            # print(eval_one_matches[0])
+            change_pairs = distill_edges_to_nodes(
+                edge_matches=eval_one_matches[0])
 
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
                 pass  # so nothing happened above.
             elif pair[0].has_rename:
                 # Put stuff back how it was
-                eval_1_e_dict, new_to_old = new_as_old(
+                eval_1_e_dict, new_to_old, old_v_obj_map = new_as_old(
                     main_dict=eval_1_e_dict,
                     new_keys=reverse_map)
-                eval_one_matches[0].update(rename_changes)
+                vert_obj_map.update(old_v_obj_map)
+                n_t_o, rename_changes = to_nto_rename_dict(
+                    new_name=new_name_col,
+                    new_name_dict=new_name_dict,
+                    str_to_obj_map=vert_obj_map)
+                change_pairs.update(rename_changes)
             elif pair[1].has_rename:
                 # undo change to nodes for comparisson purpose
-                eval_2_e_dict, new_to_old = new_as_old(
+                eval_2_e_dict, new_to_old, old_v_obj_map = new_as_old(
                     main_dict=eval_2_e_dict,
                     new_keys=reverse_map)
-                eval_one_matches[0].update(rename_changes)
+                vert_obj_map.update(old_v_obj_map)
+                n_t_o, rename_changes = to_nto_rename_dict(
+                    new_name=new_name_col,
+                    new_name_dict=new_name_dict,
+                    str_to_obj_map=vert_obj_map)
+                change_pairs.update(rename_changes)
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
             self.evaluator_change_dict.update(
-                {key: {'Changes': eval_one_matches[0],
+                {key: {'Changes': change_pairs,
                        'Unstable Pairs': eval_one_matches[1]}})
 
         return self.evaluator_change_dict
 
     def changes_to_excel(self):
-        # TODO: Find a more secure method. If multiple files created in one
+        # TODO: Find a more secure method.
+        # If multiple files created in one
         # session than data will be lost and only the most recent changes
         # will be kept.
         # does create multiple sheets for each Manager.
