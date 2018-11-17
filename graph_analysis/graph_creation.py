@@ -177,8 +177,8 @@ class Manager(object):
                 change_dict=eval_one_unmatch_pref)
 
             # print(eval_one_matches[0])
-            change_pairs = distill_edges_to_nodes(
-                edge_matches=eval_one_matches[0])
+            # change_pairs = distill_edges_to_nodes(
+            #     edge_matches=eval_one_matches[0])
 
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
                 pass  # so nothing happened above.
@@ -192,7 +192,8 @@ class Manager(object):
                     new_name=new_name_col,
                     new_name_dict=new_name_dict,
                     str_to_obj_map=vert_obj_map)
-                change_pairs.update(rename_changes)
+                eval_one_matches[0].update(rename_changes)
+                # change_pairs.update(rename_changes)
             elif pair[1].has_rename:
                 # undo change to nodes for comparisson purpose
                 eval_2_e_dict, new_to_old, old_v_obj_map = new_as_old(
@@ -203,12 +204,13 @@ class Manager(object):
                     new_name=new_name_col,
                     new_name_dict=new_name_dict,
                     str_to_obj_map=vert_obj_map)
-                change_pairs.update(rename_changes)
+                eval_one_matches[0].update(rename_changes)
+                # change_pairs.update(rename_changes)
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
             self.evaluator_change_dict.update(
-                {key: {'Changes': change_pairs,
+                {key: {'Changes': eval_one_matches[0],
                        'Unstable Pairs': eval_one_matches[1]}})
 
         return self.evaluator_change_dict
