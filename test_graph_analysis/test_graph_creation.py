@@ -185,7 +185,7 @@ class TestManager(unittest.TestCase):
                 else:
                     vals = []
                     for value in match_dict['0-1']['Changes'][key]:
-                        vals.append(value.named_edge_triple)
+                        vals.append(value.name)
                     match_dict_str.update({key: vals})
             else:
                 match_dict_str.update({key.named_edge_triple:
