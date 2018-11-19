@@ -176,10 +176,6 @@ class Manager(object):
             eval_one_matches = match_changes(
                 change_dict=eval_one_unmatch_pref)
 
-            # print(eval_one_matches[0])
-            # change_pairs = distill_edges_to_nodes(
-            #     edge_matches=eval_one_matches[0])
-
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
                 pass  # so nothing happened above.
             elif pair[0].has_rename:
@@ -193,7 +189,6 @@ class Manager(object):
                     new_name_dict=new_name_dict,
                     str_to_obj_map=vert_obj_map)
                 eval_one_matches[0].update(rename_changes)
-                # change_pairs.update(rename_changes)
             elif pair[1].has_rename:
                 # undo change to nodes for comparisson purpose
                 eval_2_e_dict, new_to_old, old_v_obj_map = new_as_old(
@@ -205,13 +200,21 @@ class Manager(object):
                     new_name_dict=new_name_dict,
                     str_to_obj_map=vert_obj_map)
                 eval_one_matches[0].update(rename_changes)
-                # change_pairs.update(rename_changes)
+
+            new_name_objs = ''
+            for key in eval_one_matches[0]:
+                if isinstance(key, str):
+                    if new_name_col in key:
+                        new_name_objs = key
+            changes_and_unstable = {'Changes': eval_one_matches[0],
+                                    'Unstable Pairs': eval_one_matches[1]}
+            self.graph_difference_to_json(new_col=new_name_objs,
+                                          change_dict=eval_one_matches[0])
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
             self.evaluator_change_dict.update(
-                {key: {'Changes': eval_one_matches[0],
-                       'Unstable Pairs': eval_one_matches[1]}})
+                {key: changes_and_unstable})
 
         return self.evaluator_change_dict
 
@@ -238,9 +241,11 @@ class Manager(object):
                     continue
                 column_headers.append(in_key)
                 input_dict.update(difference_dict[in_key])
-
+            print(column_headers)
+            print(input_dict)
             df_data = to_excel_df(data_dict=input_dict,
                                   column_keys=column_headers)
+            print(df_data)
             df_output = pd.DataFrame(data=dict([
                 (k, pd.Series(v)) for k, v in df_data.items()
             ]))
@@ -248,7 +253,28 @@ class Manager(object):
 
         writer.save()
 
-    def graph_difference_to_json(self):
+    def graph_difference_to_json(self, new_col='', change_dict=None):
+        # need to strip off the keys that are strings and use them to
+        # determine what kinds of ops I need to preform.
+        # Naked Key: Value pairs mean delete edge key and add value key.
+        # Purposefully excluding unstable pairs because the Human can make
+        # those changes so they are clear.
+        static_keys = ['Added', 'Deleted', new_col]
+        edge_del = []
+        edge_add = []
+        node_renames = []
+        for key, value in change_dict.items():
+            if key == 'Added':
+                pass
+            elif key == 'Deleted':
+                pass
+            elif key == new_col:
+                pass
+            elif isinstance(key, str):
+                continue
+            else:
+                pass
+                # edge mixin to create/del edge.
         pass
         # this is where I will use the vertex mixin to report difference
         # change uml types.

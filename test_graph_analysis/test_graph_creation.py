@@ -165,7 +165,7 @@ class TestManager(unittest.TestCase):
         self.assertTrue(manager.evaluators[1].has_rename)
 
         match_dict = manager.get_pattern_graph_diff()
-        print(match_dict)
+        # print(match_dict)
         self.assertTrue(False)
 
         match_dict_str = {}
@@ -235,6 +235,7 @@ class TestManager(unittest.TestCase):
                                   unstable_two]}}}
         manager.evaluator_change_dict = fake_datas
         manager.changes_to_excel()
+        self.assertTrue(False)
         created_file_name = 'Graph Model Differences.xlsx'
         created_file = os.path.join(DATA_DIRECTORY, created_file_name)
         created_df = pd.read_excel(created_file)

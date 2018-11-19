@@ -501,6 +501,14 @@ class Vertex(VertexReporterMixin):
         return node_uml_list, node_decorations, edge_uml_list
 
 
+class DiEedgeReporterMixin:
+    def edge_to_uml(self, op='', translator=None):
+        # edge_dict = {
+        #     'id': translator.get_uml_id(name=)
+        # }
+        pass
+
+
 class DiEdge(object):
     """A Directed Edge object stores the source and target vertex objects
     along with the edge attribute connecting the two.
