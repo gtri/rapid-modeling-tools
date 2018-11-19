@@ -211,6 +211,7 @@ class PropertyDiGraph(nx.DiGraph):
 
 class VertexReporterMixin:
     def change_node_to_uml(self, translator=None):
+        print(self.name)
         node_dict = {
             'id': translator.get_uml_id(name=self.name),
             'op': 'rename',
@@ -363,7 +364,7 @@ class Vertex(VertexReporterMixin):
     packages the Vertex for the MagicDraw interface layer.
     """
 
-    def __init__(self, name=None, node_types=set(),
+    def __init__(self, name=None, node_types=list(),
                  successors=None, predecessors=None,
                  attributes=None,
                  settings_node=None):
@@ -503,13 +504,17 @@ class Vertex(VertexReporterMixin):
 
 class DiEedgeReporterMixin:
     def edge_to_uml(self, op='', translator=None):
-        # edge_dict = {
-        #     'id': translator.get_uml_id(name=)
-        # }
-        pass
+        edge_dict = {
+            'id': translator.get_uml_id(name=self.source.name),
+            'op': op,
+            'path': self.edge_attribute,
+            'value': translator.get_uml_id(
+                name=self.target.name),
+        }
+        return to_uml_json_edge(**edge_dict)
 
 
-class DiEdge(object):
+class DiEdge(DiEedgeReporterMixin):
     """A Directed Edge object stores the source and target vertex objects
     along with the edge attribute connecting the two.
     This Class was created to facilitate the graph difference exploration

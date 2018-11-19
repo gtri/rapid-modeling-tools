@@ -137,16 +137,20 @@ class TestManager(unittest.TestCase):
         ancestor_dict = {}
 
         for edge_tuple in base_inputs:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
+            source = Vertex(name=edge_tuple[0],
+                            node_types=['component'])
+            target = Vertex(name=edge_tuple[1],
+                            node_types=['Atomic Thing'])
             edge = DiEdge(source=source, target=target,
                           edge_attribute=edge_tuple[2])
             base_dict[edge_tuple] = edge
             base_edges.append(edge)
 
         for edge_tuple in ancestor:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
+            source = Vertex(name=edge_tuple[0],
+                            node_types=['component'])
+            target = Vertex(name=edge_tuple[1],
+                            node_types=['Atomic Thing'])
             edge = DiEdge(source=source, target=target,
                           edge_attribute=edge_tuple[2])
             ancestor_dict[edge_tuple] = edge
@@ -165,8 +169,6 @@ class TestManager(unittest.TestCase):
         self.assertTrue(manager.evaluators[1].has_rename)
 
         match_dict = manager.get_pattern_graph_diff()
-        # print(match_dict)
-        self.assertTrue(False)
 
         match_dict_str = {}
         added_to_str = []
@@ -259,6 +261,52 @@ class TestManager(unittest.TestCase):
         print(expected_dict)
         self.assertDictEqual(expected_dict, created_dict)
         self.assertTrue(expected_df.equals(created_df))
+
+    def test_graph_difference_to_json(self):
+        manager = Manager(
+            excel_path=[os.path.join(
+                DATA_DIRECTORY, 'Composition Example.xlsx')
+                for i in range(2)],
+            json_path=os.path.join(DATA_DIRECTORY,
+                                   'CompositionGraphMaster.json'))
+        base_inputs = [('s1', 't1', 'type'),
+                       ('s12', 't12', 'memberEnd'),
+                       ('song', 'tiger', 'blue'), ]
+        base_df = pd.DataFrame(data={
+            'source': ['s1', 's12', 'song'],
+            'target': [edge[1] for edge in base_inputs],
+            'type': ['type' for i in range(3)],
+            'memberEnd': ['memberEnd' for i in range(3)],
+            'blue': ['blue' for i in range(3)]
+        })
+
+        ancestor = [('as1', 't1', 'type'),
+                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+
+        base_edges = []
+        base_dict = {}
+        ancestor_edges = []
+        ancestor_dict = {}
+
+        for edge_tuple in base_inputs:
+            source = Vertex(name=edge_tuple[0],
+                            node_types=['component'])
+            target = Vertex(name=edge_tuple[1],
+                            node_types=['Atomic Thing'])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            base_dict[edge_tuple] = edge
+            base_edges.append(edge)
+
+        for edge_tuple in ancestor:
+            source = Vertex(name=edge_tuple[0],
+                            node_types=['component'])
+            target = Vertex(name=edge_tuple[1],
+                            node_types=['Atomic Thing'])
+            edge = DiEdge(source=source, target=target,
+                          edge_attribute=edge_tuple[2])
+            ancestor_dict[edge_tuple] = edge
+            ancestor_edges.append(edge)
 
     def tearDown(self):
         pass

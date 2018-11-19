@@ -208,6 +208,7 @@ class Manager(object):
                         new_name_objs = key
             changes_and_unstable = {'Changes': eval_one_matches[0],
                                     'Unstable Pairs': eval_one_matches[1]}
+            print(eval_one_matches[0])
             self.graph_difference_to_json(new_col=new_name_objs,
                                           change_dict=eval_one_matches[0])
 
@@ -241,11 +242,9 @@ class Manager(object):
                     continue
                 column_headers.append(in_key)
                 input_dict.update(difference_dict[in_key])
-            print(column_headers)
-            print(input_dict)
             df_data = to_excel_df(data_dict=input_dict,
                                   column_keys=column_headers)
-            print(df_data)
+
             df_output = pd.DataFrame(data=dict([
                 (k, pd.Series(v)) for k, v in df_data.items()
             ]))
@@ -263,21 +262,41 @@ class Manager(object):
         edge_del = []
         edge_add = []
         node_renames = []
+        translator = self.translator
         for key, value in change_dict.items():
             if key == 'Added':
-                pass
+                for edge in change_dict[key]:
+                    edge_add.append(edge.edge_to_uml(op='replace',
+                                                     translator=translator))
             elif key == 'Deleted':
-                pass
+                for edge in change_dict[key]:
+                    edge_del.append(edge.edge_to_uml(op='delete',
+                                                     translator=translator))
             elif key == new_col:
-                pass
+                for node in change_dict[key]:
+                    node_renames.append(
+                        node.change_node_to_uml(translator=translator)
+                    )
             elif isinstance(key, str):
                 continue
             else:
-                pass
-                # edge mixin to create/del edge.
-        pass
-        # this is where I will use the vertex mixin to report difference
-        # change uml types.
+                del_edge_json = key.edge_to_uml(op='delete',
+                                                translator=translator)
+                edge_del.append(del_edge_json)
+                add_edge_json = value[0].edge_to_uml(op='replace',
+                                                     translator=translator)
+                edge_add.append(add_edge_json)
+
+        outfile = 'graph_difference_changes.json'
+        outpath = os.path.join(DATA_DIRECTORY, outfile)
+        json_out = {'modification targets': []}
+        json_out['modification targets'].extend(edge_del)
+        json_out['modification targets'].extend(edge_add)
+        json_out['modification targets'].extend(node_renames)
+        with open(os.path.join(DATA_DIRECTORY,
+                               'graph_difference_changes.json'),
+                  'w') as outfile:
+            json.dump(json_out, outfile, indent=4)
 
 
 class Evaluator(object):
