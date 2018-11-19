@@ -182,8 +182,11 @@ class TestManager(unittest.TestCase):
                                             for value in match_dict[
                                                 '0-1']['Changes'][key]]})
                     continue
-                match_dict_str.update(
-                    {key: match_dict['0-1']['Changes'][key]})
+                else:
+                    vals = []
+                    for value in match_dict['0-1']['Changes'][key]:
+                        vals.append(value.named_edge_triple)
+                    match_dict_str.update({key: vals})
             else:
                 match_dict_str.update({key.named_edge_triple:
                                        match_dict[
@@ -196,6 +199,7 @@ class TestManager(unittest.TestCase):
                             'Rename old name': ['t12'],
                             'Added': [('b', 'c', 'orange'), ],
                             'Deleted': [('song', 'tiger', 'blue'), ], }
+        print(match_dict_str)
         self.assertDictEqual(expected_matches, match_dict_str)
 
     def test_changes_to_excel(self):
@@ -307,6 +311,19 @@ class TestManager(unittest.TestCase):
                           edge_attribute=edge_tuple[2])
             ancestor_dict[edge_tuple] = edge
             ancestor_edges.append(edge)
+
+        base_edge = base_dict[('s1', 't1', 'type')]
+        ances_edge = ancestor_dict[('as1', 't1', 'type')]
+        at12 = ancestor_dict[('s12', 'at12', 'memberEnd')].target
+        t12 = base_dict[('s12', 't12', 'memberEnd')].target
+        add_edge = ancestor_dict[('b', 'c', 'orange')]
+        del_edge = base_dict[('song', 'tiger', 'blue')]
+
+        change_dict = {base_edge: ances_edge,
+                       'Rename new name': [at12],
+                       'Rename old name': [t12],
+                       'Added': [add_edge, ],
+                       'Deleted': [del_edge, ], }
 
     def tearDown(self):
         pass
