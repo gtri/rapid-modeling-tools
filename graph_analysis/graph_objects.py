@@ -211,19 +211,21 @@ class PropertyDiGraph(nx.DiGraph):
 
 class VertexReporterMixin:
     def change_node_to_uml(self, translator=None):
-        print(self.name)
-        node_dict = {
-            'id': translator.get_uml_id(name=self.name),
-            'op': 'rename',
-            'name': self.name,
-            'path': None,
-            'metatype': translator.get_uml_metatype(
-                node_key=self.node_types[0]),
-            'stereotype': translator.get_uml_stereotype(
-                node_key=self.node_types[0]),
-            'attributes': self.attributes,
-        }
-        return to_uml_json_node(**node_dict)
+        for count, node_type in enumerate(self.node_types):
+            if count == 0:
+                node_dict = {
+                    'id': translator.get_uml_id(name=self.name),
+                    'op': 'rename',
+                    'name': self.name,
+                    'path': None,
+                    'metatype': translator.get_uml_metatype(
+                        node_key=node_type),
+                    'stereotype': translator.get_uml_stereotype(
+                        node_key=node_type),
+                    'attributes': self.attributes,
+                }
+
+                return to_uml_json_node(**node_dict)
 
     def delete_node_to_uml(self, translator=None):
         node_dict = {
@@ -292,7 +294,7 @@ class VertexReporterMixin:
                 node_key=node_type)
             if settings_val:
                 if self.settings_node:
-                    settings_val = list(set(get_uml_id(name=node)
+                    settings_val = list(set(translator.get_uml_id(name=node)
                                             for node in self.settings_node))
                     node_dict.update({'op': 'replace',
                                       'path': path_val,

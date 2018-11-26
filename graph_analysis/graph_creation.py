@@ -211,13 +211,14 @@ class Manager(object):
                 if isinstance(key, str):
                     if new_name_col in key:
                         new_name_objs = key
-            self.graph_difference_to_json(new_col=new_name_objs,
-                                          change_dict=eval_one_matches[0])
             changes_and_unstable = {'Changes': eval_one_matches[0],
                                     'Unstable Pairs': eval_one_matches[1]}
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
+            self.graph_difference_to_json(new_col=new_name_objs,
+                                          change_dict=eval_one_matches[0],
+                                          evaluators=key)
             self.evaluator_change_dict.update(
                 {key: changes_and_unstable})
 
@@ -229,11 +230,11 @@ class Manager(object):
         # session than data will be lost and only the most recent changes
         # will be kept.
         # does create multiple sheets for each Manager.
-        outfile = 'Graph Model Differences.xlsx'
-        outpath = os.path.join(DATA_DIRECTORY, outfile)
-        writer = pd.ExcelWriter(outpath)
 
         for key in self.evaluator_change_dict:
+            outfile = 'Graph Model Differences {0}.xlsx'.format(key)
+            outpath = os.path.join(DATA_DIRECTORY, outfile)
+            writer = pd.ExcelWriter(outpath)
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
             evals_comp = key.split('-')
@@ -256,7 +257,8 @@ class Manager(object):
 
         writer.save()
 
-    def graph_difference_to_json(self, new_col='', change_dict=None):
+    def graph_difference_to_json(self, new_col='',
+                                 change_dict=None, evaluators=''):
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
         # Naked Key: Value pairs mean delete edge key and add value key.
@@ -296,12 +298,11 @@ class Manager(object):
         change_list.extend(edge_add)
         change_list.extend(node_renames)
 
-        outfile = 'graph_difference_changes.json'
-        outpath = os.path.join(DATA_DIRECTORY, outfile)
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)
         with open(os.path.join(DATA_DIRECTORY,
-                               'graph_difference_changes.json'),
+                               'graph_difference_changes_{0}.json'.format(
+                                   evaluators)),
                   'w') as outfile:
             json.dump(json_out, outfile, indent=4)
 

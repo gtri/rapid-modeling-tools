@@ -11,67 +11,98 @@ from graph_analysis.utils import object_dict_view
 DATA_DIRECTORY = '../data/'
 
 
-# class TestProduceJson(unittest.TestCase):
-#
-#     def setUp(self):
-#         pass
-#
-#     def test_json_creation(self):
-#         manager = Manager(excel_path=[os.path.join(
-#             DATA_DIRECTORY, 'Sample Equations.xlsx')],
-#             json_path=os.path.join(DATA_DIRECTORY,
-#                                    'ParametricGraphMaster.json'))
-#         translator = manager.translator
-#         evaluator = manager.evaluators[0]
-#         evaluator.rename_df_columns()
-#         evaluator.add_missing_columns()
-#         evaluator.to_property_di_graph()
-#         property_di_graph = evaluator.prop_di_graph
-#         property_di_graph.create_vertex_set(
-#             df=evaluator.df, translator=translator)
-#         vert_set = property_di_graph.vertex_set
-#         json_out = {'modification targets': []}
-#         decs_json = []
-#         edge_json = []
-#         for vertex in vert_set:
-#             vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
-#                 translator=translator)
-#             json_out['modification targets'].extend(vert_uml)
-#             decs_json.extend(decs_uml)
-#             edge_json.extend(edge_uml)
-#
-#         json_out['modification targets'].extend(decs_json)
-#         json_out['modification targets'].extend(edge_json)
-#         with open(os.path.join(DATA_DIRECTORY,
-#                                'changes_uml.json'), 'w') as outfile:
-#             json.dump(json_out, outfile, indent=4)
-#
-#     def test_change_excel_json_creation(self):
-#         excel_files = [os.path.join(DATA_DIRECTORY,
-#                                     'Composition Example Model Baseline.xlsx'),
-#                        os.path.join(DATA_DIRECTORY,
-#                                     'Composition Example Model Changed.xlsx')]
-#         manager = Manager(excel_path=excel_files,
-#                           json_path=os.path.join(DATA_DIRECTORY,
-#                                                  'CompositionGraphMaster.json')
-#                           )
-#
-#         translator = manager.translator
-#         for evaluator in manager.evaluators:
-#             evaluator.rename_df_columns()
-#             evaluator.add_missing_columns()
-#             evaluator.to_property_di_graph()
-#             property_di_graph = evaluator.prop_di_graph
-#             property_di_graph.create_vertex_set(
-#                 df=evaluator.df, translator=translator)
-#             property_di_graph.create_edge_set()
-#             vertex_set = property_di_graph.vertex_set
-#
-#         manager.get_pattern_graph_diff()
-#         manager.changes_to_excel()
-#
-#     def tearDown(self):
-#         pass
+class TestProduceJson(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_json_creation(self):
+        manager = Manager(excel_path=[os.path.join(
+            DATA_DIRECTORY, 'Sample Equations.xlsx')],
+            json_path=os.path.join(DATA_DIRECTORY,
+                                   'ParametricGraphMaster.json'))
+        translator = manager.translator
+        evaluator = manager.evaluators[0]
+        evaluator.rename_df_columns()
+        evaluator.add_missing_columns()
+        evaluator.to_property_di_graph()
+        property_di_graph = evaluator.prop_di_graph
+        property_di_graph.create_vertex_set(
+            df=evaluator.df, translator=translator)
+        vert_set = property_di_graph.vertex_set
+        json_out = {'modification targets': []}
+        decs_json = []
+        edge_json = []
+        for vertex in vert_set:
+            vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
+                translator=translator)
+            json_out['modification targets'].extend(vert_uml)
+            decs_json.extend(decs_uml)
+            edge_json.extend(edge_uml)
+
+        json_out['modification targets'].extend(decs_json)
+        json_out['modification targets'].extend(edge_json)
+        with open(os.path.join(DATA_DIRECTORY,
+                               'changes_uml.json'), 'w') as outfile:
+            json.dump(json_out, outfile, indent=4)
+
+    def test_change_excel_json_creation(self):
+        excel_files = [os.path.join(DATA_DIRECTORY,
+                                    'Composition Example Model Baseline.xlsx'),
+                       os.path.join(DATA_DIRECTORY,
+                                    'Composition Example Model Changed.xlsx')]
+        manager = Manager(excel_path=excel_files,
+                          json_path=os.path.join(DATA_DIRECTORY,
+                                                 'CompositionGraphMaster.json')
+                          )
+
+        translator = manager.translator
+        for evaluator in manager.evaluators:
+            evaluator.rename_df_columns()
+            evaluator.add_missing_columns()
+            evaluator.to_property_di_graph()
+            property_di_graph = evaluator.prop_di_graph
+            property_di_graph.create_vertex_set(
+                df=evaluator.df, translator=translator)
+            property_di_graph.create_edge_set()
+            vertex_set = property_di_graph.vertex_set
+
+        manager.get_pattern_graph_diff()
+        manager.changes_to_excel()
+
+    def test_composition_2_json(self):
+        manager = Manager(excel_path=[os.path.join(
+            DATA_DIRECTORY, 'Composition Example 2.xlsx')],
+            json_path=os.path.join(DATA_DIRECTORY,
+                                   'CompositionGraphMaster.json'))
+        translator = manager.translator
+        evaluator = manager.evaluators[0]
+        evaluator.rename_df_columns()
+        evaluator.add_missing_columns()
+        evaluator.to_property_di_graph()
+        property_di_graph = evaluator.prop_di_graph
+        property_di_graph.create_vertex_set(
+            df=evaluator.df, translator=translator)
+        vert_set = property_di_graph.vertex_set
+        json_out = {'modification targets': []}
+        decs_json = []
+        edge_json = []
+        for vertex in vert_set:
+            vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
+                translator=translator)
+            json_out['modification targets'].extend(vert_uml)
+            decs_json.extend(decs_uml)
+            edge_json.extend(edge_uml)
+
+        json_out['modification targets'].extend(decs_json)
+        json_out['modification targets'].extend(edge_json)
+        with open(os.path.join(DATA_DIRECTORY,
+                               'composition_example_2_uml.json'),
+                  'w') as outfile:
+            json.dump(json_out, outfile, indent=4)
+
+    def tearDown(self):
+        pass
 
 
 class TestManager(unittest.TestCase):
@@ -237,19 +268,21 @@ class TestManager(unittest.TestCase):
         unstable_two = DiEdge(source=Vertex(name='tomahto'),
                               target=Vertex(name='fruit'),
                               edge_attribute='fruit')
+        new_name = Vertex(name='new name')
+        old_name = Vertex(name='old name')
 
         fake_datas = {'0-1': {'Changes': {'Added': [added_edge],
                                           'Deleted': [deleted_edge],
                                           og_edge: [change_edge],
-                                          'Rename new name': ['new name'],
-                                          'Rename old name': ['old name'], },
+                                          'Rename new name': [new_name],
+                                          'Rename old name': [old_name], },
                               'Unstable Pairs': {unstable_key: [
                                   unstable_one,
                                   unstable_two]}}}
         manager.evaluator_change_dict = fake_datas
         manager.changes_to_excel()
 
-        created_file_name = 'Graph Model Differences.xlsx'
+        created_file_name = 'Graph Model Differences 0-1.xlsx'
         created_file = os.path.join(DATA_DIRECTORY, created_file_name)
         created_df = pd.read_excel(created_file)
         created_dict = created_df.to_dict()
@@ -268,8 +301,6 @@ class TestManager(unittest.TestCase):
         expected_df = pd.DataFrame(data=dict([
             (k, pd.Series(v)) for k, v in expected_data.items()]))
         expected_dict = expected_df.to_dict()
-        print(created_dict)
-        print(expected_dict)
         self.assertDictEqual(expected_dict, created_dict)
         self.assertTrue(expected_df.equals(created_df))
 
@@ -340,7 +371,8 @@ class TestManager(unittest.TestCase):
                    cd['Rename new name'][0].change_node_to_uml(translator=tr)]
 
         changes = manager.graph_difference_to_json(new_col='Rename new name',
-                                                   change_dict=change_dict)
+                                                   change_dict=change_dict,
+                                                   evaluators='0-1')
         for count, change in enumerate(changes):
             self.assertDictEqual(desired[count], change)
 

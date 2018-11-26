@@ -377,12 +377,14 @@ class TestUtils(unittest.TestCase):
         unstable_two = DiEdge(source=Vertex(name='tomahto'),
                               target=Vertex(name='fruit'),
                               edge_attribute='fruit')
+        new_name = Vertex(name='new name')
+        old_name = Vertex(name='old name')
 
         fake_datas = {'0-1': {'Changes': {'Added': [added_edge],
                                           'Deleted': [deleted_edge],
                                           og_edge: [change_edge],
-                                          'Rename new name': ['new name'],
-                                          'Rename old name': ['old name'], },
+                                          'Rename new name': [new_name],
+                                          'Rename old name': [old_name], },
                               'Unstable Pairs': {unstable_key: [
                                   unstable_one,
                                   unstable_two]}}}

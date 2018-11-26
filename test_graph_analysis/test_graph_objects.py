@@ -257,6 +257,11 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(expected_dict, car_dict)
 
     def test_create_node_to_uml(self):
+        with open(os.path.join(DATA_DIRECTORY,
+                               'CompositionGraphMaster.json')) as f:
+            data = json.load(f)
+
+        translator = MDTranslator(json_data=data)
         vertex_car = Vertex(
             name='Car',
             node_types=['Atomic Thing', 'Composite Thing'],
@@ -268,7 +273,7 @@ class TestVertex(unittest.TestCase):
             attributes=[{'Notes': 'Test Note'}]
         )
         vertex_car_uml, car_decs, edge_car_uml = vertex_car.create_node_to_uml(
-            translator=self.translator
+            translator=translator
         )
 
         vertex_engine = Vertex(
@@ -281,7 +286,7 @@ class TestVertex(unittest.TestCase):
             settings_node=['Car']
         )
         engine_uml = vertex_engine.create_node_to_uml(
-            translator=self.translator
+            translator=translator
         )
 
         car_node_uml = [{
@@ -359,7 +364,6 @@ class TestVertex(unittest.TestCase):
         }]
 
         self.assertDictEqual(engine_uml[0][0], engine_node_uml[0])
-
         for count, decs_dict in enumerate(engine_decoration_uml):
             self.assertDictEqual(engine_uml[1][count], decs_dict)
 
@@ -387,6 +391,11 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(engine_uml[2], engine_edge_uml)
 
     def test_change_node_to_uml(self):
+        with open(os.path.join(DATA_DIRECTORY,
+                               'CompositionGraphMaster.json')) as f:
+            data = json.load(f)
+
+        translator = MDTranslator(json_data=data)
         vertex_car = Vertex(
             name='Car',
             node_types=['Atomic Thing', 'Composite Thing'],
@@ -413,11 +422,16 @@ class TestVertex(unittest.TestCase):
         }]
 
         rename_json = vertex_car.change_node_to_uml(
-            translator=self.translator)
+            translator=translator)
 
         self.assertDictEqual(car_rename_uml[0], rename_json)
 
     def test_delete_node_to_uml(self):
+        with open(os.path.join(DATA_DIRECTORY,
+                               'CompositionGraphMaster.json')) as f:
+            data = json.load(f)
+
+        translator = MDTranslator(json_data=data)
         vertex_car = Vertex(
             name='Car',
             node_types=['Atomic Thing', 'Composite Thing'],
@@ -444,29 +458,34 @@ class TestVertex(unittest.TestCase):
         }]
 
         delete_json = vertex_car.delete_node_to_uml(
-            translator=self.translator)
+            translator=translator)
 
         self.assertDictEqual(car_delete_uml[0], delete_json)
 
     def test_get_uml_id(self):
+        with open(os.path.join(DATA_DIRECTORY,
+                               'CompositionGraphMaster.json')) as f:
+            data = json.load(f)
+
+        translator = MDTranslator(json_data=data)
         node_names = ['Car', 'engine', 'Car']
         uml_id_names = []
         for node_name in node_names:
-            uml_id_names.append(self.translator.get_uml_id(name=node_name))
+            uml_id_names.append(translator.get_uml_id(name=node_name))
 
         expected_uml_names = ['new_0', 'new_1', 'new_0']
         self.assertListEqual(expected_uml_names, uml_id_names)
-        self.assertEqual(2, self.translator.uml_id['count'])
+        self.assertEqual(2, translator.uml_id['count'])
 
         edge_names = ['type', 'owner', 'type']
         edge_id_names = []
         for edge_name in edge_names:
-            edge_id_names.append(self.translator.get_uml_id(name=edge_name))
+            edge_id_names.append(translator.get_uml_id(name=edge_name))
 
         expected_uml_edge_names = ['new_2', 'new_3', 'new_2']
         self.assertListEqual(
             expected_uml_edge_names, edge_id_names)
-        self.assertEqual(4, self.translator.uml_id['count'])
+        self.assertEqual(4, translator.uml_id['count'])
 
     def tearDown(self):
         pass

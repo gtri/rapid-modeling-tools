@@ -369,12 +369,13 @@ def to_excel_df(data_dict=None, column_keys=None):
         if isinstance(key, str):
             if not data_dict[key]:
                 continue
-            elif isinstance(data_dict[key][0], str):
-                df_data[key] = [value
-                                for value in data_dict[key]]
-                continue
-            df_data.update({key: [val.named_edge_triple
-                                  for val in data_dict[key]]})
+            try:
+                check = data_dict[key][0].named_edge_triple
+                df_data.update({key: [val.named_edge_triple
+                                      for val in data_dict[key]]})
+            except AttributeError:
+                df_data.update({key: [val.name
+                                      for val in data_dict[key]]})
         else:
             if len(data_dict[key]) > 1:
                 repeat_key = [key.named_edge_triple for i in range(
