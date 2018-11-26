@@ -482,7 +482,6 @@ def new_as_old(main_dict=None, new_keys=None):
             main_dict[key].source.name = old_name
             reverse_map.update({old_name: key[0]})
             main_dict[new_key] = main_dict.pop(key)
-            # print(new_key, main_dict[new_key].named_edge_triple)
         elif key[1] in new_key_set:
             old_name = new_keys[key[1]]
             new_key = list(copy(key))
@@ -525,12 +524,8 @@ def to_nto_rename_dict(new_name=None, new_name_dict=None,
 
 
 def distill_edges_to_nodes(edge_matches=None):
-    print(len(edge_matches.keys()))
     for key in edge_matches:
-        print(edge_matches.keys())
         if not isinstance(key, str):
-            # print(key)
-            # print(edge_matches[key])
             source_cond = key.source.name == edge_matches[key][0].source.name
             target_cond = key.target.name == edge_matches[key][0].target.name
             if source_cond and target_cond:

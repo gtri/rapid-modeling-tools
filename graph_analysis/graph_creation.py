@@ -100,7 +100,6 @@ class Manager(object):
                 eval_1_e_dict, reverse_map, vert_obj_map = new_as_old(
                     main_dict=eval_1_e_dict,
                     new_keys=n_t_o)
-                print(vert_obj_map)
             elif pair[1].has_rename:
                 # rename pair[1]
                 new_name_col = get_new_column_name(
@@ -183,6 +182,9 @@ class Manager(object):
                 eval_1_e_dict, new_to_old, old_v_obj_map = new_as_old(
                     main_dict=eval_1_e_dict,
                     new_keys=reverse_map)
+                vert_dict = pair[1].prop_di_graph.vertex_dict
+                for key in old_v_obj_map.keys():
+                    old_v_obj_map.update({key: vert_dict[key]})
                 vert_obj_map.update(old_v_obj_map)
                 n_t_o, rename_changes = to_nto_rename_dict(
                     new_name=new_name_col,
@@ -194,6 +196,9 @@ class Manager(object):
                 eval_2_e_dict, new_to_old, old_v_obj_map = new_as_old(
                     main_dict=eval_2_e_dict,
                     new_keys=reverse_map)
+                vert_dict = pair[0].prop_di_graph.vertex_dict
+                for key in old_v_obj_map.keys():
+                    old_v_obj_map.update({key: vert_dict[key]})
                 vert_obj_map.update(old_v_obj_map)
                 n_t_o, rename_changes = to_nto_rename_dict(
                     new_name=new_name_col,
@@ -206,11 +211,10 @@ class Manager(object):
                 if isinstance(key, str):
                     if new_name_col in key:
                         new_name_objs = key
-            changes_and_unstable = {'Changes': eval_one_matches[0],
-                                    'Unstable Pairs': eval_one_matches[1]}
-            print(eval_one_matches[0])
             self.graph_difference_to_json(new_col=new_name_objs,
                                           change_dict=eval_one_matches[0])
+            changes_and_unstable = {'Changes': eval_one_matches[0],
+                                    'Unstable Pairs': eval_one_matches[1]}
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
@@ -259,6 +263,7 @@ class Manager(object):
         # Purposefully excluding unstable pairs because the Human can make
         # those changes so they are clear.
         static_keys = ['Added', 'Deleted', new_col]
+        change_list = []
         edge_del = []
         edge_add = []
         node_renames = []
@@ -287,16 +292,20 @@ class Manager(object):
                                                      translator=translator)
                 edge_add.append(add_edge_json)
 
+        change_list.extend(edge_del)
+        change_list.extend(edge_add)
+        change_list.extend(node_renames)
+
         outfile = 'graph_difference_changes.json'
         outpath = os.path.join(DATA_DIRECTORY, outfile)
         json_out = {'modification targets': []}
-        json_out['modification targets'].extend(edge_del)
-        json_out['modification targets'].extend(edge_add)
-        json_out['modification targets'].extend(node_renames)
+        json_out['modification targets'].extend(change_list)
         with open(os.path.join(DATA_DIRECTORY,
                                'graph_difference_changes.json'),
                   'w') as outfile:
             json.dump(json_out, outfile, indent=4)
+
+        return change_list
 
 
 class Evaluator(object):
