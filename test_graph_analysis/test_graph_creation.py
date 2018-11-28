@@ -1,6 +1,7 @@
 import json
 import os
 import unittest
+import warnings
 
 import pandas as pd
 
@@ -100,6 +101,34 @@ class TestProduceJson(unittest.TestCase):
                                'composition_example_2_uml.json'),
                   'w') as outfile:
             json.dump(json_out, outfile, indent=4)
+
+    def test_change_composition_2_excel_json_creation(self):
+        warnings.warn(
+            'File overwrite if test_change_excel_json_creation is uncommented')
+        original_file = 'Composition Example 2 Model Baseline.xlsx'
+        change_file = 'Composition Example 2 Model Changed.xlsx'
+        excel_files = [os.path.join(DATA_DIRECTORY,
+                                    original_file),
+                       os.path.join(DATA_DIRECTORY,
+                                    change_file)]
+        manager = Manager(excel_path=excel_files,
+                          json_path=os.path.join(DATA_DIRECTORY,
+                                                 'CompositionGraphMaster.json')
+                          )
+
+        translator = manager.translator
+        for evaluator in manager.evaluators:
+            evaluator.rename_df_columns()
+            evaluator.add_missing_columns()
+            evaluator.to_property_di_graph()
+            property_di_graph = evaluator.prop_di_graph
+            property_di_graph.create_vertex_set(
+                df=evaluator.df, translator=translator)
+            property_di_graph.create_edge_set()
+            vertex_set = property_di_graph.vertex_set
+
+        manager.get_pattern_graph_diff()
+        manager.changes_to_excel()
 
     def tearDown(self):
         pass
