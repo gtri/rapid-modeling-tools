@@ -9,6 +9,9 @@ UML_ID = {
 }
 
 
+# TODO: to selectively import one of the utils is the funtion that needs to do
+# the importing.
+
 def get_uml_id(name=None):
     """Returns the UML_ID for the corresponding vertex name provided. If the
     name provided does not exist as a key in the UML_ID dictionary than a
