@@ -276,14 +276,9 @@ def match_changes(change_dict=None):
             else:
                 i = 0
                 j = 1
-                # print(j, len(matched[suitor]))
-                # print(matched[suitor][j])
-                # if len(matched[suitor]) == 2:
-                #     print(matched[suitor])
                 while matched[suitor][i][1] == matched[suitor][j][1]:
                     i += 1
                     j += 1
-                    # print(j, len(matched[suitor]))
                     if j >= len(matched[suitor]):
                         break
                 unstable_pairing[suitor] = [matched[suitor][k][0]
@@ -486,30 +481,32 @@ def new_as_old(main_dict=None, new_keys=None):
 
 def to_nto_rename_dict(new_name=None, new_name_dict=None,
                        str_to_obj_map=None):
-    # print(new_name_dict)
     new_names_list = new_name_dict[new_name]
-    if str_to_obj_map:
-        for key, val in str_to_obj_map.items():
-            # print(key, val.name)
-            pass
     # old_names_list = [
     #     value
     #     for key, value in new_name_dict.items() if key is not new_name
     #     ]
     # Why does the above work in jupyter but not here?
+    old_obj_list = []
+    new_obj_list = []
     for key, value in new_name_dict.items():
-        # print(key)
-        # print(value)
         if key is not new_name:
             if str_to_obj_map:
-                old_obj_list = [str_to_obj_map[val] for val in value]
-                new_obj_list = [str_to_obj_map[val] for val in new_names_list]
+                for val in value:
+                    if val in str_to_obj_map.keys():
+                        old_obj_list.append(str_to_obj_map[val])
+                    else:
+                        continue
+                for val in new_names_list:
+                    if val in str_to_obj_map.keys():
+                        new_obj_list.append(str_to_obj_map[val])
+                    else:
+                        continue
+
             old_names_list = value
             old_key = key
 
     new_to_old_dict = dict(zip(new_names_list, old_names_list))
-    print('new to old dict')
-    print(new_to_old_dict)
 
     if str_to_obj_map:
         rename_changes = {'Rename {0}'.format(new_name): new_obj_list,

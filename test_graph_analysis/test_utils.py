@@ -181,7 +181,7 @@ class TestUtils(unittest.TestCase):
             else:
                 ancestor_preference[edge] = copy(
                     base_map[edge.edge_attribute])
-        # print(base_preference)
+
         match_dict = match_changes(change_dict=base_preference)
 
         expected_matches = {('s2', 't2', 'type'): ('s2', 'at2', 'type'),
@@ -225,8 +225,6 @@ class TestUtils(unittest.TestCase):
             else:
                 for edge in pairings[key]:
                     pairings_str[key].append(edge.named_edge_triple)
-
-        print(pairings_str)
 
         self.assertDictEqual(expected_matches, pairings_str)
 

@@ -199,10 +199,7 @@ class Manager(object):
                 vert_dict = pair[0].prop_di_graph.vertex_dict
                 for key in old_v_obj_map.keys():
                     old_v_obj_map.update({key: vert_dict[key]})
-                print(vert_obj_map.keys())
                 vert_obj_map.update(old_v_obj_map)
-                print(vert_obj_map.keys())
-                print(new_name_dict)
                 n_t_o, rename_changes = to_nto_rename_dict(
                     new_name=new_name_col,
                     new_name_dict=new_name_dict,
