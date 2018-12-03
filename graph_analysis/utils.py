@@ -244,98 +244,75 @@ def get_node_types_attrs(df=None, node=None,
     return node_type_columns, node_attr_dict
 
 
-def match_changes(change_dict=None, score=None, match_ancestors=None):
+def match_changes(change_dict=None):
     # count = 0
     unstable_pairing = {}
-    if not score:
-        score = {}
-    if not match_ancestors:
-        match_ancestors = {}
+    matched = {}
+    str_dict = {}
 
-    # this is running a version of the stable marriage algorithm
-    # suitors are keys in the change_dict looking for engagements to the
-    # values they contian.
     add_del = ('Added', 'Deleted')
     for suitor in change_dict:
         # TODO: generalize key skip method
-        while len(change_dict[suitor]) > 1:
-            if suitor in add_del or not change_dict[suitor]:
-                if not change_dict[suitor] and suitor not in add_del:
-                    deleted_set = set(change_dict['Deleted']).add(suitor)
-                    update_dict = {'Deleted': deleted_set}
-                    change_dict.update(update_dict)
-                # count += 1
-                continue
-
-            if suitor not in score.keys():  # initialize a score
-                preference = match(
-                    current=suitor, clone=change_dict[suitor][0])
-                score[suitor] = preference
-                match_ancestors.update({change_dict[suitor][0]: suitor})
-
-            # loop over suitors for engagements
-            if len(change_dict[suitor]) > 1:
-                preference = match(
-                    current=suitor, clone=change_dict[suitor][1])
-
-                # match with node in 1th position
-                if preference > score[suitor]:
-                    if match_ancestors[change_dict[suitor][0]] == suitor:
-                        match_ancestors.update({change_dict[suitor][0]: None})
-                        # record how the values match to the keys.
-
-                    # remove previous engagement; more favorable pairing found
-                    change_dict[suitor].pop(0)
-                    score[suitor] = preference
-                    match_ancestors.update({change_dict[suitor][0]: suitor})
-                # do nothing 1th node less likely
-                elif preference < score[suitor]:
-                    change_dict[suitor].pop(1)
-                elif preference == score[suitor] and preference < 1:
-                    # because this is an imperfect application of stable
-                    # marriage when a favorable pariing is found but
-                    # there are still suitors in the list, shuffle the list
-                    # to try to remove remaining
-                    score.pop(suitor, None)
-                    shuffle(change_dict[suitor])
-                else:
-                    unstable_pairing.update({suitor: change_dict[suitor]})
-                    # at least two likely pairs but shuffle to try to
-                    # reduce the list to the minimal pairing.
-                    shuffle(change_dict[suitor])
-                    # could rerun the checks using the unstable pairing dict
-                    # count += 1
-                    continue
+        if suitor in add_del:
+            str_dict[suitor] = change_dict[suitor]
+            if not change_dict[suitor] and suitor not in add_del:
+                deleted_set = set(
+                    str_dict['Deleted']).add(set(suitor.named_edge_triple))
+                update_dict = {'Deleted': list(deleted_set)}
+                str_dict.update(update_dict)
+            continue
+        scores = match(*change_dict[suitor], current=suitor)
+        matched[suitor] = [(item, scores[j])
+                           for j, item in enumerate(change_dict[suitor])]
+        matched[suitor] = sorted(matched[suitor],
+                                 reverse=True, key=lambda elem: elem[1])
+        if len(matched[suitor]) == 1:
+            matched[suitor] = [matched[suitor][0][0]]
+        elif len(matched[suitor]) > 1:
+            first = matched[suitor][0][1]
+            second = matched[suitor][1][1]
+            if first > second:
+                matched[suitor] = [matched[suitor][0][0]]
             else:
-                match_ancestors.update({change_dict[suitor][0]: suitor})
-                # count += 1
-                # continue
+                i = 0
+                j = 1
+                # print(j, len(matched[suitor]))
+                # print(matched[suitor][j])
+                # if len(matched[suitor]) == 2:
+                #     print(matched[suitor])
+                while matched[suitor][i][1] == matched[suitor][j][1]:
+                    i += 1
+                    j += 1
+                    # print(j, len(matched[suitor]))
+                    if j >= len(matched[suitor]):
+                        break
+                unstable_pairing[suitor] = [matched[suitor][k][0]
+                                            for k in range(j)]
+                matched.pop(suitor)
 
-        # if count == len(change_dict.keys()):
-    return (change_dict, unstable_pairing, score)
-    # else:
-    # This function alone responsible for returning
-    # probably matchings
-    # return match_changes(change_dict=change_dict, score=score,
-    # match_ancestors = match_ancestors)
+    matched.update(str_dict)
+    return (matched, unstable_pairing)
 
 
-def match(current=None, clone=None):
+def match(*args, current=None):
     # this function should only be getting nodes with the same edges
     # if I change this to assume nodes of the same edge attr then I can
     # send this function "equivalent edges"
-    if current.edge_attribute == clone.edge_attribute:
-        if ((current.source.name == clone.source.name)
-                or (current.target.name == clone.target.name)):
-            # TODO: check subgraph
-            # if subgraph is isomorphic then return 2
-            return 1
-        else:
-            return 0
-    elif len(current.edge_attribute) > len(clone.edge_attribute):
-        return -1
-    else:  # edge attribute of current is shorter than of clone
-        return -2
+    scores = []
+    for clone in args:
+        if current.edge_attribute == clone.edge_attribute:
+            if ((current.source.name == clone.source.name)
+                    or (current.target.name == clone.target.name)):
+                # TODO: check subgraph
+                # if subgraph is isomorphic then return 2
+                scores.append(1)
+            else:
+                scores.append(0)
+        elif len(current.edge_attribute) > len(clone.edge_attribute):
+            scores.append(-1)
+        else:  # edge attribute of current is shorter than of clone
+            scores.append(-2)
+    return scores
 
 
 def recast_new_names_as_old(edge_dict=None, rename_df=None, new_name=None):
@@ -509,13 +486,20 @@ def new_as_old(main_dict=None, new_keys=None):
 
 def to_nto_rename_dict(new_name=None, new_name_dict=None,
                        str_to_obj_map=None):
+    # print(new_name_dict)
     new_names_list = new_name_dict[new_name]
+    if str_to_obj_map:
+        for key, val in str_to_obj_map.items():
+            # print(key, val.name)
+            pass
     # old_names_list = [
     #     value
     #     for key, value in new_name_dict.items() if key is not new_name
     #     ]
     # Why does the above work in jupyter but not here?
     for key, value in new_name_dict.items():
+        # print(key)
+        # print(value)
         if key is not new_name:
             if str_to_obj_map:
                 old_obj_list = [str_to_obj_map[val] for val in value]
@@ -524,6 +508,8 @@ def to_nto_rename_dict(new_name=None, new_name_dict=None,
             old_key = key
 
     new_to_old_dict = dict(zip(new_names_list, old_names_list))
+    print('new to old dict')
+    print(new_to_old_dict)
 
     if str_to_obj_map:
         rename_changes = {'Rename {0}'.format(new_name): new_obj_list,

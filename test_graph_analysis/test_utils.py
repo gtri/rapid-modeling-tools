@@ -181,9 +181,8 @@ class TestUtils(unittest.TestCase):
             else:
                 ancestor_preference[edge] = copy(
                     base_map[edge.edge_attribute])
-
-        match_dict = match_changes(change_dict=base_preference, score={},
-                                   match_ancestors={})
+        # print(base_preference)
+        match_dict = match_changes(change_dict=base_preference)
 
         expected_matches = {('s2', 't2', 'type'): ('s2', 'at2', 'type'),
                             ('s3', 't3', 'owner'): ('as3', 't3', 'owner'),
@@ -227,6 +226,8 @@ class TestUtils(unittest.TestCase):
                 for edge in pairings[key]:
                     pairings_str[key].append(edge.named_edge_triple)
 
+        print(pairings_str)
+
         self.assertDictEqual(expected_matches, pairings_str)
 
         for key in unstable_keys:
@@ -269,31 +270,31 @@ class TestUtils(unittest.TestCase):
         # case: different target
         match_edge = DiEdge(source=car, target=wheel,
                             edge_attribute='owner')
-        match_val = match(current=og_edge, clone=match_edge)
-        self.assertEqual(1, match_val)
+        match_val = match(*[match_edge], current=og_edge,)
+        self.assertEqual(1, match_val[0])
 
         # case: different source
         match_edge2 = DiEdge(source=wheel, target=engine,
                              edge_attribute='owner')
-        match_val = match(current=og_edge, clone=match_edge2)
-        self.assertEqual(1, match_val)
+        match_val = match(*[match_edge2], current=og_edge,)
+        self.assertEqual(1, match_val[0])
 
         # case: same edge type different otherwise
         match_edge3 = DiEdge(source=wheel, target=car,
                              edge_attribute='owner')
-        match_val = match(current=og_edge, clone=match_edge3)
-        self.assertEqual(0, match_val)
+        match_val = match(*[match_edge3], current=og_edge,)
+        self.assertEqual(0, match_val[0])
 
         # case: original edge type longer than change
         short_edge = DiEdge(source=car, target=engine, edge_attribute='type')
-        match_val = match(current=og_edge, clone=short_edge)
-        self.assertEqual(-1, match_val)
+        match_val = match(*[short_edge], current=og_edge,)
+        self.assertEqual(-1, match_val[0])
 
         # case: original edge type shorter than chagne
         long_edge = DiEdge(source=car, target=engine,
                            edge_attribute='memberEnd')
-        match_val = match(current=og_edge, clone=long_edge)
-        self.assertEqual(-2, match_val)
+        match_val = match(*[long_edge], current=og_edge,)
+        self.assertEqual(-2, match_val[0])
 
     def test_recast_new_names_as_old(self):
         base_inputs = [('s1', 't1', 'type'),
