@@ -3,6 +3,7 @@ __pycache__
 doc
 .pytest_cache
 envs
-graph_analysis.egg-info
+*.egg-info
 notebooks
 old_data
+*.cache

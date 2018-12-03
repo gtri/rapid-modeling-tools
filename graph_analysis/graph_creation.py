@@ -401,10 +401,14 @@ class Evaluator(object):
                             # then replace instances of this with those in 1
                             self.df.replace(to_replace=row[0], value=row[1],
                                             inplace=True)
+                            self.translator.uml_id[
+                                row[1]] = self.translator.uml_id[row[0]]
                         elif row[1] in self.translator.uml_id.keys():
                             # same as above in other direction
                             self.df.replace(to_replace=row[1], value=row[0],
                                             inplace=True)
+                            self.translator.uml_id[
+                                row[0]] = self.translator.uml_id[row[1]]
         else:
             self.df = pd.read_excel(excel_file)
             self.df.dropna(how='all', inplace=True)
