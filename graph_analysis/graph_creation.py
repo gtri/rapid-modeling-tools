@@ -382,7 +382,7 @@ class Evaluator(object):
         # TODO: Generalize/Standardize this function
         xls = pd.ExcelFile(excel_file, on_demand=True)
         if len(xls.sheet_names) > 1:
-            for sheet in xls.sheet_names:
+            for sheet in sorted(xls.sheet_names):
                 if 'composition' == sheet.lower():
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df.dropna(how='all', inplace=True)
@@ -393,8 +393,18 @@ class Evaluator(object):
                         self.df_ids.to_dict(
                             orient='dict')[self.df_ids.columns[0]])
                 elif 'renames' == sheet.lower():
+                    # TODO: Write test for this!
                     self.df_renames = pd.read_excel(excel_file,
                                                     sheet_name=sheet)
+                    for row in self.df_renames.itertuples(index=False):
+                        if row[0] in self.translator.uml_id.keys():
+                            # then replace instances of this with those in 1
+                            self.df.replace(to_replace=row[0], value=row[1],
+                                            inplace=True)
+                        elif row[1] in self.translator.uml_id.keys():
+                            # same as above in other direction
+                            self.df.replace(to_replace=row[1], value=row[0],
+                                            inplace=True)
         else:
             self.df = pd.read_excel(excel_file)
             self.df.dropna(how='all', inplace=True)
