@@ -1,7 +1,10 @@
 import json
 import os
 from copy import copy
+from glob import glob
 from itertools import combinations
+from os.path import basename
+from warnings import warn
 
 import networkx as nx
 import pandas as pd
@@ -16,7 +19,7 @@ from .utils import (associate_node_ids, create_column_values_singleton,
 DATA_DIRECTORY = '../data/'
 
 
-class Manager(object):
+class Manager:
     """Class for raw data input and distribution to other classes.
 
     The Manager takes in a list of n excel filepaths and a single json_path.
@@ -309,7 +312,7 @@ class Manager(object):
         return change_list
 
 
-class Evaluator(object):
+class Evaluator:
     """Class for creating the PropertyDiGraph from the Excel data with the help
     of the MDTranslator.
 
@@ -383,15 +386,20 @@ class Evaluator(object):
         xls = pd.ExcelFile(excel_file, on_demand=True)
         if len(xls.sheet_names) > 1:
             for sheet in sorted(xls.sheet_names):
+                # TODO: Change the way check the sheets.
+                # base this on avail patterns
                 if 'composition' == sheet.lower():
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df.dropna(how='all', inplace=True)
+                # base this on available patterns
                 elif 'composition ids' == sheet.lower():
                     self.df_ids = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df_ids.set_index(self.df_ids.columns[0], inplace=True)
                     self.translator.uml_id.update(
                         self.df_ids.to_dict(
                             orient='dict')[self.df_ids.columns[0]])
+                # TODO: if names of patterns begin with letter r or later
+                # we have a problem
                 elif 'renames' == sheet.lower():
                     # TODO: Write test for this!
                     self.df_renames = pd.read_excel(excel_file,
@@ -562,7 +570,7 @@ class Evaluator(object):
         return self.prop_di_graph.edge_set
 
 
-class MDTranslator(object):
+class MDTranslator:
     """
     Class to serve as the Rosetta Stone for taking column headers from the
     Excel input to the MagicDraw compatible output. More specifically, this
@@ -643,3 +651,16 @@ class MDTranslator(object):
 
         key = next(iter(uml_phrase))
         return key, uml_phrase[key]
+
+
+def create_json(workbook_path, output_path="create_md_model.json"):
+    json_patterns = {
+        basename(pattern_path).split('.')[0]: pattern_path
+        for pattern_path in glob("patterns/*.json", recursive=True)
+    }
+
+    instructions = {}
+    for excel_file in workbook_path:
+        model_type = pd.ExcelFile(excel_file).sheet_names[0]
+        manager = Manager(excel_path=excel_file,
+                          json_path=json_patterns[model_type])
