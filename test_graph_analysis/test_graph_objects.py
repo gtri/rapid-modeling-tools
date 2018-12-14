@@ -1,6 +1,6 @@
 import json
-import os
 import unittest
+from pathlib import Path
 
 import networkx as nx
 import pandas as pd
@@ -10,15 +10,15 @@ from graph_analysis.graph_objects import (DiEdge, PropertyDiGraph, Vertex,
                                           create_vertex_objects)
 from graph_analysis.utils import create_column_values
 
-from .test_graph_creation import DATA_DIRECTORY
+from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 
 
 class TestPropertyDiGraph(unittest.TestCase):
 
     def setUp(self):
-        with open(os.path.join(DATA_DIRECTORY,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text(
+        )
+        data = json.loads(data)
 
         self.translator = MDTranslator(json_data=data)
 
@@ -30,8 +30,8 @@ class TestPropertyDiGraph(unittest.TestCase):
                      'Atomic Thing': ['Engine', 'Wheel',
                                       'Hub', 'Drive Output']}
         df = pd.DataFrame(data=data_dict)
-        self.evaluator = Evaluator(excel_file=os.path.join(
-            DATA_DIRECTORY, 'Composition Example.xlsx'),
+        self.evaluator = Evaluator(excel_file=(
+            DATA_DIRECTORY / 'Composition Example.xlsx'),
             translator=self.translator)
         self.evaluator.df = df
         self.evaluator.rename_df_columns()
@@ -190,7 +190,7 @@ class TestPropertyDiGraph(unittest.TestCase):
 class TestVertex(unittest.TestCase):
 
     def setUp(self):
-        with open(os.path.join(DATA_DIRECTORY,
+        with open(os.path.join(PATTERNS,
                                'CompositionGraphMaster.json')) as f:
             data = json.load(f)
 
@@ -257,7 +257,7 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(expected_dict, car_dict)
 
     def test_create_node_to_uml(self):
-        with open(os.path.join(DATA_DIRECTORY,
+        with open(os.path.join(PATTERNS,
                                'CompositionGraphMaster.json')) as f:
             data = json.load(f)
 
@@ -391,7 +391,7 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(engine_uml[2], engine_edge_uml)
 
     def test_change_node_to_uml(self):
-        with open(os.path.join(DATA_DIRECTORY,
+        with open(os.path.join(PATTERNS,
                                'CompositionGraphMaster.json')) as f:
             data = json.load(f)
 
@@ -427,7 +427,7 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(car_rename_uml[0], rename_json)
 
     def test_delete_node_to_uml(self):
-        with open(os.path.join(DATA_DIRECTORY,
+        with open(os.path.join(PATTERNS,
                                'CompositionGraphMaster.json')) as f:
             data = json.load(f)
 
@@ -463,7 +463,7 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(car_delete_uml[0], delete_json)
 
     def test_get_uml_id(self):
-        with open(os.path.join(DATA_DIRECTORY,
+        with open(os.path.join(PATTERNS,
                                'CompositionGraphMaster.json')) as f:
             data = json.load(f)
 

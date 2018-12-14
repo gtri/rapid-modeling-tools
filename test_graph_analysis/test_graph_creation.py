@@ -1,7 +1,7 @@
 import json
-import os
 import unittest
 import warnings
+from pathlib import Path
 
 import pandas as pd
 
@@ -9,7 +9,7 @@ from graph_analysis.graph_creation import Evaluator, Manager, MDTranslator
 from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
 from graph_analysis.utils import object_dict_view
 
-DATA_DIRECTORY = '../data/'
+from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 
 
 class TestProduceJson(unittest.TestCase):
@@ -18,10 +18,10 @@ class TestProduceJson(unittest.TestCase):
         pass
 
     def test_json_creation(self):
-        manager = Manager(excel_path=[os.path.join(
-            DATA_DIRECTORY, 'Sample Equations.xlsx')],
-            json_path=os.path.join(DATA_DIRECTORY,
-                                   'ParametricGraphMaster.json'))
+        manager = Manager(
+            excel_path=[DATA_DIRECTORY / 'Sample Equations.xlsx'],
+            json_path=PATTERNS / 'ParametricGraphMaster.json'
+        )
         translator = manager.translator
         evaluator = manager.evaluators[0]
         evaluator.rename_df_columns()
@@ -43,18 +43,17 @@ class TestProduceJson(unittest.TestCase):
 
         json_out['modification targets'].extend(decs_json)
         json_out['modification targets'].extend(edge_json)
-        with open(os.path.join(DATA_DIRECTORY,
-                               'changes_uml.json'), 'w') as outfile:
-            json.dump(json_out, outfile, indent=4)
+
+        (OUTPUT_DIRECTORY / 'changes_uml.json').write_text(
+            json.dumps(json_out, indent=4, sort_keys=True)
+        )
 
     def test_change_excel_json_creation(self):
-        excel_files = [os.path.join(DATA_DIRECTORY,
-                                    'Composition Example Model Baseline.xlsx'),
-                       os.path.join(DATA_DIRECTORY,
-                                    'Composition Example Model Changed.xlsx')]
+        excel_files = [
+            DATA_DIRECTORY / 'Composition Example Model Baseline.xlsx',
+            DATA_DIRECTORY / 'Composition Example Model Changed.xlsx']
         manager = Manager(excel_path=excel_files,
-                          json_path=os.path.join(DATA_DIRECTORY,
-                                                 'CompositionGraphMaster.json')
+                          json_path=PATTERNS / 'CompositionGraphMaster.json'
                           )
 
         translator = manager.translator
@@ -72,10 +71,9 @@ class TestProduceJson(unittest.TestCase):
         manager.changes_to_excel()
 
     def test_composition_2_json(self):
-        manager = Manager(excel_path=[os.path.join(
-            DATA_DIRECTORY, 'Composition Example 2.xlsx')],
-            json_path=os.path.join(DATA_DIRECTORY,
-                                   'CompositionGraphMaster.json'))
+        manager = Manager(excel_path=[
+            DATA_DIRECTORY / 'Composition Example 2.xlsx'],
+            json_path=PATTERNS / 'CompositionGraphMaster.json')
         translator = manager.translator
         evaluator = manager.evaluators[0]
         evaluator.rename_df_columns()
@@ -95,25 +93,19 @@ class TestProduceJson(unittest.TestCase):
             decs_json.extend(decs_uml)
             edge_json.extend(edge_uml)
 
-        json_out['modification targets'].extend(decs_json)
-        json_out['modification targets'].extend(edge_json)
-        with open(os.path.join(DATA_DIRECTORY,
-                               'composition_example_2_uml.json'),
-                  'w') as outfile:
-            json.dump(json_out, outfile, indent=4)
+        (OUTPUT_DIRECTORY / 'composition_example_2_uml.json').write_text(
+            json.dumps(json_out, indent=4, sort_keys=True)
+        )
 
     def test_change_composition_2_excel_json_creation(self):
         warnings.warn(
             'File overwrite if test_change_excel_json_creation is uncommented')
         original_file = 'Composition Example 2 Model Baseline.xlsx'
         change_file = 'Composition Example 2 Model Changed.xlsx'
-        excel_files = [os.path.join(DATA_DIRECTORY,
-                                    original_file),
-                       os.path.join(DATA_DIRECTORY,
-                                    change_file)]
+        excel_files = [DATA_DIRECTORY / original_file,
+                       DATA_DIRECTORY / change_file]
         manager = Manager(excel_path=excel_files,
-                          json_path=os.path.join(DATA_DIRECTORY,
-                                                 'CompositionGraphMaster.json')
+                          json_path=PATTERNS / 'CompositionGraphMaster.json'
                           )
 
         translator = manager.translator
@@ -141,11 +133,10 @@ class TestManager(unittest.TestCase):
         # make the data the instance variables that I can access to make
         # instances of the classes locally within the function scope.
         self.manager = Manager(
-            excel_path=[os.path.join(
-                DATA_DIRECTORY, 'Composition Example.xlsx')
+            excel_path=[
+                DATA_DIRECTORY / 'Composition Example.xlsx'
                 for i in range(2)],
-            json_path=os.path.join(DATA_DIRECTORY,
-                                   'CompositionGraphMaster.json'))
+            json_path=PATTERNS / 'CompositionGraphMaster.json')
 
     def test_get_json_data(self):
         expected_keys = ['Columns to Navigation Map',
@@ -172,11 +163,10 @@ class TestManager(unittest.TestCase):
         # this is a bad function and an improper test.
         # The test ignores the obvious problem of non-unique matchings
         manager = Manager(
-            excel_path=[os.path.join(
-                DATA_DIRECTORY, 'Composition Example.xlsx')
+            excel_path=[
+                DATA_DIRECTORY / 'Composition Example.xlsx'
                 for i in range(2)],
-            json_path=os.path.join(DATA_DIRECTORY,
-                                   'CompositionGraphMaster.json'))
+            json_path=PATTERNS / 'CompositionGraphMaster.json')
         base_inputs = [('s1', 't1', 'type'),
                        ('s12', 't12', 'memberEnd'),
                        ('song', 'tiger', 'blue'), ]
@@ -271,11 +261,10 @@ class TestManager(unittest.TestCase):
 
     def test_changes_to_excel(self):
         manager = Manager(
-            excel_path=[os.path.join(
-                DATA_DIRECTORY, 'Composition Example.xlsx')
+            excel_path=[
+                DATA_DIRECTORY / 'Composition Example.xlsx'
                 for i in range(1)],
-            json_path=os.path.join(DATA_DIRECTORY,
-                                   'CompositionGraphMaster.json'))
+            json_path=PATTERNS / 'CompositionGraphMaster.json')
         og_edge = DiEdge(source=Vertex(name='green'),
                          target=Vertex(name='apple'),
                          edge_attribute='fruit')
@@ -312,7 +301,7 @@ class TestManager(unittest.TestCase):
         manager.changes_to_excel()
 
         created_file_name = 'Graph Model Differences 0-1.xlsx'
-        created_file = os.path.join(DATA_DIRECTORY, created_file_name)
+        created_file = OUTPUT_DIRECTORY / created_file_name
         created_df = pd.read_excel(created_file)
         created_dict = created_df.to_dict()
 
@@ -335,11 +324,10 @@ class TestManager(unittest.TestCase):
 
     def test_graph_difference_to_json(self):
         manager = Manager(
-            excel_path=[os.path.join(
-                DATA_DIRECTORY, 'Composition Example.xlsx')
+            excel_path=[
+                DATA_DIRECTORY / 'Composition Example.xlsx'
                 for i in range(2)],
-            json_path=os.path.join(DATA_DIRECTORY,
-                                   'CompositionGraphMaster.json'))
+            json_path=PATTERNS / 'CompositionGraphMaster.json')
         base_inputs = [('s1', 't1', 'type'),
                        ('s12', 't12', 'memberEnd'),
                        ('song', 'tiger', 'blue'), ]
@@ -415,14 +403,13 @@ class TestEvaluator(unittest.TestCase):
     # TODO: Test the PROCESS of some of these functions.
 
     def setUp(self):
-        with open(os.path.join(DATA_DIRECTORY,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text(
+        )
+        data = json.loads(data)
 
         self.translator = MDTranslator(json_data=data)
         self.evaluator = Evaluator(
-            excel_file=os.path.join(
-                DATA_DIRECTORY, 'Composition Example.xlsx'),
+            excel_file=DATA_DIRECTORY / 'Composition Example.xlsx',
             translator=self.translator)
 
         data_dict = {
@@ -441,19 +428,18 @@ class TestEvaluator(unittest.TestCase):
         self.evaluator.df = pd.DataFrame(data=data_dict)
 
     def test_sheets_to_dataframe(self):
-        with open(os.path.join(DATA_DIRECTORY,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text(
+        )
+        data = json.loads(data)
 
+        ex_f = DATA_DIRECTORY / 'Composition Example Model Baseline.xlsx'
         translator = MDTranslator(json_data=data)
         evaluator = Evaluator(
-            excel_file=os.path.join(DATA_DIRECTORY,
-                                    'Composition Example Model Baseline.xlsx'),
+            excel_file=ex_f,
             translator=translator
         )
         file_name = 'Composition Example Model Baseline.xlsx'
-        evaluator.sheets_to_dataframe(excel_file=os.path.join(DATA_DIRECTORY,
-                                                              file_name))
+        evaluator.sheets_to_dataframe(excel_file=DATA_DIRECTORY / file_name)
         columns_list = [col for col in evaluator.df.columns]
         self.assertListEqual(
             ['Component', 'Position', 'Part'], columns_list)
@@ -462,20 +448,21 @@ class TestEvaluator(unittest.TestCase):
         self.assertEqual(64, len(translator.uml_id))
 
     def test_has_rename(self):
-        with open(os.path.join(DATA_DIRECTORY,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text(
+        )
+        data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
+        excel_file = DATA_DIRECTORY / 'Composition Example Model Changed.xlsx'
         evaluator = Evaluator(
-            excel_file=os.path.join(DATA_DIRECTORY,
-                                    'Composition Example Model Changed.xlsx'),
+            excel_file=excel_file,
             translator=translator
         )
         self.assertTrue(evaluator.has_rename)
+        excel_no_rename = (
+            DATA_DIRECTORY / 'Composition Example Model Baseline.xlsx')
         evaluator_no_rename = Evaluator(
-            excel_file=os.path.join(DATA_DIRECTORY,
-                                    'Composition Example Model Baseline.xlsx'),
+            excel_file=excel_no_rename,
             translator=translator
         )
         self.assertFalse(evaluator_no_rename.has_rename)
@@ -497,8 +484,7 @@ class TestEvaluator(unittest.TestCase):
         # TODO: This is an incomplete test because it does not test for
         # the case of no space column to be created.
         evaluator = Evaluator(
-            excel_file=os.path.join(
-                DATA_DIRECTORY, 'Composition Example.xlsx'),
+            excel_file=DATA_DIRECTORY / 'Composition Example.xlsx',
             translator=self.translator)
         evaluator.translator.get_pattern_graph().append('cardinal')
         evaluator.translator.get_pattern_graph().append('component context')
@@ -575,9 +561,8 @@ class TestEvaluator(unittest.TestCase):
             'Element Names': ['blueberry', 'pie', 'milk'],
             'ID': [123, 234, 345]
         }
-        evaluator = Evaluator(excel_file=os.path.join(
-            DATA_DIRECTORY,
-            'Composition Example Model Baseline.xlsx'),
+        evaluator = Evaluator(excel_file=(
+            DATA_DIRECTORY / 'Composition Example Model Baseline.xlsx'),
             translator=self.translator)
         evaluator.df = pd.DataFrame(data=data_dict)
         df_ids = pd.DataFrame(data=data_id_dict)
@@ -609,9 +594,8 @@ class TestMDTranslator(unittest.TestCase):
 
     def setUp(self):
         # TODO: Note that this relies on CompositionGraphMaster.json
-        with open(os.path.join(DATA_DIRECTORY,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = json.loads(data)
 
         self.translator = MDTranslator(json_data=data)
 

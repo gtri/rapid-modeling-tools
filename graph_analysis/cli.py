@@ -1,6 +1,6 @@
 import argparse
 
-from .graph_creation import compare, create
+from .commands import compare, create_md_model
 
 
 def main():
@@ -55,7 +55,7 @@ def main():
         return "0.1.0"
     elif args.create:
         # TODO: define a create function that creates a json for a fresh model
-        return None
+        return create_md_model(args.input, args.output)
     elif args.compare:
         # TODO: return comparison
         return None
