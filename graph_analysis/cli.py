@@ -19,12 +19,14 @@ def main():
     parser.add_argument(
         "-cr",
         "--create",
+        nargs='+',
         help="Create a JSON file for the Player Piano to make in a MD Diagram"
     )
 
     parser.add_argument(
         "-cf",
         "--compare",
+        nargs='+',
         help="Compare a baseline Excel File with a collection of Change Files"
     )
 
@@ -38,7 +40,7 @@ def main():
     parser.add_argument(
         "-o",
         "--output",
-        help="Path to JSON file to save instruction to",
+        help="Path to desired loaction of JSON file containing instructions",
         type=str,
     )
 

@@ -190,9 +190,8 @@ class TestPropertyDiGraph(unittest.TestCase):
 class TestVertex(unittest.TestCase):
 
     def setUp(self):
-        with open(os.path.join(PATTERNS,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = json.loads(data)
 
         self.translator = MDTranslator(json_data=data)
 
@@ -257,9 +256,8 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(expected_dict, car_dict)
 
     def test_create_node_to_uml(self):
-        with open(os.path.join(PATTERNS,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
         vertex_car = Vertex(
@@ -391,9 +389,8 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(engine_uml[2], engine_edge_uml)
 
     def test_change_node_to_uml(self):
-        with open(os.path.join(PATTERNS,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
         vertex_car = Vertex(
@@ -427,9 +424,8 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(car_rename_uml[0], rename_json)
 
     def test_delete_node_to_uml(self):
-        with open(os.path.join(PATTERNS,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
         vertex_car = Vertex(
@@ -463,9 +459,8 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(car_delete_uml[0], delete_json)
 
     def test_get_uml_id(self):
-        with open(os.path.join(PATTERNS,
-                               'CompositionGraphMaster.json')) as f:
-            data = json.load(f)
+        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
         node_names = ['Car', 'engine', 'Car']
