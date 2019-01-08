@@ -1,5 +1,5 @@
 import json
-import os
+# import os
 from copy import copy
 from glob import glob
 from itertools import combinations
@@ -9,6 +9,7 @@ from warnings import warn
 import networkx as nx
 import pandas as pd
 
+from . import OUTPUT_DIRECTORY
 from .graph_objects import PropertyDiGraph
 from .utils import (associate_node_ids, create_column_values_singleton,
                     create_column_values_space, create_column_values_under,
@@ -16,7 +17,8 @@ from .utils import (associate_node_ids, create_column_values_singleton,
                     new_as_old, object_dict_view, to_excel_df,
                     to_nto_rename_dict)
 
-DATA_DIRECTORY = '../data/'
+
+# DATA_DIRECTORY = '../data/'
 
 
 class Manager:
@@ -60,6 +62,7 @@ class Manager:
         self.create_evaluators()
 
     def get_json_data(self):
+        # TODO: replace this with a pathlib appropriate approach
         with open(self.json_path) as f:
             self.json_data = json.load(f)
 
@@ -230,14 +233,12 @@ class Manager:
     def changes_to_excel(self):
         # TODO: Find a more secure method.
         # If multiple files created in one
-        # session than data will be lost and only the most recent changes
+        # session then data will be lost and only the most recent changes
         # will be kept.
         # does create multiple sheets for each Manager.
 
         for key in self.evaluator_change_dict:
             outfile = 'Graph Model Differences {0}.xlsx'.format(key)
-            outpath = os.path.join(DATA_DIRECTORY, outfile)
-            writer = pd.ExcelWriter(outpath)
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
             evals_comp = key.split('-')
@@ -256,9 +257,9 @@ class Manager:
             df_output = pd.DataFrame(data=dict([
                 (k, pd.Series(v)) for k, v in df_data.items()
             ]))
-            df_output.to_excel(writer, sheet_name=key, index=False)
 
-        writer.save()
+            df_output.to_excel(
+                (OUTPUT_DIRECTORY / outfile), sheet_name=key, index=False)
 
     def graph_difference_to_json(self, new_col='',
                                  change_dict=None, evaluators=''):
@@ -303,11 +304,10 @@ class Manager:
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)
-        with open(os.path.join(DATA_DIRECTORY,
-                               'graph_difference_changes_{0}.json'.format(
-                                   evaluators)),
-                  'w') as outfile:
-            json.dump(json_out, outfile, indent=4)
+
+        (OUTPUT_DIRECTORY / 'graph_difference_changes_{0}.json'.format(
+            evaluators)).write_text(
+                json.dumps(json_out, indent=4, sort_keys=True))
 
         return change_list
 
