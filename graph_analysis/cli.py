@@ -1,6 +1,6 @@
 import argparse
 
-from .commands import compare, create_md_model
+from .commands import compare_md_model, create_md_model
 
 
 def main():

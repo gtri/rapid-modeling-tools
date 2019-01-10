@@ -1,6 +1,6 @@
 import os
+import warnings
 from pathlib import Path
-from warnings import warn
 
 from graph_analysis.graph_creation import *
 
@@ -28,17 +28,35 @@ def create_md_model(input_paths, output_path=''):
         wkbk_paths.extend(p)
 
     for wkbk in wkbk_paths:
+        if wkbk.parts[-1].split('.')[-1] != 'xlsx':
+            msg = ('\n'
+                   + 'This program only supports Excel Files.'
+                   + ' "{0}" was skipped, not an Excel File'
+                   ).format(wkbk.parts[-1])
+            warnings.warn(msg)
+            continue
         xl = pd.ExcelFile(wkbk)
         not_found = 0
+        pattern_sheet = ''
         for sheet in xl.sheet_names:
-            if not_found == len(xl.sheet_names):
-                warn('The Excel File {0} requires an '.format(
-                     wkbk.parts[-1])
-                     + 'unsupported pattern type.')
             if sheet.lower() not in json_patterns.keys():
                 not_found += 1
-                continue
-            data = (json_patterns[sheet.lower()]).read_text()
+                if not_found == len(xl.sheet_names):
+                    warn_msg = ('The Excel File "{0}" requires an '
+                                + 'unsupported pattern type.').format(
+                                    wkbk.parts[-1])
+                    patterns_msg = ('The currently supported '
+                                    + 'patterns are: {0}'.format(
+                                        [*json_patterns]))
+                    warnings.warn('\n' + warn_msg + '\n' + patterns_msg)
+                    break
+                else:
+                    continue
+            else:
+                pattern_sheet = sheet.lower()
+                break
+        if pattern_sheet:
+            data = (json_patterns[pattern_sheet]).read_text()
             data = json.loads(data)
             translator = MDTranslator(json_data=data)
             evaluator = Evaluator(excel_file=wkbk, translator=translator)
@@ -62,7 +80,13 @@ def create_md_model(input_paths, output_path=''):
             json_out['modification targets'].extend(decs_json)
             json_out['modification targets'].extend(edge_json)
 
-            outfile = wkbk.parts[-1].split('.')[0] + '.json'
-            (OUTPUT_DIRECTORY / outfile).write_text(
+            if not output_path:
+                outfile = wkbk.parent.joinpath(
+                    wkbk.parts[-1]).with_suffix('.json')
+            else:
+                outfile = Path(output_path).joinpath(
+                    wkbk.parts[-1]).with_suffix('.json')
+
+            (outfile).write_text(
                 json.dumps(json_out, indent=4, sort_keys=True)
             )

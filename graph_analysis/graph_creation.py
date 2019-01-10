@@ -386,7 +386,14 @@ class Evaluator:
         xls = pd.ExcelFile(excel_file, on_demand=True)
         if len(xls.sheet_names) > 1:
             for sheet in sorted(xls.sheet_names):
+                # TODO: sorting like this may not be viable, I can manually
+                # TODO: build the lists placing comp then ids then renames
+                # TODO: then running the df creation rules on them since I
+                # TODO: know the order.
                 # TODO: Change the way check the sheets.
+                # TODO: Now that there is a patterns directory, pull the names
+                # TODO: of valid patterns from the directory and use that to
+                # TODO: do the sheet name checks here.
                 # base this on avail patterns
                 if 'composition' == sheet.lower():
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
@@ -400,7 +407,7 @@ class Evaluator:
                             orient='dict')[self.df_ids.columns[0]])
                 # TODO: if names of patterns begin with letter r or later
                 # we have a problem
-                elif 'renames' == sheet.lower():
+                elif 'renames' == sheet.lower():  # new names, updated names
                     # TODO: Write test for this!
                     self.df_renames = pd.read_excel(excel_file,
                                                     sheet_name=sheet)
