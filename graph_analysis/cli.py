@@ -27,12 +27,14 @@ def main():
         "-cf",
         "--compare",
         nargs='+',
-        help="Compare a baseline Excel File with a collection of Change Files"
+        help=("Compare a baseline Excel File with a collection of Change Files"
+              + " Must supply the original file first and then the changes")
     )
 
     parser.add_argument(
         "-i",
         "--input",
+        nargs='+',
         help="Path to Excel Workbook(s)",
         type=str,
     )
@@ -40,8 +42,22 @@ def main():
     parser.add_argument(
         "-o",
         "--output",
-        help="Path to desired loaction of JSON file containing instructions",
+        help=("Path/Directory where the JSON file(s) should be placed"
+              + " Default behavior will place the JSON in the input location"),
         type=str,
+    )
+
+    parser.add_argument(
+        "-or",
+        "--original",
+        help="The original file to which the comparison will be run against.",
+    )
+
+    parser.add_argument(
+        "-up",
+        "--updated",
+        nargs='+',
+        help="Change files to be compared to the Original."
     )
 
     parser.add_argument(
@@ -60,7 +76,12 @@ def main():
         return create_md_model(args.input, args.output)
     elif args.compare:
         # TODO: return comparison
-        return None
+        if not (args.original or args.updated):
+            raise RuntimeError('Missing Original or Updated File(s)')
+        else:
+            # I could throw a warning and make the user type yes or no to
+            # continue so they acknowledge the possibility of overwrite.
+            return compare_md_model(args.original, args.updated, args.output)
     else:
         return "Not a valid input argument. Choose from create or compare"
 

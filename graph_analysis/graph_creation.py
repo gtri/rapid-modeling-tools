@@ -222,6 +222,7 @@ class Manager:
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
+            # TODO: Deal with the file naming
             self.graph_difference_to_json(new_col=new_name_objs,
                                           change_dict=eval_one_matches[0],
                                           evaluators=key)
@@ -238,6 +239,7 @@ class Manager:
         # does create multiple sheets for each Manager.
 
         for key in self.evaluator_change_dict:
+            # TODO: Find a better way to name files
             outfile = 'Graph Model Differences {0}.xlsx'.format(key)
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
