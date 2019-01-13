@@ -102,16 +102,8 @@ def compare_md_model(original, updated, output_path=''):
     # creating it. If it does add a (1) and increment by 1 until
     # a free name is found.
 
-    outpath = Path(output_path)
-    if outpath:
-        if outpath.is_dir():
-            # TODO Do something??? But what?
-            # Check for potential filename conflicts
-            pass
-        elif outpath.is_file():
-            raise RuntimeError('Please provide an output directory')
-
-    provided_paths = [original, updated]
+    provided_paths = [original]
+    provided_paths.extend(updated)
     wkbk_paths = []
     here = Path(os.getcwd())
 
@@ -125,6 +117,17 @@ def compare_md_model(original, updated, output_path=''):
             p = [p]
 
         wkbk_paths.extend(p)
+
+    outpath = Path(output_path)
+    if outpath:
+        if outpath.is_dir():
+            # TODO Do something??? But what?
+            # Check for potential filename conflicts
+            pass
+        elif outpath.is_file():
+            raise RuntimeError('Please provide an output directory')
+    else:
+        outpath = wkbk_paths[0].parent
 
     for wkbk in wkbk_paths:
         if wkbk.parts[-1].split('.')[-1] != 'xlsx':
@@ -182,4 +185,4 @@ def compare_md_model(original, updated, output_path=''):
 
         # TODO: This needs to depend on the type of outpath.
         manager.get_pattern_graph_diff()
-        manager.chagnes_to_excel()
+        manager.chagnes_to_excel(out_directory=outpath)

@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from shutil import copy2
 
-from graph_analysis.commands import create_md_model
+from graph_analysis.commands import create_md_model, compare_md_model
 
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS, ROOT
 
@@ -44,6 +44,59 @@ class TestCommands(unittest.TestCase):
                 create_md_model(wkbk_path, out_tmp_dir)
                 new_json = list(out_tmp_dir.glob('*.json'))
                 self.assertEqual(5, len(new_json))
+
+    def test_compare_md_model(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            excel_files = [
+                DATA_DIRECTORY / 'Composition Example 2 Model Baseline.xlsx',
+                DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx',
+                DATA_DIRECTORY / 'Composition Example 2 Model Changed 2.xlsx',
+                DATA_DIRECTORY / 'Composition Example Model Baseline.xlsx',
+                DATA_DIRECTORY / 'Composition Example Model Changed.xlsx',
+            ]
+            for xl in excel_files:
+                copy2(DATA_DIRECTORY / xl, tmpdir)
+
+            original = tmpdir / 'Composition Example 2 Model Baseline.xlsx'
+            updated = [tmpdir / 'Composition Example 2 Model Changed.xlsx',
+                       tmpdir / 'Composition Example 2 Model Changed 2.xlsx'
+            ]
+            orig = tmpdir / 'Composition Example Model Baseline.xlsx'
+            update = tmpdir / 'Composition Example Model Changed.xlsx'
+
+            compare_md_model(original, updated)
+            compare_md_model(orig, update)
+            # expect 3 json and 3 more excel files
+            cr_json = list(tmpdir.glob('*.json'))
+            self.assertEqual(3, len(cr_json))
+            # check for created excel files by name
+            self.assertTrue(
+                (tmpdir / 'Graph Model Differences 0-1.xlsx').is_file())
+            self.assertTrue(
+                (tmpdir / 'Graph Model Differences 0-2.xlsx').is_file()
+            )
+            self.assertTrue(
+                (tmpdir / 'Graph Model Differences 0-1(1).xlsx').is_file()
+            )
+
+            with tempfile.TemporaryDirectory() as tmpdir2:
+                outdir = Path(tmpdir2)
+                compare_md_model(original, updated, outidr)
+                compare_md_model(orig, update, outdir)
+                # expect 3 json and 3 more excel files
+                cr_json = list(tmpdir2.glob('*.json'))
+                self.assertEqual(3, len(cr_json))
+                # check for created excel files by name
+                self.assertTrue(
+                    (tmpdir2 / 'Graph Model Differences 0-1.xlsx').is_file())
+                self.assertTrue(
+                    (tmpdir2 / 'Graph Model Differences 0-2.xlsx').is_file()
+                )
+                self.assertTrue(
+                    (tmpdir2 / 'Graph Model Differences 0-1(1).xlsx').is_file()
+                )
+
 
     def tearDown(self):
         pass

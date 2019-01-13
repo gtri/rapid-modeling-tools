@@ -3,7 +3,7 @@ import json
 from copy import copy
 from glob import glob
 from itertools import combinations
-from os.path import basename
+from pathlib import Path
 from warnings import warn
 
 import networkx as nx
@@ -16,9 +16,6 @@ from .utils import (associate_node_ids, create_column_values_singleton,
                     distill_edges_to_nodes, get_new_column_name, match_changes,
                     new_as_old, object_dict_view, to_excel_df,
                     to_nto_rename_dict)
-
-
-# DATA_DIRECTORY = '../data/'
 
 
 class Manager:
@@ -63,8 +60,10 @@ class Manager:
 
     def get_json_data(self):
         # TODO: replace this with a pathlib appropriate approach
-        with open(self.json_path) as f:
-            self.json_data = json.load(f)
+        json_path = Path(self.json_path)
+        data = (json_path).read_text()
+        data = json.loads(data)
+        self.json_data = data
 
     def create_evaluators(self):
         for excel_file in self.excel_path:
@@ -231,7 +230,7 @@ class Manager:
 
         return self.evaluator_change_dict
 
-    def changes_to_excel(self):
+    def changes_to_excel(self, out_directory=''):
         # TODO: Find a more secure method.
         # If multiple files created in one
         # session then data will be lost and only the most recent changes
@@ -240,7 +239,21 @@ class Manager:
 
         for key in self.evaluator_change_dict:
             # TODO: Find a better way to name files
-            outfile = 'Graph Model Differences {0}.xlsx'.format(key)
+            outfile = Path('Graph Model Differences {0}.xlsx'.format(key))
+            if out_directory:
+                if outfile.is_file():
+                    i = 0
+                    while outfile.is_file():
+                        i += 1
+                        out_name = outfile.stem + '({0})'.format(i)
+                        outfile.stem = out_name
+            else:
+                if outfile.is_file():
+                    i = 0
+                    while outfile.is_file():
+                        i += 1
+                        out_name = outfile.stem + '({0})'.format(i)
+                        outfile.stem = out_name
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
             evals_comp = key.split('-')
@@ -307,8 +320,23 @@ class Manager:
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)
 
-        (OUTPUT_DIRECTORY / 'graph_difference_changes_{0}.json'.format(
-            evaluators)).write_text(
+        outfile = Path('graph_difference_changes_{0}.json'.format(key))
+        if out_directory:
+            if outfile.is_file():
+                i = 0
+                while outfile.is_file():
+                    i += 1
+                    out_name = outfile.stem + '({0})'.format(i)
+                    outfile.stem = out_name
+        else:
+            if outfile.is_file():
+                i = 0
+                while outfile.is_file():
+                    i += 1
+                    out_name = outfile.stem + '({0})'.format(i)
+                    outfile.stem = out_name
+
+        (OUTPUT_DIRECTORY / outfile).write_text(
                 json.dumps(json_out, indent=4, sort_keys=True))
 
         return change_list
@@ -660,16 +688,3 @@ class MDTranslator:
 
         key = next(iter(uml_phrase))
         return key, uml_phrase[key]
-
-
-def create_json(workbook_path, output_path="create_md_model.json"):
-    json_patterns = {
-        basename(pattern_path).split('.')[0]: pattern_path
-        for pattern_path in glob("patterns/*.json", recursive=True)
-    }
-
-    instructions = {}
-    for excel_file in workbook_path:
-        model_type = pd.ExcelFile(excel_file).sheet_names[0]
-        manager = Manager(excel_path=excel_file,
-                          json_path=json_patterns[model_type])
