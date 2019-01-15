@@ -81,7 +81,8 @@ def main():
         else:
             # I could throw a warning and make the user type yes or no to
             # continue so they acknowledge the possibility of overwrite.
-            return compare_md_model(args.original, args.updated, args.output)
+            inputs = [args.original, args.updated]
+            return compare_md_model(inputs, args.output)
     else:
         return "Not a valid input argument. Choose from create or compare"
 

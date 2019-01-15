@@ -60,6 +60,8 @@ class Manager:
 
     def get_json_data(self):
         # TODO: replace this with a pathlib appropriate approach
+        print('Here is json data')
+        print(self.json_path)
         json_path = Path(self.json_path)
         data = (json_path).read_text()
         data = json.loads(data)
@@ -71,7 +73,7 @@ class Manager:
                 Evaluator(excel_file=excel_file,
                           translator=self.translator))
 
-    def get_pattern_graph_diff(self):
+    def get_pattern_graph_diff(self, out_directory=''):
         evaluator_dict = {evaluator: index for index, evaluator in enumerate(
             self.evaluators
         )}
@@ -224,7 +226,8 @@ class Manager:
             # TODO: Deal with the file naming
             self.graph_difference_to_json(new_col=new_name_objs,
                                           change_dict=eval_one_matches[0],
-                                          evaluators=key)
+                                          evaluators=key,
+                                          out_directory=out_directory)
             self.evaluator_change_dict.update(
                 {key: changes_and_unstable})
 
@@ -246,14 +249,15 @@ class Manager:
                     while outfile.is_file():
                         i += 1
                         out_name = outfile.stem + '({0})'.format(i)
-                        outfile.stem = out_name
+                        outfile.rename(out_name)
             else:
+                out_directory = OUTPUT_DIRECTORY
                 if outfile.is_file():
                     i = 0
                     while outfile.is_file():
                         i += 1
                         out_name = outfile.stem + '({0})'.format(i)
-                        outfile.stem = out_name
+                        outfile.rename(out_name)
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
             evals_comp = key.split('-')
@@ -274,10 +278,11 @@ class Manager:
             ]))
 
             df_output.to_excel(
-                (OUTPUT_DIRECTORY / outfile), sheet_name=key, index=False)
+                (out_directory / outfile), sheet_name=key, index=False)
 
     def graph_difference_to_json(self, new_col='',
-                                 change_dict=None, evaluators=''):
+                                 change_dict=None, evaluators='',
+                                 out_directory=''):
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
         # Naked Key: Value pairs mean delete edge key and add value key.
@@ -319,24 +324,25 @@ class Manager:
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)
-
-        outfile = Path('graph_difference_changes_{0}.json'.format(key))
+        print(evaluators)
+        outfile = Path('graph_difference_changes_{0}.json'.format(evaluators))
         if out_directory:
             if outfile.is_file():
                 i = 0
                 while outfile.is_file():
                     i += 1
                     out_name = outfile.stem + '({0})'.format(i)
-                    outfile.stem = out_name
+                    outfile.rename(out_name)
         else:
+            out_directory = OUTPUT_DIRECTORY
             if outfile.is_file():
                 i = 0
                 while outfile.is_file():
                     i += 1
                     out_name = outfile.stem + '({0})'.format(i)
-                    outfile.stem = out_name
+                    outfile.rename(out_name)
 
-        (OUTPUT_DIRECTORY / outfile).write_text(
+        (out_directory / outfile).write_text(
                 json.dumps(json_out, indent=4, sort_keys=True))
 
         return change_list

@@ -33,9 +33,9 @@ class TestCommands(unittest.TestCase):
                 tmpdir,
             ]
             create_md_model(wkbk_path)
-            # expect 5
+            # expect 6
             cr_json = list(tmpdir.glob('*.json'))
-            self.assertEqual(5, len(cr_json))
+            self.assertEqual(6, len(cr_json))
             self.assertTrue(
                 (DATA_DIRECTORY / 'Composition Example 2.json').is_file())
 
@@ -43,7 +43,7 @@ class TestCommands(unittest.TestCase):
                 out_tmp_dir = Path(out_tmp_dir)
                 create_md_model(wkbk_path, out_tmp_dir)
                 new_json = list(out_tmp_dir.glob('*.json'))
-                self.assertEqual(5, len(new_json))
+                self.assertEqual(6, len(new_json))
 
     def test_compare_md_model(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -65,8 +65,12 @@ class TestCommands(unittest.TestCase):
             orig = tmpdir / 'Composition Example Model Baseline.xlsx'
             update = tmpdir / 'Composition Example Model Changed.xlsx'
 
-            compare_md_model(original, updated)
-            compare_md_model(orig, update)
+            inputs = [original]
+            inputs.extend(updated)
+            # print(inputs)
+            compare_md_model(inputs)
+            ins = [orig, update]
+            compare_md_model(ins)
             # expect 3 json and 3 more excel files
             cr_json = list(tmpdir.glob('*.json'))
             self.assertEqual(3, len(cr_json))
@@ -82,8 +86,8 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                compare_md_model(original, updated, outidr)
-                compare_md_model(orig, update, outdir)
+                compare_md_model(inputs, outidr)
+                compare_md_model(ins, outdir)
                 # expect 3 json and 3 more excel files
                 cr_json = list(tmpdir2.glob('*.json'))
                 self.assertEqual(3, len(cr_json))

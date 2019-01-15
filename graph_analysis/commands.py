@@ -92,7 +92,7 @@ def create_md_model(input_paths, output_path=''):
             )
 
 
-def compare_md_model(original, updated, output_path=''):
+def compare_md_model(inputs, output_path=''):
     # TODO: Check for filename potential conflicts.
     # This may have to be done at file creation time. Maybe supply the
     # filename upstream at the get_pattern_graph_diff() stage and that can
@@ -102,12 +102,13 @@ def compare_md_model(original, updated, output_path=''):
     # creating it. If it does add a (1) and increment by 1 until
     # a free name is found.
 
-    provided_paths = [original]
-    provided_paths.extend(updated)
+    provided_paths = inputs
+    # provided_paths.extend(updated)
     wkbk_paths = []
     here = Path(os.getcwd())
 
     for path in provided_paths:
+        # print(path)
         p = Path(path)
         if not p.is_absolute():
             p = here / p
@@ -165,24 +166,25 @@ def compare_md_model(original, updated, output_path=''):
             break
 
     if pattern_sheet:
-        data = (json_patterns[pattern_sheet]).read_text()
-        data = json.loads(data)
+        # data = (json_patterns[pattern_sheet]).read_text()
+        # data = json.loads(data)
+        # print(provided_paths)
         manager = Manager(
             excel_path=provided_paths,
-            json_path=data,
+            json_path=json_patterns[pattern_sheet],
         )
         translator = manager.translator
         for evaluator in manager.evaluators:
             evaluator.rename_df_columns()
-            evaulator.add_missing_columns()
-            evaulator.to_property_di_graph()
-            property_di_graph = evaulator.prop_di_graph
+            evaluator.add_missing_columns()
+            evaluator.to_property_di_graph()
+            property_di_graph = evaluator.prop_di_graph
             property_di_graph.create_vertex_set(
-                df=evaulator.df, translator=translator,
+                df=evaluator.df, translator=translator,
             )
             property_di_graph.create_edge_set()
             vertex_set = property_di_graph.vertex_set
 
         # TODO: This needs to depend on the type of outpath.
-        manager.get_pattern_graph_diff()
-        manager.chagnes_to_excel(out_directory=outpath)
+        manager.get_pattern_graph_diff(out_directory=outpath)
+        manager.changes_to_excel(out_directory=outpath)
