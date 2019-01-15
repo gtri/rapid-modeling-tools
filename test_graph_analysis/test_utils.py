@@ -1,12 +1,16 @@
+import tempfile
 import unittest
 from copy import copy
+from pathlib import Path
+from shutil import copy2
 
 import networkx as nx
 import pandas as pd
 
 from graph_analysis.graph_creation import MDTranslator
 from graph_analysis.graph_objects import DiEdge, Vertex
-from graph_analysis.utils import (associate_node_ids, create_column_values,
+from graph_analysis.utils import (associate_node_ids, check_create_filename,
+                                  create_column_values,
                                   create_column_values_singleton,
                                   create_column_values_space,
                                   create_column_values_under,
@@ -17,6 +21,8 @@ from graph_analysis.utils import (associate_node_ids, create_column_values,
                                   replace_new_with_old_name, to_excel_df,
                                   to_nto_rename_dict, to_uml_json_decorations,
                                   to_uml_json_edge, to_uml_json_node)
+
+from . import DATA_DIRECTORY
 
 
 class TestUtils(unittest.TestCase):
@@ -628,6 +634,25 @@ class TestUtils(unittest.TestCase):
             ]
         }
         self.assertDictEqual(expect, to_uml_json_edge(**edge_info))
+
+    def test_check_create_filename(self):
+        # dummyfile = DATA_DIRECTORY / 'changes_uml.json'
+        # newname = Path((DATA_DIRECTORY / 'changes_uml.json'))
+        # dummyfile.rename(newname)
+        # print(dummyfile.name)
+        # with tempfile.TemporaryDirectory() as tmpdir:
+        #     tmpdir = Path(tmpdir)
+        #     copy2((DATA_DIRECTORY / 'Invalid Pattern.xlsx'), tmpdir)
+        #     dir, fname = check_create_filename(
+        #         directory=tmpdir,
+        #         filename='Invalid Pattern.xlsx',
+        #     )
+        #     self.assertEqual('Invalid Pattern(1).xlsx', fname.name)
+        dir, fname = check_create_filename(
+            directory=DATA_DIRECTORY,
+            filename='Invalid Pattern(1).xlsx',
+        )
+        self.assertEqual('Invalid Pattern(1).xlsx', fname.name)
 
     def tearDown(self):
         pass

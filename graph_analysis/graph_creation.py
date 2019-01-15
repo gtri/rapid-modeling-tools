@@ -11,11 +11,11 @@ import pandas as pd
 
 from . import OUTPUT_DIRECTORY
 from .graph_objects import PropertyDiGraph
-from .utils import (associate_node_ids, create_column_values_singleton,
-                    create_column_values_space, create_column_values_under,
-                    distill_edges_to_nodes, get_new_column_name, match_changes,
-                    new_as_old, object_dict_view, to_excel_df,
-                    to_nto_rename_dict)
+from .utils import (associate_node_ids, check_create_filename,
+                    create_column_values_singleton, create_column_values_space,
+                    create_column_values_under, distill_edges_to_nodes,
+                    get_new_column_name, match_changes, new_as_old,
+                    object_dict_view, to_excel_df, to_nto_rename_dict)
 
 
 class Manager:
@@ -60,8 +60,6 @@ class Manager:
 
     def get_json_data(self):
         # TODO: replace this with a pathlib appropriate approach
-        print('Here is json data')
-        print(self.json_path)
         json_path = Path(self.json_path)
         data = (json_path).read_text()
         data = json.loads(data)
@@ -243,21 +241,10 @@ class Manager:
         for key in self.evaluator_change_dict:
             # TODO: Find a better way to name files
             outfile = Path('Graph Model Differences {0}.xlsx'.format(key))
-            if out_directory:
-                if outfile.is_file():
-                    i = 0
-                    while outfile.is_file():
-                        i += 1
-                        out_name = outfile.stem + '({0})'.format(i)
-                        outfile.rename(out_name)
-            else:
-                out_directory = OUTPUT_DIRECTORY
-                if outfile.is_file():
-                    i = 0
-                    while outfile.is_file():
-                        i += 1
-                        out_name = outfile.stem + '({0})'.format(i)
-                        outfile.rename(out_name)
+            # TODO: Increment file names
+            outdir, outfile = check_create_filename(
+                directory=out_directory, filename=outfile
+            )
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
             evals_comp = key.split('-')
@@ -278,7 +265,7 @@ class Manager:
             ]))
 
             df_output.to_excel(
-                (out_directory / outfile), sheet_name=key, index=False)
+                (outfile), sheet_name=key, index=False)
 
     def graph_difference_to_json(self, new_col='',
                                  change_dict=None, evaluators='',
@@ -326,24 +313,12 @@ class Manager:
         json_out['modification targets'].extend(change_list)
         print(evaluators)
         outfile = Path('graph_difference_changes_{0}.json'.format(evaluators))
-        if out_directory:
-            if outfile.is_file():
-                i = 0
-                while outfile.is_file():
-                    i += 1
-                    out_name = outfile.stem + '({0})'.format(i)
-                    outfile.rename(out_name)
-        else:
-            out_directory = OUTPUT_DIRECTORY
-            if outfile.is_file():
-                i = 0
-                while outfile.is_file():
-                    i += 1
-                    out_name = outfile.stem + '({0})'.format(i)
-                    outfile.rename(out_name)
+        outdir, outfile = check_create_filename(
+            directory=out_directory, filename=outfile
+        )
 
-        (out_directory / outfile).write_text(
-                json.dumps(json_out, indent=4, sort_keys=True))
+        (outfile).write_text(
+            json.dumps(json_out, indent=4, sort_keys=True))
 
         return change_list
 

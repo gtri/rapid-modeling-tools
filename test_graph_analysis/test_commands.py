@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from shutil import copy2
 
-from graph_analysis.commands import create_md_model, compare_md_model
+from graph_analysis.commands import compare_md_model, create_md_model
 
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS, ROOT
 
@@ -61,13 +61,16 @@ class TestCommands(unittest.TestCase):
             original = tmpdir / 'Composition Example 2 Model Baseline.xlsx'
             updated = [tmpdir / 'Composition Example 2 Model Changed.xlsx',
                        tmpdir / 'Composition Example 2 Model Changed 2.xlsx'
-            ]
+                       ]
             orig = tmpdir / 'Composition Example Model Baseline.xlsx'
             update = tmpdir / 'Composition Example Model Changed.xlsx'
 
             inputs = [original]
             inputs.extend(updated)
-            # print(inputs)
+            try:
+                compare_md_model(inputs, output_path=inputs[0])
+            except RuntimeError:
+                self.assertTrue(True)
             compare_md_model(inputs)
             ins = [orig, update]
             compare_md_model(ins)
@@ -100,7 +103,6 @@ class TestCommands(unittest.TestCase):
                 self.assertTrue(
                     (tmpdir2 / 'Graph Model Differences 0-1(1).xlsx').is_file()
                 )
-
 
     def tearDown(self):
         pass

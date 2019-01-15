@@ -2,6 +2,7 @@ import json
 import os
 from copy import copy
 from itertools import count
+from pathlib import Path
 from random import shuffle
 
 UML_ID = {
@@ -591,3 +592,40 @@ def to_uml_json_edge(**kwargs):
             }
         ]
     }
+
+
+def check_create_filename(directory='', filename=''):
+    # Assumes that directory and filename are both Path() objects
+    # cleaned your inputs for you
+    if not (isinstance(directory, Path) and isinstance(filename, Path)):
+        directory = Path(directory)
+        filename = Path(filename)
+    elif not isinstance(directory, Path):
+        directory = Path(directory)
+    elif not isinstance(filename, Path):
+        print('made the filename into a Path obj')
+        filename = Path(filename)
+
+    if directory.is_dir():
+        filename = directory.joinpath(filename)
+        i = 0
+        while filename.exists():
+            # filename.rename('hello world.json')
+            # print(filename.name)
+            i += 1
+            suffix = filename.suffix
+            increment_name = filename.stem + '({0})'.format(i) + suffix
+            filename.rename(Path(directory / increment_name))
+            # filename.with_suffix(suffix)
+            print(filename.name)
+        # if filename.exists():
+        #     print('Filename already exists!')
+    else:
+        directory = directory.parent
+        filename = directory.joinpath(filename)
+        i = 0
+        while filename.exists():
+            i += 1
+            increment_name = filename.stem + '({0})'.format(i)
+            filename.rename(increment_name)
+    return directory, filename

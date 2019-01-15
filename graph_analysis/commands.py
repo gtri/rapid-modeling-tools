@@ -108,7 +108,6 @@ def compare_md_model(inputs, output_path=''):
     here = Path(os.getcwd())
 
     for path in provided_paths:
-        # print(path)
         p = Path(path)
         if not p.is_absolute():
             p = here / p
@@ -119,14 +118,10 @@ def compare_md_model(inputs, output_path=''):
 
         wkbk_paths.extend(p)
 
-    outpath = Path(output_path)
-    if outpath:
-        if outpath.is_dir():
-            # TODO Do something??? But what?
-            # Check for potential filename conflicts
-            pass
-        elif outpath.is_file():
+    if output_path:
+        if not output_path.is_dir():
             raise RuntimeError('Please provide an output directory')
+        outpath = output_path
     else:
         outpath = wkbk_paths[0].parent
 
@@ -166,9 +161,6 @@ def compare_md_model(inputs, output_path=''):
             break
 
     if pattern_sheet:
-        # data = (json_patterns[pattern_sheet]).read_text()
-        # data = json.loads(data)
-        # print(provided_paths)
         manager = Manager(
             excel_path=provided_paths,
             json_path=json_patterns[pattern_sheet],
