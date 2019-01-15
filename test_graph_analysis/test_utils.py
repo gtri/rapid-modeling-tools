@@ -650,7 +650,7 @@ class TestUtils(unittest.TestCase):
         #     self.assertEqual('Invalid Pattern(1).xlsx', fname.name)
         dir, fname = check_create_filename(
             directory=DATA_DIRECTORY,
-            filename='Invalid Pattern(1).xlsx',
+            filename='Invalid Pattern.xlsx',
         )
         self.assertEqual('Invalid Pattern(1).xlsx', fname.name)
 
