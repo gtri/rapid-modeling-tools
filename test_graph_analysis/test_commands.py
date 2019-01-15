@@ -78,14 +78,8 @@ class TestCommands(unittest.TestCase):
             cr_json = list(tmpdir.glob('*.json'))
             self.assertEqual(3, len(cr_json))
             # check for created excel files by name
-            self.assertTrue(
-                (tmpdir / 'Graph Model Differences 0-1.xlsx').is_file())
-            self.assertTrue(
-                (tmpdir / 'Graph Model Differences 0-2.xlsx').is_file()
-            )
-            self.assertTrue(
-                (tmpdir / 'Graph Model Differences 0-1(1).xlsx').is_file()
-            )
+            diff_files = list(tmpdir.glob('Model Diffs*.xlsx'))
+            self.assertEqual(3, len(diff_files))
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)

@@ -9,8 +9,7 @@ import pandas as pd
 
 from graph_analysis.graph_creation import MDTranslator
 from graph_analysis.graph_objects import DiEdge, Vertex
-from graph_analysis.utils import (associate_node_ids, check_create_filename,
-                                  create_column_values,
+from graph_analysis.utils import (associate_node_ids, create_column_values,
                                   create_column_values_singleton,
                                   create_column_values_space,
                                   create_column_values_under,
@@ -634,25 +633,6 @@ class TestUtils(unittest.TestCase):
             ]
         }
         self.assertDictEqual(expect, to_uml_json_edge(**edge_info))
-
-    def test_check_create_filename(self):
-        # dummyfile = DATA_DIRECTORY / 'changes_uml.json'
-        # newname = Path((DATA_DIRECTORY / 'changes_uml.json'))
-        # dummyfile.rename(newname)
-        # print(dummyfile.name)
-        # with tempfile.TemporaryDirectory() as tmpdir:
-        #     tmpdir = Path(tmpdir)
-        #     copy2((DATA_DIRECTORY / 'Invalid Pattern.xlsx'), tmpdir)
-        #     dir, fname = check_create_filename(
-        #         directory=tmpdir,
-        #         filename='Invalid Pattern.xlsx',
-        #     )
-        #     self.assertEqual('Invalid Pattern(1).xlsx', fname.name)
-        dir, fname = check_create_filename(
-            directory=DATA_DIRECTORY,
-            filename='Invalid Pattern.xlsx',
-        )
-        self.assertEqual('Invalid Pattern(1).xlsx', fname.name)
 
     def tearDown(self):
         pass

@@ -1,6 +1,6 @@
 import json
-# import os
 from copy import copy
+from datetime import datetime
 from glob import glob
 from itertools import combinations
 from pathlib import Path
@@ -11,11 +11,11 @@ import pandas as pd
 
 from . import OUTPUT_DIRECTORY
 from .graph_objects import PropertyDiGraph
-from .utils import (associate_node_ids, check_create_filename,
-                    create_column_values_singleton, create_column_values_space,
-                    create_column_values_under, distill_edges_to_nodes,
-                    get_new_column_name, match_changes, new_as_old,
-                    object_dict_view, to_excel_df, to_nto_rename_dict)
+from .utils import (associate_node_ids, create_column_values_singleton,
+                    create_column_values_space, create_column_values_under,
+                    distill_edges_to_nodes, get_new_column_name, match_changes,
+                    new_as_old, object_dict_view, to_excel_df,
+                    to_nto_rename_dict)
 
 
 class Manager:
@@ -239,12 +239,15 @@ class Manager:
         # does create multiple sheets for each Manager.
 
         for key in self.evaluator_change_dict:
-            # TODO: Find a better way to name files
-            outfile = Path('Graph Model Differences {0}.xlsx'.format(key))
-            # TODO: Increment file names
-            outdir, outfile = check_create_filename(
-                directory=out_directory, filename=outfile
-            )
+            outfile = Path(
+                'Model Diffs {0}-{1}.xlsx'.format(
+                    key, datetime.now()))
+
+            if out_directory:
+                outdir = out_directory
+            else:
+                outdir = DATA_DIRECTORY
+
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
             evals_comp = key.split('-')
@@ -265,7 +268,7 @@ class Manager:
             ]))
 
             df_output.to_excel(
-                (outfile), sheet_name=key, index=False)
+                (outdir / outfile), sheet_name=key, index=False)
 
     def graph_difference_to_json(self, new_col='',
                                  change_dict=None, evaluators='',
@@ -311,13 +314,14 @@ class Manager:
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)
-        print(evaluators)
-        outfile = Path('graph_difference_changes_{0}.json'.format(evaluators))
-        outdir, outfile = check_create_filename(
-            directory=out_directory, filename=outfile
-        )
+        outfile = Path('diff_change_{0}-{1}.json'.format(
+            evaluators, datetime.now()))
+        if out_directory:
+            outdir = out_directory
+        else:
+            outdir = DATA_DIRECTORY
 
-        (outfile).write_text(
+        (outdir / outfile).write_text(
             json.dumps(json_out, indent=4, sort_keys=True))
 
         return change_list
