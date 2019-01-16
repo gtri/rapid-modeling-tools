@@ -15,7 +15,7 @@ from .utils import (associate_node_ids, create_column_values_singleton,
                     create_column_values_space, create_column_values_under,
                     distill_edges_to_nodes, get_new_column_name, match_changes,
                     new_as_old, object_dict_view, to_excel_df,
-                    to_nto_rename_dict)
+                    to_nto_rename_dict, truncate_microsec)
 
 
 class Manager:
@@ -86,7 +86,7 @@ class Manager:
             eval_2_e_dict = pair[1].prop_di_graph.edge_dict
 
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
-                pass  # so skip it
+                continue  # skip because this is comparing diff to diff
             elif pair[0].has_rename:  # This shouldn't happen since first
                 # pair entry always be baseline based on how combos built
                 # rename pair[0]
@@ -241,8 +241,7 @@ class Manager:
         for key in self.evaluator_change_dict:
             outfile = Path(
                 'Model Diffs {0}-{1}.xlsx'.format(
-                    key, datetime.now()))
-            outfile.name.replace(':', '-')
+                    key, truncate_microsec(curr_time=datetime.now().time())))
 
             if out_directory:
                 outdir = out_directory
@@ -315,9 +314,8 @@ class Manager:
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)
-        outfile = Path('diff_{0}({1}).json'.format(
-            evaluators, datetime.now))
-        outfile.name.replace(':', '-')
+        outfile = Path('graph_diff_changes_{0}({1}).json'.format(
+            evaluators, truncate_microsec(curr_time=datetime.now())))
 
         if out_directory:
             outdir = out_directory

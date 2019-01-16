@@ -592,3 +592,8 @@ def to_uml_json_edge(**kwargs):
             }
         ]
     }
+
+
+def truncate_microsec(curr_time=None):
+    time_str = curr_time.strftime('%H %M %S %f')
+    return time_str[0:-3]

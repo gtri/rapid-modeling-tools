@@ -83,20 +83,13 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                compare_md_model(inputs, outidr)
+                compare_md_model(inputs, outdir)
                 compare_md_model(ins, outdir)
                 # expect 3 json and 3 more excel files
-                cr_json = list(tmpdir2.glob('*.json'))
+                cr_json = list(outdir.glob('*.json'))
                 self.assertEqual(3, len(cr_json))
-                # check for created excel files by name
-                self.assertTrue(
-                    (tmpdir2 / 'Graph Model Differences 0-1.xlsx').is_file())
-                self.assertTrue(
-                    (tmpdir2 / 'Graph Model Differences 0-2.xlsx').is_file()
-                )
-                self.assertTrue(
-                    (tmpdir2 / 'Graph Model Differences 0-1(1).xlsx').is_file()
-                )
+                diff_files = list(tmpdir.glob('Model Diffs*.xlsx'))
+                self.assertEqual(3, len(diff_files))
 
     def tearDown(self):
         pass

@@ -55,6 +55,7 @@ def create_md_model(input_paths, output_path=''):
             else:
                 pattern_sheet = sheet.lower()
                 break
+
         if pattern_sheet:
             data = (json_patterns[pattern_sheet]).read_text()
             data = json.loads(data)
@@ -88,22 +89,14 @@ def create_md_model(input_paths, output_path=''):
                     wkbk.parts[-1]).with_suffix('.json')
 
             (outfile).write_text(
-                json.dumps(json_out, indent=4, sort_keys=True)
-            )
+                json.dumps(json_out, indent=4, sort_keys=True))
+        else:
+            raise RuntimeError('No matching pattern sheet was found.'
+                               + ' Check the sheet names and try again.')
 
 
 def compare_md_model(inputs, output_path=''):
-    # TODO: Check for filename potential conflicts.
-    # This may have to be done at file creation time. Maybe supply the
-    # filename upstream at the get_pattern_graph_diff() stage and that can
-    # pass the filename to the other functions that are burried inside.
-
-    # Check if the file already exists in the output directory before
-    # creating it. If it does add a (1) and increment by 1 until
-    # a free name is found.
-
     provided_paths = inputs
-    # provided_paths.extend(updated)
     wkbk_paths = []
     here = Path(os.getcwd())
 
@@ -180,3 +173,6 @@ def compare_md_model(inputs, output_path=''):
         # TODO: This needs to depend on the type of outpath.
         manager.get_pattern_graph_diff(out_directory=outpath)
         manager.changes_to_excel(out_directory=outpath)
+    else:
+        raise RuntimeError('No matching pattern sheet was found.'
+                           + ' Check the sheet names and try again.')
