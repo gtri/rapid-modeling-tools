@@ -242,6 +242,7 @@ class Manager:
             outfile = Path(
                 'Model Diffs {0}-{1}.xlsx'.format(
                     key, datetime.now()))
+            outfile.name.replace(':', '-')
 
             if out_directory:
                 outdir = out_directory
@@ -314,8 +315,10 @@ class Manager:
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)
-        outfile = Path('diff_change_{0}-{1}.json'.format(
-            evaluators, datetime.now()))
+        outfile = Path('diff_{0}({1}).json'.format(
+            evaluators, datetime.now))
+        outfile.name.replace(':', '-')
+
         if out_directory:
             outdir = out_directory
         else:

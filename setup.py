@@ -27,5 +27,5 @@ setup(
         "graph-analysis = graph_analysis.cli:main"]},
     install_requires=[
         'pandas', 'scipy', 'networkx >=2.1', 'xlrd >=0.9.0'],
-    tests_require=['pytest'],
+    tests_require=['pytest', 'unittest'],
 )
