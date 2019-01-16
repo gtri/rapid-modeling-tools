@@ -90,9 +90,6 @@ def create_md_model(input_paths, output_path=''):
 
             (outfile).write_text(
                 json.dumps(json_out, indent=4, sort_keys=True))
-        else:
-            raise RuntimeError('No matching pattern sheet was found.'
-                               + ' Check the sheet names and try again.')
 
 
 def compare_md_model(inputs, output_path=''):

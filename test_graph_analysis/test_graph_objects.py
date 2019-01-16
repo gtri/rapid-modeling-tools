@@ -16,7 +16,7 @@ from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 class TestPropertyDiGraph(unittest.TestCase):
 
     def setUp(self):
-        data = (PATTERNS / 'CompositionGraphMaster.json').read_text(
+        data = (PATTERNS / 'Composition.json').read_text(
         )
         data = json.loads(data)
 
@@ -190,7 +190,7 @@ class TestPropertyDiGraph(unittest.TestCase):
 class TestVertex(unittest.TestCase):
 
     def setUp(self):
-        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = (PATTERNS / 'Composition.json').read_text()
         data = json.loads(data)
 
         self.translator = MDTranslator(json_data=data)
@@ -256,7 +256,7 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(expected_dict, car_dict)
 
     def test_create_node_to_uml(self):
-        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = (PATTERNS / 'Composition.json').read_text()
         data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
@@ -389,7 +389,7 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(engine_uml[2], engine_edge_uml)
 
     def test_change_node_to_uml(self):
-        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = (PATTERNS / 'Composition.json').read_text()
         data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
@@ -424,7 +424,7 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(car_rename_uml[0], rename_json)
 
     def test_delete_node_to_uml(self):
-        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = (PATTERNS / 'Composition.json').read_text()
         data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
@@ -459,7 +459,7 @@ class TestVertex(unittest.TestCase):
         self.assertDictEqual(car_delete_uml[0], delete_json)
 
     def test_get_uml_id(self):
-        data = (PATTERNS / 'CompositionGraphMaster.json').read_text()
+        data = (PATTERNS / 'Composition.json').read_text()
         data = json.loads(data)
 
         translator = MDTranslator(json_data=data)

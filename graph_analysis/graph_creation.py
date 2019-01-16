@@ -246,7 +246,7 @@ class Manager:
             if out_directory:
                 outdir = out_directory
             else:
-                outdir = DATA_DIRECTORY
+                outdir = OUTPUT_DIRECTORY
 
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
@@ -320,7 +320,7 @@ class Manager:
         if out_directory:
             outdir = out_directory
         else:
-            outdir = DATA_DIRECTORY
+            outdir = OUTPUT_DIRECTORY
 
         (outdir / outfile).write_text(
             json.dumps(json_out, indent=4, sort_keys=True))
