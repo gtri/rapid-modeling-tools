@@ -35,7 +35,7 @@ class TestCommands(unittest.TestCase):
             create_md_model(wkbk_path)
             # expect 6
             cr_json = list(tmpdir.glob('*.json'))
-            self.assertEqual(6, len(cr_json))
+            self.assertEqual(7, len(cr_json))
             self.assertTrue(
                 (DATA_DIRECTORY / 'Composition Example 2.json').is_file())
 
@@ -43,7 +43,7 @@ class TestCommands(unittest.TestCase):
                 out_tmp_dir = Path(out_tmp_dir)
                 create_md_model(wkbk_path, out_tmp_dir)
                 new_json = list(out_tmp_dir.glob('*.json'))
-                self.assertEqual(6, len(new_json))
+                self.assertEqual(7, len(new_json))
 
     def test_compare_md_model(self):
         with tempfile.TemporaryDirectory() as tmpdir:

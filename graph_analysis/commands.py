@@ -48,7 +48,11 @@ def create_md_model(input_paths, output_path=''):
                     patterns_msg = ('The currently supported '
                                     + 'patterns are: {0}'.format(
                                         [*json_patterns]))
-                    warnings.warn('\n' + warn_msg + '\n' + patterns_msg)
+                    patts = ('New patterns may be added in the'
+                             + ' graph_analysis/patterns directory')
+                    warnings.warn('\n' + warn_msg
+                                  + '\n' + patterns_msg
+                                  + '\n' + patts)
                     break
                 else:
                     continue
@@ -142,7 +146,10 @@ def compare_md_model(inputs, output_path=''):
                 patterns_msg = ('The currently supported '
                                 + 'patterns are: {0}'.format(
                                     [*json_patterns]))
-                warnings.warn('\n' + warn_msg + '\n' + patterns_msg)
+                patts = ('New patterns may be added in the'
+                         + ' graph_analysis/patterns directory')
+                warnings.warn('\n' + warn_msg + '\n' + patterns_msg
+                              + '\n' + patts)
                 break
             else:
                 continue

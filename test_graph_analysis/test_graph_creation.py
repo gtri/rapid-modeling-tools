@@ -447,8 +447,8 @@ class TestEvaluator(unittest.TestCase):
         self.assertListEqual(
             ['Component', 'Position', 'Part'], columns_list)
 
-        # 63 ids provided and 1 key for the new_i counter ids.
-        self.assertEqual(64, len(translator.uml_id))
+        # 63 ids provided.
+        self.assertEqual(63, len(evaluator.df_ids))
 
     def test_has_rename(self):
         data = (PATTERNS / 'Composition.json').read_text(
