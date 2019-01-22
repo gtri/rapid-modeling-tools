@@ -91,5 +91,40 @@ class TestCommands(unittest.TestCase):
                 diff_files = list(tmpdir.glob('Model Diffs*.xlsx'))
                 self.assertEqual(3, len(diff_files))
 
+    def test_compare_md_model_dir(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            tempdir = Path(tempdir)
+            excel_files = [
+                DATA_DIRECTORY / 'Composition Example 2 Model Baseline.xlsx',
+                DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx',
+                DATA_DIRECTORY / 'Composition Example 2 Model Changed 2.xlsx',
+            ]
+            for xl in excel_files:
+                copy2(DATA_DIRECTORY / xl, tempdir)
+
+            original = tempdir / 'Composition Example 2 Model Baseline.xlsx'
+
+            compare_md_model([original, tempdir])
+            dir_json = list(tempdir.glob('*.json'))
+            dir_xl = list(tempdir.glob('Model Diff*.xlsx'))
+            self.assertEqual(3, len(dir_json))
+            self.assertEqual(3, len(dir_xl))
+
+            # with tempfile.TemporaryDirectory() as tmpdir3:
+            #     outdir = Path(tmpdir3)
+            #     copy2(DATA_DIRECTORY /
+            #           'Composition Example 2 Model Baseline.xlsx', outdir)
+            #     copy2(DATA_DIRECTORY /
+            #           'Composition Example 2 Model Changed.xlsx', outdir)
+            #     copy2(DATA_DIRECTORY /
+            #           'Composition Example 2 Model Changed 2.xlsx', outdir)
+            #     orig3 = outdir / 'Composition Example 2 Model Baseline.xlsx'
+            #     input3 = [orig3, outdir]
+            #     compare_md_model(input3, output_path=outdir)
+            #     new_json = list(outdir.glob('*.json'))
+            #     new_xl = list(outdir.glob('Model Diffs*.xlsx'))
+            #     self.assertEqual(3, len(new_json))
+            #     self.assertEqual(3, len(new_xl))
+
     def tearDown(self):
         pass

@@ -13,28 +13,33 @@ def main():
 
     parser = argparse.ArgumentParser(
         description="A simple CLI for parsing an Excel Workbook and "
-                    "generating a SysML instruction graph",
+                    "generating SysML Graph JSON instructions to be used "
+                    "with the Player Piano.",
     )
 
     parser.add_argument(
         "-cr",
         "--create",
-        nargs='+',
-        help="Create a JSON file for the Player Piano to make in a MD Diagram"
+        nargs='?',
+        help="Create a JSON file for the Player Piano to make in a MD Diagram",
+        default=True,
+        const=True
     )
 
     parser.add_argument(
         "-cf",
         "--compare",
-        nargs='+',
+        nargs='?',
         help=("Compare a baseline Excel File with a collection of Change Files"
-              + " Must supply the original file first and then the changes")
+              + " Must supply the original file first and then the changes"),
+        default=True,
+        const=True
     )
 
     parser.add_argument(
         "-i",
         "--input",
-        nargs='+',
+        nargs='*',
         help="Path to Excel Workbook(s)",
         type=str,
     )
@@ -56,7 +61,7 @@ def main():
     parser.add_argument(
         "-up",
         "--updated",
-        nargs='+',
+        nargs='*',
         help="Change files to be compared to the Original."
     )
 

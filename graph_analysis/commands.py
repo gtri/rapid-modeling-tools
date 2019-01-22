@@ -101,12 +101,16 @@ def compare_md_model(inputs, output_path=''):
     wkbk_paths = []
     here = Path(os.getcwd())
 
-    for path in provided_paths:
+    for counter, path in enumerate(provided_paths):
         p = Path(path)
+        # print(p)
         if not p.is_absolute():
             p = here / p
         if p.is_dir():
             p = list(p.glob('*.xlsx'))
+            for path in p:
+                if counter != 0 and path == provided_paths[0]:
+                    p.remove(path)
         else:
             p = [p]
 
@@ -159,7 +163,7 @@ def compare_md_model(inputs, output_path=''):
 
     if pattern_sheet:
         manager = Manager(
-            excel_path=provided_paths,
+            excel_path=wkbk_paths,
             json_path=json_patterns[pattern_sheet],
         )
         translator = manager.translator
@@ -174,7 +178,6 @@ def compare_md_model(inputs, output_path=''):
             property_di_graph.create_edge_set()
             vertex_set = property_di_graph.vertex_set
 
-        # TODO: This needs to depend on the type of outpath.
         manager.get_pattern_graph_diff(out_directory=outpath)
         manager.changes_to_excel(out_directory=outpath)
     else:

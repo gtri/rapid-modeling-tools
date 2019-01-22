@@ -108,13 +108,28 @@ class Manager:
                     original_df=orig_eval.df,
                     rename_df=pair[1].df_renames)
                 new_name_dict = pair[1].df_renames.to_dict(orient='list')
+                print('\n' + 'actually first thing printed')
+                print(pair[1].df_renames.head(5))
+                # print(len(self.evaluators))
+                print(pair[0].excel_file.name, pair[1].excel_file.name)
+                # print(new_name_dict)
+                # print(new_name_col)
                 n_t_o, rename_changes = to_nto_rename_dict(
                     new_name=new_name_col,
                     new_name_dict=new_name_dict)
+                print('this is nto: {0}'.format(n_t_o))
+                eval_2_obj_names = {key for key in n_t_o}
+                print('do these exist in the graph?')
+                truth = eval_2_obj_names.intersection(
+                    pair[1].prop_di_graph.named_vertex_set)
+                print('new names are objs? {0}'.format(truth))
                 # iterate through keys in new_to_old changing names edge dict
+                # print(eval_2_e_dict)
                 eval_2_e_dict, reverse_map, vert_obj_map = new_as_old(
                     main_dict=eval_2_e_dict,
                     new_keys=n_t_o)
+                print('reverse_map')
+                print(reverse_map)
 
             edge_set_one = pair[0].edge_set  # get baseline edge set
             edge_set_two = pair[1].edge_set  # get the changed edge set
@@ -178,7 +193,7 @@ class Manager:
                 change_dict=eval_one_unmatch_pref)
 
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
-                pass  # so nothing happened above.
+                continue  # so nothing happened above.
             elif pair[0].has_rename:
                 # Put stuff back how it was
                 eval_1_e_dict, new_to_old, old_v_obj_map = new_as_old(
@@ -199,13 +214,19 @@ class Manager:
                     main_dict=eval_2_e_dict,
                     new_keys=reverse_map)
                 vert_dict = pair[0].prop_di_graph.vertex_dict
+                # print('first thing printed')
+                # print(pair[0].excel_file.name, pair[1].excel_file.name)
+                # print(pair[1].df_renames.head)
+                # print(old_v_obj_map)
                 for key in old_v_obj_map.keys():
                     old_v_obj_map.update({key: vert_dict[key]})
                 vert_obj_map.update(old_v_obj_map)
+                # print(vert_obj_map)
                 n_t_o, rename_changes = to_nto_rename_dict(
                     new_name=new_name_col,
                     new_name_dict=new_name_dict,
                     str_to_obj_map=vert_obj_map)
+                # print(rename_changes)
                 eval_one_matches[0].update(rename_changes)
 
             new_name_objs = ''
@@ -219,6 +240,8 @@ class Manager:
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
 
+            # print(key)
+            # print(eval_one_matches[0]['Rename new name'])
             self.graph_difference_to_json(new_col=new_name_objs,
                                           change_dict=eval_one_matches[0],
                                           evaluators=key,
@@ -285,6 +308,10 @@ class Manager:
                     edge_del.append(edge.edge_to_uml(op='delete',
                                                      translator=translator))
             elif key == new_col:
+                print(key)
+                # print(change_dict[key])
+                for n_ode in change_dict[key]:
+                    print(n_ode)
                 for node in change_dict[key]:
                     node_renames.append(
                         node.change_node_to_uml(translator=translator)
@@ -412,9 +439,13 @@ class Evaluator:
                     self.translator.uml_id.update(
                         self.df_ids.to_dict(
                             orient='dict')[self.df_ids.columns[0]])
-                elif sheet.lower() in renames:
-                    self.df_renames = pd.read_excel(excel_file,
-                                                    sheet_name=sheet)
+                # elif sheet.lower() in renames:
+                elif any(renm_str in sheet.lower() for renm_str in renames):
+                    self.df_renames = pd.read_excel(
+                        excel_file, sheet_name=sheet)
+                    self.df_renames.dropna(
+                        how='all', inplace=True)
+                    print(self.df_renames)
                     for row in self.df_renames.itertuples(index=False):
                         if row[0] in self.translator.uml_id.keys():
                             # replace instances of this with those in 1
@@ -433,9 +464,15 @@ class Evaluator:
                 else:
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df.dropna(how='all', inplace=True)
-            elif sheet.lower() in renames:
+            # elif sheet.lower() in renames:
+            elif any(renm_str in sheet.lower() for renm_str in renames):
                 self.df_renames = pd.read_excel(excel_file,
                                                 sheet_name=sheet)
+                self.df_renames.dropna(
+                    how='all', inplace=True)
+                print('in outer elif')
+                print(self.df_renames)
+                print(self.df_renames.iloc[0])
                 for row in self.df_renames.itertuples(index=False):
                     if row[0] in self.translator.uml_id.keys():
                         # then replace instances of this with those in 1
@@ -568,6 +605,11 @@ class Evaluator:
             edge_type = self.translator.get_edge_type(index=index)
             self.df[edge_type] = edge_type
             df_temp = self.df[[pair[0], pair[1], edge_type]]
+            fugitives = {'SV-5', 'SV-6', 'Miniature Inertial Measurement Unit'}
+            # print(df_temp.iloc[0].str.contains('Spacecraft'))
+            # if df_temp.str.contains('SV-5|SV-6|Miniature Inertial Measurement Unit').any():
+            # 'Inertial Measurement Unit|LV-3|LV-4'
+            # print(df_temp)
             GraphTemp = nx.DiGraph()
             GraphTemp = nx.from_pandas_edgelist(
                 df=df_temp, source=pair[0],
