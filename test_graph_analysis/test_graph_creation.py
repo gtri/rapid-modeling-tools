@@ -382,17 +382,22 @@ class TestManager(unittest.TestCase):
                        'Deleted': [del_edge, ], }
         cd = change_dict
         tr = manager.translator
-        desired = [base_edge.edge_to_uml(op='delete', translator=tr),
+        desired = [cd['Rename new name'][0].create_node_to_uml(translator=tr),
+                   base_edge.edge_to_uml(op='delete', translator=tr),
                    cd['Deleted'][0].edge_to_uml(op='delete', translator=tr),
                    ances_edge.edge_to_uml(op='replace', translator=tr),
                    cd['Added'][0].edge_to_uml(op='replace', translator=tr),
-                   cd['Rename new name'][0].change_node_to_uml(translator=tr)]
+                   cd['Rename new name'][0].change_node_to_uml(translator=tr),
+                   ]
 
         changes = manager.graph_difference_to_json(new_col='Rename new name',
                                                    change_dict=change_dict,
                                                    evaluators='0-1')
         for count, change in enumerate(changes):
-            self.assertDictEqual(desired[count], change)
+            if isinstance(change, tuple) and isinstance(desired[count], tuple):
+                self.assertTupleEqual(desired[count], change)
+            else:
+                self.assertDictEqual(desired[count], change)
 
     def tearDown(self):
         pass

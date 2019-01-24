@@ -279,6 +279,7 @@ class Manager:
         edge_del = []
         edge_add = []
         node_renames = []
+        create_new_name_node = []
         translator = self.translator
         for key, value in change_dict.items():
             if key == 'Added':
@@ -291,6 +292,9 @@ class Manager:
                                                      translator=translator))
             elif key == new_col:
                 for node in change_dict[key]:
+                    create_new_name_node.append(
+                        node.create_node_to_uml(translator=translator)
+                    )
                     node_renames.append(
                         node.change_node_to_uml(translator=translator)
                     )
@@ -304,6 +308,7 @@ class Manager:
                                                      translator=translator)
                 edge_add.append(add_edge_json)
 
+        change_list.extend(create_new_name_node)
         change_list.extend(edge_del)
         change_list.extend(edge_add)
         change_list.extend(node_renames)
