@@ -99,8 +99,6 @@ from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 #         )
 #
 #     def test_change_composition_2_excel_json_creation(self):
-#         warnings.warn(
-#             'File overwrite if test_change_excel_json_creation is uncommented')
 #         original_file = 'Composition Example 2 Model Baseline.xlsx'
 #         change_file = 'Composition Example 2 Model Changed.xlsx'
 #         excel_files = [DATA_DIRECTORY / original_file,

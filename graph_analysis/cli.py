@@ -9,7 +9,7 @@ def main():
     :return:
     """
 
-    print('hello world')
+    print('I am shocked, shocked to find that gambling is going on in here!')
 
     parser = argparse.ArgumentParser(
         description="A simple CLI for parsing an Excel Workbook and "
@@ -18,22 +18,20 @@ def main():
     )
 
     parser.add_argument(
-        "-cr",
+        "-c",
         "--create",
         nargs='?',
         help="Create a JSON file for the Player Piano to make in a MD Diagram",
-        default=True,
-        const=True
+        const=True,
     )
 
     parser.add_argument(
-        "-cf",
+        "-C",
         "--compare",
         nargs='?',
         help=("Compare a baseline Excel File with a collection of Change Files"
               + " Must supply the original file first and then the changes"),
-        default=True,
-        const=True
+        const=True,
     )
 
     parser.add_argument(
@@ -53,16 +51,18 @@ def main():
     )
 
     parser.add_argument(
-        "-or",
+        "-O",
         "--original",
         help="The original file to which the comparison will be run against.",
+        type=str,
     )
 
     parser.add_argument(
-        "-up",
+        "-U",
         "--updated",
         nargs='*',
-        help="Change files to be compared to the Original."
+        help="Change files to be compared to the Original.",
+        type=str,
     )
 
     parser.add_argument(
@@ -77,17 +77,11 @@ def main():
         # TODO: get __version__ form init.py and setup.py
         return "0.1.0"
     elif args.create:
-        # TODO: define a create function that creates a json for a fresh model
         return create_md_model(args.input, args.output)
     elif args.compare:
-        # TODO: return comparison
-        if not (args.original or args.updated):
-            raise RuntimeError('Missing Original or Updated File(s)')
-        else:
-            # I could throw a warning and make the user type yes or no to
-            # continue so they acknowledge the possibility of overwrite.
-            inputs = [args.original, args.updated]
-            return compare_md_model(inputs, args.output)
+        inputs = [args.original]
+        inputs.extend(args.updated)
+        return compare_md_model(inputs, args.output)
     else:
         return "Not a valid input argument. Choose from create or compare"
 

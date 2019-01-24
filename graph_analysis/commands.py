@@ -95,6 +95,8 @@ def create_md_model(input_paths, output_path=''):
             (outfile).write_text(
                 json.dumps(json_out, indent=4, sort_keys=True))
 
+            print('Creation Complete')
+
 
 def compare_md_model(inputs, output_path=''):
     provided_paths = inputs
@@ -103,13 +105,12 @@ def compare_md_model(inputs, output_path=''):
 
     for counter, path in enumerate(provided_paths):
         p = Path(path)
-        # print(p)
         if not p.is_absolute():
             p = here / p
         if p.is_dir():
             p = list(p.glob('*.xlsx'))
             for path in p:
-                if counter != 0 and path == provided_paths[0]:
+                if counter != 0 and path.name == p[0].name:
                     p.remove(path)
         else:
             p = [p]
@@ -180,6 +181,8 @@ def compare_md_model(inputs, output_path=''):
 
         manager.get_pattern_graph_diff(out_directory=outpath)
         manager.changes_to_excel(out_directory=outpath)
+
+        print('Comparison Complete')
     else:
         raise RuntimeError('No matching pattern sheet was found.'
                            + ' Check the sheet names and try again.')
