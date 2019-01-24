@@ -458,18 +458,8 @@ def replace_new_with_old_name(changed_df=None, rename_df=None, new_name=None):
 
 def new_as_old(main_dict=None, new_keys=None):
     reverse_map = {}
-    print('new keys')
-    print(new_keys)
     new_key_set = {key for key in new_keys.keys()}
     vert_obj_map = {}
-    print('new key set')
-    print(new_key_set)
-    main_set = set()
-    for key in main_dict:
-        main_set.add(key[0])
-        main_set.add(key[1])
-    expect_keys = new_key_set.intersection(main_set)
-    print('The intersection: {0}'.format(expect_keys))
     for key in main_dict:
         if key[0] in new_key_set:
             old_name = new_keys[key[0]]
@@ -503,9 +493,6 @@ def to_nto_rename_dict(new_name=None, new_name_dict=None,
     # Why does the above work in jupyter but not here?
     old_obj_list = []
     new_obj_list = []
-    # print(new_name)
-    # print(new_name_dict)
-    # print(str_to_obj_map)
     for key, value in new_name_dict.items():
         if key is not new_name:
             if str_to_obj_map:

@@ -107,8 +107,8 @@ class TestCommands(unittest.TestCase):
             compare_md_model([original, tempdir])
             dir_json = list(tempdir.glob('*.json'))
             dir_xl = list(tempdir.glob('Model Diff*.xlsx'))
-            self.assertEqual(3, len(dir_json))
-            self.assertEqual(3, len(dir_xl))
+            self.assertEqual(2, len(dir_json))
+            self.assertEqual(2, len(dir_xl))
 
             # with tempfile.TemporaryDirectory() as tmpdir3:
             #     outdir = Path(tmpdir3)

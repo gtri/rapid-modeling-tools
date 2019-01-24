@@ -447,7 +447,7 @@ class TestEvaluator(unittest.TestCase):
         self.assertListEqual(
             ['Component', 'Position', 'Part'], columns_list)
 
-        # 63 ids provided.
+        # 63 ids provided .
         self.assertEqual(63, len(evaluator.df_ids))
 
     def test_has_rename(self):
