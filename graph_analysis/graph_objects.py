@@ -384,16 +384,18 @@ class Vertex(VertexReporterMixin):
         """
         connections = []
         # {'<node name>' : {'edge_attribute': 'edge type'}}
-        for node_name in self.successors:
-            temp_dict = {'source': self.name,
-                         'target': node_name}
-            temp_dict.update(self.successors[node_name])
-            connections.append(temp_dict)
-        for node_name in self.predecessors:
-            temp_dict = {'source': node_name,
-                         'target': self.name}
-            temp_dict.update(self.predecessors[node_name])
-            connections.append(temp_dict)
+        if self.successors:
+            for node_name in self.successors:
+                temp_dict = {'source': self.name,
+                             'target': node_name}
+                temp_dict.update(self.successors[node_name])
+                connections.append(temp_dict)
+        if self.predecessors:
+            for node_name in self.predecessors:
+                temp_dict = {'source': node_name,
+                             'target': self.name}
+                temp_dict.update(self.predecessors[node_name])
+                connections.append(temp_dict)
         return connections
 
     def to_dict(self):

@@ -1,5 +1,5 @@
 import json
-from copy import copy
+from copy import copy, deepcopy
 from datetime import datetime
 from glob import glob
 from itertools import combinations
@@ -9,7 +9,7 @@ from warnings import warn
 import networkx as nx
 import pandas as pd
 
-from . import OUTPUT_DIRECTORY
+from . import OUTPUT_DIRECTORY, PATTERNS
 from .graph_objects import PropertyDiGraph
 from .utils import (associate_node_ids, create_column_values_singleton,
                     create_column_values_space, create_column_values_under,
@@ -66,10 +66,14 @@ class Manager:
         self.json_data = data
 
     def create_evaluators(self):
-        for excel_file in self.excel_path:
+        for count, excel_file in enumerate(self.excel_path):
+            if count != 0:
+                translator = self.evaluators[0].translator
+            else:
+                translator = self.translator
             self.evaluators.append(
                 Evaluator(excel_file=excel_file,
-                          translator=self.translator))
+                          translator=deepcopy(translator)))
 
     def get_pattern_graph_diff(self, out_directory=''):
         evaluator_dict = {evaluator: index for index, evaluator in enumerate(
@@ -79,9 +83,6 @@ class Manager:
         orig_eval = self.evaluators[0]
 
         for pair in combinations(self.evaluators, 2):
-            # recast new names to be old but don't lost that info
-            # want to somehow pass back the fact that new names were recast
-            # have to update dict with new names
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
             eval_2_e_dict = pair[1].prop_di_graph.edge_dict
 
@@ -114,6 +115,7 @@ class Manager:
                 n_t_o, rename_changes = to_nto_rename_dict(
                     new_name=new_name_col,
                     new_name_dict=new_name_dict)
+                eval_2_obj_names = {key for key in n_t_o}
                 # iterate through keys in new_to_old changing names edge dict
                 eval_2_e_dict, reverse_map, vert_obj_map = new_as_old(
                     main_dict=eval_2_e_dict,
@@ -181,7 +183,7 @@ class Manager:
                 change_dict=eval_one_unmatch_pref)
 
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
-                pass  # so nothing happened above.
+                continue  # so nothing happened above.
             elif pair[0].has_rename:
                 # Put stuff back how it was
                 eval_1_e_dict, new_to_old, old_v_obj_map = new_as_old(
@@ -221,7 +223,7 @@ class Manager:
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
-            # TODO: Deal with the file naming
+
             self.graph_difference_to_json(new_col=new_name_objs,
                                           change_dict=eval_one_matches[0],
                                           evaluators=key,
@@ -232,12 +234,6 @@ class Manager:
         return self.evaluator_change_dict
 
     def changes_to_excel(self, out_directory=''):
-        # TODO: Find a more secure method.
-        # If multiple files created in one
-        # session then data will be lost and only the most recent changes
-        # will be kept.
-        # does create multiple sheets for each Manager.
-
         for key in self.evaluator_change_dict:
             outfile = Path(
                 'Model Diffs {0}-{1}.xlsx'.format(
@@ -283,6 +279,7 @@ class Manager:
         edge_del = []
         edge_add = []
         node_renames = []
+        create_new_name_node = []
         translator = self.translator
         for key, value in change_dict.items():
             if key == 'Added':
@@ -295,6 +292,9 @@ class Manager:
                                                      translator=translator))
             elif key == new_col:
                 for node in change_dict[key]:
+                    create_new_name_node.append(
+                        node.create_node_to_uml(translator=translator)
+                    )
                     node_renames.append(
                         node.change_node_to_uml(translator=translator)
                     )
@@ -308,6 +308,7 @@ class Manager:
                                                      translator=translator)
                 edge_add.append(add_edge_json)
 
+        change_list.extend(create_new_name_node)
         change_list.extend(edge_del)
         change_list.extend(edge_add)
         change_list.extend(node_renames)
@@ -377,6 +378,7 @@ class Evaluator:
         self.df = pd.DataFrame()
         self.df_ids = pd.DataFrame()
         self.df_renames = pd.DataFrame()
+        self.excel_file = excel_file
         # TODO: Why did I do this? save the file off as self.file then
         # call sheets_to_dataframe on self.
         self.sheets_to_dataframe(excel_file=excel_file)
@@ -399,50 +401,90 @@ class Evaluator:
 
     def sheets_to_dataframe(self, excel_file=None):
         # TODO: Generalize/Standardize this function
+        patterns = [pattern.name.split('.')[0].lower()
+                    for pattern in PATTERNS.glob('*.json')]
+        ids = ['id', 'ids', 'identification number',
+               'id number', 'uuid', 'mduuid', 'magicdraw id',
+               'magic draw id', 'magicdraw identification',
+               'identification numbers', 'id_numbers', 'id_number']
+        renames = ['renames', 'rename', 'new names', 'new name', 'newnames',
+                   'newname', 'new_name', 'new_names', 'changed names',
+                   'changed name', 'change names', 'changed_names',
+                   'changenames', 'changed_names']
         xls = pd.ExcelFile(excel_file, on_demand=True)
-        if len(xls.sheet_names) > 1:
-            for sheet in sorted(xls.sheet_names):
-                # TODO: sorting like this may not be viable, I can manually
-                # TODO: build the lists placing comp then ids then renames
-                # TODO: then running the df creation rules on them since I
-                # TODO: know the order.
-                # TODO: Change the way check the sheets.
-                # TODO: Now that there is a patterns directory, pull the names
-                # TODO: of valid patterns from the directory and use that to
-                # TODO: do the sheet name checks here.
-                # base this on avail patterns
-                if 'composition' == sheet.lower():
-                    self.df = pd.read_excel(excel_file, sheet_name=sheet)
-                    self.df.dropna(how='all', inplace=True)
-                # base this on available patterns
-                elif 'composition ids' == sheet.lower():
-                    self.df_ids = pd.read_excel(excel_file, sheet_name=sheet)
-                    self.df_ids.set_index(self.df_ids.columns[0], inplace=True)
+        for sheet in sorted(xls.sheet_names):  # Alphabetical sort
+            # Find the Pattern Sheet
+            if any(pattern in sheet.lower() for pattern in patterns):
+                # Maybe you named the ids sheet Pattern IDs I will find it
+                if any(id_str in sheet.lower() for id_str in ids):
+                    self.df_ids = pd.read_excel(
+                        excel_file, sheet_name=sheet)
+                    self.df_ids.set_index(
+                        self.df_ids.columns[0], inplace=True)
                     self.translator.uml_id.update(
                         self.df_ids.to_dict(
                             orient='dict')[self.df_ids.columns[0]])
-                # TODO: if names of patterns begin with letter r or later
-                # we have a problem
-                elif 'renames' == sheet.lower():  # new names, updated names
-                    # TODO: Write test for this!
-                    self.df_renames = pd.read_excel(excel_file,
-                                                    sheet_name=sheet)
+                # elif sheet.lower() in renames:
+                # Maybe you named the rename sheet Pattern Renames
+                elif any(renm_str in sheet.lower() for renm_str in renames):
+                    self.df_renames = pd.read_excel(
+                        excel_file, sheet_name=sheet)
+                    self.df_renames.dropna(
+                        how='all', inplace=True)
                     for row in self.df_renames.itertuples(index=False):
                         if row[0] in self.translator.uml_id.keys():
-                            # then replace instances of this with those in 1
-                            self.df.replace(to_replace=row[0], value=row[1],
+                            # replace instances of this with those in 1
+                            self.df.replace(to_replace=row[0],
+                                            value=row[1],
                                             inplace=True)
                             self.translator.uml_id[
                                 row[1]] = self.translator.uml_id[row[0]]
                         elif row[1] in self.translator.uml_id.keys():
                             # same as above in other direction
-                            self.df.replace(to_replace=row[1], value=row[0],
+                            self.df.replace(to_replace=row[1],
+                                            value=row[0],
                                             inplace=True)
                             self.translator.uml_id[
                                 row[0]] = self.translator.uml_id[row[1]]
-        else:
-            self.df = pd.read_excel(excel_file)
-            self.df.dropna(how='all', inplace=True)
+                else:
+                    self.df = pd.read_excel(excel_file, sheet_name=sheet)
+                    self.df.dropna(how='all', inplace=True)
+            # elif sheet.lower() in renames:
+            # Hopefully you explcitly named the Rename sheet
+            elif any(renm_str in sheet.lower() for renm_str in renames):
+                self.df_renames = pd.read_excel(excel_file,
+                                                sheet_name=sheet)
+                self.df_renames.dropna(
+                    how='all', inplace=True)
+                for row in self.df_renames.itertuples(index=False):
+                    if row[0] in self.translator.uml_id.keys():
+                        # then replace instances of this with those in 1
+                        self.df.replace(to_replace=row[0], value=row[1],
+                                        inplace=True)
+                        self.translator.uml_id[
+                            row[1]] = self.translator.uml_id[row[0]]
+                        continue
+                    elif row[1] in self.translator.uml_id.keys():
+                        # same as above in other direction
+                        self.df.replace(to_replace=row[1], value=row[0],
+                                        inplace=True)
+                        self.translator.uml_id[
+                            row[0]] = self.translator.uml_id[row[1]]
+                        continue
+            elif any(id_str in sheet.lower() for id_str in ids) and \
+                    not any(pattern in sheet.lower() for pattern in patterns):
+                self.df_ids = pd.read_excel(
+                    excel_file, sheet_name=sheet)
+                self.df_ids.set_index(
+                    self.df_ids.columns[0], inplace=True)
+                self.translator.uml_id.update(
+                    self.df_ids.to_dict(
+                        orient='dict')[self.df_ids.columns[0]])
+            else:
+                raise RuntimeError(
+                    'Unrecognized sheet names for: {0}'.format(
+                        excel_file.name
+                    ))
 
     def rename_df_columns(self):
         """Returns renamed DataFrame columns from their Excel name to their

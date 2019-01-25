@@ -48,7 +48,11 @@ def create_md_model(input_paths, output_path=''):
                     patterns_msg = ('The currently supported '
                                     + 'patterns are: {0}'.format(
                                         [*json_patterns]))
-                    warnings.warn('\n' + warn_msg + '\n' + patterns_msg)
+                    patts = ('New patterns may be added in the'
+                             + ' graph_analysis/patterns directory')
+                    warnings.warn('\n' + warn_msg
+                                  + '\n' + patterns_msg
+                                  + '\n' + patts)
                     break
                 else:
                     continue
@@ -91,18 +95,23 @@ def create_md_model(input_paths, output_path=''):
             (outfile).write_text(
                 json.dumps(json_out, indent=4, sort_keys=True))
 
+            print('Creation Complete')
+
 
 def compare_md_model(inputs, output_path=''):
     provided_paths = inputs
     wkbk_paths = []
     here = Path(os.getcwd())
 
-    for path in provided_paths:
+    for counter, path in enumerate(provided_paths):
         p = Path(path)
         if not p.is_absolute():
             p = here / p
         if p.is_dir():
             p = list(p.glob('*.xlsx'))
+            for path in p:
+                if counter != 0 and path.name == p[0].name:
+                    p.remove(path)
         else:
             p = [p]
 
@@ -142,7 +151,10 @@ def compare_md_model(inputs, output_path=''):
                 patterns_msg = ('The currently supported '
                                 + 'patterns are: {0}'.format(
                                     [*json_patterns]))
-                warnings.warn('\n' + warn_msg + '\n' + patterns_msg)
+                patts = ('New patterns may be added in the'
+                         + ' graph_analysis/patterns directory')
+                warnings.warn('\n' + warn_msg + '\n' + patterns_msg
+                              + '\n' + patts)
                 break
             else:
                 continue
@@ -152,7 +164,7 @@ def compare_md_model(inputs, output_path=''):
 
     if pattern_sheet:
         manager = Manager(
-            excel_path=provided_paths,
+            excel_path=wkbk_paths,
             json_path=json_patterns[pattern_sheet],
         )
         translator = manager.translator
@@ -167,9 +179,10 @@ def compare_md_model(inputs, output_path=''):
             property_di_graph.create_edge_set()
             vertex_set = property_di_graph.vertex_set
 
-        # TODO: This needs to depend on the type of outpath.
         manager.get_pattern_graph_diff(out_directory=outpath)
         manager.changes_to_excel(out_directory=outpath)
+
+        print('Comparison Complete')
     else:
         raise RuntimeError('No matching pattern sheet was found.'
                            + ' Check the sheet names and try again.')

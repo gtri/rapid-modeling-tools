@@ -99,8 +99,6 @@ from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 #         )
 #
 #     def test_change_composition_2_excel_json_creation(self):
-#         warnings.warn(
-#             'File overwrite if test_change_excel_json_creation is uncommented')
 #         original_file = 'Composition Example 2 Model Baseline.xlsx'
 #         change_file = 'Composition Example 2 Model Changed.xlsx'
 #         excel_files = [DATA_DIRECTORY / original_file,
@@ -384,17 +382,22 @@ class TestManager(unittest.TestCase):
                        'Deleted': [del_edge, ], }
         cd = change_dict
         tr = manager.translator
-        desired = [base_edge.edge_to_uml(op='delete', translator=tr),
+        desired = [cd['Rename new name'][0].create_node_to_uml(translator=tr),
+                   base_edge.edge_to_uml(op='delete', translator=tr),
                    cd['Deleted'][0].edge_to_uml(op='delete', translator=tr),
                    ances_edge.edge_to_uml(op='replace', translator=tr),
                    cd['Added'][0].edge_to_uml(op='replace', translator=tr),
-                   cd['Rename new name'][0].change_node_to_uml(translator=tr)]
+                   cd['Rename new name'][0].change_node_to_uml(translator=tr),
+                   ]
 
         changes = manager.graph_difference_to_json(new_col='Rename new name',
                                                    change_dict=change_dict,
                                                    evaluators='0-1')
         for count, change in enumerate(changes):
-            self.assertDictEqual(desired[count], change)
+            if isinstance(change, tuple) and isinstance(desired[count], tuple):
+                self.assertTupleEqual(desired[count], change)
+            else:
+                self.assertDictEqual(desired[count], change)
 
     def tearDown(self):
         pass
@@ -447,8 +450,8 @@ class TestEvaluator(unittest.TestCase):
         self.assertListEqual(
             ['Component', 'Position', 'Part'], columns_list)
 
-        # 63 ids provided and 1 key for the new_i counter ids.
-        self.assertEqual(64, len(translator.uml_id))
+        # 63 ids provided .
+        self.assertEqual(63, len(evaluator.df_ids))
 
     def test_has_rename(self):
         data = (PATTERNS / 'Composition.json').read_text(
