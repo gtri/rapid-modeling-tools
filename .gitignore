@@ -7,3 +7,15 @@ envs
 notebooks
 old_data
 *.cache
+trial_data/HWS Requirements.xlsx
+trial_data/HWS Requirements.json
+trial_data/CET WBS Trial.xlsx
+trial_data/CET WBS Trial.json
+test_graph_analysis/data_test/Composition Example Model Changed.json
+test_graph_analysis/data_test/Composition Example Model Baseline.json
+test_graph_analysis/data_test/Composition Example 2.json
+test_graph_analysis/data_test/Composition Example 2 Model Changed.json
+test_graph_analysis/data_test/Composition Example 2 Model Changed 2.json
+test_graph_analysis/data_test/Composition Example 2 Model Baseline.json
+graph_analysis/patterns/ReqNesting.json
+anaconda-project
