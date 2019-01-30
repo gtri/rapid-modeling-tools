@@ -6,8 +6,7 @@ from .utils import (get_node_types_attrs, get_setting_node_name_from_df,
 
 
 def create_vertex_objects(df=None, graph=None):
-    """Returns a list of Vertex objects. Seems to be depricated in favor of
-    get_node_types_attrs(), however this function is still used in testing.
+    """Returns a list of Vertex objects.
 
     Parameters
     ----------
@@ -17,11 +16,6 @@ def create_vertex_objects(df=None, graph=None):
 
     graph : PropertyDiGraph
         The Property Directed Graph that the Vertices should be created from.
-
-    Notes
-    -----
-    Once this has definitively been identified as a depricated function it will
-    be removed.
     """
     vertex_list = []
     for node in graph.nodes:
@@ -210,7 +204,23 @@ class PropertyDiGraph(nx.DiGraph):
 
 
 class VertexReporterMixin:
+    """
+    Mixin that supplies the functions for a Vertex to package itself
+    to JSON for consumption by MagicDraw. It contains a write method for
+    change, deletion and creation instructions.
+    """
     def change_node_to_uml(self, translator=None):
+        """
+        Package the Vertex information into a dictionary to be written out
+        to JSON change instructions for the Player Piano.
+
+        Returns a function call with the node attributes as a dictioanry
+        keyword argument that builds a change dict for the passed node.
+
+        Parameters
+        ----------
+        translator : MDTranslator
+        """
         for count, node_type in enumerate(self.node_types):
             if count == 0:
                 node_dict = {
@@ -228,6 +238,17 @@ class VertexReporterMixin:
                 return to_uml_json_node(**node_dict)
 
     def delete_node_to_uml(self, translator=None):
+        """
+        Packages the Vertex information into a dictionary to be written to
+        JSON for consumption by the Player Piano into MagicDraw.
+
+        Returns a function call with the node attributes as a dictioanry
+        keyword argument that builds a change dict for the passed node.
+
+        Parameters
+        ----------
+        translator : MDTranslator
+        """
         node_dict = {
             'id': translator.get_uml_id(name=self.name),
             'op': 'delete',
@@ -241,7 +262,7 @@ class VertexReporterMixin:
         }
         return to_uml_json_node(**node_dict)
 
-    def create_node_to_uml(self, translator=None):
+    def create_node_to_uml(self, old_name='', translator=None):
         """Returns two lists of dictionaries formatted for JSON output to the
         MagicDraw interface layer. The first list returned contains the vertex
         and its values with additional subdictionaries if that particular
@@ -275,11 +296,19 @@ class VertexReporterMixin:
         """
         node_uml_list = []
         node_decorations = []
+        if old_name:
+            name = old_name
+            print('JSON PRODUCTION')
+            print(self.name, name)
+            print(translator.get_uml_id(name=self.name))
+            print(translator.get_uml_id(name=name))
+        else:
+            name = self.name
 
         for count, node_type in enumerate(self.node_types):
             if count == 0:
                 node_dict = {
-                    'id': translator.get_uml_id(name=self.name),
+                    'id': translator.get_uml_id(name=name),
                     'op': 'create',  # evaluator replace with fn input.
                     'name': self.name,
                     'path': None,
@@ -363,7 +392,8 @@ class Vertex(VertexReporterMixin):
     This class encapsulates the node data from the PropertyDiGraph, providing
     user defined functions for accessing the information of a particular
     Vertex. Additionally, this class contains the to_uml_json() method which,
-    packages the Vertex for the MagicDraw interface layer.
+    is now deprecated in favor of the VertexReporterMixin which contains all
+    of the JSON writing functionality.
     """
 
     def __init__(self, name=None, node_types=list(),
@@ -399,7 +429,7 @@ class Vertex(VertexReporterMixin):
         return connections
 
     def to_dict(self):
-        """Produces a dictionary for the attributes. Primarily used to test that
+        """Produces a dictionary for the attributes. Used to test that
         the object was created properly.
         """
         return {'name': self.name,
@@ -409,36 +439,9 @@ class Vertex(VertexReporterMixin):
                 'attributes': self.attributes}
 
     def to_uml_json(self, translator=None):
-        """Returns two lists of dictionaries formatted for JSON output to the
-        MagicDraw interface layer. The first list returned contains the vertex
-        and its values with additional subdictionaries if that particular
-        Vertex had more than one node_type. The second list returned contains
-        all of the connections of the Vertex.
-
-        Parameters
-        ----------
-        translator : MDTranslator Object
-            A MDTranslator object that prvoides access to the
-            JSON data file that translates the information from the Python
-            meanigns here to MagicDraw terminology.
-
-        Notes
-        -----
-        First, the function loops over the node_types attribute. For the first
-        node_type attribute encountered (regardless of its value), the metadata
-        associated with that node_type is recorded. Subsequent loop iterations
-        provide additional node_type information.
-        While iterating the node_type information, the function checks
-        for nodes with settings values under the vertex settings key in the
-        JSON. If a node has a settings value then the ID of the associated
-        settings node is retreived and associated to the node_decorations list.
-        Next, the edge_uml_list is built using the connections property. From
-        there, a source and target id are identified from the connections
-        information and the get_uml_id function.
-        With all of these lists populated, the function returns the
-        node_uml_list, node_decorations, and the edge_uml_list to be packaged
-        for the final JSON output. The JSON file contains all of the vertex
-        data first followed by the edge data.
+        """
+        For details see the VertexReporterMixin.create_node_to_uml().
+        This functions is left in because of its use in testing.
         """
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
@@ -507,7 +510,27 @@ class Vertex(VertexReporterMixin):
 
 
 class DiEedgeReporterMixin:
+    """
+    Mixin that supplies the functions for a Directed Edge to package itself
+    to JSON for consumption by MagicDraw. It contains a write method for
+    changed edges.
+    """
     def edge_to_uml(self, op='', translator=None):
+        """
+        Packages the DiEdge information into a dictionary to be written to
+        JSON for consumption by the Player Piano into MagicDraw.
+
+        Returns a function call with the edge attributes as a dictionary of
+        keyword argument that builds a change dict for the passed edge.
+
+        Parameters
+        ----------
+        op : string
+            Specifies the desired operation for MagicDraw to preform when
+            it reads the instructions for this edge
+
+        translator : MDTranslator
+        """
         edge_dict = {
             'id': translator.get_uml_id(name=self.source.name),
             'op': op,
@@ -543,10 +566,13 @@ class DiEdge(DiEedgeReporterMixin):
     ----------
     source : Vertex
         The Vertex at the tail of the directed edge
+
     target : Vertex
         The Vertex at the tip fo the directed edge
+
     edge_attribute : string
         The string that describes the edge type
+
     __len__ : Reference
         This is intended to mean that a DiEdge object only represents a single
         edge. If there are length issues later relating to a DiEdge then

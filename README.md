@@ -19,20 +19,20 @@
         * Will produce help text that specifies the
 
     * Creating a new model:
-        * Input File: `anaconda-project run cli --create --input <path\to\file\filename> --output <path\to\output\directory>`
+        * Input File: `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"`
             * If your filename has spaces then wrap your path in quotes:
                 * `"path\to\file\filename"`
             * Omitting `-o <outdir>` will cause the program to place your creation instruction json next to your input file with the same name but a `.json` extension.
-        * Input Directory: `anaconda-project run cli --create --input <path\to\directory>`
-            * Option to add a `--output <path\to\output\directory>` but if none provided then the program will place the produced `.json` files into the input directory.
+        * Input Directory: `anaconda-project run cli --create --input "<path\to\directory>"`
+            * Option to add a `--output "<path\to\output\directory>"` but if none provided then the program will place the produced `.json` files into the input directory.
 
     * Compare one or more models to a common ancestor:
         * This program only compares one family of files at a time. Meaning that if the user desires to compare multiple families of files then the program must be run once for each of the desired comparisons.
             * A family of files is an Original File and the Updated Files that are to be compared against the Original.
-        * `anaconda-project run cli --compare --original <path\to\original\file\filename> --update <path\to\update\directory>`
+        * `anaconda-project run cli --compare --original <path\to\original\file\filename> --update "<path\to\update\directory>"`
             * If your filename has spaces then wrap your path in quotes:
                 * `"path\to\file\filename"`
-            * Optionally the user can provide an output directory by specifying `--output <path\to\output\directory>`
+            * Optionally the user can provide an output directory by specifying `--output "<path\to\output\directory>"`
 
 **Using Jupyter Lab**
 * create a ```notebooks``` directory in the top level
