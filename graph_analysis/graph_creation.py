@@ -71,8 +71,14 @@ class Manager:
     def create_evaluators(self):
         # TODO: Give baseline translator to change files but also to create
         # files if multiple create files in a create command. Issue?
+        path_name = [excel_file.name for excel_file in self.excel_path]
+        print(path_name)
         for count, excel_file in enumerate(self.excel_path):
             if count != 0:
+                print(excel_file.name, count)
+                # print(self.evaluators[0].translator.get_uml_id(
+                #     name='Miniature Inertial Measurement Unit'
+                # ))
                 translator = self.evaluators[0].translator
                 # print(translator.uml_id['Inertial Measurement Unit'])
             else:
@@ -144,6 +150,7 @@ class Manager:
                 # new_to_old.keys() then make new key and associate the obj
                 # do the same if is target. return the new dict and a dict to
                 # replace the keys at the end.
+                new_translator = pair[0].translator
                 new_name_col = get_new_column_name(
                     original_df=orig_eval.df,
                     rename_df=pair[0].df_renames)
@@ -157,6 +164,7 @@ class Manager:
                     new_keys=n_t_o)
             elif pair[1].has_rename:
                 # rename pair[1]
+                new_translator = pair[1].translator
                 new_name_col = get_new_column_name(
                     original_df=orig_eval.df,
                     rename_df=pair[1].df_renames)
@@ -262,20 +270,36 @@ class Manager:
                 vert_dict = pair[0].prop_di_graph.vertex_dict
                 for key in old_v_obj_map.keys():
                     old_v_obj_map.update({key: vert_dict[key]})
+                # print(vert_dict)
+                # print('old v obj map')
+                # print(old_v_obj_map)
+                # print('vertobj map before update')
+                # print(vert_obj_map)
                 vert_obj_map.update(old_v_obj_map)
+                # print('vertex object map')
+                # print(vert_obj_map)
                 n_t_o, rename_changes = to_nto_rename_dict(
                     new_name=new_name_col,
                     new_name_dict=new_name_dict,
                     str_to_obj_map=vert_obj_map)
                 eval_one_matches[0].update(rename_changes)
 
+            # print('evaluator matches')
+            # print(eval_one_matches[0])
+
             new_name_objs = ''
             for key in eval_one_matches[0]:
                 if isinstance(key, str):
                     if new_name_col in key:
                         new_name_objs = key
+                # else:
+                #     print('this is else')
+                #     print(key)
             changes_and_unstable = {'Changes': eval_one_matches[0],
                                     'Unstable Pairs': eval_one_matches[1]}
+
+            # print('changse_and_unstable')
+            # print(changes_and_unstable)
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
@@ -283,6 +307,7 @@ class Manager:
             self.graph_difference_to_json(new_col=new_name_objs,
                                           new_name_dict=new_to_old,
                                           change_dict=eval_one_matches[0],
+                                          translator=new_translator,
                                           evaluators=key,
                                           out_directory=out_directory)
             self.evaluator_change_dict.update(
@@ -336,7 +361,8 @@ class Manager:
 
     def graph_difference_to_json(
                                 self, new_col='', new_name_dict=None,
-                                change_dict=None, evaluators='',
+                                change_dict=None, translator=None,
+                                evaluators='',
                                 out_directory=''
                                 ):
         # need to strip off the keys that are strings and use them to
@@ -350,7 +376,8 @@ class Manager:
         edge_add = []
         node_renames = []
         create_new_name_node = []
-        translator = self.translator
+        # This is the line!
+        # translator = self.translator
         for key, value in change_dict.items():
             if key == 'Added':
                 for edge in change_dict[key]:
@@ -366,6 +393,7 @@ class Manager:
                         old_name = new_name_dict[node.name]
                     else:
                         old_name = ''
+                    print(node)
                     node_cr, node_dec, node_edge = node.create_node_to_uml(
                         old_name=old_name, translator=translator)
                     create_new_name_node.append(node_cr)
@@ -376,7 +404,7 @@ class Manager:
                     node_renames.append(
                         node.change_node_to_uml(translator=translator)
                     )
-            elif isinstance(key, str):
+            elif isinstance(key, str) and key != new_col:
                 continue
             else:
                 del_edge_json = key.edge_to_uml(op='delete',
@@ -463,10 +491,10 @@ class Evaluator:
         # call sheets_to_dataframe on self.
         self.sheets_to_dataframe(excel_file=excel_file)
         # self.df.dropna(how='all', inplace=True)
-        print('For each evaluator printing the number of keys in translator')
-        print('on creation.')
-        print(self.excel_file.name)
-        print(len(self.translator.uml_id.keys()))
+        # print('For each evaluator printing the number of keys in translator')
+        # print('on creation.')
+        # print(self.excel_file.name)
+        # print(len(self.translator.uml_id.keys()))
         self.prop_di_graph = None
         self.root_node_attr_columns = set()
 
@@ -513,6 +541,7 @@ class Evaluator:
                 # elif sheet.lower() in renames:
                 # Maybe you named the rename sheet Pattern Renames
                 elif any(renm_str in sheet.lower() for renm_str in renames):
+                    print('Running renames just after pattern check')
                     self.df_renames = pd.read_excel(
                         excel_file, sheet_name=sheet)
                     self.df_renames.dropna(
@@ -525,16 +554,16 @@ class Evaluator:
                                             inplace=True)
                             # self.translator.uml_id[
                             #     row[1]] = self.translator.uml_id[row[0]]
-                            print('inside dataframe sheet detection')
-                            print('translator ids before supposed changing')
-                            print(self.translator.uml_id[row[0]])
+                            # print('inside dataframe sheet detection')
+                            # print('translator ids before supposed changing')
+                            # print(self.translator.uml_id[row[0]])
                             # self.translator.uml_id[
                             #     row[1]] = self.translator.uml_id[row[0]]
                             self.translator.uml_id.update({
                                 row[1]: self.translator.uml_id[row[0]]
                             })
-                            print(row[1], self.translator.uml_id[row[1]],
-                                  row[0], self.translator.uml_id[row[0]])
+                            # print(row[1], self.translator.uml_id[row[1]],
+                            #       row[0], self.translator.uml_id[row[0]])
                         elif row[1] in self.translator.uml_id.keys():
                             # same as above in other direction
                             self.df.replace(to_replace=row[1],
@@ -542,16 +571,16 @@ class Evaluator:
                                             inplace=True)
                             # self.translator.uml_id[
                             #     row[0]] = self.translator.uml_id[row[1]]
-                            print('inside dataframe sheet detection')
-                            print('translator ids before supposed changing')
-                            print(self.translator.uml_id[row[1]])
+                            # print('inside dataframe sheet detection')
+                            # print('translator ids before supposed changing')
+                            # print(self.translator.uml_id[row[1]])
                             # self.translator.uml_id[
                             #     row[0]] = self.translator.uml_id[row[1]]
                             self.translator.uml_id.update(
                                 {row[0]: self.translator.uml_id[row[1]]}
                             )
-                            print(row[1], self.translator.uml_id[row[1]],
-                                  row[0], self.translator.uml_id[row[0]])
+                            # print(row[1], self.translator.uml_id[row[1]],
+                            #       row[0], self.translator.uml_id[row[0]])
                 else:
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df.dropna(how='all', inplace=True)
@@ -563,41 +592,50 @@ class Evaluator:
                 self.df_renames.dropna(
                     how='all', inplace=True)
                 for row in self.df_renames.itertuples(index=False):
-                    if row[0] in self.translator.uml_id.keys():
+                    if all(row[i] in self.translator.uml_id.keys() for i in (0, 1)):
+                    # row[0] in self.translator.uml_id.keys() and row[1] self.translator.uml_id.keys():
+                        print(self.excel_file.name)
+                        row_0 = self.translator.uml_id[row[0]]
+                        row_1 = self.translator.get_uml_id(name=row[1])
+                        print('{0}: {1}, {2}: {3}'.format(
+                            row[0], row_0, row[1], row_1
+                        ))
+                        raise RuntimeError('Both old and new in keys')
+                    elif row[0] in self.translator.uml_id.keys():
                         # then replace instances of this with those in 1
                         self.df.replace(to_replace=row[0], value=row[1],
                                         inplace=True)
-                        print('inside dataframe sheet detection')
-                        print('Filename')
-                        print(self.excel_file.name)
-                        print('translator ids before supposed changing')
-                        print(row)
-                        print(self.translator.uml_id[row[0]])
+                        # print('inside dataframe sheet detection')
+                        # print('Filename')
+                        # print(self.excel_file.name)
+                        # print('translator ids before supposed changing')
+                        # print(row)
+                        # print(self.translator.uml_id[row[0]])
                         # self.translator.uml_id[
                         #     row[1]] = self.translator.uml_id[row[0]]
                         self.translator.uml_id.update({
                             row[1]: self.translator.uml_id[row[0]]
                         })
-                        print(row[1], self.translator.uml_id[row[1]],
-                              row[0], self.translator.uml_id[row[0]])
+                        # print(row[1], self.translator.uml_id[row[1]],
+                        #       row[0], self.translator.uml_id[row[0]])
                         continue
                     elif row[1] in self.translator.uml_id.keys():
                         # same as above in other direction
                         self.df.replace(to_replace=row[1], value=row[0],
                                         inplace=True)
-                        print('inside dataframe sheet detection')
-                        print('Filename')
-                        print(self.excel_file.name)
-                        print('translator ids before supposed changing')
-                        print(row[0], row[1])
-                        print(self.translator.uml_id[row[1]])
+                        # print('inside dataframe sheet detection')
+                        # print('Filename')
+                        # print(self.excel_file.name)
+                        # print('translator ids before supposed changing')
+                        # print(row[0], row[1])
+                        # print(self.translator.uml_id[row[1]])
                         # self.translator.uml_id[
                         #     row[0]] = self.translator.uml_id[row[1]]
                         self.translator.uml_id.update(
                             {row[0]: self.translator.uml_id[row[1]]}
                         )
-                        print(row[1], self.translator.uml_id[row[1]],
-                              row[0], self.translator.uml_id[row[0]])
+                        # print(row[1], self.translator.uml_id[row[1]],
+                        #       row[0], self.translator.uml_id[row[0]])
                         continue
             elif any(id_str in sheet.lower() for id_str in ids) and \
                     not any(pattern in sheet.lower() for pattern in patterns):
@@ -805,9 +843,9 @@ class MDTranslator:
         by MagicDraw.
         """
         # TODO: write test function for this
-        if name == 'Miniature Inertial Measurement Unit':
-            print('found one')
-            print(self.uml_id[name])
+        # if name == 'Miniature Inertial Measurement Unit':
+        #     print('found one')
+        #     print(self.uml_id[name])
         if name in self.uml_id.keys():
             return self.uml_id[name]
         else:

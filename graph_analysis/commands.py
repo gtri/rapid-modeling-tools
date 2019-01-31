@@ -167,14 +167,13 @@ def compare_md_model(inputs, output_path=''):
             excel_path=wkbk_paths,
             json_path=json_patterns[pattern_sheet],
         )
-        translator = manager.translator
         for evaluator in manager.evaluators:
             evaluator.rename_df_columns()
             evaluator.add_missing_columns()
             evaluator.to_property_di_graph()
             property_di_graph = evaluator.prop_di_graph
             property_di_graph.create_vertex_set(
-                df=evaluator.df, translator=translator,
+                df=evaluator.df, translator=evaluator.translator,
             )
             property_di_graph.create_edge_set()
             vertex_set = property_di_graph.vertex_set

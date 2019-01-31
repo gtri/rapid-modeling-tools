@@ -7,3 +7,7 @@ envs
 notebooks
 old_data
 *.cache
+data/graph_diff*
+data/Graph Model Difference*
+test_graph_analysis/data_test/graph_diff*
+test_graph_analysis/data_test/Model Diffs*

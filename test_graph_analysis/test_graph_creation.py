@@ -128,14 +128,97 @@ from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 class TestManager(unittest.TestCase):
 
     def setUp(self):
+        pass
         # instead of making objects that go through all these tests
         # make the data the instance variables that I can access to make
         # instances of the classes locally within the function scope.
-        self.manager = Manager(
+        # self.manager = Manager(
+        #     excel_path=[
+        #         DATA_DIRECTORY / 'Composition Example.xlsx'
+        #         for i in range(2)],
+        #     json_path=PATTERNS / 'Composition.json')
+
+    def test_ids_assinged_in_change(self):
+        manager = Manager(
             excel_path=[
-                DATA_DIRECTORY / 'Composition Example.xlsx'
-                for i in range(2)],
-            json_path=PATTERNS / 'Composition.json')
+                (DATA_DIRECTORY / 'Composition Example 2 Model Baseline.xlsx'),
+                (DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx')
+                ],
+            json_path=PATTERNS / 'Composition.json'
+        )
+        eval_base = manager.evaluators[0]
+        # print(eval_base.translator.uml_id['Miniature Inertial Measurement Unit'])
+        # self.assertTrue(False)
+        eval_change = manager.evaluators[1]
+        # self.assertEqual(eval_base.excel_file.name,
+        #                  'Composition Example 2 Model Baseline.xlsx')
+        # self.assertEqual(eval_change.excel_file.name,
+        #                  'Composition Example 2 Model Changed.xlsx')
+        # print('baseline ids len = {0}'.format(
+        #     len(eval_base.translator.uml_id.keys())))
+        # print('change ids len = {0}'.format(
+        #     len(eval_change.translator.uml_id.keys())
+        # ))
+        # base_key_set = set(eval_base.translator.uml_id.keys())
+        # change_key_set = set(eval_change.translator.uml_id.keys())
+        # key_difference = change_key_set.difference(base_key_set)
+        # print(change_key_set.difference(base_key_set))
+        # eval_change.sheets_to_dataframe(excel_file=eval_change.excel_file)
+        # print(change_key_set.difference(base_key_set))
+        # new_name_dict = eval_change.df_renames.to_dict(orient='list')
+        # # print(new_name_dict)
+        # new_to_old = {}
+        # for count, val in enumerate(new_name_dict['new name']):
+        #     new_to_old[val] = new_name_dict['old name'][count]
+        # # print(new_to_old)
+        # c_tran = eval_change.translator
+        # for key, value in new_to_old.items():
+        #     old_id = c_tran.get_uml_id(name=value)
+        #     new_id = c_tran.get_uml_id(name=key)
+        #     print('prior to updating dict')
+        #     print('new: {0}, old: {1}'.format(new_id, old_id))
+        #     c_tran.uml_id.update({
+        #         key: old_id
+        #     })
+        #     new_id_2 = c_tran.get_uml_id(name=key)
+        #     print('post updating dict')
+        #     print('new: {0}, old: {1}'.format(new_id, old_id))
+
+        eval_base.rename_df_columns()
+        eval_base.add_missing_columns()
+        eval_base.to_property_di_graph()
+        base_prop_graph = eval_base.prop_di_graph
+        base_prop_graph.create_vertex_set(
+            df=eval_base.df, translator=eval_base.translator,
+        )
+        base_prop_graph.create_edge_set()
+        base_vert_set = base_prop_graph.vertex_set
+        base_vert_dict = base_prop_graph.vertex_dict
+        eval_change.rename_df_columns()
+        eval_change.add_missing_columns()
+        eval_change.to_property_di_graph()
+        change_prop_graph = eval_change.prop_di_graph
+        change_prop_graph.create_vertex_set(
+            df=eval_change.df, translator=eval_change.translator,
+        )
+        change_prop_graph.create_edge_set()
+        change_vert_set = change_prop_graph.vertex_set
+        change_vert_dict = change_prop_graph.vertex_dict
+        # I want to see if the nodes in the graph have the right ids
+        print(set(change_prop_graph).difference(set(base_prop_graph)))
+        diff_nodes = set(change_prop_graph).difference(set(base_prop_graph))
+        diff_dict = {key: eval_change.translator.uml_id[key]
+                     for key in diff_nodes}
+        print(diff_dict)
+        print(change_vert_dict['Miniature Inertial Measurement Unit'])
+        # manager.get_pattern_graph_diff(out_directory=DATA_DIRECTORY)
+        # print(eval_change.translator.uml_id['new_2'])
+        for key, value in eval_change.translator.uml_id.items():
+            if key == 'count':
+                continue
+            if 'new' in value:
+                print(key, value)
+        self.assertTrue(False)
 
     def test_get_json_data(self):
         expected_keys = ['Columns to Navigation Map',

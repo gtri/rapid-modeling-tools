@@ -298,10 +298,10 @@ class VertexReporterMixin:
         node_decorations = []
         if old_name:
             name = old_name
-            print('JSON PRODUCTION')
-            print(self.name, name)
-            print(translator.get_uml_id(name=self.name))
-            print(translator.get_uml_id(name=name))
+            # print('JSON PRODUCTION')
+            # print(self.name, name)
+            # print(translator.get_uml_id(name=self.name))
+            # print(translator.get_uml_id(name=name))
         else:
             name = self.name
 
