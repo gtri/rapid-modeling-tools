@@ -28,6 +28,7 @@ def create_md_model(input_paths, output_path=''):
         wkbk_paths.extend(p)
 
     for wkbk in wkbk_paths:
+        # TODO: Can this support Heterogeneous excel input files?
         if wkbk.parts[-1].split('.')[-1] != 'xlsx':
             msg = ('\n'
                    + 'This program only supports Excel Files.'
@@ -64,7 +65,8 @@ def create_md_model(input_paths, output_path=''):
             data = (json_patterns[pattern_sheet]).read_text()
             data = json.loads(data)
             translator = MDTranslator(json_data=data)
-            evaluator = Evaluator(excel_file=wkbk, translator=translator)
+            evaluator = Evaluator(excel_file=wkbk,
+                                  translator=translator)
             evaluator.rename_df_columns()
             evaluator.add_missing_columns()
             evaluator.to_property_di_graph()

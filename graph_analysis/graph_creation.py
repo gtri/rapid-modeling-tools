@@ -376,8 +376,8 @@ class Manager:
         edge_add = []
         node_renames = []
         create_new_name_node = []
-        # This is the line!
-        # translator = self.translator
+        rename_nodes = [n.name for n in change_dict[new_col]]
+
         for key, value in change_dict.items():
             if key == 'Added':
                 for edge in change_dict[key]:
@@ -388,35 +388,62 @@ class Manager:
                     edge_del.append(edge.edge_to_uml(op='delete',
                                                      translator=translator))
             elif key == new_col:
+                print('Got to the new key')
+                new_nodes = [n.name for n in change_dict[key]]
+                print(new_nodes)
                 for node in change_dict[key]:
-                    if new_name_dict:
-                        old_name = new_name_dict[node.name]
-                    else:
-                        old_name = ''
-                    print(node)
-                    node_cr, node_dec, node_edge = node.create_node_to_uml(
-                        old_name=old_name, translator=translator)
-                    create_new_name_node.append(node_cr)
+                    node_renames.append(
+                        node.change_node_to_uml(translator=translator)
+                    )
+                prnt()
+            elif isinstance(key, str) and key != new_col:
+                continue
+            else:
+                print(key.named_edge_triple, '\n', value[0].named_edge_triple)
+                source, target = value[0].source, value[0].target
+                print(source.name, target.name)
+                print('SV-5 Connections')
+                if target.name == 'SV-5':
+                    print(target.connections)
+                if 'new' in translator.uml_id[source.name]:
+                    # create then add
+                    node_cr, node_dec, node_edge = source.create_node_to_uml(
+                        translator=translator
+                    )
+                    # extend here and below was previously append
+                    # will have to do some crazy work to remove duplicates
+                    create_new_name_node.extend(node_cr)
                     if node_dec:
                         create_new_name_node.extend(node_dec)
                     if node_edge:
                         edge_add.extend(node_edge)
-                    node_renames.append(
-                        node.change_node_to_uml(translator=translator)
+                elif 'new' in translator.uml_id[target.name]:
+                    # create then add
+                    node_cr, node_dec, node_edge = target.create_node_to_uml(
+                        translator=translator
                     )
-            elif isinstance(key, str) and key != new_col:
-                continue
-            else:
+                    create_new_name_node.extend(node_cr)
+                    if node_dec:
+                        create_new_name_node.extend(node_dec)
+                    if node_edge:
+                        edge_add.extend(node_edge)
+
+
                 del_edge_json = key.edge_to_uml(op='delete',
                                                 translator=translator)
                 edge_del.append(del_edge_json)
+
                 add_edge_json = value[0].edge_to_uml(op='replace',
                                                      translator=translator)
                 edge_add.append(add_edge_json)
 
-        for new_node_info in create_new_name_node:
-            change_list.extend(new_node_info)
-        # change_list.extend(create_new_name_node)
+        seen_id = set()
+        for nn_d in create_new_name_node:
+            if not nn_d['id'] in seen_id:
+                seen_id.add(nn_d['id'])
+                change_list.append(nn_d)
+            else:
+                continue
         change_list.extend(edge_del)
         change_list.extend(edge_add)
         change_list.extend(node_renames)

@@ -221,6 +221,11 @@ class TestManager(unittest.TestCase):
         self.assertTrue(False)
 
     def test_get_json_data(self):
+        manager = Manager(
+            excel_path=[
+                DATA_DIRECTORY / 'Composition Example.xlsx'
+                for i in range(2)],
+            json_path=PATTERNS / 'Composition.json')
         expected_keys = ['Columns to Navigation Map',
                          'Pattern Graph Vertices',
                          'Pattern Graph Edge Labels',
@@ -233,12 +238,17 @@ class TestManager(unittest.TestCase):
                          'Vertex Settings']
 
         self.assertListEqual(expected_keys, list(
-            self.manager.json_data.keys()))
+            manager.json_data.keys()))
 
     def test_create_evaluators(self):
+        manager = Manager(
+            excel_path=[
+                DATA_DIRECTORY / 'Composition Example.xlsx'
+                for i in range(2)],
+            json_path=PATTERNS / 'Composition.json')
         # weak test: create_evaluators() run during init
-        self.assertEqual(2, len(self.manager.evaluators))
-        for eval in self.manager.evaluators:
+        self.assertEqual(2, len(manager.evaluators))
+        for eval in manager.evaluators:
             self.assertIsInstance(eval, Evaluator)
 
     def test_get_pattern_graph_diff(self):
@@ -412,9 +422,12 @@ class TestManager(unittest.TestCase):
                 DATA_DIRECTORY / 'Composition Example.xlsx'
                 for i in range(2)],
             json_path=PATTERNS / 'Composition.json')
+        tr = manager.translator
+
         base_inputs = [('s1', 't1', 'type'),
                        ('s12', 't12', 'memberEnd'),
                        ('song', 'tiger', 'blue'), ]
+
         base_df = pd.DataFrame(data={
             'source': ['s1', 's12', 'song'],
             'target': [edge[1] for edge in base_inputs],
@@ -438,6 +451,8 @@ class TestManager(unittest.TestCase):
                             node_types=['Atomic Thing'])
             edge = DiEdge(source=source, target=target,
                           edge_attribute=edge_tuple[2])
+            tr.get_uml_id(name=edge_tuple[0])
+            tr.get_uml_id(name=edge_tuple[1])
             base_dict[edge_tuple] = edge
             base_edges.append(edge)
 
@@ -448,6 +463,8 @@ class TestManager(unittest.TestCase):
                             node_types=['Atomic Thing'])
             edge = DiEdge(source=source, target=target,
                           edge_attribute=edge_tuple[2])
+            tr.get_uml_id(name=edge_tuple[0])
+            tr.get_uml_id(name=edge_tuple[1])
             ancestor_dict[edge_tuple] = edge
             ancestor_edges.append(edge)
 
@@ -458,14 +475,13 @@ class TestManager(unittest.TestCase):
         add_edge = ancestor_dict[('b', 'c', 'orange')]
         del_edge = base_dict[('song', 'tiger', 'blue')]
 
-        change_dict = {base_edge: [ances_edge],
-                       'Rename new name': [at12],
-                       'Rename old name': [t12],
+        change_dict = {base_edge: [ances_edge, ],
+                       'Rename new name': [at12, ],
+                       'Rename old name': [t12, ],
                        'Added': [add_edge, ],
                        'Deleted': [del_edge, ], }
         cd = change_dict
-        tr = manager.translator
-        desired = [cd['Rename new name'][0].create_node_to_uml(translator=tr),
+        desired = [ances_edge.source.create_node_to_uml(translator=tr)[0][0],
                    base_edge.edge_to_uml(op='delete', translator=tr),
                    cd['Deleted'][0].edge_to_uml(op='delete', translator=tr),
                    ances_edge.edge_to_uml(op='replace', translator=tr),
@@ -475,7 +491,13 @@ class TestManager(unittest.TestCase):
 
         changes = manager.graph_difference_to_json(new_col='Rename new name',
                                                    change_dict=change_dict,
-                                                   evaluators='0-1')
+                                                   evaluators='0-1',
+                                                   translator=tr)
+
+        # THis test is super sensitive to the order the IDs are created above
+        # a better way around this would be to assign bs ids manually and
+        # the one id that says 'new_1' for as1 to make sure it goes through the
+        # correct channels.
         for count, change in enumerate(changes):
             if isinstance(change, tuple) and isinstance(desired[count], tuple):
                 self.assertTupleEqual(desired[count], change)
