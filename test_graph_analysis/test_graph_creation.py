@@ -143,11 +143,12 @@ class TestManager(unittest.TestCase):
             excel_path=[
                 (DATA_DIRECTORY / 'Composition Example 2 Model Baseline.xlsx'),
                 (DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx')
-                ],
+            ],
             json_path=PATTERNS / 'Composition.json'
         )
         eval_base = manager.evaluators[0]
-        # print(eval_base.translator.uml_id['Miniature Inertial Measurement Unit'])
+        # print(
+        # eval_base.translator.uml_id['Miniature Inertial Measurement Unit'])
         # self.assertTrue(False)
         eval_change = manager.evaluators[1]
         # self.assertEqual(eval_base.excel_file.name,
