@@ -339,7 +339,7 @@ def associate_node_ids(nodes=None, attr_df=None, uml_id_dict=None):
             attr = attr_df.loc[node].to_dict()
             nodes_to_add.append((node, attr))
         else:
-            attr = {'ID': uml_id_dict(name=node)}
+            attr = {'id': uml_id_dict(name=node)}
             nodes_to_add.append((node, attr))
 
     return nodes_to_add

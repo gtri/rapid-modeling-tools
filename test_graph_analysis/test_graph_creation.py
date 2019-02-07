@@ -610,6 +610,20 @@ class TestEvaluator(unittest.TestCase):
         # 63 ids provided .
         self.assertEqual(63, len(evaluator.df_ids))
 
+        data2 = (PATTERNS / 'Composition.json').read_text()
+        data2 = json.loads(data2)
+
+        ex_f2 = DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx'
+        tr2 = MDTranslator(json_data=data2)
+        eval = Evaluator(
+            excel_file=ex_f2,
+            translator=tr2,
+        )
+        print(eval.df_renames)
+        self.assertFalse(eval.df_renames.empty)
+        self.assertFalse(eval.df_ids.empty)
+        self.assertTrue(False)
+
     def test_has_rename(self):
         data = (PATTERNS / 'Composition.json').read_text(
         )
@@ -707,13 +721,6 @@ class TestEvaluator(unittest.TestCase):
         # networkx provides the functionality to get the data into the graph
         # the graph itself will be tested so I should just test that a graph
         # obj exists.
-        # self.evaluator.rename_df_columns()
-        # self.evaluator.add_missing_columns()
-        # self.evaluator.to_property_di_graph()
-        # self.assertTrue(self.evaluator.prop_di_graph)
-        # self.assertIsInstance(self.evaluator.prop_di_graph,
-        #                       PropertyDiGraph)
-
         # TODO: create tests for the properties on the Evaluator class.
         data_dict = {
             'Composite Thing': ['blueberry', ],
@@ -747,6 +754,7 @@ class TestEvaluator(unittest.TestCase):
                              ('A_blueberry qua pie context_pie',
                               {'ID': 'new_1'})]
 
+        self.assertTrue(False)
         self.assertListEqual(expected_node_ids, graph_node_data)
 
     def tearDown(self):

@@ -606,7 +606,6 @@ class Evaluator:
                 # elif sheet.lower() in renames:
                 # Maybe you named the rename sheet Pattern Renames
                 elif any(renm_str in sheet.lower() for renm_str in renames):
-                    print('Running renames just after pattern check')
                     self.df_renames = pd.read_excel(
                         excel_file, sheet_name=sheet)
                     self.df_renames.dropna(
@@ -638,9 +637,12 @@ class Evaluator:
                                                 sheet_name=sheet)
                 self.df_renames.dropna(
                     how='all', inplace=True)
+                index_name = ''
                 for row in self.df_renames.itertuples(index=False):
-                    if all(row[i] in self.translator.uml_id.keys() for i in (
-                            0, 1)):
+                    if all(
+                            row[i] in self.translator.uml_id.keys()
+                            for i in (0, 1)):
+                        print('Both old and new here')
                         # row[0] in self.translator.uml_id.keys() and row[1]
                         # self.translator.uml_id.keys():
                         print(self.excel_file.name)
@@ -651,6 +653,8 @@ class Evaluator:
                         ))
                         raise RuntimeError('Both old and new in keys')
                     elif row[0] in self.translator.uml_id.keys():
+                        print(row[0])
+                        print('just {0} was in here'.format(row[0]))
                         # then replace instances of this with those in 1
                         self.df.replace(to_replace=row[0], value=row[1],
                                         inplace=True)
@@ -659,6 +663,8 @@ class Evaluator:
                         })
                         continue
                     elif row[1] in self.translator.uml_id.keys():
+                        print(row[1])
+                        print('just {0} was in here'.format(row[1]))
                         # same as above in other direction
                         self.df.replace(to_replace=row[1], value=row[0],
                                         inplace=True)
@@ -666,6 +672,8 @@ class Evaluator:
                             {row[0]: self.translator.uml_id[row[1]]}
                         )
                         continue
+                if index_name:  # index_name will be column that satisfies elif
+                    self.df_renames.set_index(index_name)
             elif any(id_str in sheet.lower() for id_str in ids) and \
                     not any(pattern in sheet.lower() for pattern in patterns):
                 self.df_ids = pd.read_excel(
@@ -729,55 +737,56 @@ class Evaluator:
         under = '_'
         space = ' '
         dash = '-'
-
-        for col in columns_to_create:
-            if under in col:
-                if dash in col:
-                    col_data_vals = col.split(sep=under)
-                    suffix = col_data_vals[-1].split(sep=dash)
-                    first_node_data = self.df.loc[:, col_data_vals[1]]
-                    second_node_data = self.df.loc[:, suffix[0]]
-                    suff = dash + suffix[-1]
-                    self.df[col] = create_column_values_under(
-                        prefix=col_data_vals[0],
+        if columns_to_create:
+            for col in columns_to_create:
+                if under in col:
+                    if dash in col:
+                        col_data_vals = col.split(sep=under)
+                        suffix = col_data_vals[-1].split(sep=dash)
+                        first_node_data = self.df.loc[:, col_data_vals[1]]
+                        second_node_data = self.df.loc[:, suffix[0]]
+                        suff = dash + suffix[-1]
+                        self.df[col] = create_column_values_under(
+                            prefix=col_data_vals[0],
+                            first_node_data=first_node_data,
+                            second_node_data=second_node_data,
+                            suffix=suff
+                        )
+                    else:
+                        col_data_vals = col.split(sep=under)
+                        first_node_data = self.df.loc[:, col_data_vals[1]]
+                        second_node_data = self.df.loc[:, col_data_vals[2]]
+                        self.df[col] = create_column_values_under(
+                            prefix=col_data_vals[0],
+                            first_node_data=first_node_data,
+                            second_node_data=second_node_data,
+                            suffix=''
+                        )
+                elif space in col:
+                    col_data_vals = col.split(sep=space)
+                    root_col_name = self.translator.get_root_node()
+                    if col_data_vals[0] in self.df.columns:
+                        first_node_data = self.df.loc[:, col_data_vals[0]]
+                        second_node_data = [col_data_vals[-1]
+                                            for i in range(
+                                                len(first_node_data))]
+                    else:
+                        first_node_data = self.df.iloc[:, 0]
+                        second_node_data = self.df.loc[:, root_col_name]
+                    self.df[col] = create_column_values_space(
                         first_node_data=first_node_data,
-                        second_node_data=second_node_data,
-                        suffix=suff
+                        second_node_data=second_node_data
                     )
                 else:
-                    col_data_vals = col.split(sep=under)
-                    first_node_data = self.df.loc[:, col_data_vals[1]]
-                    second_node_data = self.df.loc[:, col_data_vals[2]]
-                    self.df[col] = create_column_values_under(
-                        prefix=col_data_vals[0],
-                        first_node_data=first_node_data,
-                        second_node_data=second_node_data,
-                        suffix=''
-                    )
-            elif space in col:
-                col_data_vals = col.split(sep=space)
-                root_col_name = self.translator.get_root_node()
-                if col_data_vals[0] in self.df.columns:
-                    first_node_data = self.df.loc[:, col_data_vals[0]]
-                    second_node_data = [col_data_vals[-1]
-                                        for i in range(len(first_node_data))]
-                else:
+                    col_data_vals = col
+                    root_col_name = self.translator.get_root_node()
                     first_node_data = self.df.iloc[:, 0]
-                    second_node_data = self.df.loc[:, root_col_name]
-                self.df[col] = create_column_values_space(
-                    first_node_data=first_node_data,
-                    second_node_data=second_node_data
-                )
-            else:
-                col_data_vals = col
-                root_col_name = self.translator.get_root_node()
-                first_node_data = self.df.iloc[:, 0]
-                second_node_data = [
-                    col for count in range(len(first_node_data))]
-                self.df[col] = create_column_values_singleton(
-                    first_node_data=first_node_data,
-                    second_node_data=second_node_data
-                )
+                    second_node_data = [
+                        col for count in range(len(first_node_data))]
+                    self.df[col] = create_column_values_singleton(
+                        first_node_data=first_node_data,
+                        second_node_data=second_node_data
+                    )
 
     def to_property_di_graph(self):
         """Creates a PropertyDiGraph from the completely filled out dataframe.
@@ -789,6 +798,15 @@ class Evaluator:
         self.prop_di_graph = PropertyDiGraph(
             root_attr_columns=self.root_node_attr_columns
         )
+        inner_dict = {
+            'id': None,
+            'name': None,
+            'node_types': [],
+            'successors': [],
+            'predecessors': [],
+            'attributes': {},
+            'settings_node': False,
+        }  # The init args to Vertex
         for index, pair in enumerate(
                 self.translator.get_pattern_graph_edges()):
             edge_type = self.translator.get_edge_type(index=index)
@@ -806,9 +824,10 @@ class Evaluator:
                     uml_id_dict=self.translator.get_uml_id)
             else:
                 nodes_to_add = [
-                    (node, {'ID': self.translator.get_uml_id(name=node)})
+                    (node, {'id': self.translator.get_uml_id(name=node)})
                     for node in GraphTemp.nodes()
                 ]
+
             self.prop_di_graph.add_nodes_from(nodes_to_add)
             self.prop_di_graph.add_edges_from(GraphTemp.edges,
                                               edge_attribute=edge_type)
