@@ -416,6 +416,55 @@ class TestManager(unittest.TestCase):
             self.assertDictEqual(expected_dict, created_dict)
             self.assertTrue(expected_df.equals(created_df))
 
+    def test_graph_difference_to_json_2(self):
+        manager = Manager(
+            excel_path=[
+                (DATA_DIRECTORY / 'Composition_Diff_JSON_Baseline.xlsx'),
+                (DATA_DIRECTORY / 'Composition_Diff_JSON_Changed.xlsx'),
+            ],
+            json_path=PATTERNS / 'Composition.json'
+        )
+        tr = manager.translator
+        print(manager.evaluators)
+        eval = manager.evaluators[0]
+        eval1 = manager.evaluators[-1]
+        eval.rename_df_columns()
+        eval.add_missing_columns()
+        eval.to_property_di_graph()
+        pdg = eval.prop_di_graph
+        pdg.create_vertex_set(
+            df=eval.df, translator=eval.translator
+        )
+        pdg.create_edge_set()
+        vset = pdg.vertex_set
+        e_set = pdg.edge_set
+
+        eval1.rename_df_columns()
+        eval1.add_missing_columns()
+        eval1.to_property_di_graph()
+        pdg1 = eval1.prop_di_graph
+        pdg1.create_vertex_set(
+            df=eval1.df, translator=eval1.translator
+        )
+        pdg1.create_edge_set()
+        vset1 = pdg.vertex_set
+        e_set1 = pdg1.edge_set
+
+        print('the edge set of baseline')
+        e = {edge.named_edge_triple: edge
+             for edge in e_set}
+        print(sorted(e.keys(), key=lambda elem: elem[0]))
+        print('the edge set of changed')
+        ec = {edge.named_edge_triple: edge
+              for edge in e_set1}
+        print(sorted(ec.keys(), key=lambda elem: elem[0]))
+
+        change_dict = manager.get_pattern_graph_diff(
+            out_directory=DATA_DIRECTORY)
+        print(change_dict)
+        manager.changes_to_excel(out_directory=DATA_DIRECTORY)
+        self.assertTrue(False)
+
     def test_graph_difference_to_json(self):
         manager = Manager(
             excel_path=[
@@ -437,7 +486,8 @@ class TestManager(unittest.TestCase):
         })
 
         ancestor = [('as1', 't1', 'type'),
-                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+                    ('s12', 'at12', 'memberEnd'),
+                    ('b', 'c', 'orange'), ]
 
         base_edges = []
         base_dict = {}

@@ -376,7 +376,8 @@ class Manager:
         edge_add = []
         node_renames = []
         create_new_name_node = []
-        rename_nodes = [n.name for n in change_dict[new_col]]
+        print('new names column: {0}'.format(change_dict[new_col]))
+        rename_nodes = {n.name for n in change_dict[new_col]}
 
         for key, value in change_dict.items():
             if key == 'Added':
@@ -388,23 +389,14 @@ class Manager:
                     edge_del.append(edge.edge_to_uml(op='delete',
                                                      translator=translator))
             elif key == new_col:
-                print('Got to the new key')
-                new_nodes = [n.name for n in change_dict[key]]
-                print(new_nodes)
                 for node in change_dict[key]:
                     node_renames.append(
                         node.change_node_to_uml(translator=translator)
                     )
-                prnt()
             elif isinstance(key, str) and key != new_col:
                 continue
             else:
-                print(key.named_edge_triple, '\n', value[0].named_edge_triple)
                 source, target = value[0].source, value[0].target
-                print(source.name, target.name)
-                print('SV-5 Connections')
-                if target.name == 'SV-5':
-                    print(target.connections)
                 if 'new' in translator.uml_id[source.name]:
                     # create then add
                     node_cr, node_dec, node_edge = source.create_node_to_uml(
@@ -428,14 +420,80 @@ class Manager:
                     if node_edge:
                         edge_add.extend(node_edge)
 
+                renm_source = any(source.name in nm for nm in rename_nodes)
+                renm_target = any(target.name in nm for nm in rename_nodes)
+                if renm_source or renm_target:
+                    # replace the key.source with value.source
+                    # replace key.target with value.target
+                    del_edge_json = key.edge_to_uml(op='delete',
+                                                    translator=translator)
+                    edge_del.append(del_edge_json)
 
-                del_edge_json = key.edge_to_uml(op='delete',
-                                                translator=translator)
-                edge_del.append(del_edge_json)
+                    add_edge_json = value[0].edge_to_uml(op='replace',
+                                                         translator=translator)
+                    edge_add.append(add_edge_json)
+                else:
+                    # rename node was not in either of change items
+                    source_id = translator.uml_id[source.name]
+                    target_id = translator.uml_id[target.name]
+                    if 'new' in source_id and target_id:
+                        # if 'new' in source.id and target.id
+                        # create both value.source and value.target
+                        # create then add
+                        s_cr, s_dec, s_edge = source.create_node_to_uml(
+                            translator=translator
+                        )
+                        # extend here and below was previously append
+                        # will have to do some crazy work to remove duplicates
+                        create_new_name_node.extend(s_cr)
+                        if s_dec:
+                            create_new_name_node.extend(s_dec)
+                        if s_edge:
+                            edge_add.extend(s_edge)
+                        # create then add
+                        t_cr, t_dec, t_edge = target.create_node_to_uml(
+                            translator=translator
+                        )
+                        create_new_name_node.extend(t_cr)
+                        if t_dec:
+                            create_new_name_node.extend(t_dec)
+                        if t_edge:
+                            edge_add.extend(t_edge)
+                    elif 'new' in source_id:
+                        s_cr, s_dec, s_edge = source.create_node_to_uml(
+                            translator=translator
+                        )
+                        # extend here and below was previously append
+                        # will have to do some crazy work to remove duplicates
+                        create_new_name_node.extend(s_cr)
+                        if s_dec:
+                            create_new_name_node.extend(s_dec)
+                        if s_edge:
+                            edge_add.extend(s_edge)
+                        # elif 'new' in source.id
+                        # create node for value.source
+                    elif 'new' in target_id:
+                        # create then add
+                        t_cr, t_dec, t_edge = target.create_node_to_uml(
+                            translator=translator
+                        )
+                        create_new_name_node.extend(t_cr)
+                        if t_dec:
+                            create_new_name_node.extend(t_dec)
+                        if t_edge:
+                            edge_add.extend(t_edge)
+                        # elif 'new' in target.id
+                        # create node for value.target
+                    else:
+                        del_edge_json = key.edge_to_uml(op='delete',
+                                                        translator=translator)
+                        edge_del.append(del_edge_json)
 
-                add_edge_json = value[0].edge_to_uml(op='replace',
-                                                     translator=translator)
-                edge_add.append(add_edge_json)
+                        add_edge_json = value[0].edge_to_uml(op='replace',
+                                                             translator=translator)
+                        edge_add.append(add_edge_json)
+                    # else
+                    # replace key (edge) with target (edge)
 
         seen_id = set()
         for nn_d in create_new_name_node:
