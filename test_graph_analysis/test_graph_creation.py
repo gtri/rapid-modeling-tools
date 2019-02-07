@@ -463,6 +463,7 @@ class TestManager(unittest.TestCase):
             out_directory=DATA_DIRECTORY)
         print(change_dict)
         manager.changes_to_excel(out_directory=DATA_DIRECTORY)
+        print('print statement here')
         self.assertTrue(False)
 
     def test_graph_difference_to_json(self):
