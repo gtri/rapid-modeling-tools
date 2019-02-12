@@ -209,6 +209,7 @@ class VertexReporterMixin:
     to JSON for consumption by MagicDraw. It contains a write method for
     change, deletion and creation instructions.
     """
+
     def change_node_to_uml(self, translator=None):
         """
         Package the Vertex information into a dictionary to be written out
@@ -298,10 +299,6 @@ class VertexReporterMixin:
         node_decorations = []
         if old_name:
             name = old_name
-            # print('JSON PRODUCTION')
-            # print(self.name, name)
-            # print(translator.get_uml_id(name=self.name))
-            # print(translator.get_uml_id(name=name))
         else:
             name = self.name
 
@@ -399,8 +396,10 @@ class Vertex(VertexReporterMixin):
     def __init__(self, name=None, node_types=list(),
                  successors=None, predecessors=None,
                  attributes=None,
-                 settings_node=None):
+                 settings_node=None,
+                 id=None, **kwargs,):
         self.name = name
+        self.id = id
         self.node_types = node_types
         self.successors = successors
         self.predecessors = predecessors
@@ -515,6 +514,7 @@ class DiEedgeReporterMixin:
     to JSON for consumption by MagicDraw. It contains a write method for
     changed edges.
     """
+
     def edge_to_uml(self, op='', translator=None):
         """
         Packages the DiEdge information into a dictionary to be written to

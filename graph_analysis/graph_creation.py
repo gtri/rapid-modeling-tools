@@ -832,6 +832,17 @@ class Evaluator:
             self.prop_di_graph.add_edges_from(GraphTemp.edges,
                                               edge_attribute=edge_type)
 
+        # Add all nodes then overwrite them with access to the vertex obj.
+        # print('Temporary Graph Nodes')
+        # print(GraphTemp.nodes)
+        # print('Property Graph Nodes')
+        # print(self.prop_di_graph.nodes)
+        # print('Vanilla print a node see what happened')
+        # print(self.prop_di_graph.nodes['blueberry'])
+        # print('Change stuff see what happens')
+        # self.prop_di_graph.add_nodes_from([('blueberry', {'ID': 456})])
+        # print(self.prop_di_graph.nodes['blueberry'])
+
     @property
     def named_vertex_set(self):
         return self.prop_di_graph.get_vertex_set_named(df=self.df)
