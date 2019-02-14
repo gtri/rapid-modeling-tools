@@ -13,6 +13,67 @@ UML_ID = {
 # TODO: to selectively import one of the utils is the funtion that needs to do
 # the importing.
 
+
+def associate_node_id(tr, node=''):
+    return {'id': tr.get_uml_id(name=node)}
+
+
+def associate_successors(graph, node=''):
+    return {'successors': [{'source': node,
+                            'target': succ} for succ in graph.succ[node]]}
+
+
+def associate_predecessors(graph, node=''):
+    return {'predecessors': [{'source': pred,
+                              'target': node}
+                             for pred in graph.pred[node]]}
+
+
+def associate_node_types_settings(
+        df, tr, root_node_type, root_attr_cols, node=''):
+    node_type_cols, node_attr_dict = get_node_types_attrs(
+        df=df, node=node,
+        root_node_type=tr.get_root_node(),
+        root_attr_columns=root_attr_cols)
+    node_types = {col for col in node_type_cols}
+
+    settings_value = []
+
+    for node_type in node_type_cols:
+        vert_type, settings_val = tr.get_uml_settings(
+            node_key=node_type)
+        if settings_val and 'id' in settings_val:
+            settings_value = get_setting_node_name_from_df(
+                df=df, column=settings_val.split('-')[-1], node=node)
+            settings = True
+        else:
+            settings_value = []
+
+    type_setting_dict = {'settings_node': settings_value}
+    type_setting_dict['attributes'] = node_attr_dict
+    return type_setting_dict
+
+
+def associate_renames(df_renames, tr, node):
+    if any(new_nm in node for new_nm in df_renames.index):
+        row_index = next(filter(lambda x: x in node, df_renames.index))
+        old_name - df_renames.loc[ind_name].item()
+    else:
+        pass
+    pass
+
+
+def build_dict(arg):
+    one_dict = {}
+    for ar in arg:
+        one_dict.update(ar)
+    return one_dict
+
+
+def make_object(obj, kwargs):
+    return obj(**kwargs)
+
+
 def get_uml_id(name=None):
     """Returns the UML_ID for the corresponding vertex name provided. If the
     name provided does not exist as a key in the UML_ID dictionary than a
@@ -40,10 +101,8 @@ def get_uml_id(name=None):
         return UML_ID[name]
 
 
-def create_column_values_under(prefix=None,
-                               first_node_data=None,
-                               second_node_data=None,
-                               suffix=''):
+def create_column_values_under(prefix=None, first_node_data=None,
+                               second_node_data=None, suffix=''):
     """Returns the column values for an inferred dataframe column that has
     underscores in the column name.
 
@@ -134,8 +193,8 @@ def create_column_values_space(first_node_data=None,
     return column_values
 
 
-def create_column_values_singleton(first_node_data=None,
-                                   second_node_data=None):
+def create_column_values_singleton(
+        first_node_data=None, second_node_data=None):
     """Returns the column values for an inferred dataframe column that is only
     one word.
 
@@ -328,21 +387,21 @@ def recast_new_names_as_old(edge_dict=None, rename_df=None, new_name=None):
         # do nothing
 
 
-def associate_node_ids(nodes=None, attr_df=None, uml_id_dict=None):
-    # return a list of tuples with (node name, {id: <node id>})
-    # TODO: this function should do more. Need something for the else
-    # otherwise this silently corrupts data.
-    # This could be expanded to add attrs but its really only adding ids.
-    nodes_to_add = []
-    for node in nodes:
-        if node in attr_df.index:
-            attr = attr_df.loc[node].to_dict()
-            nodes_to_add.append((node, attr))
-        else:
-            attr = {'id': uml_id_dict(name=node)}
-            nodes_to_add.append((node, attr))
-
-    return nodes_to_add
+# def associate_node_ids(nodes=None, attr_df=None, uml_id_dict=None):
+#     # return a list of tuples with (node name, {id: <node id>})
+#     # TODO: this function should do more. Need something for the else
+#     # otherwise this silently corrupts data.
+#     # This could be expanded to add attrs but its really only adding ids.
+#     nodes_to_add = []
+#     for node in nodes:
+#         if node in attr_df.index:
+#             attr = attr_df.loc[node].to_dict()
+#             nodes_to_add.append((node, attr))
+#         else:
+#             attr = {'id': uml_id_dict(name=node)}
+#             nodes_to_add.append((node, attr))
+#
+#     return nodes_to_add
 
 
 def to_excel_df(data_dict=None, column_keys=None):

@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from copy import copy
@@ -9,25 +10,110 @@ import pandas as pd
 
 from graph_analysis.graph_creation import MDTranslator
 from graph_analysis.graph_objects import DiEdge, Vertex
-from graph_analysis.utils import (associate_node_ids, create_column_values,
+from graph_analysis.utils import (associate_node_id,
+                                  associate_node_types_settings,
+                                  associate_predecessors, associate_renames,
+                                  associate_successors, build_dict,
+                                  create_column_values,
                                   create_column_values_singleton,
                                   create_column_values_space,
                                   create_column_values_under,
                                   distill_edges_to_nodes, get_new_column_name,
                                   get_node_types_attrs,
-                                  get_setting_node_name_from_df, match,
-                                  match_changes, new_as_old,
+                                  get_setting_node_name_from_df, make_object,
+                                  match, match_changes, new_as_old,
                                   replace_new_with_old_name, to_excel_df,
                                   to_nto_rename_dict, to_uml_json_decorations,
                                   to_uml_json_edge, to_uml_json_node)
 
-from . import DATA_DIRECTORY
+from . import DATA_DIRECTORY, PATTERNS
 
 
 class TestUtils(unittest.TestCase):
 
     def setUp(self):
         pass
+
+    def test_associate_node_id(self):
+        data = (PATTERNS / 'Composition.json').read_text()
+        data = json.loads(data)
+        tr = MDTranslator(json_data=data)
+        node = 'test node'
+        id = tr.get_uml_id(name=node)
+        id_dict = associate_node_id(tr, node='test node')
+        self.assertDictEqual({'id': 'new_0'}, id_dict)
+
+    def test_associate_successors(self):
+        graph = nx.DiGraph()
+        graph.add_nodes_from(['zero', 'one', 'two'])
+        graph.add_edges_from([('zero', 'one'), ('zero', 'two')])
+        succs = associate_successors(graph, node='zero')
+        succ_dict = {
+            'successors': [{'source': 'zero',
+                            'target': 'one'},
+                           {'source': 'zero',
+                            'target': 'two'}, ]
+        }
+        self.assertDictEqual(succ_dict, succs)
+
+    def test_associate_predecessors(self):
+        graph = nx.DiGraph()
+        graph.add_nodes_from(['zero', 'one', 'two'])
+        graph.add_edges_from([('one', 'zero'), ('two', 'zero')])
+        preds = associate_predecessors(graph, node='zero')
+        pred_dict = {
+            'predecessors': [{'target': 'zero',
+                              'source': 'one'},
+                             {'target': 'zero',
+                              'source': 'two'}, ]
+        }
+        self.assertDictEqual(pred_dict, preds)
+
+    def test_associate_node_types_settings(self):
+        data = (PATTERNS / 'Composition.json').read_text()
+        data = json.loads(data)
+        tr = MDTranslator(json_data=data)
+        # for the test to work
+        tr.data['Root Node'] = 'Atomic Thing'
+        data_dict = {
+            'component': ['car', 'wheel', 'engine'],
+            'Atomic Thing': ['Car', 'Wheel', 'Car'],
+            'edge attribute': ['owner', 'owner', 'owner'],
+            'Notes': ['little car to big Car', 6, 2],
+            'Two such Cols': [1, 2, 3],
+        }
+        df = pd.DataFrame(data=data_dict)
+
+        node_type_cols, node_attr_dict = get_node_types_attrs(
+            df=df, node='Car',
+            root_node_type='Atomic Thing',
+            root_attr_columns={'Notes', 'Two such Cols'})
+
+        type_set_dict = associate_node_types_settings(
+            df, tr, tr, {'Notes', 'Two such Cols'}, node='Car'
+        )
+        expect = {
+            'settings_node': [],
+            'attributes': node_attr_dict
+        }
+        self.assertDictEqual(expect, type_set_dict)
+
+    def test_associate_renames(self):
+        self.assertTrue(False, msg='Finish writing function then do this')
+
+    def test_build_dict(self):
+        arg = [{'id': 1}, {'name': 'Car'}]
+        built_dict = build_dict(arg)
+        expect = {'id': 1,
+                  'name': 'Car'}
+        self.assertDictEqual(expect, built_dict)
+
+    def test_make_object(self):
+        obj_attrs = {'name': 'Car',
+                     'id': '123'}
+        vert = Vertex(**obj_attrs)
+        self.assertEqual(vert.name, 'Car')
+        self.assertEqual(vert.id, '123')
 
     def test_create_column_values_under(self):
         data_dict = {
@@ -94,13 +180,16 @@ class TestUtils(unittest.TestCase):
             self.assertListEqual(expected_output[col], list_out)
 
     def test_get_node_types_attrs(self):
+        # TODO: Investigate this test.
+        # TODO: Expand functionality, this leaves notes on the floor
         data_dict = {
             'component': ['car', 'wheel', 'engine'],
             'Atomic Thing': ['Car', 'Wheel', 'Car'],
             'edge attribute': ['owner', 'owner', 'owner'],
             'Notes': ['little car to big Car',
                       6,
-                      2]
+                      2],
+            'Two such Cols': [1, 2, 3],
         }
         df = pd.DataFrame(data=data_dict)
 
@@ -109,7 +198,9 @@ class TestUtils(unittest.TestCase):
             root_node_type='Atomic Thing',
             root_attr_columns={'Notes'})
 
-        attr_list = [{'Notes': 'little car to big Car'}, {'Notes': 2}]
+        attr_list = [{'Notes': 'little car to big Car'}, {'Notes': 2},
+                     {'Two such Cols': 1}]
+        # Try with multiple notes cols and a node with two types.
         self.assertEqual({'Atomic Thing'}, node_type_cols)
         self.assertListEqual(attr_list,
                              node_attr_dict)
@@ -328,20 +419,20 @@ class TestUtils(unittest.TestCase):
             ancestor_dict[edge_tuple] = edge
             ancestor_edges.append(edge)
 
-    def test_associate_node_ids(self):
-        node_id_dict = {'Element Name': ['Car', 'engine', 'orange'],
-                        'ID': [1, 2, 3]}
-        df_ids = pd.DataFrame(data=node_id_dict)
-        df_ids.set_index(df_ids.columns[0], inplace=True)
-        translator = MDTranslator()
-        nodes = ['Car', 'engine', 'orange', 'green']
-        nodes_to_add = associate_node_ids(nodes=nodes, attr_df=df_ids,
-                                          uml_id_dict=translator.get_uml_id)
-        expected_node_info = [('Car', {'ID': 1}), ('engine', {'ID': 2}),
-                              ('orange', {'ID': 3}),
-                              ('green', {'ID': 'new_0'})]
-        for count, node_tup in enumerate(nodes_to_add):
-            self.assertTupleEqual(expected_node_info[count], node_tup)
+    # def test_associate_node_ids(self):
+    #     node_id_dict = {'Element Name': ['Car', 'engine', 'orange'],
+    #                     'ID': [1, 2, 3]}
+    #     df_ids = pd.DataFrame(data=node_id_dict)
+    #     df_ids.set_index(df_ids.columns[0], inplace=True)
+    #     translator = MDTranslator()
+    #     nodes = ['Car', 'engine', 'orange', 'green']
+    #     nodes_to_add = associate_node_ids(nodes=nodes, attr_df=df_ids,
+    #                                       uml_id_dict=translator.get_uml_id)
+    #     expected_node_info = [('Car', {'ID': 1}), ('engine', {'ID': 2}),
+    #                           ('orange', {'ID': 3}),
+    #                           ('green', {'ID': 'new_0'})]
+    #     for count, node_tup in enumerate(nodes_to_add):
+    #         self.assertTupleEqual(expected_node_info[count], node_tup)
 
     def test_get_setting_node_name_from_df(self):
         data_dict = {

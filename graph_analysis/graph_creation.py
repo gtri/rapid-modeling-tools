@@ -1,8 +1,9 @@
 import json
 from copy import copy, deepcopy
 from datetime import datetime
+from functools import partial
 from glob import glob
-from itertools import combinations
+from itertools import chain, combinations
 from pathlib import Path
 from warnings import warn
 
@@ -10,10 +11,13 @@ import networkx as nx
 import pandas as pd
 
 from . import OUTPUT_DIRECTORY, PATTERNS
-from .graph_objects import PropertyDiGraph
-from .utils import (associate_node_ids, create_column_values_singleton,
-                    create_column_values_space, create_column_values_under,
-                    distill_edges_to_nodes, get_new_column_name, match_changes,
+from .graph_objects import PropertyDiGraph, Vertex
+from .utils import (associate_node_id, associate_node_types_settings,
+                    associate_predecessors, associate_renames,
+                    associate_successors, build_dict,
+                    create_column_values_singleton, create_column_values_space,
+                    create_column_values_under, distill_edges_to_nodes,
+                    get_new_column_name, make_object, match_changes,
                     new_as_old, object_dict_view, to_excel_df,
                     to_nto_rename_dict, truncate_microsec)
 
@@ -613,6 +617,27 @@ class Evaluator:
                     for row in self.df_renames.itertuples(index=False):
                         if row[0] in self.translator.uml_id.keys():
                             # replace instances of this with those in 1
+                            if len(row) == 2:
+                                if not self.df_renames.index.is_object():
+                                    # do the thing set the index as new name
+                                    old_mask = self.df_renames == row[0]
+                                    old_masked_df = self.df_renames[
+                                        old_mask].dropna(how='all', axis=0)
+                                    # should return new names col and nan
+                                    new_names = self.df_renames.T.index.where(
+                                        old_masked_df.isnull()).tolist()
+                                    new_col = list(
+                                        chain.from_iterable(new_names))
+                                    new_name = list(
+                                        filter(
+                                            lambda x: isinstance(
+                                                x, str), new_col))
+                                    self.df_renames.set_index(
+                                        new_name, inplace=True)
+                            else:
+                                raise RuntimeError(
+                                    'Unexpected columns in Rename Sheet. \
+                                     Expected 2 but found more than 2.')
                             self.df.replace(to_replace=row[0],
                                             value=row[1],
                                             inplace=True)
@@ -620,6 +645,27 @@ class Evaluator:
                                 row[1]: self.translator.uml_id[row[0]]
                             })
                         elif row[1] in self.translator.uml_id.keys():
+                            if len(row) == 2:
+                                if not self.df_renames.index.is_object():
+                                    # do the thing set the index as new name
+                                    old_mask = self.df_renames == row[1]
+                                    old_masked_df = self.df_renames[
+                                        old_mask].dropna(how='all', axis=0)
+                                    # should return new names col and nan
+                                    new_names = self.df_renames.T.index.where(
+                                        old_masked_df.isnull()).tolist()
+                                    new_col = list(
+                                        chain.from_iterable(new_names))
+                                    new_name = list(
+                                        filter(
+                                            lambda x: isinstance(
+                                                x, str), new_col))
+                                    self.df_renames.set_index(
+                                        new_name, inplace=True)
+                            else:
+                                raise RuntimeError(
+                                    'Unexpected columns in Rename Sheet. \
+                                     Expected 2 but found more than 2.')
                             # same as above in other direction
                             self.df.replace(to_replace=row[1],
                                             value=row[0],
@@ -639,23 +685,31 @@ class Evaluator:
                     how='all', inplace=True)
                 index_name = ''
                 for row in self.df_renames.itertuples(index=False):
-                    if all(
-                            row[i] in self.translator.uml_id.keys()
+                    if all(row[i] in self.translator.uml_id.keys()
                             for i in (0, 1)):
-                        print('Both old and new here')
-                        # row[0] in self.translator.uml_id.keys() and row[1]
-                        # self.translator.uml_id.keys():
-                        print(self.excel_file.name)
-                        row_0 = self.translator.uml_id[row[0]]
-                        row_1 = self.translator.get_uml_id(name=row[1])
-                        print('{0}: {1}, {2}: {3}'.format(
-                            row[0], row_0, row[1], row_1
-                        ))
                         raise RuntimeError('Both old and new in keys')
                     elif row[0] in self.translator.uml_id.keys():
-                        print(row[0])
-                        print('just {0} was in here'.format(row[0]))
                         # then replace instances of this with those in 1
+                        if len(row) == 2:
+                            if not self.df_renames.index.is_object():
+                                # do the thing set the index as new name
+                                old_mask = self.df_renames == row[0]
+                                old_masked_df = self.df_renames[
+                                    old_mask].dropna(how='all', axis=0)
+                                # should return name of new names col and nan
+                                new_names = self.df_renames.T.index.where(
+                                    old_masked_df.isnull()).tolist()
+                                new_col = list(
+                                    chain.from_iterable(new_names))
+                                new_name = list(
+                                    filter(
+                                        lambda x: isinstance(x, str), new_col))
+                                self.df_renames.set_index(
+                                    new_name, inplace=True)
+                        else:
+                            raise RuntimeError(
+                                'Unexpected columns in Rename Sheet. \
+                                 Expected 2 but found more than 2.')
                         self.df.replace(to_replace=row[0], value=row[1],
                                         inplace=True)
                         self.translator.uml_id.update({
@@ -663,14 +717,27 @@ class Evaluator:
                         })
                         continue
                     elif row[1] in self.translator.uml_id.keys():
-                        print(len(row))
+                        # row[1] is old, row[0] is new
                         if len(row) == 2:
-                            pass
+                            if not self.df_renames.index.is_object():
+                                # do the thing set the index as new name
+                                old_mask = self.df_renames == row[1]
+                                old_masked_df = self.df_renames[
+                                    old_mask].dropna(how='all', axis=0)
+                                # should return name of new names col and nan
+                                new_names = self.df_renames.T.index.where(
+                                    old_masked_df.isnull()).tolist()
+                                new_col = list(
+                                    chain.from_iterable(new_names))
+                                new_name = list(
+                                    filter(
+                                        lambda x: isinstance(x, str), new_col))
+                                self.df_renames.set_index(
+                                    new_name, inplace=True)
                         else:
                             raise RuntimeError(
-                                'Unexpected columns in Rename Sheet')
-                        print(row[1])
-                        print('just {0} was in here'.format(row[1]))
+                                'Unexpected columns in Rename Sheet. \
+                                 Expected 2 but found more than 2.')
                         # same as above in other direction
                         self.df.replace(to_replace=row[1], value=row[0],
                                         inplace=True)
@@ -678,8 +745,6 @@ class Evaluator:
                             {row[0]: self.translator.uml_id[row[1]]}
                         )
                         continue
-                if index_name:  # index_name will be column that satisfies elif
-                    self.df_renames.set_index(index_name)
             elif any(id_str in sheet.lower() for id_str in ids) and \
                     not any(pattern in sheet.lower() for pattern in patterns):
                 self.df_ids = pd.read_excel(
@@ -804,15 +869,6 @@ class Evaluator:
         self.prop_di_graph = PropertyDiGraph(
             root_attr_columns=self.root_node_attr_columns
         )
-        inner_dict = {
-            'id': None,
-            'name': None,
-            'node_types': [],
-            'successors': [],
-            'predecessors': [],
-            'attributes': {},
-            'settings_node': False,
-        }  # The init args to Vertex
         for index, pair in enumerate(
                 self.translator.get_pattern_graph_edges()):
             edge_type = self.translator.get_edge_type(index=index)
@@ -823,31 +879,44 @@ class Evaluator:
                 df=df_temp, source=pair[0],
                 target=pair[1], edge_attr=edge_type,
                 create_using=GraphTemp)
-            if self.df_ids is not None:
-                nodes_to_add = associate_node_ids(
-                    nodes=GraphTemp.nodes(),
-                    attr_df=self.df_ids,
-                    uml_id_dict=self.translator.get_uml_id)
-            else:
-                nodes_to_add = [
-                    (node, {'id': self.translator.get_uml_id(name=node)})
-                    for node in GraphTemp.nodes()
-                ]
-
-            self.prop_di_graph.add_nodes_from(nodes_to_add)
+            self.prop_di_graph.add_nodes_from(GraphTemp.nodes)
             self.prop_di_graph.add_edges_from(GraphTemp.edges,
                                               edge_attribute=edge_type)
 
-        # Add all nodes then overwrite them with access to the vertex obj.
-        # print('Temporary Graph Nodes')
-        # print(GraphTemp.nodes)
-        # print('Property Graph Nodes')
-        # print(self.prop_di_graph.nodes)
-        # print('Vanilla print a node see what happened')
-        # print(self.prop_di_graph.nodes['blueberry'])
-        # print('Change stuff see what happens')
-        # self.prop_di_graph.add_nodes_from([('blueberry', {'ID': 456})])
-        # print(self.prop_di_graph.nodes['blueberry'])
+        pdg = self.prop_di_graph
+        tr = self.translator
+
+        # Est list of lists with dict for each node contaiing its name
+        # node is already a string because of networkx functionality
+        # idea is to build up kwargs to instantiate a vertex object.
+        node_atters = [[{'name': node}
+                        for node in list(pdg)]]
+
+        # various functions required to get different vertex attrs
+        # partialy instantiate each function so that each fn only needs node
+        # TODO: add the associate_renames() It is still under construction
+        associate_funs = [partial(associate_node_id, tr),
+                          partial(associate_successors, pdg),
+                          partial(associate_predecessors, pdg),
+                          partial(associate_node_types_settings, self.df,
+                                  tr, self.root_node_attr_columns)]
+
+        # apply each function to each node.
+        # map(function, iterable)
+        for fun in associate_funs:
+            fun_map = map(fun, list(pdg))
+            node_atters.append(fun_map)
+
+        # Partially bake a Vertex object to make it act like a function when
+        # passed the attr dict. Atter dict built using map(build_dict, zip())
+        # zip(*node_atters) unpacks the nested lists then takes one of ea attr
+        # from the map obj stored there (map objs are iterables)
+        vertex = partial(make_object, Vertex)
+        for mp in map(vertex, map(build_dict, zip(*node_atters))):
+            vert_tup = (mp.name, {mp.name: mp})
+            # overwrites the original node in the graph to add an attribute
+            # {'<name>': <corresponding vertex object>}
+            pdg.add_node(vert_tup[0], **vert_tup[1])
 
     @property
     def named_vertex_set(self):

@@ -722,40 +722,22 @@ class TestEvaluator(unittest.TestCase):
         # the graph itself will be tested so I should just test that a graph
         # obj exists.
         # TODO: create tests for the properties on the Evaluator class.
-        data_dict = {
-            'Composite Thing': ['blueberry', ],
-            'component': ['pie', ],
-            'Atomic Thing': ['milk']
-        }
-        data_id_dict = {
-            'Element Names': ['blueberry', 'pie', 'milk'],
-            'ID': [123, 234, 345]
-        }
-        evaluator = Evaluator(excel_file=(
-            DATA_DIRECTORY / 'Composition Example Model Baseline.xlsx'),
-            translator=self.translator)
-        evaluator.df = pd.DataFrame(data=data_dict)
-        df_ids = pd.DataFrame(data=data_id_dict)
-        df_ids.set_index(df_ids.columns[0], inplace=True)
-        evaluator.df_ids = df_ids
-        evaluator.translator.uml_id.update(
-            evaluator.df_ids.to_dict(
-                orient='dict')[evaluator.df_ids.columns[0]]
-        )
+        json_data = (PATTERNS / 'Composition.json').read_text()
+        json_data = json.loads(json_data)
+        tr = MDTranslator(json_data=json_data)
+        file = DATA_DIRECTORY / 'Composition Example 2 Model partial_map.xlsx'
+        evaluator = Evaluator(excel_file=file,
+                              translator=tr)
+        df = evaluator.df
+        df_ids = evaluator.df_ids
+        df_renames = evaluator.df_renames
         evaluator.rename_df_columns()
         evaluator.add_missing_columns()
         evaluator.to_property_di_graph()
+        pdg = evaluator.prop_di_graph
 
-        graph_node_data = list(evaluator.prop_di_graph.nodes().data())
-        expected_node_ids = [('blueberry qua pie context', {'ID': 'new_0'}),
-                             ('blueberry', {'ID': 123}),
-                             ('pie', {'ID': 234}),
-                             ('milk', {'ID': 345}),
-                             ('A_blueberry qua pie context_pie',
-                              {'ID': 'new_1'})]
-
-        self.assertTrue(False)
-        self.assertListEqual(expected_node_ids, graph_node_data)
+        for node in list(pdg):
+            self.assertEqual(node, pdg.nodes[node][node].name)
 
     def tearDown(self):
         pass

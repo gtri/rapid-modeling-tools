@@ -97,7 +97,7 @@ class PropertyDiGraph(nx.DiGraph):
     """
 
     def __init__(self, incoming_graph_data=None,
-                 root_attr_columns=None, ** attr):
+                 root_attr_columns=None, **attr):
         self.vertex_dict = {}
         self.edge_dict = {}
         self.vertex_set = set()
