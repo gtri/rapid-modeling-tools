@@ -663,6 +663,12 @@ class Evaluator:
                         })
                         continue
                     elif row[1] in self.translator.uml_id.keys():
+                        print(len(row))
+                        if len(row) == 2:
+                            pass
+                        else:
+                            raise RuntimeError(
+                                'Unexpected columns in Rename Sheet')
                         print(row[1])
                         print('just {0} was in here'.format(row[1]))
                         # same as above in other direction
