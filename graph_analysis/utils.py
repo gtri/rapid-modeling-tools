@@ -1,7 +1,8 @@
 import json
 import os
 from copy import copy
-from itertools import count
+from functools import reduce
+from itertools import chain, count
 from pathlib import Path
 from random import shuffle
 
@@ -56,11 +57,17 @@ def associate_node_types_settings(
 
 def associate_renames(df_renames, tr, node):
     if any(new_nm in node for new_nm in df_renames.index):
-        row_index = next(filter(lambda x: x in node, df_renames.index))
-        old_name - df_renames.loc[ind_name].item()
+        row_index = list(filter(lambda x: x in node, df_renames.index))
+        old_name = df_renames.loc[row_index].get_values()
+        new_old_tup = zip(row_index, chain(*old_name))
+        original_name = reduce(
+            lambda new, kv: new.replace(*kv), new_old_tup, node)
+        original_id = tr.get_uml_id(name=original_name)
+        return {'original_name': original_name,
+                'original_id': original_id}
     else:
-        pass
-    pass
+        return {'original_name': None,
+                'original_id': None}
 
 
 def build_dict(arg):

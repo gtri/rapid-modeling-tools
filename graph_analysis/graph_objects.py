@@ -394,10 +394,9 @@ class Vertex(VertexReporterMixin):
     """
 
     def __init__(self, name=None, node_types=list(),
-                 successors=None, predecessors=None,
-                 attributes=None,
-                 settings_node=None,
-                 id=None, **kwargs,):
+                 successors=None, predecessors=None, attributes=None,
+                 settings_node=None, id=None, original_name=False,
+                 original_id=None, **kwargs,):
         self.name = name
         self.id = id
         self.node_types = node_types
@@ -405,6 +404,15 @@ class Vertex(VertexReporterMixin):
         self.predecessors = predecessors
         self.attributes = attributes
         self.settings_node = settings_node
+        self.original_name = original_name
+        self.original_id = original_id
+
+    @property
+    def has_rename(self):
+        if self.original_name:
+            return True
+        else:
+            return False
 
     @property
     def connections(self):

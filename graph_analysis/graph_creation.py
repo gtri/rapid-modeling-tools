@@ -894,12 +894,12 @@ class Evaluator:
 
         # various functions required to get different vertex attrs
         # partialy instantiate each function so that each fn only needs node
-        # TODO: add the associate_renames() It is still under construction
         associate_funs = [partial(associate_node_id, tr),
                           partial(associate_successors, pdg),
                           partial(associate_predecessors, pdg),
                           partial(associate_node_types_settings, self.df,
-                                  tr, self.root_node_attr_columns)]
+                                  tr, self.root_node_attr_columns),
+                          partial(associate_renames, self.df_renames, tr), ]
 
         # apply each function to each node.
         # map(function, iterable)

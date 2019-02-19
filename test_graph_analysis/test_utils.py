@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from copy import copy
+from functools import partial
 from pathlib import Path
 from shutil import copy2
 
@@ -99,7 +100,34 @@ class TestUtils(unittest.TestCase):
         self.assertDictEqual(expect, type_set_dict)
 
     def test_associate_renames(self):
-        self.assertTrue(False, msg='Finish writing function then do this')
+        tr = MDTranslator()
+        name_id_dict = {
+            'A_composite owner_component-end1': '_1983',
+            'car qua engine context': '_2019',
+            'green apple': '_2020',
+            'A_core_orange-context1': '_2021',
+        }
+        tr.uml_id.update(name_id_dict)
+        df_renames = pd.DataFrame(data={
+            'new name': ['atomic thing', 'composite thing',
+                         'vehicle', 'piston engine', 'red',
+                         'fruit', 'interior'],
+            'old name': ['composite owner', 'component',
+                         'car', 'engine', 'green',
+                         'apple', 'core'],
+        })
+        df_renames.set_index('new name', inplace=True)
+        changed_names = ['A_atomic thing_composite thing-end1',
+                         'vehicle qua piston engine context',
+                         'red fruit',
+                         'A_interior_orange-context1']
+        expect_dict = []
+        for k, v in name_id_dict.items():
+            expect_dict.append({'original_name': k,
+                                'original_id': v})
+        partial_rename = partial(associate_renames, df_renames, tr)
+        for test_pair in zip(expect_dict, map(partial_rename, changed_names)):
+            assert test_pair[0] == test_pair[1]
 
     def test_build_dict(self):
         arg = [{'id': 1}, {'name': 'Car'}]
@@ -154,12 +182,12 @@ class TestUtils(unittest.TestCase):
 
     def test_create_column_values_singleton(self):
         first_node_data = ['green', 'blue']
-        second_node_data = ['context1', 'context1']
+        second_node_data = ['apple', 'context1']
         created_cols = create_column_values_singleton(
             first_node_data=first_node_data,
             second_node_data=second_node_data
         )
-        expectation = ['green context1', 'blue context1']
+        expectation = ['green apple', 'blue context1']
         self.assertListEqual(expectation, created_cols)
 
     def test_create_column_values(self):
