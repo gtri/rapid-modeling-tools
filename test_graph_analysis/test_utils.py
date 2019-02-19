@@ -234,6 +234,8 @@ class TestUtils(unittest.TestCase):
                              node_attr_dict)
 
     def test_match_changes(self):
+        tr = MDTranslator()
+
         base_inputs = [('s1', 't1', 'type'), ('s2', 't2', 'type'),
                        ('s3', 't3', 'owner'), ('s4', 't4', 'owner'),
                        ('s5', 't5', 'memberEnd'),
@@ -258,15 +260,19 @@ class TestUtils(unittest.TestCase):
         ancestor_edges = []
 
         for edge_tuple in base_inputs:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
+            source = Vertex(
+                name=edge_tuple[0], id=tr.get_uml_id(name=edge_tuple[0]))
+            target = Vertex(
+                name=edge_tuple[1], id=tr.get_uml_id(name=edge_tuple[1]))
             edge = DiEdge(source=source, target=target,
                           edge_attribute=edge_tuple[2])
             base_edges.append(edge)
 
         for edge_tuple in ancestor:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
+            source = Vertex(
+                name=edge_tuple[0], id=tr.get_uml_id(name=edge_tuple[0]))
+            target = Vertex(
+                name=edge_tuple[1], id=tr.get_uml_id(name=edge_tuple[1]))
             edge = DiEdge(source=source, target=target,
                           edge_attribute=edge_tuple[2])
             ancestor_edges.append(edge)
@@ -377,9 +383,9 @@ class TestUtils(unittest.TestCase):
         # current = ('source', 'target', 'type')
         # clone = ('new source', 'new target', 'memberEnd')
         # self.assertEqual(-2, match(current=current, clone=clone))
-        car = Vertex(name='Car')
-        engine = Vertex(name='engine')
-        wheel = Vertex(name='wheel')
+        car = Vertex(name='Car', id='1')
+        engine = Vertex(name='engine', id='2')
+        wheel = Vertex(name='wheel', id='3')
 
         # need a test for when I implement the 'edge type equivalence'
         # This would address a case: Suppose the edge attribtue 'type'
@@ -417,6 +423,14 @@ class TestUtils(unittest.TestCase):
                            edge_attribute='memberEnd')
         match_val = match(*[long_edge], current=og_edge,)
         self.assertEqual(-2, match_val[0])
+
+        # case: rename of Car to Vehicle but actually the same edge.
+        vehicle = Vertex(name='Vehicle', id='4', original_id='1',
+                         original_name='Car')
+        rename_edge = DiEdge(source=vehicle, target=engine,
+                             edge_attribute='owner')
+        match_rnm = match(*[rename_edge], current=og_edge,)
+        self.assertEqual(2, match_rnm[0])
 
     def test_recast_new_names_as_old(self):
         base_inputs = [('s1', 't1', 'type'),

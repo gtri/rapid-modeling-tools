@@ -360,14 +360,18 @@ def match_changes(change_dict=None):
 
 
 def match(*args, current=None):
+    # current is the original edge and clone is the change
     # this function should only be getting nodes with the same edges
     # if I change this to assume nodes of the same edge attr then I can
     # send this function "equivalent edges"
     scores = []
     for clone in args:
         if current.edge_attribute == clone.edge_attribute:
-            if ((current.source.name == clone.source.name)
-                    or (current.target.name == clone.target.name)):
+            if ((current.source.id == clone.source.original_id)
+                    or (current.target.id == clone.target.original_id)):
+                scores.append(2)
+            elif ((current.source.id == clone.source.id)
+                    or (current.target.id == clone.target.id)):
                 # TODO: check subgraph
                 # if subgraph is isomorphic then return 2
                 scores.append(1)

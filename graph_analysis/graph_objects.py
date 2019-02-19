@@ -409,7 +409,7 @@ class Vertex(VertexReporterMixin):
 
     @property
     def has_rename(self):
-        if self.original_name:
+        if self.original_name or self.original_id:
             return True
         else:
             return False
