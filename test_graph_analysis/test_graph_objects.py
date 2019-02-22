@@ -69,9 +69,7 @@ class TestPropertyDiGraph(unittest.TestCase):
                            'A_wheel qua hub context_hub',
                            'A_engine qua drive output context_drive output',
                            'wheel qua hub context'}
-        self.Graph.create_vertex_set(
-            df=self.evaluator.df,
-            translator=self.translator)
+        self.Graph.create_vertex_set()
         for vertex in self.Graph.vertex_set:
             self.assertIsInstance(vertex, Vertex)
             self.assertIn(vertex.name, expect_vert_set)

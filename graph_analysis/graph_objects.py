@@ -126,7 +126,7 @@ class PropertyDiGraph(nx.DiGraph):
         """
         return {edge.named_edge_triple for edge in self.edge_set}
 
-    def create_vertex_set(self, df=None, translator=None):
+    def create_vertex_set(self,):
         """Returns a vertex_set containing all of the vertex objects created
         from the Graph.nodes attribute.
 
@@ -154,36 +154,9 @@ class PropertyDiGraph(nx.DiGraph):
         Finally, this function creates a vertex dictionary with the Vertex.name
         as the key and the vertex object as the value.
         """
-        for node in self.nodes:
-            node_type_columns, node_attr_dict = get_node_types_attrs(
-                df=df,
-                node=node,
-                root_node_type=translator.get_root_node(),
-                root_attr_columns=self.root_attr_columns)
-
-            node_types = {col for col in node_type_columns}
-
-            settings = False
-
-            for node_type in node_type_columns:
-                vert_type, settings_val = translator.get_uml_settings(
-                    node_key=node_type)
-                if settings_val and 'id' in settings_val:
-                    settings_value = get_setting_node_name_from_df(
-                        df=df,
-                        column=settings_val.split('-')[-1],
-                        node=node)
-                    settings = True
-                else:
-                    settings_value = None
-
-            vertex = Vertex(name=node, node_types=node_types,
-                            successors=self.succ[node],
-                            predecessors=self.pred[node],
-                            attributes=node_attr_dict,
-                            settings_node=settings_value)
-            self.vertex_dict.update({node: vertex})
-            self.vertex_set.add(vertex)
+        for node in self.nodes(data=True):
+            self.vertex_dict.update(node[1])
+            self.vertex_set.add(node[1][node[0]])
 
         return self.vertex_set
 
@@ -595,6 +568,10 @@ class DiEdge(DiEedgeReporterMixin):
 
     def __len__(self):  # TODO: Is this a snake in the grass???
         return 1
+
+    def __repr__(self):
+        return 'DiEdge Obj({0}, {1}, {2})'.format(
+            self.source.name, self.target.name, self.edge_attribute)
 
     @property
     def named_edge_triple(self):

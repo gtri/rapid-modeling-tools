@@ -56,7 +56,7 @@ def associate_node_types_settings(
 
 
 def associate_renames(df_renames, tr, node):
-    if any(new_nm in node for new_nm in df_renames.index):
+    if any(new_nm.lower() in node.lower() for new_nm in df_renames.index):
         row_index = list(filter(lambda x: x in node, df_renames.index))
         old_name = df_renames.loc[row_index].get_values()
         new_old_tup = zip(row_index, chain(*old_name))

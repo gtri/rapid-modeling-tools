@@ -76,15 +76,10 @@ class Manager:
         # TODO: Give baseline translator to change files but also to create
         # files if multiple create files in a create command. Issue?
         path_name = [excel_file.name for excel_file in self.excel_path]
-        print(path_name)
+
         for count, excel_file in enumerate(self.excel_path):
             if count != 0:
-                print(excel_file.name, count)
-                # print(self.evaluators[0].translator.get_uml_id(
-                #     name='Miniature Inertial Measurement Unit'
-                # ))
                 translator = self.evaluators[0].translator
-                # print(translator.uml_id['Inertial Measurement Unit'])
             else:
                 translator = self.translator
             self.evaluators.append(
@@ -144,46 +139,50 @@ class Manager:
         for pair in combinations(self.evaluators, 2):
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
             eval_2_e_dict = pair[1].prop_di_graph.edge_dict
+            # print(eval_1_e_dict)
 
+            # Checking if Evaluator has a rename dataframe
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
                 continue  # skip because this is comparing diff to diff
-            elif pair[0].has_rename:  # This shouldn't happen since first
-                # pair entry always be baseline based on how combos built
-                # rename pair[0]
-                # loop eval_1_e_dict and if source is a
-                # new_to_old.keys() then make new key and associate the obj
-                # do the same if is target. return the new dict and a dict to
-                # replace the keys at the end.
-                new_translator = pair[0].translator
-                new_name_col = get_new_column_name(
-                    original_df=orig_eval.df,
-                    rename_df=pair[0].df_renames)
-                new_name_dict = pair[0].df_renames.to_dict(orient='list')
-                n_t_o, rename_changes = to_nto_rename_dict(
-                    new_name=new_name_col,
-                    new_name_dict=new_name_dict)
-                # iterate through keys in new_to_old changing names edge dict
-                eval_1_e_dict, reverse_map, vert_obj_map = new_as_old(
-                    main_dict=eval_1_e_dict,
-                    new_keys=n_t_o)
-            elif pair[1].has_rename:
-                # rename pair[1]
-                new_translator = pair[1].translator
-                new_name_col = get_new_column_name(
-                    original_df=orig_eval.df,
-                    rename_df=pair[1].df_renames)
-                new_name_dict = pair[1].df_renames.to_dict(orient='list')
-                n_t_o, rename_changes = to_nto_rename_dict(
-                    new_name=new_name_col,
-                    new_name_dict=new_name_dict)
-                eval_2_obj_names = {key for key in n_t_o}
-                # iterate through keys in new_to_old changing names edge dict
-                eval_2_e_dict, reverse_map, vert_obj_map = new_as_old(
-                    main_dict=eval_2_e_dict,
-                    new_keys=n_t_o)
+            # elif pair[0].has_rename:  # This shouldn't happen since first
+            #     # pair entry always be baseline based on how combos built
+            #     # rename pair[0]
+            #     # loop eval_1_e_dict and if source is a
+            #     # new_to_old.keys() then make new key and associate the obj
+            #     # do the same if is target. return the new dict and a dict to
+            #     # replace the keys at the end.
+            #     new_translator = pair[0].translator
+            #     # Do not need get_new_column_name, it is the index of renames
+            #     new_name_col = get_new_column_name(
+            #         original_df=orig_eval.df,
+            #         rename_df=pair[0].df_renames)
+            #     new_name_dict = pair[0].df_renames.to_dict(orient='list')
+            #     n_t_o, rename_changes = to_nto_rename_dict(
+            #         new_name=new_name_col,
+            #         new_name_dict=new_name_dict)
+            #     # iterate through keys in new_to_old changing names edge dict
+            #     eval_1_e_dict, reverse_map, vert_obj_map = new_as_old(
+            #         main_dict=eval_1_e_dict,
+            #         new_keys=n_t_o)
+            # elif pair[1].has_rename:
+            #     # rename pair[1]
+            #     new_translator = pair[1].translator
+            #     new_name_col = get_new_column_name(
+            #         original_df=orig_eval.df,
+            #         rename_df=pair[1].df_renames)
+            #     new_name_dict = pair[1].df_renames.to_dict(orient='list')
+            #     n_t_o, rename_changes = to_nto_rename_dict(
+            #         new_name=new_name_col,
+            #         new_name_dict=new_name_dict)
+            #     eval_2_obj_names = {key for key in n_t_o}
+            #     # iterate through keys in new_to_old changing names edge dict
+            #     eval_2_e_dict, reverse_map, vert_obj_map = new_as_old(
+            #         main_dict=eval_2_e_dict,
+            #         new_keys=n_t_o)
 
             edge_set_one = pair[0].edge_set  # get baseline edge set
             edge_set_two = pair[1].edge_set  # get the changed edge set
+            # print(edge_set_one)
 
             # remove common edges
             # have to do this with named edges.
@@ -252,34 +251,34 @@ class Manager:
             # Chagnes the names back to how they were before this function
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
                 continue  # so nothing happened above.
-            elif pair[0].has_rename:
-                # Put stuff back how it was
-                eval_1_e_dict, new_to_old, old_v_obj_map = new_as_old(
-                    main_dict=eval_1_e_dict,
-                    new_keys=reverse_map)
-                vert_dict = pair[1].prop_di_graph.vertex_dict
-                for key in old_v_obj_map.keys():
-                    old_v_obj_map.update({key: vert_dict[key]})
-                vert_obj_map.update(old_v_obj_map)
-                n_t_o, rename_changes = to_nto_rename_dict(
-                    new_name=new_name_col,
-                    new_name_dict=new_name_dict,
-                    str_to_obj_map=vert_obj_map)
-                eval_one_matches[0].update(rename_changes)
-            elif pair[1].has_rename:
-                # undo change to nodes for comparisson purpose
-                eval_2_e_dict, new_to_old, old_v_obj_map = new_as_old(
-                    main_dict=eval_2_e_dict,
-                    new_keys=reverse_map)
-                vert_dict = pair[0].prop_di_graph.vertex_dict
-                for key in old_v_obj_map.keys():
-                    old_v_obj_map.update({key: vert_dict[key]})
-                vert_obj_map.update(old_v_obj_map)
-                n_t_o, rename_changes = to_nto_rename_dict(
-                    new_name=new_name_col,
-                    new_name_dict=new_name_dict,
-                    str_to_obj_map=vert_obj_map)
-                eval_one_matches[0].update(rename_changes)
+            # elif pair[0].has_rename:
+            #     # Put stuff back how it was
+            #     eval_1_e_dict, new_to_old, old_v_obj_map = new_as_old(
+            #         main_dict=eval_1_e_dict,
+            #         new_keys=reverse_map)
+            #     vert_dict = pair[1].prop_di_graph.vertex_dict
+            #     for key in old_v_obj_map.keys():
+            #         old_v_obj_map.update({key: vert_dict[key]})
+            #     vert_obj_map.update(old_v_obj_map)
+            #     n_t_o, rename_changes = to_nto_rename_dict(
+            #         new_name=new_name_col,
+            #         new_name_dict=new_name_dict,
+            #         str_to_obj_map=vert_obj_map)
+            #     eval_one_matches[0].update(rename_changes)
+            # elif pair[1].has_rename:
+            #     # undo change to nodes for comparisson purpose
+            #     eval_2_e_dict, new_to_old, old_v_obj_map = new_as_old(
+            #         main_dict=eval_2_e_dict,
+            #         new_keys=reverse_map)
+            #     vert_dict = pair[0].prop_di_graph.vertex_dict
+            #     for key in old_v_obj_map.keys():
+            #         old_v_obj_map.update({key: vert_dict[key]})
+            #     vert_obj_map.update(old_v_obj_map)
+            #     n_t_o, rename_changes = to_nto_rename_dict(
+            #         new_name=new_name_col,
+            #         new_name_dict=new_name_dict,
+            #         str_to_obj_map=vert_obj_map)
+            #     eval_one_matches[0].update(rename_changes)
 
             new_name_objs = ''
             for key in eval_one_matches[0]:
@@ -347,12 +346,10 @@ class Manager:
             df_output.to_excel(
                 (outdir / outfile), sheet_name=key, index=False)
 
-    def graph_difference_to_json(
-        self, new_col='', new_name_dict=None,
-        change_dict=None, translator=None,
-        evaluators='',
-        out_directory=''
-    ):
+    def graph_difference_to_json(self, new_col='', new_name_dict=None,
+                                 change_dict=None, translator=None,
+                                 evaluators='',
+                                 out_directory='', ):
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
         # Naked Key: Value pairs mean delete edge key and add value key.
@@ -364,7 +361,6 @@ class Manager:
         edge_add = []
         node_renames = []
         create_new_name_node = []
-        print('new names column: {0}'.format(change_dict[new_col]))
         rename_nodes = {n.name for n in change_dict[new_col]}
 
         for key, value in change_dict.items():
@@ -568,12 +564,6 @@ class Evaluator:
         # self.df.dropna(how='all', inplace=True)
         self.prop_di_graph = None
         self.root_node_attr_columns = set()
-
-    # def validate_cols_keys_map(self):
-    #     df_cols = set(self.df.columns)
-    #     data_keys = set(translator.get_cols_to_nav_map())
-    #     try:
-    #         df_cols == data_keys
 
     @property
     def has_rename(self):
@@ -917,6 +907,8 @@ class Evaluator:
             # overwrites the original node in the graph to add an attribute
             # {'<name>': <corresponding vertex object>}
             pdg.add_node(vert_tup[0], **vert_tup[1])
+
+        return pdg
 
     @property
     def named_vertex_set(self):

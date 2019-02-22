@@ -144,46 +144,10 @@ class TestManager(unittest.TestCase):
                 (DATA_DIRECTORY / 'Composition Example 2 Model Baseline.xlsx'),
                 (DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx')
             ],
-            json_path=PATTERNS / 'Composition.json'
+            json_path=(PATTERNS / 'Composition.json'),
         )
         eval_base = manager.evaluators[0]
-        # print(
-        # eval_base.translator.uml_id['Miniature Inertial Measurement Unit'])
-        # self.assertTrue(False)
         eval_change = manager.evaluators[1]
-        # self.assertEqual(eval_base.excel_file.name,
-        #                  'Composition Example 2 Model Baseline.xlsx')
-        # self.assertEqual(eval_change.excel_file.name,
-        #                  'Composition Example 2 Model Changed.xlsx')
-        # print('baseline ids len = {0}'.format(
-        #     len(eval_base.translator.uml_id.keys())))
-        # print('change ids len = {0}'.format(
-        #     len(eval_change.translator.uml_id.keys())
-        # ))
-        # base_key_set = set(eval_base.translator.uml_id.keys())
-        # change_key_set = set(eval_change.translator.uml_id.keys())
-        # key_difference = change_key_set.difference(base_key_set)
-        # print(change_key_set.difference(base_key_set))
-        # eval_change.sheets_to_dataframe(excel_file=eval_change.excel_file)
-        # print(change_key_set.difference(base_key_set))
-        # new_name_dict = eval_change.df_renames.to_dict(orient='list')
-        # # print(new_name_dict)
-        # new_to_old = {}
-        # for count, val in enumerate(new_name_dict['new name']):
-        #     new_to_old[val] = new_name_dict['old name'][count]
-        # # print(new_to_old)
-        # c_tran = eval_change.translator
-        # for key, value in new_to_old.items():
-        #     old_id = c_tran.get_uml_id(name=value)
-        #     new_id = c_tran.get_uml_id(name=key)
-        #     print('prior to updating dict')
-        #     print('new: {0}, old: {1}'.format(new_id, old_id))
-        #     c_tran.uml_id.update({
-        #         key: old_id
-        #     })
-        #     new_id_2 = c_tran.get_uml_id(name=key)
-        #     print('post updating dict')
-        #     print('new: {0}, old: {1}'.format(new_id, old_id))
 
         eval_base.rename_df_columns()
         eval_base.add_missing_columns()
@@ -206,20 +170,16 @@ class TestManager(unittest.TestCase):
         change_vert_set = change_prop_graph.vertex_set
         change_vert_dict = change_prop_graph.vertex_dict
         # I want to see if the nodes in the graph have the right ids
-        print(set(change_prop_graph).difference(set(base_prop_graph)))
         diff_nodes = set(change_prop_graph).difference(set(base_prop_graph))
         diff_dict = {key: eval_change.translator.uml_id[key]
                      for key in diff_nodes}
-        print(diff_dict)
-        print(change_vert_dict['Miniature Inertial Measurement Unit'])
-        # manager.get_pattern_graph_diff(out_directory=DATA_DIRECTORY)
-        # print(eval_change.translator.uml_id['new_2'])
-        for key, value in eval_change.translator.uml_id.items():
-            if key == 'count':
-                continue
-            if 'new' in value:
-                print(key, value)
-        self.assertTrue(False)
+        self.assertTrue(
+            set(eval_base.translator.uml_id.keys()).issubset(
+                set(eval_change.translator.uml_id.keys())))
+        for key in eval_base.translator.uml_id.keys():
+            if key is not 'count':
+                self.assertEqual(eval_base.translator.uml_id[key],
+                                 eval_change.translator.uml_id[key])
 
     def test_get_json_data(self):
         manager = Manager(
@@ -423,48 +383,57 @@ class TestManager(unittest.TestCase):
                 (DATA_DIRECTORY / 'Composition_Diff_JSON_Baseline.xlsx'),
                 (DATA_DIRECTORY / 'Composition_Diff_JSON_Changed.xlsx'),
             ],
-            json_path=PATTERNS / 'Composition.json'
+            json_path=(PATTERNS / 'Composition.json'),
         )
         tr = manager.translator
-        print(manager.evaluators)
         eval = manager.evaluators[0]
         eval1 = manager.evaluators[-1]
         eval.rename_df_columns()
         eval.add_missing_columns()
         eval.to_property_di_graph()
         pdg = eval.prop_di_graph
-        pdg.create_vertex_set(
-            df=eval.df, translator=eval.translator
-        )
-        pdg.create_edge_set()
-        vset = pdg.vertex_set
-        e_set = pdg.edge_set
+        vset = pdg.create_vertex_set()
 
         eval1.rename_df_columns()
         eval1.add_missing_columns()
         eval1.to_property_di_graph()
         pdg1 = eval1.prop_di_graph
-        pdg1.create_vertex_set(
-            df=eval1.df, translator=eval1.translator
-        )
-        pdg1.create_edge_set()
-        vset1 = pdg.vertex_set
-        e_set1 = pdg1.edge_set
+        vset1 = pdg1.create_vertex_set()
+        edges = []
+        for node, nbrdict in pdg1.adjacency():
+            print('\n')
+            print(node)
+            print(nbrdict)
+            count = 0
+            while len(nbrdict) > 0 and count != len(nbrdict):
+                edges.append(node)
+                count += 1
 
-        print('the edge set of baseline')
-        e = {edge.named_edge_triple: edge
-             for edge in e_set}
-        print(sorted(e.keys(), key=lambda elem: elem[0]))
-        print('the edge set of changed')
-        ec = {edge.named_edge_triple: edge
-              for edge in e_set1}
-        print(sorted(ec.keys(), key=lambda elem: elem[0]))
+        print(edges)
+        print('Main Engine' in edges)
+
+        eset = pdg.create_edge_set()
+        eset1 = pdg1.create_edge_set()
+
+        # print(eval.translator.uml_id)
+        # print(len(pdg.vertex_set), len(pdg1.vertex_set))
+        # for v_pair in zip(pdg.vertex_set, pdg1.vertex_set):
+        #     print('\n')
+        #     print('The information about each vertex')
+        #     print('baseline: name: {0}, id: {1}'.format(
+        #           v_pair[0].name, v_pair[0].id))
+        #     print('change: name: {0}, id: {1}'.format(
+        #           v_pair[1].name, v_pair[1].id))
+        #     if v_pair[1].has_rename:
+        #         print('Additionally this vertex was a rename')
+        #         print('og name: {0}, og id: {1}'.format(
+        #             v_pair[1].original_name, v_pair[1].original_id))
 
         change_dict = manager.get_pattern_graph_diff(
             out_directory=DATA_DIRECTORY)
         print(change_dict)
-        manager.changes_to_excel(out_directory=DATA_DIRECTORY)
-        print('print statement here')
+        # manager.changes_to_excel(out_directory=DATA_DIRECTORY)
+        # print('print statement here')
         self.assertTrue(False)
 
     def test_graph_difference_to_json(self):
@@ -619,10 +588,9 @@ class TestEvaluator(unittest.TestCase):
             excel_file=ex_f2,
             translator=tr2,
         )
-        print(eval.df_renames)
+
         self.assertFalse(eval.df_renames.empty)
         self.assertFalse(eval.df_ids.empty)
-        self.assertTrue(False)
 
     def test_has_rename(self):
         data = (PATTERNS / 'Composition.json').read_text(

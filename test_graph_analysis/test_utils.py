@@ -224,10 +224,10 @@ class TestUtils(unittest.TestCase):
         node_type_cols, node_attr_dict = get_node_types_attrs(
             df=df, node='Car',
             root_node_type='Atomic Thing',
-            root_attr_columns={'Notes'})
+            root_attr_columns={'Notes', 'Two such Cols'})
 
-        attr_list = [{'Notes': 'little car to big Car'}, {'Notes': 2},
-                     {'Two such Cols': 1}]
+        attr_list = [{'Notes': 'little car to big Car',
+                      'Two such Cols': 1}, {'Notes': 2, 'Two such Cols': 3}]
         # Try with multiple notes cols and a node with two types.
         self.assertEqual({'Atomic Thing'}, node_type_cols)
         self.assertListEqual(attr_list,
