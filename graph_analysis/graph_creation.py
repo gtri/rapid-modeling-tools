@@ -11,7 +11,7 @@ import networkx as nx
 import pandas as pd
 
 from . import OUTPUT_DIRECTORY, PATTERNS
-from .graph_objects import PropertyDiGraph, Vertex
+from .graph_objects import PropertyDiGraph, Vertex, DiEdge
 from .utils import (associate_node_id, associate_node_types_settings,
                     associate_predecessors, associate_renames,
                     associate_successors, build_dict,
@@ -908,6 +908,18 @@ class Evaluator:
             # {'<name>': <corresponding vertex object>}
             pdg.add_node(vert_tup[0], **vert_tup[1])
 
+        # build edges container
+        edges = []
+        for edge, data in pdg.edges.items():
+            diedge = DiEdge(source=pdg.nodes[edge[0]][edge[0]],
+                            target=pdg.nodes[edge[1]][edge[1]],
+                            edge_attribute=data['edge_attribute'])
+            edges.append((edge, {'diedge': diedge}))
+        for edge in edges:
+            # unpack each edge and the edge attribute dict for the add_edge fn
+            pdg.add_edge(*edge[0], **edge[1])
+
+        # pdg has associated vertex obj and associated edge obj in edj dict.
         return pdg
 
     @property

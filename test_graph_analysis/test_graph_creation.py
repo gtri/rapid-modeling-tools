@@ -399,21 +399,40 @@ class TestManager(unittest.TestCase):
         eval1.to_property_di_graph()
         pdg1 = eval1.prop_di_graph
         vset1 = pdg1.create_vertex_set()
-        edges = []
-        for node, nbrdict in pdg1.adjacency():
-            print('\n')
-            print(node)
-            print(nbrdict)
-            count = 0
-            while len(nbrdict) > 0 and count != len(nbrdict):
-                edges.append(node)
-                count += 1
+        # edges = []
+        # etups = []
+        # for node, nbrdict in pdg1.adjacency():
+        #     # print('\n')
+        #     # print('attempt to access node dict through graph')
+        #     # ndict = pdg1.nodes[node]
+        #     # print(ndict[node])
+        #     # print(nbrdict)
+        #     count = 0
+        #     while count != len(nbrdict):
+        #         edges.append(node)
+        #         # can I put everything together to make an edge
+        #         etup = [(node, key, v['edge_attribute'])
+        #                 for key, v in nbrdict.items()]
+        #         etups.extend(etup)
+        #         count += 1
+        #
+        # print(edges)
+        # print('Main Engine' in edges)
+        # print('the edge tuples created while looping neghibors')
+        # print(etups)
+        # print(any('Main Engine' in etup[1] for etup in etups))
+        #
+        # print('\n')
+        # # print(pdg1.edges)
+        # for edge in pdg1.edges:
+        #     print('edge followed by its data')
+        #     print(edge)
+        #     print(pdg1.nodes[edge[0]][edge[0]],
+        #           pdg1.nodes[edge[1]][edge[1]])
+        #     print(pdg1.edges[edge])
 
-        print(edges)
-        print('Main Engine' in edges)
-
-        eset = pdg.create_edge_set()
-        eset1 = pdg1.create_edge_set()
+        # eset = pdg.create_edge_set()
+        # eset1 = pdg1.create_edge_set()
 
         # print(eval.translator.uml_id)
         # print(len(pdg.vertex_set), len(pdg1.vertex_set))
