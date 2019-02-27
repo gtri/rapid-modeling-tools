@@ -98,33 +98,38 @@ class PropertyDiGraph(nx.DiGraph):
 
     def __init__(self, incoming_graph_data=None,
                  root_attr_columns=None, **attr):
-        self.vertex_dict = {}
-        self.edge_dict = {}
-        self.vertex_set = set()
-        self.edge_set = set()
         self.root_attr_columns = root_attr_columns
         super().__init__(incoming_graph_data=None)
-        # TODO: these two attribtues caused my Evaluator tests to fail
-        # TODO: figure out a way to set these attrs without creating in init
-        # self.create_vertex_set()
-        # self.create_edge_set()
+
+    @property
+    def vertex_set(self):
+        return set(self.nodes[node][node] for node in self.nodes)
 
     @property
     def named_vertex_set(self):
         """Returns a set of vertex name attributes from the set of vertex
         objects created during the create_vertex_set method.
         """
-        vert_set_named = set()
-        for vert in self.vertex_set:
-            vert_set_named.add(vert.name)
-        return vert_set_named
+        # TODO: Consider writing an ID_vertex_set for the ids because they
+        # are more useful than the names.
+        # vertex_set = self.vertex_set
+        return set(vertex.name for vertex in self.vertex_set)
+
+    @property
+    def edge_set(self):
+        return set(self.edges[edge]['diedge'] for edge in self.edges)
+
+    @property
+    def edge_dict(self):
+        return {(k[0], k[1], v['edge_attribute']): v['diedge']
+                for k, v in self.edges.items()}
 
     @property
     def named_edge_set(self):
         """Returns a set of named edge triples of the form (source name,
         target name, edge attribute) from the edge objects in the edge_set.
         """
-        return {edge.named_edge_triple for edge in self.edge_set}
+        return set(edge.named_edge_triple for edge in self.edge_set)
 
     def create_vertex_set(self,):
         """Returns a vertex_set containing all of the vertex objects created
@@ -154,6 +159,7 @@ class PropertyDiGraph(nx.DiGraph):
         Finally, this function creates a vertex dictionary with the Vertex.name
         as the key and the vertex object as the value.
         """
+        # TODO: Remove this function.
         for node in self.nodes(data=True):
             self.vertex_dict.update(node[1])
             self.vertex_set.add(node[1][node[0]])
@@ -163,6 +169,7 @@ class PropertyDiGraph(nx.DiGraph):
     def create_edge_set(self):
         """Creates an edge set comprised of edge objects.
         """
+        # TODO: Remove this function.
         edge_pair_attr_dict = nx.get_edge_attributes(self, 'edge_attribute')
         for edge_pair in edge_pair_attr_dict:
             source_vert = self.vertex_dict[edge_pair[0]]  # the object
@@ -379,6 +386,10 @@ class Vertex(VertexReporterMixin):
         self.settings_node = settings_node
         self.original_name = original_name
         self.original_id = original_id
+
+    def __repr__(self):
+        return 'Vertex Obj({0}, {1})'.format(
+            self.name, self.id,)
 
     @property
     def has_rename(self):

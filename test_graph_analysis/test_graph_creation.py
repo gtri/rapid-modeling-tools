@@ -392,62 +392,12 @@ class TestManager(unittest.TestCase):
         eval.add_missing_columns()
         eval.to_property_di_graph()
         pdg = eval.prop_di_graph
-        vset = pdg.create_vertex_set()
 
         eval1.rename_df_columns()
         eval1.add_missing_columns()
         eval1.to_property_di_graph()
         pdg1 = eval1.prop_di_graph
-        vset1 = pdg1.create_vertex_set()
-        # edges = []
-        # etups = []
-        # for node, nbrdict in pdg1.adjacency():
-        #     # print('\n')
-        #     # print('attempt to access node dict through graph')
-        #     # ndict = pdg1.nodes[node]
-        #     # print(ndict[node])
-        #     # print(nbrdict)
-        #     count = 0
-        #     while count != len(nbrdict):
-        #         edges.append(node)
-        #         # can I put everything together to make an edge
-        #         etup = [(node, key, v['edge_attribute'])
-        #                 for key, v in nbrdict.items()]
-        #         etups.extend(etup)
-        #         count += 1
-        #
-        # print(edges)
-        # print('Main Engine' in edges)
-        # print('the edge tuples created while looping neghibors')
-        # print(etups)
-        # print(any('Main Engine' in etup[1] for etup in etups))
-        #
-        # print('\n')
-        # # print(pdg1.edges)
-        # for edge in pdg1.edges:
-        #     print('edge followed by its data')
-        #     print(edge)
-        #     print(pdg1.nodes[edge[0]][edge[0]],
-        #           pdg1.nodes[edge[1]][edge[1]])
-        #     print(pdg1.edges[edge])
-
-        # eset = pdg.create_edge_set()
-        # eset1 = pdg1.create_edge_set()
-
-        # print(eval.translator.uml_id)
-        # print(len(pdg.vertex_set), len(pdg1.vertex_set))
-        # for v_pair in zip(pdg.vertex_set, pdg1.vertex_set):
-        #     print('\n')
-        #     print('The information about each vertex')
-        #     print('baseline: name: {0}, id: {1}'.format(
-        #           v_pair[0].name, v_pair[0].id))
-        #     print('change: name: {0}, id: {1}'.format(
-        #           v_pair[1].name, v_pair[1].id))
-        #     if v_pair[1].has_rename:
-        #         print('Additionally this vertex was a rename')
-        #         print('og name: {0}, og id: {1}'.format(
-        #             v_pair[1].original_name, v_pair[1].original_id))
-
+        print(pdg.edge_dict)
         change_dict = manager.get_pattern_graph_diff(
             out_directory=DATA_DIRECTORY)
         print(change_dict)
@@ -725,6 +675,15 @@ class TestEvaluator(unittest.TestCase):
 
         for node in list(pdg):
             self.assertEqual(node, pdg.nodes[node][node].name)
+
+        for edge in list(pdg.edges):
+            source_edge = edge[0]
+            target_edge = edge[1]
+            pdg_edge = pdg.edges[edge]['diedge']
+            source_pdg = pdg_edge.named_edge_triple[0]
+            target_pdg = pdg_edge.named_edge_triple[1]
+            self.assertEqual(source_edge, source_pdg)
+            self.assertEqual(target_edge, target_pdg)
 
     def tearDown(self):
         pass

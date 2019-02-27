@@ -11,7 +11,7 @@ import networkx as nx
 import pandas as pd
 
 from . import OUTPUT_DIRECTORY, PATTERNS
-from .graph_objects import PropertyDiGraph, Vertex, DiEdge
+from .graph_objects import DiEdge, PropertyDiGraph, Vertex
 from .utils import (associate_node_id, associate_node_types_settings,
                     associate_predecessors, associate_renames,
                     associate_successors, build_dict,
@@ -139,7 +139,6 @@ class Manager:
         for pair in combinations(self.evaluators, 2):
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
             eval_2_e_dict = pair[1].prop_di_graph.edge_dict
-            # print(eval_1_e_dict)
 
             # Checking if Evaluator has a rename dataframe
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
@@ -247,6 +246,19 @@ class Manager:
             # Run the matching algorithm
             eval_one_matches = match_changes(
                 change_dict=eval_one_unmatch_pref)
+            print('Evaluator 1 matches')
+            print(eval_one_matches)
+            print('Here is all of the unstable matches')
+            print('Below fix the way the dict is cleaned up')
+            print('Everything seems to be working properly the')
+            print('data sanitization needs to be changed to agree')
+            for k, v in eval_one_matches[0].items():
+                print(len(v))
+                if len(v) > 1:
+                    print(k, v)
+            for k, v in eval_one_matches[1].items():
+                print(k, v)
+            print('printed all of eval_one_matches[1]')
 
             # Chagnes the names back to how they were before this function
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
@@ -914,6 +926,9 @@ class Evaluator:
             diedge = DiEdge(source=pdg.nodes[edge[0]][edge[0]],
                             target=pdg.nodes[edge[1]][edge[1]],
                             edge_attribute=data['edge_attribute'])
+            # The inner key must be a string thus 'diedge' instead of
+            # pdg.edges[edge][edge] which would mimic behavior for nodes
+            # pdg.nodes[node][node]
             edges.append((edge, {'diedge': diedge}))
         for edge in edges:
             # unpack each edge and the edge attribute dict for the add_edge fn
