@@ -1,4 +1,5 @@
 import json
+import pprint as pp
 import tempfile
 import unittest
 from copy import copy
@@ -9,7 +10,7 @@ from shutil import copy2
 import networkx as nx
 import pandas as pd
 
-from graph_analysis.graph_creation import MDTranslator
+from graph_analysis.graph_creation import Manager, MDTranslator
 from graph_analysis.graph_objects import DiEdge, Vertex
 from graph_analysis.utils import (associate_node_id,
                                   associate_node_types_settings,
@@ -234,86 +235,175 @@ class TestUtils(unittest.TestCase):
                              node_attr_dict)
 
     def test_match_changes(self):
-        tr = MDTranslator()
+        # tr = MDTranslator()
+        #
+        # base_inputs = [('s1', 't1', 'type'), ('s2', 't2', 'type'),
+        #                ('s3', 't3', 'owner'), ('s4', 't4', 'owner'),
+        #                ('s5', 't5', 'memberEnd'),
+        #                ('s6', 't6', 'memberEnd'),
+        #                ('s7', 't7', 'type'), ('s8', 't8', 'type'),
+        #                ('s9', 't9', 'owner'), ('s10', 't10', 'owner'),
+        #                ('s11', 't11', 'memberEnd'),
+        #                ('s12', 't12', 'memberEnd'),
+        #                ('song', 'tiger', 'blue'), ]
+        #
+        # ancestor = [('as1', 't1', 'type'), ('s2', 'at2', 'type'),
+        #             ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
+        #             ('as5', 't5', 'memberEnd'),
+        #             ('s6', 'at6', 'memberEnd'),
+        #             ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
+        #             ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
+        #             ('as11', 't11', 'memberEnd'),
+        #             ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange'),
+        #             ('s1', 'at1', 'type')]
+        #
+        # base_edges = []
+        # ancestor_edges = []
+        #
+        # for edge_tuple in base_inputs:
+        #     source = Vertex(
+        #         name=edge_tuple[0], id=tr.get_uml_id(name=edge_tuple[0]))
+        #     target = Vertex(
+        #         name=edge_tuple[1], id=tr.get_uml_id(name=edge_tuple[1]))
+        #     edge = DiEdge(source=source, target=target,
+        #                   edge_attribute=edge_tuple[2])
+        #     base_edges.append(edge)
+        #
+        # for edge_tuple in ancestor:
+        #     source = Vertex(
+        #         name=edge_tuple[0], id=tr.get_uml_id(name=edge_tuple[0]))
+        #     target = Vertex(
+        #         name=edge_tuple[1], id=tr.get_uml_id(name=edge_tuple[1]))
+        #     edge = DiEdge(source=source, target=target,
+        #                   edge_attribute=edge_tuple[2])
+        #     ancestor_edges.append(edge)
+        #
+        # base_map = dict((ea.edge_attribute, list()) for ea in base_edges)
+        #
+        # ance_map = dict((ea.edge_attribute, list())
+        #                 for ea in ancestor_edges)
+        #
+        # for edge in base_edges:
+        #     base_map[edge.edge_attribute].append(edge)
+        # for edge in ancestor_edges:
+        #     ance_map[edge.edge_attribute].append(edge)
+        #
+        # base_preference = {}
+        # ancestor_preference = {}
+        #
+        # ance_keys_not_in_base = set(
+        #     ance_map.keys()).difference(set(base_map.keys()))
+        #
+        # base_preference['Added'] = []
+        # base_preference['Deleted'] = []
+        # for edge_type in ance_keys_not_in_base:
+        #     base_preference['Added'].extend(ance_map[edge_type])
+        #
+        # for edge in base_edges:
+        #     if edge.edge_attribute not in ance_map.keys():
+        #         base_preference['Deleted'].append(edge)
+        #     else:
+        #         base_preference[edge] = copy(
+        #             ance_map[edge.edge_attribute])
+        #
+        # for edge in ancestor_edges:
+        #     if edge.edge_attribute not in base_map.keys():
+        #         ancestor_preference[edge] = []
+        #     else:
+        #         ancestor_preference[edge] = copy(
+        #             base_map[edge.edge_attribute])
 
-        base_inputs = [('s1', 't1', 'type'), ('s2', 't2', 'type'),
-                       ('s3', 't3', 'owner'), ('s4', 't4', 'owner'),
-                       ('s5', 't5', 'memberEnd'),
-                       ('s6', 't6', 'memberEnd'),
-                       ('s7', 't7', 'type'), ('s8', 't8', 'type'),
-                       ('s9', 't9', 'owner'), ('s10', 't10', 'owner'),
-                       ('s11', 't11', 'memberEnd'),
-                       ('s12', 't12', 'memberEnd'),
-                       ('song', 'tiger', 'blue'), ]
+        manager = Manager(
+            excel_path=[
+                (DATA_DIRECTORY / 'Composition_Diff_JSON_Baseline.xlsx'),
+                (DATA_DIRECTORY / 'Composition_Diff_JSON_Changed.xlsx'),
+            ],
+            json_path=(PATTERNS / 'Composition.json'),
+        )
+        tr = manager.translator
+        eval = manager.evaluators[0]
+        eval1 = manager.evaluators[-1]
+        eval.rename_df_columns()
+        eval.add_missing_columns()
+        eval.to_property_di_graph()
+        pdg = eval.prop_di_graph
 
-        ancestor = [('as1', 't1', 'type'), ('s2', 'at2', 'type'),
-                    ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
-                    ('as5', 't5', 'memberEnd'),
-                    ('s6', 'at6', 'memberEnd'),
-                    ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
-                    ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
-                    ('as11', 't11', 'memberEnd'),
-                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange'),
-                    ('s1', 'at1', 'type')]
+        eval1.rename_df_columns()
+        eval1.add_missing_columns()
+        eval1.to_property_di_graph()
+        pdg1 = eval1.prop_di_graph
 
-        base_edges = []
-        ancestor_edges = []
+        eval_1_e_dict = pdg.edge_dict
+        eval_2_e_dict = pdg1.edge_dict
 
-        for edge_tuple in base_inputs:
-            source = Vertex(
-                name=edge_tuple[0], id=tr.get_uml_id(name=edge_tuple[0]))
-            target = Vertex(
-                name=edge_tuple[1], id=tr.get_uml_id(name=edge_tuple[1]))
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            base_edges.append(edge)
+        edge_set_one = eval.edge_set  # get baseline edge set
+        edge_set_two = eval1.edge_set  # get the changed edge set
+        # print(edge_set_one)
 
-        for edge_tuple in ancestor:
-            source = Vertex(
-                name=edge_tuple[0], id=tr.get_uml_id(name=edge_tuple[0]))
-            target = Vertex(
-                name=edge_tuple[1], id=tr.get_uml_id(name=edge_tuple[1]))
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            ancestor_edges.append(edge)
+        # remove common edges
+        # have to do this with named edges.
+        edge_set_one_set = {edge.named_edge_triple
+                            for edge in edge_set_one}
+        edge_set_two_set = {edge.named_edge_triple
+                            for edge in edge_set_two}
 
-        base_map = dict((ea.edge_attribute, list()) for ea in base_edges)
+        # Remove edges common to each but preserve set integrity for
+        # each evaluator
+        eval_one_unmatched_named = list(edge_set_one_set.difference(
+            edge_set_two_set))
+        eval_two_unmatched_named = list(edge_set_two_set.difference(
+            edge_set_one_set
+        ))
 
-        ance_map = dict((ea.edge_attribute, list())
-                        for ea in ancestor_edges)
+        # Organize edges in dictionary based on type (this goes on for
+        # multiple lines)
+        eval_one_unmatched = [eval_1_e_dict[edge]
+                              for edge in eval_one_unmatched_named]
+        eval_two_unmatched = [eval_2_e_dict[edge]
+                              for edge in eval_two_unmatched_named]
 
-        for edge in base_edges:
-            base_map[edge.edge_attribute].append(edge)
-        for edge in ancestor_edges:
-            ance_map[edge.edge_attribute].append(edge)
+        eval_one_unmatch_map = dict((edge.edge_attribute, list())
+                                    for edge in eval_one_unmatched)
+        eval_two_unmatch_map = dict((edge.edge_attribute, list())
+                                    for edge in eval_two_unmatched)
 
-        base_preference = {}
-        ancestor_preference = {}
+        for edge in eval_one_unmatched:
+            eval_one_unmatch_map[edge.edge_attribute].append(
+                edge)
+        for edge in eval_two_unmatched:
+            eval_two_unmatch_map[edge.edge_attribute].append(
+                edge)
+
+        eval_one_unmatch_pref = {}
+        eval_two_unmatch_pref = {}
 
         ance_keys_not_in_base = set(
-            ance_map.keys()).difference(set(base_map.keys()))
+            eval_two_unmatch_map.keys()).difference(
+                set(eval_one_unmatch_map))
 
-        base_preference['Added'] = []
-        base_preference['Deleted'] = []
+        eval_one_unmatch_pref['Added'] = []
+        eval_one_unmatch_pref['Deleted'] = []
         for edge_type in ance_keys_not_in_base:
-            base_preference['Added'].extend(ance_map[edge_type])
+            eval_one_unmatch_pref['Added'].extend(
+                eval_two_unmatch_map[edge_type])
 
-        for edge in base_edges:
-            if edge.edge_attribute not in ance_map.keys():
-                base_preference['Deleted'].append(edge)
+        for edge in eval_one_unmatched:
+            if edge.edge_attribute not in eval_two_unmatch_map.keys():
+                eval_one_unmatch_pref['Deleted'].append(edge)
             else:
-                base_preference[edge] = copy(
-                    ance_map[edge.edge_attribute])
-
-        for edge in ancestor_edges:
-            if edge.edge_attribute not in base_map.keys():
-                ancestor_preference[edge] = []
+                eval_one_unmatch_pref[edge] = copy(eval_two_unmatch_map[
+                    edge.edge_attribute])
+        for edge in eval_two_unmatched:
+            if edge.edge_attribute not in eval_one_unmatch_map.keys():
+                eval_two_unmatch_pref[edge] = []
             else:
-                ancestor_preference[edge] = copy(
-                    base_map[edge.edge_attribute])
+                eval_two_unmatch_pref[edge] = copy(eval_one_unmatch_map[
+                    edge.edge_attribute])
 
-        match_dict = match_changes(change_dict=base_preference)
+        pp.pprint(eval_one_unmatch_pref, indent=4)
 
+        match_dict = match_changes(change_dict=eval_one_unmatch_pref)
+        self.assertTrue(False)
         expected_matches = {('s2', 't2', 'type'): ('s2', 'at2', 'type'),
                             ('s3', 't3', 'owner'): ('as3', 't3', 'owner'),
                             ('s4', 't4', 'owner'): ('s4', 'at4', 'owner'),

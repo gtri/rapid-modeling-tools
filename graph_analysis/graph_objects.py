@@ -378,14 +378,20 @@ class Vertex(VertexReporterMixin):
                  settings_node=None, id=None, original_name=False,
                  original_id=None, **kwargs,):
         self.name = name
-        self.id = id
+        if original_id:
+            self.id = original_id
+            self.original_id = original_id
+        else:
+            self.id = id
+            self.original_id = original_id
+        # self.id = id
         self.node_types = node_types
         self.successors = successors
         self.predecessors = predecessors
         self.attributes = attributes
         self.settings_node = settings_node
         self.original_name = original_name
-        self.original_id = original_id
+        # self.original_id = original_id
 
     def __repr__(self):
         return 'Vertex Obj({0}, {1})'.format(
@@ -583,6 +589,10 @@ class DiEdge(DiEedgeReporterMixin):
     def __repr__(self):
         return 'DiEdge Obj({0}, {1}, {2})'.format(
             self.source.name, self.target.name, self.edge_attribute)
+
+    @property
+    def has_rename(self):
+        return self.source.has_rename or self.target.has_rename
 
     @property
     def named_edge_triple(self):

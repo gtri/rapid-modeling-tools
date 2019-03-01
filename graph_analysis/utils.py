@@ -57,12 +57,22 @@ def associate_node_types_settings(
 
 def associate_renames(df_renames, tr, node):
     if any(new_nm.lower() in node.lower() for new_nm in df_renames.index):
-        row_index = list(filter(lambda x: x in node, df_renames.index))
+        row_index = list(filter(lambda x: x.lower() in node, df_renames.index))
         old_name = df_renames.loc[row_index].get_values()
-        new_old_tup = zip(row_index, chain(*old_name))
+        row_index = [x.lower() for x in row_index]
+        old_name = [x.lower() for x in chain(*old_name)]
+        new_old_tup = zip(row_index, old_name)
         original_name = reduce(
             lambda new, kv: new.replace(*kv), new_old_tup, node)
+        if node == original_name:
+            row_index = list(filter(lambda x: x in node, df_renames.index))
+            old_name = df_renames.loc[row_index].get_values()
+            new_old_tup = zip(row_index, chain(*old_name))
+            original_name = reduce(
+                lambda new, kv: new.replace(*kv), new_old_tup, node)
+
         original_id = tr.get_uml_id(name=original_name)
+        tr.uml_id.update({node: original_id})
         return {'original_name': original_name,
                 'original_id': original_id}
     else:
@@ -326,16 +336,36 @@ def match_changes(change_dict=None):
         if suitor in add_del:
             str_dict[suitor] = change_dict[suitor]
             if not change_dict[suitor] and suitor not in add_del:
+                # TODO: I think this will cause issues in the json output.
                 deleted_set = set(
                     str_dict['Deleted']).add(set(suitor.named_edge_triple))
                 update_dict = {'Deleted': list(deleted_set)}
                 str_dict.update(update_dict)
             continue
         scores = match(*change_dict[suitor], current=suitor)
-        matched[suitor] = [(item, scores[j])
-                           for j, item in enumerate(change_dict[suitor])]
+        matched[suitor] = list(zip(change_dict[suitor], scores))
         matched[suitor] = sorted(matched[suitor],
                                  reverse=True, key=lambda elem: elem[1])
+        print('\n')
+        print('Here is matched suitor we will see results of scoring')
+        print(suitor)
+        print(matched[suitor])
+        print('Suitor {0} id and original data expect id, None, None'.format(
+            suitor.source.name))
+        print(suitor.source.id, suitor.source.original_id,
+              suitor.source.original_name)
+        print('Suitor {0} id and original data expect id, None, None'.format(
+            suitor.target.name
+        ))
+        print(suitor.target.id, suitor.target.original_id,
+              suitor.target.original_name)
+        print('first match id and original data expect id suitor suitor')
+        msour = matched[suitor][0][0].source
+        mtarg = matched[suitor][0][0].target
+        print('Source {0}, {1}, {2}'.format(
+            msour.id, msour.original_id, msour.original_name))
+        print('Target {0}, {1}, {2}'.format(
+            mtarg.id, mtarg.original_id, mtarg.original_name))
         if len(matched[suitor]) == 1:
             matched[suitor] = [matched[suitor][0][0]]
         elif len(matched[suitor]) > 1:
@@ -367,12 +397,15 @@ def match(*args, current=None):
     scores = []
     for clone in args:
         if current.edge_attribute == clone.edge_attribute:
-            if ((current.source.id == clone.source.original_id)
-                    or (current.target.id == clone.target.original_id)):
+            source_condit = (clone.source.original_id == current.source.id
+                             or clone.source.id == current.source.id)
+            target_condit = (clone.target.original_id == current.target.id
+                             or clone.target.id == current.target.id)
+            if source_condit and target_condit:
                 scores.append(2)
-            elif ((current.source.id == clone.source.id)
-                    or (current.target.id == clone.target.id)):
-                # TODO: check subgraph
+                return scores
+            elif source_condit or target_condit:
+                # TODO: check subgraph/call is_similar
                 # if subgraph is isomorphic then return 2
                 scores.append(1)
             else:
@@ -382,6 +415,12 @@ def match(*args, current=None):
         else:  # edge attribute of current is shorter than of clone
             scores.append(-2)
     return scores
+
+
+def is_similar(current=None, clone=None):
+    pass
+    # can write a function for this in the case that the score will be 1
+    # this function will check successors and predecessors for similarity but
 
 
 def recast_new_names_as_old(edge_dict=None, rename_df=None, new_name=None):

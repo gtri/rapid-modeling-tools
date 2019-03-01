@@ -392,15 +392,25 @@ class TestManager(unittest.TestCase):
         eval.add_missing_columns()
         eval.to_property_di_graph()
         pdg = eval.prop_di_graph
+        # for edge in pdg.edge_set:
+        #     print('\n')
+        #     print('Source Data')
+        #     print(edge.source)
+        #     print('Original Data')
+        #     print(edge.source.original_id, edge.source.original_name)
+        #     print('Target Data')
+        #     print(edge.target)
+        #     print('Original Data')
+        #     print(edge.target.original_id, edge.target.original_name)
 
         eval1.rename_df_columns()
         eval1.add_missing_columns()
         eval1.to_property_di_graph()
         pdg1 = eval1.prop_di_graph
-        print(pdg.edge_dict)
+
         change_dict = manager.get_pattern_graph_diff(
             out_directory=DATA_DIRECTORY)
-        print(change_dict)
+        # print(change_dict)
         # manager.changes_to_excel(out_directory=DATA_DIRECTORY)
         # print('print statement here')
         self.assertTrue(False)

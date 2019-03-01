@@ -1,4 +1,6 @@
 import json
+import pprint as pp
+import uuid
 from copy import copy, deepcopy
 from datetime import datetime
 from functools import partial
@@ -85,6 +87,7 @@ class Manager:
             self.evaluators.append(
                 Evaluator(excel_file=excel_file,
                           translator=deepcopy(translator)))
+        self.evaluators[-1].translator.uml_id['Not original?'] = 'deep'
 
     def get_pattern_graph_diff(self, out_directory=''):
         """
@@ -246,19 +249,8 @@ class Manager:
             # Run the matching algorithm
             eval_one_matches = match_changes(
                 change_dict=eval_one_unmatch_pref)
-            print('Evaluator 1 matches')
-            print(eval_one_matches)
-            print('Here is all of the unstable matches')
-            print('Below fix the way the dict is cleaned up')
-            print('Everything seems to be working properly the')
-            print('data sanitization needs to be changed to agree')
-            for k, v in eval_one_matches[0].items():
-                print(len(v))
-                if len(v) > 1:
-                    print(k, v)
-            for k, v in eval_one_matches[1].items():
-                print(k, v)
-            print('printed all of eval_one_matches[1]')
+            print(eval_one_matches[1])
+            print(notavariable)
 
             # Chagnes the names back to how they were before this function
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
@@ -1002,7 +994,7 @@ class MDTranslator:
         if name in self.uml_id.keys():
             return self.uml_id[name]
         else:
-            self.uml_id.update({name: 'new_{0}'.format(self.uml_id['count'])})
+            self.uml_id.update({name: uuid.uuid4()})
             self.uml_id['count'] += 1
             return self.uml_id[name]
 
