@@ -8,121 +8,8 @@ import pandas as pd
 
 from graph_analysis.graph_creation import Evaluator, Manager, MDTranslator
 from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
-from graph_analysis.utils import object_dict_view
 
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
-
-
-# class TestProduceJson(unittest.TestCase):
-#
-#     def setUp(self):
-#         pass
-#
-#     def test_json_creation(self):
-#         manager = Manager(
-#             excel_path=[DATA_DIRECTORY / 'Sample Equations.xlsx'],
-#             json_path=PATTERNS / 'Parametric.json'
-#         )
-#         translator = manager.translator
-#         evaluator = manager.evaluators[0]
-#         evaluator.rename_df_columns()
-#         evaluator.add_missing_columns()
-#         evaluator.to_property_di_graph()
-#         property_di_graph = evaluator.prop_di_graph
-#         property_di_graph.create_vertex_set(
-#             df=evaluator.df, translator=translator)
-#         vert_set = property_di_graph.vertex_set
-#         json_out = {'modification targets': []}
-#         decs_json = []
-#         edge_json = []
-#         for vertex in vert_set:
-#             vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
-#                 translator=translator)
-#             json_out['modification targets'].extend(vert_uml)
-#             decs_json.extend(decs_uml)
-#             edge_json.extend(edge_uml)
-#
-#         json_out['modification targets'].extend(decs_json)
-#         json_out['modification targets'].extend(edge_json)
-#
-#         (OUTPUT_DIRECTORY / 'changes_uml.json').write_text(
-#             json.dumps(json_out, indent=4, sort_keys=True)
-#         )
-#
-#     def test_change_excel_json_creation(self):
-#         excel_files = [
-#             DATA_DIRECTORY / 'Composition Example Model Baseline.xlsx',
-#             DATA_DIRECTORY / 'Composition Example Model Changed.xlsx']
-#         manager = Manager(excel_path=excel_files,
-#                           json_path=PATTERNS / 'Composition.json'
-#                           )
-#
-#         translator = manager.translator
-#         for evaluator in manager.evaluators:
-#             evaluator.rename_df_columns()
-#             evaluator.add_missing_columns()
-#             evaluator.to_property_di_graph()
-#             property_di_graph = evaluator.prop_di_graph
-#             property_di_graph.create_vertex_set(
-#                 df=evaluator.df, translator=translator)
-#             property_di_graph.create_edge_set()
-#             vertex_set = property_di_graph.vertex_set
-#
-#         manager.get_pattern_graph_diff()
-#         manager.changes_to_excel()
-#
-#     def test_composition_2_json(self):
-#         manager = Manager(excel_path=[
-#             DATA_DIRECTORY / 'Composition Example 2.xlsx'],
-#             json_path=PATTERNS / 'Composition.json')
-#         translator = manager.translator
-#         evaluator = manager.evaluators[0]
-#         evaluator.rename_df_columns()
-#         evaluator.add_missing_columns()
-#         evaluator.to_property_di_graph()
-#         property_di_graph = evaluator.prop_di_graph
-#         property_di_graph.create_vertex_set(
-#             df=evaluator.df, translator=translator)
-#         vert_set = property_di_graph.vertex_set
-#         json_out = {'modification targets': []}
-#         decs_json = []
-#         edge_json = []
-#         for vertex in vert_set:
-#             vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
-#                 translator=translator)
-#             json_out['modification targets'].extend(vert_uml)
-#             decs_json.extend(decs_uml)
-#             edge_json.extend(edge_uml)
-#
-#         (OUTPUT_DIRECTORY / 'composition_example_2_uml.json').write_text(
-#             json.dumps(json_out, indent=4, sort_keys=True)
-#         )
-#
-#     def test_change_composition_2_excel_json_creation(self):
-#         original_file = 'Composition Example 2 Model Baseline.xlsx'
-#         change_file = 'Composition Example 2 Model Changed.xlsx'
-#         excel_files = [DATA_DIRECTORY / original_file,
-#                        DATA_DIRECTORY / change_file]
-#         manager = Manager(excel_path=excel_files,
-#                           json_path=PATTERNS / 'Composition.json'
-#                           )
-#
-#         translator = manager.translator
-#         for evaluator in manager.evaluators:
-#             evaluator.rename_df_columns()
-#             evaluator.add_missing_columns()
-#             evaluator.to_property_di_graph()
-#             property_di_graph = evaluator.prop_di_graph
-#             property_di_graph.create_vertex_set(
-#                 df=evaluator.df, translator=translator)
-#             property_di_graph.create_edge_set()
-#             vertex_set = property_di_graph.vertex_set
-#
-#         manager.get_pattern_graph_diff()
-#         manager.changes_to_excel()
-#
-#     def tearDown(self):
-#         pass
 
 
 class TestManager(unittest.TestCase):
@@ -392,16 +279,7 @@ class TestManager(unittest.TestCase):
         eval.add_missing_columns()
         eval.to_property_di_graph()
         pdg = eval.prop_di_graph
-        # for edge in pdg.edge_set:
-        #     print('\n')
-        #     print('Source Data')
-        #     print(edge.source)
-        #     print('Original Data')
-        #     print(edge.source.original_id, edge.source.original_name)
-        #     print('Target Data')
-        #     print(edge.target)
-        #     print('Original Data')
-        #     print(edge.target.original_id, edge.target.original_name)
+        # self.assertTrue(False)
 
         eval1.rename_df_columns()
         eval1.add_missing_columns()
@@ -410,9 +288,6 @@ class TestManager(unittest.TestCase):
 
         change_dict = manager.get_pattern_graph_diff(
             out_directory=DATA_DIRECTORY)
-        # print(change_dict)
-        # manager.changes_to_excel(out_directory=DATA_DIRECTORY)
-        # print('print statement here')
         self.assertTrue(False)
 
     def test_graph_difference_to_json(self):

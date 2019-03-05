@@ -1,8 +1,6 @@
 import networkx as nx
 
-from .utils import (get_node_types_attrs, get_setting_node_name_from_df,
-                    get_uml_id, to_uml_json_decorations, to_uml_json_edge,
-                    to_uml_json_node)
+from .utils import to_uml_json_decorations, to_uml_json_edge, to_uml_json_node
 
 
 def create_vertex_objects(df=None, graph=None):
@@ -202,10 +200,15 @@ class VertexReporterMixin:
         ----------
         translator : MDTranslator
         """
+        my_id = str(self.id)
+        if '_' == my_id[0]:
+            id = my_id
+        else:
+            id = 'new_' + my_id
         for count, node_type in enumerate(self.node_types):
             if count == 0:
                 node_dict = {
-                    'id': translator.get_uml_id(name=self.name),
+                    'id': id,
                     'op': 'rename',
                     'name': self.name,
                     'path': None,
@@ -215,7 +218,6 @@ class VertexReporterMixin:
                         node_key=node_type),
                     'attributes': self.attributes,
                 }
-
                 return to_uml_json_node(**node_dict)
 
     def delete_node_to_uml(self, translator=None):
@@ -230,8 +232,13 @@ class VertexReporterMixin:
         ----------
         translator : MDTranslator
         """
+        my_id = str(self.id)
+        if '_' == my_id[0]:
+            id = my_id
+        else:
+            id = 'new_' + my_id
         node_dict = {
-            'id': translator.get_uml_id(name=self.name),
+            'id': id,
             'op': 'delete',
             'name': self.name,
             'path': None,
@@ -284,8 +291,13 @@ class VertexReporterMixin:
 
         for count, node_type in enumerate(self.node_types):
             if count == 0:
+                my_id = str(self.id)
+                if '_' == my_id[0]:
+                    id = my_id
+                else:
+                    id = 'new_' + my_id
                 node_dict = {
-                    'id': translator.get_uml_id(name=name),
+                    'id': id,
                     'op': 'create',  # evaluator replace with fn input.
                     'name': self.name,
                     'path': None,
@@ -296,21 +308,28 @@ class VertexReporterMixin:
                     'attributes': self.attributes,
                 }
                 node_uml_dict = to_uml_json_node(**node_dict)
+                node_uml_list.append(node_uml_dict)
+
             path_val, settings_val = translator.get_uml_settings(
                 node_key=node_type)
             if settings_val:
                 if self.settings_node:
-                    settings_val = list(set(translator.get_uml_id(name=node)
-                                            for node in self.settings_node))
+                    # TODO: Check is this creates and issue
+                    settings_val = set()
+                    for node in self.settings_node:
+                        node_id = translator.get_uml_id(name=node)
+                        if '_' == node_id[0]:
+                            id = node_id
+                        else:
+                            id = 'new_' + str(node_id)
+                        settings_val.add(id)
                     node_dict.update({'op': 'replace',
                                       'path': path_val,
-                                      'value': settings_val})
+                                      'value': list(settings_val)})
                     decorations_dict = to_uml_json_decorations(**node_dict)
                     node_decorations.append(decorations_dict)
             else:
                 continue
-
-        node_uml_list.append(node_uml_dict)
 
         # check the connections.
         edge_uml_list = []
@@ -318,12 +337,22 @@ class VertexReporterMixin:
             # There will be some notion of a flag for the 'path' key to
             # change between m0, m1 and m2 type MD diagrams but that info is
             # TBD
+            id_val = str(translator.get_uml_id(name=connection['source']))
+            if '_' == id_val[0]:
+                id = id_val
+            else:
+                id = 'new_' + id_val
+            val_val = str(translator.get_uml_id(name=connection['target']))
+            if '_' == val_val[0]:
+                value = val_val
+            else:
+                value = 'new_' + val_val
+
             edge_dict = {
-                'id': translator.get_uml_id(name=connection['source']),
+                'id': id,
                 'op': 'replace',
                 'path': connection['edge_attribute'],
-                'value': translator.get_uml_id(
-                    name=connection['target']),
+                'value': value,
             }
             edge_uml_dict = to_uml_json_edge(**edge_dict)
             edge_uml_list.append(edge_uml_dict)
@@ -410,19 +439,10 @@ class Vertex(VertexReporterMixin):
         target node names.
         """
         connections = []
-        # {'<node name>' : {'edge_attribute': 'edge type'}}
         if self.successors:
-            for node_name in self.successors:
-                temp_dict = {'source': self.name,
-                             'target': node_name}
-                temp_dict.update(self.successors[node_name])
-                connections.append(temp_dict)
+            connections.extend(self.successors)
         if self.predecessors:
-            for node_name in self.predecessors:
-                temp_dict = {'source': node_name,
-                             'target': self.name}
-                temp_dict.update(self.predecessors[node_name])
-                connections.append(temp_dict)
+            connections.extend(self.predecessors)
         return connections
 
     def to_dict(self):
@@ -529,12 +549,21 @@ class DiEedgeReporterMixin:
 
         translator : MDTranslator
         """
+        id_val = str(self.source.id)
+        if '_' == id_val[0]:
+            id = id_val
+        else:
+            id = 'new_' + id_val
+        val_val = str(self.target.id)
+        if '_' == val_val[0]:
+            value = val_val
+        else:
+            value = 'new_' + val_val
         edge_dict = {
-            'id': translator.get_uml_id(name=self.source.name),
+            'id': id,
             'op': op,
             'path': self.edge_attribute,
-            'value': translator.get_uml_id(
-                name=self.target.name),
+            'value': value,
         }
         return to_uml_json_edge(**edge_dict)
 

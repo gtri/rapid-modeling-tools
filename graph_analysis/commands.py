@@ -71,8 +71,6 @@ def create_md_model(input_paths, output_path=''):
             evaluator.add_missing_columns()
             evaluator.to_property_di_graph()
             property_di_graph = evaluator.prop_di_graph
-            property_di_graph.create_vertex_set(
-                df=evaluator.df, translator=translator)
             vert_set = property_di_graph.vertex_set
             json_out = {'modification targets': []}
             decs_json = []
@@ -173,12 +171,6 @@ def compare_md_model(inputs, output_path=''):
             evaluator.rename_df_columns()
             evaluator.add_missing_columns()
             evaluator.to_property_di_graph()
-            property_di_graph = evaluator.prop_di_graph
-            property_di_graph.create_vertex_set(
-                df=evaluator.df, translator=evaluator.translator,
-            )
-            property_di_graph.create_edge_set()
-            vertex_set = property_di_graph.vertex_set
 
         manager.get_pattern_graph_diff(out_directory=outpath)
         manager.changes_to_excel(out_directory=outpath)

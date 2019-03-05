@@ -6,9 +6,7 @@ import networkx as nx
 import pandas as pd
 
 from graph_analysis.graph_creation import Evaluator, MDTranslator
-from graph_analysis.graph_objects import (DiEdge, PropertyDiGraph, Vertex,
-                                          create_vertex_objects)
-from graph_analysis.utils import create_column_values
+from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
 
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 

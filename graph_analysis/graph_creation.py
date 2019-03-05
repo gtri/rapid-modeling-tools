@@ -1,5 +1,4 @@
 import json
-import pprint as pp
 import uuid
 from copy import copy, deepcopy
 from datetime import datetime
@@ -18,10 +17,8 @@ from .utils import (associate_node_id, associate_node_types_settings,
                     associate_predecessors, associate_renames,
                     associate_successors, build_dict,
                     create_column_values_singleton, create_column_values_space,
-                    create_column_values_under, distill_edges_to_nodes,
-                    get_new_column_name, make_object, match_changes,
-                    new_as_old, object_dict_view, to_excel_df,
-                    to_nto_rename_dict, truncate_microsec)
+                    create_column_values_under, make_object, match_changes,
+                    to_excel_df, truncate_microsec)
 
 
 class Manager:
@@ -125,12 +122,6 @@ class Manager:
 
         See Also
         --------
-        get_new_column_name
-
-        to_nto_rename_dict
-
-        new_as_old
-
         match_changes
         """
         evaluator_dict = {evaluator: index for index, evaluator in enumerate(
@@ -140,51 +131,15 @@ class Manager:
         orig_eval = self.evaluators[0]
 
         for pair in combinations(self.evaluators, 2):
-            eval_1_e_dict = pair[0].prop_di_graph.edge_dict
-            eval_2_e_dict = pair[1].prop_di_graph.edge_dict
-
             # Checking if Evaluator has a rename dataframe
             if pair[0].has_rename and pair[1].has_rename:  # comparing changes
                 continue  # skip because this is comparing diff to diff
-            # elif pair[0].has_rename:  # This shouldn't happen since first
-            #     # pair entry always be baseline based on how combos built
-            #     # rename pair[0]
-            #     # loop eval_1_e_dict and if source is a
-            #     # new_to_old.keys() then make new key and associate the obj
-            #     # do the same if is target. return the new dict and a dict to
-            #     # replace the keys at the end.
-            #     new_translator = pair[0].translator
-            #     # Do not need get_new_column_name, it is the index of renames
-            #     new_name_col = get_new_column_name(
-            #         original_df=orig_eval.df,
-            #         rename_df=pair[0].df_renames)
-            #     new_name_dict = pair[0].df_renames.to_dict(orient='list')
-            #     n_t_o, rename_changes = to_nto_rename_dict(
-            #         new_name=new_name_col,
-            #         new_name_dict=new_name_dict)
-            #     # iterate through keys in new_to_old changing names edge dict
-            #     eval_1_e_dict, reverse_map, vert_obj_map = new_as_old(
-            #         main_dict=eval_1_e_dict,
-            #         new_keys=n_t_o)
-            # elif pair[1].has_rename:
-            #     # rename pair[1]
-            #     new_translator = pair[1].translator
-            #     new_name_col = get_new_column_name(
-            #         original_df=orig_eval.df,
-            #         rename_df=pair[1].df_renames)
-            #     new_name_dict = pair[1].df_renames.to_dict(orient='list')
-            #     n_t_o, rename_changes = to_nto_rename_dict(
-            #         new_name=new_name_col,
-            #         new_name_dict=new_name_dict)
-            #     eval_2_obj_names = {key for key in n_t_o}
-            #     # iterate through keys in new_to_old changing names edge dict
-            #     eval_2_e_dict, reverse_map, vert_obj_map = new_as_old(
-            #         main_dict=eval_2_e_dict,
-            #         new_keys=n_t_o)
+
+            eval_1_e_dict = pair[0].prop_di_graph.edge_dict
+            eval_2_e_dict = pair[1].prop_di_graph.edge_dict
 
             edge_set_one = pair[0].edge_set  # get baseline edge set
             edge_set_two = pair[1].edge_set  # get the changed edge set
-            # print(edge_set_one)
 
             # remove common edges
             # have to do this with named edges.
@@ -247,58 +202,19 @@ class Manager:
                         edge.edge_attribute])
 
             # Run the matching algorithm
+            # Always expect the input dict to be Original: Chagnes.
+            # Functions down the line hold this expectation.
             eval_one_matches = match_changes(
                 change_dict=eval_one_unmatch_pref)
-            print(eval_one_matches[1])
-            print(notavariable)
 
-            # Chagnes the names back to how they were before this function
-            if pair[0].has_rename and pair[1].has_rename:  # comparing changes
-                continue  # so nothing happened above.
-            # elif pair[0].has_rename:
-            #     # Put stuff back how it was
-            #     eval_1_e_dict, new_to_old, old_v_obj_map = new_as_old(
-            #         main_dict=eval_1_e_dict,
-            #         new_keys=reverse_map)
-            #     vert_dict = pair[1].prop_di_graph.vertex_dict
-            #     for key in old_v_obj_map.keys():
-            #         old_v_obj_map.update({key: vert_dict[key]})
-            #     vert_obj_map.update(old_v_obj_map)
-            #     n_t_o, rename_changes = to_nto_rename_dict(
-            #         new_name=new_name_col,
-            #         new_name_dict=new_name_dict,
-            #         str_to_obj_map=vert_obj_map)
-            #     eval_one_matches[0].update(rename_changes)
-            # elif pair[1].has_rename:
-            #     # undo change to nodes for comparisson purpose
-            #     eval_2_e_dict, new_to_old, old_v_obj_map = new_as_old(
-            #         main_dict=eval_2_e_dict,
-            #         new_keys=reverse_map)
-            #     vert_dict = pair[0].prop_di_graph.vertex_dict
-            #     for key in old_v_obj_map.keys():
-            #         old_v_obj_map.update({key: vert_dict[key]})
-            #     vert_obj_map.update(old_v_obj_map)
-            #     n_t_o, rename_changes = to_nto_rename_dict(
-            #         new_name=new_name_col,
-            #         new_name_dict=new_name_dict,
-            #         str_to_obj_map=vert_obj_map)
-            #     eval_one_matches[0].update(rename_changes)
-
-            new_name_objs = ''
-            for key in eval_one_matches[0]:
-                if isinstance(key, str):
-                    if new_name_col in key:
-                        new_name_objs = key
             changes_and_unstable = {'Changes': eval_one_matches[0],
                                     'Unstable Pairs': eval_one_matches[1]}
 
             key = '{0}-{1}'.format(evaluator_dict[pair[0]],
                                    evaluator_dict[pair[1]])
 
-            self.graph_difference_to_json(new_col=new_name_objs,
-                                          new_name_dict=new_to_old,
-                                          change_dict=eval_one_matches[0],
-                                          translator=new_translator,
+            self.graph_difference_to_json(change_dict=eval_one_matches[0],
+                                          translator=pair[1].translator,
                                           evaluators=key,
                                           out_directory=out_directory)
             self.evaluator_change_dict.update(
@@ -350,151 +266,131 @@ class Manager:
             df_output.to_excel(
                 (outdir / outfile), sheet_name=key, index=False)
 
-    def graph_difference_to_json(self, new_col='', new_name_dict=None,
-                                 change_dict=None, translator=None,
-                                 evaluators='',
-                                 out_directory='', ):
+    def graph_difference_to_json(self, change_dict=None, translator=None,
+                                 evaluators='', out_directory='', ):
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
         # Naked Key: Value pairs mean delete edge key and add value key.
         # Purposefully excluding unstable pairs because the Human can make
         # those changes so they are clear.
-        static_keys = ['Added', 'Deleted', new_col]
+        static_keys = ['Added', 'Deleted', ]
         change_list = []
         edge_del = []
         edge_add = []
         node_renames = []
-        create_new_name_node = []
-        rename_nodes = {n.name for n in change_dict[new_col]}
+        create_node = []
+        node_dec = []
+        seen_ids = set()
 
         for key, value in change_dict.items():
             if key == 'Added':
-                for edge in change_dict[key]:
+                for edge in value:
+                    # TODO: make creates for nodes
                     edge_add.append(edge.edge_to_uml(op='replace',
                                                      translator=translator))
             elif key == 'Deleted':
-                for edge in change_dict[key]:
+                for edge in value:
                     edge_del.append(edge.edge_to_uml(op='delete',
                                                      translator=translator))
-            elif key == new_col:
-                for node in change_dict[key]:
-                    node_renames.append(
-                        node.change_node_to_uml(translator=translator)
-                    )
-            elif isinstance(key, str) and key != new_col:
-                continue
             else:
-                source, target = value[0].source, value[0].target
-                if 'new' in translator.uml_id[source.name]:
-                    # create then add
-                    node_cr, node_dec, node_edge = source.create_node_to_uml(
-                        translator=translator
-                    )
-                    # extend here and below was previously append
-                    # will have to do some crazy work to remove duplicates
-                    create_new_name_node.extend(node_cr)
-                    if node_dec:
-                        create_new_name_node.extend(node_dec)
-                    if node_edge:
-                        edge_add.extend(node_edge)
-                elif 'new' in translator.uml_id[target.name]:
-                    # create then add
-                    node_cr, node_dec, node_edge = target.create_node_to_uml(
-                        translator=translator
-                    )
-                    create_new_name_node.extend(node_cr)
-                    if node_dec:
-                        create_new_name_node.extend(node_dec)
-                    if node_edge:
-                        edge_add.extend(node_edge)
-
-                renm_source = any(source.name in nm for nm in rename_nodes)
-                renm_target = any(target.name in nm for nm in rename_nodes)
-                if renm_source or renm_target:
-                    # replace the key.source with value.source
-                    # replace key.target with value.target
-                    del_edge_json = key.edge_to_uml(op='delete',
-                                                    translator=translator)
-                    edge_del.append(del_edge_json)
-
-                    add_edge_json = value[0].edge_to_uml(op='replace',
-                                                         translator=translator)
-                    edge_add.append(add_edge_json)
+                # Key is DiEdge Obj (Original), Value[0] is DiEdge Obj (Change)
+                source_key, target_key = key.source, key.target
+                source_val, target_val = value[0].source, value[0].target
+                seen_source = any(
+                    saw_id == source_val.id for saw_id in seen_ids)
+                seen_target = any(
+                    saw_id == target_val.id for saw_id in seen_ids)
+                new_source = isinstance(source_val.id, type(uuid.uuid4()))
+                new_target = isinstance(target_val.id, type(uuid.uuid4()))
+                if source_val.has_rename and target_val.has_rename:
+                    # create the value_source/target
+                    if not seen_source:
+                        seen_ids.add(source_val.id)
+                        node_renames.append(
+                            source_val.change_node_to_uml(
+                                translator=translator)
+                        )
+                    if not seen_target:
+                        seen_ids.add(target_val.id)
+                        node_renames.append(
+                            target_val.change_node_to_uml(
+                                translator=translator)
+                        )
+                    edge_add.append(value[0].edge_to_uml(
+                        op='replace', translator=translator))
+                elif source_val.has_rename:
+                    # create the value_source/target
+                    if not seen_source:
+                        seen_ids.add(source_val.id)
+                        node_renames.append(
+                            source_val.change_node_to_uml(
+                                translator=translator)
+                        )
+                    edge_add.append(value[0].edge_to_uml(
+                        op='replace', translator=translator))
+                elif target_val.has_rename:
+                    # create the value_source/target
+                    if not seen_target:
+                        seen_ids.add(target_val.id)
+                        node_renames.append(
+                            target_val.change_node_to_uml(
+                                translator=translator)
+                        )
+                    edge_add.append(value[0].edge_to_uml(
+                        op='replace', translator=translator))
+                elif new_source and new_target:
+                    # create both source and target
+                    # replace edge
+                    if not seen_source:
+                        seen_ids.add(source_val.id)
+                        s_cr, s_dec, s_edg = source_val.create_node_to_uml(
+                            translator=translator)
+                        create_node.extend(s_cr)
+                        node_dec.extend(s_dec)
+                        # This could be double creating edges.
+                        # just creating node and decorations because. Excluding
+                        # the edges maintains promise of change json to user
+                        # that only changes made are those listed in json. To
+                        # find missing nodes and such look in the Excel.
+                    if not seen_target:
+                        seen_ids.add(target_val.id)
+                        t_cr, t_dec, t_edg = target_val.create_node_to_uml(
+                            translator=translator)
+                        create_node.extend(t_cr)
+                        node_dec.extend(t_dec)
+                    edge_add.append(value[0].edge_to_uml(
+                        op='replace', translator=translator))
+                elif new_source:
+                    # create node, replace edge
+                    if not seen_source:
+                        seen_ids.add(source_val.id)
+                        s_cr, s_dec, s_edg = source_val.create_node_to_uml(
+                            translator=translator)
+                        create_node.extend(s_cr)
+                        node_dec.extend(s_dec)
+                    edge_add.append(value[0].edge_to_uml(
+                        op='replace', translator=translator))
+                elif new_target:
+                    # create node, replace edge
+                    if not seen_target:
+                        seen_ids.add(target_val.id)
+                        t_cr, t_dec, t_edg = target_val.create_node_to_uml(
+                            translator=translator)
+                        create_node.extend(t_cr)
+                        node_dec.extend(t_dec)
+                    edge_add.append(value[0].edge_to_uml(
+                        op='replace', translator=translator))
                 else:
-                    # rename node was not in either of change items
-                    source_id = translator.uml_id[source.name]
-                    target_id = translator.uml_id[target.name]
-                    if 'new' in source_id and target_id:
-                        # if 'new' in source.id and target.id
-                        # create both value.source and value.target
-                        # create then add
-                        s_cr, s_dec, s_edge = source.create_node_to_uml(
-                            translator=translator
-                        )
-                        # extend here and below was previously append
-                        # will have to do some crazy work to remove duplicates
-                        create_new_name_node.extend(s_cr)
-                        if s_dec:
-                            create_new_name_node.extend(s_dec)
-                        if s_edge:
-                            edge_add.extend(s_edge)
-                        # create then add
-                        t_cr, t_dec, t_edge = target.create_node_to_uml(
-                            translator=translator
-                        )
-                        create_new_name_node.extend(t_cr)
-                        if t_dec:
-                            create_new_name_node.extend(t_dec)
-                        if t_edge:
-                            edge_add.extend(t_edge)
-                    elif 'new' in source_id:
-                        s_cr, s_dec, s_edge = source.create_node_to_uml(
-                            translator=translator
-                        )
-                        # extend here and below was previously append
-                        # will have to do some crazy work to remove duplicates
-                        create_new_name_node.extend(s_cr)
-                        if s_dec:
-                            create_new_name_node.extend(s_dec)
-                        if s_edge:
-                            edge_add.extend(s_edge)
-                        # elif 'new' in source.id
-                        # create node for value.source
-                    elif 'new' in target_id:
-                        # create then add
-                        t_cr, t_dec, t_edge = target.create_node_to_uml(
-                            translator=translator
-                        )
-                        create_new_name_node.extend(t_cr)
-                        if t_dec:
-                            create_new_name_node.extend(t_dec)
-                        if t_edge:
-                            edge_add.extend(t_edge)
-                        # elif 'new' in target.id
-                        # create node for value.target
-                    else:
-                        del_edge_json = key.edge_to_uml(op='delete',
-                                                        translator=translator)
-                        edge_del.append(del_edge_json)
+                    edge_add.append(value[0].edge_to_uml(
+                        op='replace', translator=translator
+                    ))
 
-                        add_edge_json = value[0].edge_to_uml(
-                            op='replace',
-                            translator=translator
-                        )
-                        edge_add.append(add_edge_json)
-                    # else
-                    # replace key (edge) with target (edge)
-
-        seen_id = set()
-        for nn_d in create_new_name_node:
-            if not nn_d['id'] in seen_id:
-                seen_id.add(nn_d['id'])
-                change_list.append(nn_d)
-            else:
-                continue
+        if create_node:
+            change_list.extend(create_node)
+            change_list.extend(node_dec)
         change_list.extend(edge_del)
-        change_list.extend(edge_add)
         change_list.extend(node_renames)
+        change_list.extend(edge_add)
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)
@@ -965,9 +861,7 @@ class MDTranslator:
 
     def __init__(self, json_data=None):
         self.data = json_data
-        self.uml_id = {'count': 0}
-        # print('MDTranslator Number of Keys on INIT')
-        # print(len(self.uml_id.keys()))
+        self.uml_id = {}
 
     def get_uml_id(self, name=None):
         """Returns the UML_ID for the corresponding vertex name provided. If the
@@ -988,14 +882,10 @@ class MDTranslator:
         by MagicDraw.
         """
         # TODO: write test function for this
-        # if name == 'Miniature Inertial Measurement Unit':
-        #     print('found one')
-        #     print(self.uml_id[name])
         if name in self.uml_id.keys():
             return self.uml_id[name]
         else:
             self.uml_id.update({name: uuid.uuid4()})
-            self.uml_id['count'] += 1
             return self.uml_id[name]
 
     def get_root_node(self):

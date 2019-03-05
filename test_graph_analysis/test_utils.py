@@ -16,17 +16,14 @@ from graph_analysis.utils import (associate_node_id,
                                   associate_node_types_settings,
                                   associate_predecessors, associate_renames,
                                   associate_successors, build_dict,
-                                  create_column_values,
                                   create_column_values_singleton,
                                   create_column_values_space,
                                   create_column_values_under,
-                                  distill_edges_to_nodes, get_new_column_name,
                                   get_node_types_attrs,
                                   get_setting_node_name_from_df, make_object,
-                                  match, match_changes, new_as_old,
-                                  replace_new_with_old_name, to_excel_df,
-                                  to_nto_rename_dict, to_uml_json_decorations,
-                                  to_uml_json_edge, to_uml_json_node)
+                                  match, match_changes, to_excel_df,
+                                  to_uml_json_decorations, to_uml_json_edge,
+                                  to_uml_json_node)
 
 from . import DATA_DIRECTORY, PATTERNS
 
@@ -43,6 +40,7 @@ class TestUtils(unittest.TestCase):
         node = 'test node'
         id = tr.get_uml_id(name=node)
         id_dict = associate_node_id(tr, node='test node')
+
         self.assertDictEqual({'id': 'new_0'}, id_dict)
 
     def test_associate_successors(self):
@@ -190,23 +188,6 @@ class TestUtils(unittest.TestCase):
         )
         expectation = ['green apple', 'blue context1']
         self.assertListEqual(expectation, created_cols)
-
-    def test_create_column_values(self):
-        data = ['Car', 'Wheel', 'Engine']
-        data_2 = ['chassis', 'hub', 'drive output']
-        columns = ['A_"composite owner"_component', 'composite owner']
-        expected_output = {'A_"composite owner"_component':
-                           ['A_car_chassis', 'A_wheel_hub',
-                            'A_engine_drive output'],
-                           'composite owner':
-                           ['car qua chassis context',
-                            'wheel qua hub context',
-                            'engine qua drive output context']
-                           }
-        for col in columns:
-            list_out = create_column_values(col_name=col, data=data,
-                                            aux_data=data_2)
-            self.assertListEqual(expected_output[col], list_out)
 
     def test_get_node_types_attrs(self):
         # TODO: Investigate this test.
@@ -522,50 +503,6 @@ class TestUtils(unittest.TestCase):
         match_rnm = match(*[rename_edge], current=og_edge,)
         self.assertEqual(2, match_rnm[0])
 
-    def test_recast_new_names_as_old(self):
-        base_inputs = [('s1', 't1', 'type'),
-                       ('s12', 't12', 'memberEnd'),
-                       ('song', 'tiger', 'blue'), ]
-
-        ancestor = [('as1', 't1', 'type'),
-                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
-
-        base_edges = []
-        base_dict = {}
-        ancestor_edges = []
-        ancestor_dict = {}
-
-        for edge_tuple in base_inputs:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            base_dict[edge_tuple] = edge
-            base_edges.append(edge)
-
-        for edge_tuple in ancestor:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            ancestor_dict[edge_tuple] = edge
-            ancestor_edges.append(edge)
-
-    # def test_associate_node_ids(self):
-    #     node_id_dict = {'Element Name': ['Car', 'engine', 'orange'],
-    #                     'ID': [1, 2, 3]}
-    #     df_ids = pd.DataFrame(data=node_id_dict)
-    #     df_ids.set_index(df_ids.columns[0], inplace=True)
-    #     translator = MDTranslator()
-    #     nodes = ['Car', 'engine', 'orange', 'green']
-    #     nodes_to_add = associate_node_ids(nodes=nodes, attr_df=df_ids,
-    #                                       uml_id_dict=translator.get_uml_id)
-    #     expected_node_info = [('Car', {'ID': 1}), ('engine', {'ID': 2}),
-    #                           ('orange', {'ID': 3}),
-    #                           ('green', {'ID': 'new_0'})]
-    #     for count, node_tup in enumerate(nodes_to_add):
-    #         self.assertTupleEqual(expected_node_info[count], node_tup)
-
     def test_get_setting_node_name_from_df(self):
         data_dict = {
             'component': ['car', 'wheel', 'engine'],
@@ -641,158 +578,6 @@ class TestUtils(unittest.TestCase):
         excel_df = pd.DataFrame(data=dict([
             (k, pd.Series(v)) for k, v in excel_data.items()]))
         self.assertTrue(expected_df.equals(excel_df))
-
-    def test_get_new_column_name(self):
-        og_dict = {'Composite Thing': ['Car', 'Car',
-                                       'Wheel', 'Engine'],
-                   'component': ['engine', 'rear driver',
-                                 'hub', 'drive output'],
-                   'Atomic Thing': ['Engine', 'Wheel',
-                                    'Hub', 'Drive Output']}
-        original_df = pd.DataFrame(data=og_dict)
-        rename_dict = {'old name': ['Car'],
-                       'changed name': ['Subaru']}
-        rename_df = pd.DataFrame(data=rename_dict)
-
-        new_name_col = get_new_column_name(
-            original_df=original_df,
-            rename_df=rename_df)
-        self.assertEqual('changed name', new_name_col)
-
-    def test_replace_new_with_old_name(self):
-        change_dict = {'Composite Thing': ['Subaru', 'Subaru',
-                                           'Wheel', 'Engine'],
-                       'component': ['engine', 'rear driver',
-                                     'hub', 'drive output'],
-                       'Atomic Thing': ['Engine', 'Wheel',
-                                        'Hub', 'Drive Output']}
-        change_df = pd.DataFrame(data=change_dict)
-        rename_dict = {'old name': ['Car'],
-                       'changed name': ['Subaru']}
-        rename_df = pd.DataFrame(data=rename_dict)
-        new_name = 'changed name'
-
-        recast_df = replace_new_with_old_name(changed_df=change_df,
-                                              rename_df=rename_df,
-                                              new_name=new_name)
-        og_dict = {'Composite Thing': ['Car', 'Car',
-                                       'Wheel', 'Engine'],
-                   'component': ['engine', 'rear driver',
-                                 'hub', 'drive output'],
-                   'Atomic Thing': ['Engine', 'Wheel',
-                                    'Hub', 'Drive Output']}
-        og_df = pd.DataFrame(data=og_dict)
-
-        self.assertTrue(og_df.equals(recast_df))
-
-    def test_new_as_old(self):
-        ancestor = [('as1', 't1', 'type'),
-                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
-        ancestor_edges = []
-        ancestor_dict = {}
-        for edge_tuple in ancestor:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            ancestor_dict[edge_tuple] = edge
-            ancestor_edges.append(edge)
-
-        expect_out_d = {('s1', 't1', 'type'): ancestor_dict[ancestor[0]],
-                        ('s12', 't12', 'memberEnd'): ancestor_dict[
-                            ancestor[1]],
-                        ('b', 'cyborg', 'orange'): ancestor_dict[ancestor[2]],
-                        }
-
-        new_keys = {'at12': 't12',
-                    'c': 'cyborg',
-                    'as1': 's1', }
-
-        output = new_as_old(main_dict=ancestor_dict,
-                            new_keys=new_keys)
-
-        expect_reverse = {'t12': 'at12',
-                          'cyborg': 'c',
-                          's1': 'as1', }
-        # check that all of the vertex names got changed
-        vert_names = {key: key
-                      for key in expect_out_d.keys()}
-        vert_fn_names = {key: output[0][key].named_edge_triple
-                         for key in output[0]}
-
-        new_v_o_map = {'as1': ancestor_edges[0].source,
-                       'at12': ancestor_edges[1].target,
-                       'c': ancestor_edges[2].target, }
-
-        self.assertDictEqual(expect_out_d, output[0])
-        self.assertDictEqual(expect_reverse, output[1])
-        self.assertDictEqual(vert_names, vert_fn_names)
-        self.assertDictEqual(new_v_o_map, output[2])
-
-        # Can I take the output and get the input?
-        new_out = new_as_old(main_dict=output[0], new_keys=output[1])
-
-        v_names = {key: key
-                   for key in ancestor_dict.keys()}
-        v_fn_names = {key: new_out[0][key].named_edge_triple
-                      for key in new_out[0]}
-
-        self.assertDictEqual(ancestor_dict, new_out[0])
-        self.assertDictEqual(new_keys, new_out[1])
-        self.assertDictEqual(v_names, v_fn_names)
-
-    def test_to_nto_rename_dict(self):
-        renm_d = {
-            'change name': ['Big Cylinder', 'Locking Nut'],
-            'previous name': ['Cylinder', 'Lug Nut'],
-        }
-        new_to_old, rename_changes = to_nto_rename_dict(new_name='change name',
-                                                        new_name_dict=renm_d)
-        self.assertDictEqual({'Big Cylinder': 'Cylinder',
-                              'Locking Nut': 'Lug Nut'}, new_to_old)
-
-        self.assertDictEqual({'Rename change name': ['Big Cylinder',
-                                                     'Locking Nut'],
-                              'Rename previous name': ['Cylinder', 'Lug Nut']},
-                             rename_changes)
-
-    def test_distill_edges_to_nodes(self):
-        base_inputs = [('s1', 't1', 'type'),
-                       ('s12', 't12', 'memberEnd'),
-                       ('song', 'tiger', 'blue'), ]
-
-        ancestor = [('as1', 't1', 'type'),
-                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
-        base_edges = []
-        base_dict = {}
-        ancestor_edges = []
-        ancestor_dict = {}
-        for edge_tuple in base_inputs:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            base_dict[edge_tuple] = edge
-            base_edges.append(edge)
-        for edge_tuple in ancestor:
-            source = Vertex(name=edge_tuple[0])
-            target = Vertex(name=edge_tuple[1])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            ancestor_dict[edge_tuple] = edge
-            ancestor_edges.append(edge)
-
-        matched_dict = {'Added': [ancestor_edges[2]],
-                        'Deleted': [base_edges[2]],
-                        ancestor_edges[0]: [base_edges[0]],
-                        ancestor_edges[1]: [base_edges[1]], }
-        distilled_outs = distill_edges_to_nodes(edge_matches=matched_dict)
-
-        expected_dict = {'Added': [ancestor_edges[2]],
-                         'Deleted': [base_edges[2]],
-                         ancestor_edges[0].source: base_edges[0].source,
-                         ancestor_edges[1].target: base_edges[1].target, }
-        self.assertDictEqual(expected_dict, distilled_outs)
 
     def test_to_uml_json_node(self):
         in_dict = {
