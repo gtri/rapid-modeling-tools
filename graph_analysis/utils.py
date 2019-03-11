@@ -143,8 +143,7 @@ def create_column_values_under(prefix=None, first_node_data=None,
     return column_values
 
 
-def create_column_values_space(first_node_data=None,
-                               second_node_data=None):
+def create_column_values_space(first_node_data=None, second_node_data=None):
     """Returns the column values for an inferred dataframe column that has
     spaces in the column name.
 

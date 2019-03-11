@@ -84,7 +84,6 @@ class Manager:
             self.evaluators.append(
                 Evaluator(excel_file=excel_file,
                           translator=deepcopy(translator)))
-        self.evaluators[-1].translator.uml_id['Not original?'] = 'deep'
 
     def get_pattern_graph_diff(self, out_directory=''):
         """
@@ -234,6 +233,8 @@ class Manager:
         See Also
         --------
         """
+        # TODO: When length of value > 1 put these changes into
+        # Unstable Original: [key*len(value)] Unstable Change: [value]
         for key in self.evaluator_change_dict:
             outfile = Path(
                 'Model Diffs {0}-{1}.xlsx'.format(
@@ -249,6 +250,8 @@ class Manager:
             evals_comp = key.split('-')
             edit_left_dash = 'Edit {0}'.format(str(int(evals_comp[0]) + 1))
             edit_right_dash = 'Edit {0}'.format(str(int(evals_comp[-1]) + 1))
+            unstab_original = 'Unstable Matches Original'
+            unstab_change = 'Unstable Matches Change'
             column_headers = [edit_left_dash, edit_right_dash]
 
             for in_key in difference_dict:

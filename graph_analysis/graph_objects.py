@@ -284,6 +284,7 @@ class VertexReporterMixin:
         """
         node_uml_list = []
         node_decorations = []
+        # TODO: Remove this and test consequences.
         if old_name:
             name = old_name
         else:
