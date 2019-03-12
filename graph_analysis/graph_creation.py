@@ -250,8 +250,6 @@ class Manager:
             evals_comp = key.split('-')
             edit_left_dash = 'Edit {0}'.format(str(int(evals_comp[0]) + 1))
             edit_right_dash = 'Edit {0}'.format(str(int(evals_comp[-1]) + 1))
-            unstab_original = 'Unstable Matches Original'
-            unstab_change = 'Unstable Matches Change'
             column_headers = [edit_left_dash, edit_right_dash]
 
             for in_key in difference_dict:

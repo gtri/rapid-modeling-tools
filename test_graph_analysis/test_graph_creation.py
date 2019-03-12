@@ -288,7 +288,11 @@ class TestManager(unittest.TestCase):
 
         change_dict = manager.get_pattern_graph_diff(
             out_directory=DATA_DIRECTORY)
-        self.assertTrue(False)
+        for node in eval1.vertex_set:
+            print(node)
+            print(node.original_name)
+        self.assertTrue(False,
+                        msg='A casing issue is causing matches to be missed')
 
     def test_graph_difference_to_json(self):
         manager = Manager(

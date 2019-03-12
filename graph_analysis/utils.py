@@ -350,8 +350,12 @@ def to_excel_df(data_dict=None, column_keys=None):
     # each key], 'Added': [all added data], 'Deleted': [all deleted data]
     edit_1 = column_keys[0]
     edit_2 = column_keys[1]
+    unstab_original = 'Unstable Matches Original'
+    unstab_change = 'Unstable Matches Change'
     df_data = {edit_1: [],
-               edit_2: [], }
+               edit_2: [],
+               unstab_original: [],
+               unstab_change: [], }
     for key in data_dict:
         if isinstance(key, str):
             if not data_dict[key]:
@@ -370,8 +374,8 @@ def to_excel_df(data_dict=None, column_keys=None):
                 multiple_vals = [
                     val.named_edge_triple for val in data_dict[key]]
                 # multiple_vals = data_dict[key]
-                df_data[edit_1].extend(repeat_key)
-                df_data[edit_2].extend(multiple_vals)
+                df_data[unstab_original].extend(repeat_key)
+                df_data[unstab_change].extend(multiple_vals)
             else:
                 df_data[edit_1].append(key.named_edge_triple)
                 value = data_dict[key][0].named_edge_triple
