@@ -381,10 +381,8 @@ class TestUtils(unittest.TestCase):
                 eval_two_unmatch_pref[edge] = copy(eval_one_unmatch_map[
                     edge.edge_attribute])
 
-        pp.pprint(eval_one_unmatch_pref, indent=4)
-
         match_dict = match_changes(change_dict=eval_one_unmatch_pref)
-        self.assertTrue(False)
+
         expected_matches = {('s2', 't2', 'type'): ('s2', 'at2', 'type'),
                             ('s3', 't3', 'owner'): ('as3', 't3', 'owner'),
                             ('s4', 't4', 'owner'): ('s4', 'at4', 'owner'),
@@ -426,6 +424,11 @@ class TestUtils(unittest.TestCase):
             else:
                 for edge in pairings[key]:
                     pairings_str[key].append(edge.named_edge_triple)
+
+        print('expected matches')
+        print(expected_matches)
+        print('pairings string')
+        print(pairings_str)
 
         self.assertDictEqual(expected_matches, pairings_str)
 
@@ -559,12 +562,14 @@ class TestUtils(unittest.TestCase):
         input_data.update(inner_dict['Unstable Pairs'])
         str_keys = ['Edit 1', 'Edit 2', 'Added', 'Deleted']
 
-        expected_data = {'Edit 1': [('green', 'apple', 'fruit'),
-                                    ('tomato', 'fruit', 'fruit'),
-                                    ('tomato', 'fruit', 'fruit')],
-                         'Edit 2': [('gala', 'apple', 'fruit'),
-                                    ('tomato', 'vegetable', 'fruit'),
-                                    ('tomahto', 'fruit', 'fruit')],
+        expected_data = {'Edit 1': [('green', 'apple', 'fruit'), ],
+                         'Edit 2': [('gala', 'apple', 'fruit'), ],
+                         'Unstable Matches Original': [
+                         ('tomato', 'fruit', 'fruit'),
+                         ('tomato', 'fruit', 'fruit'), ],
+                         'Unstable Matches Change': [
+                         ('tomato', 'vegetable', 'fruit'),
+                         ('tomahto', 'fruit', 'fruit'), ],
                          'Added': [('blueberry', 'berry', 'bush')],
                          'Deleted': [('yellow', 'delicious', 'apple')],
                          'Rename new name': ['new name'],

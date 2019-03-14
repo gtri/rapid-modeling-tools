@@ -348,6 +348,7 @@ def is_similar(current=None, clone=None):
 def to_excel_df(data_dict=None, column_keys=None):
     # Idea: df_data = {'Edit 1': [keys for the changes], 'Edit 2': [values for
     # each key], 'Added': [all added data], 'Deleted': [all deleted data]
+    # TODO: Expand test to test for the new unstable pairs columns
     edit_1 = column_keys[0]
     edit_2 = column_keys[1]
     unstab_original = 'Unstable Matches Original'
