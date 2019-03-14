@@ -216,84 +216,6 @@ class TestUtils(unittest.TestCase):
                              node_attr_dict)
 
     def test_match_changes(self):
-        # tr = MDTranslator()
-        #
-        # base_inputs = [('s1', 't1', 'type'), ('s2', 't2', 'type'),
-        #                ('s3', 't3', 'owner'), ('s4', 't4', 'owner'),
-        #                ('s5', 't5', 'memberEnd'),
-        #                ('s6', 't6', 'memberEnd'),
-        #                ('s7', 't7', 'type'), ('s8', 't8', 'type'),
-        #                ('s9', 't9', 'owner'), ('s10', 't10', 'owner'),
-        #                ('s11', 't11', 'memberEnd'),
-        #                ('s12', 't12', 'memberEnd'),
-        #                ('song', 'tiger', 'blue'), ]
-        #
-        # ancestor = [('as1', 't1', 'type'), ('s2', 'at2', 'type'),
-        #             ('as3', 't3', 'owner'), ('s4', 'at4', 'owner'),
-        #             ('as5', 't5', 'memberEnd'),
-        #             ('s6', 'at6', 'memberEnd'),
-        #             ('as7', 't7', 'type'), ('s8', 'at8', 'type'),
-        #             ('as9', 't9', 'owner'), ('s10', 'at10', 'owner'),
-        #             ('as11', 't11', 'memberEnd'),
-        #             ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange'),
-        #             ('s1', 'at1', 'type')]
-        #
-        # base_edges = []
-        # ancestor_edges = []
-        #
-        # for edge_tuple in base_inputs:
-        #     source = Vertex(
-        #         name=edge_tuple[0], id=tr.get_uml_id(name=edge_tuple[0]))
-        #     target = Vertex(
-        #         name=edge_tuple[1], id=tr.get_uml_id(name=edge_tuple[1]))
-        #     edge = DiEdge(source=source, target=target,
-        #                   edge_attribute=edge_tuple[2])
-        #     base_edges.append(edge)
-        #
-        # for edge_tuple in ancestor:
-        #     source = Vertex(
-        #         name=edge_tuple[0], id=tr.get_uml_id(name=edge_tuple[0]))
-        #     target = Vertex(
-        #         name=edge_tuple[1], id=tr.get_uml_id(name=edge_tuple[1]))
-        #     edge = DiEdge(source=source, target=target,
-        #                   edge_attribute=edge_tuple[2])
-        #     ancestor_edges.append(edge)
-        #
-        # base_map = dict((ea.edge_attribute, list()) for ea in base_edges)
-        #
-        # ance_map = dict((ea.edge_attribute, list())
-        #                 for ea in ancestor_edges)
-        #
-        # for edge in base_edges:
-        #     base_map[edge.edge_attribute].append(edge)
-        # for edge in ancestor_edges:
-        #     ance_map[edge.edge_attribute].append(edge)
-        #
-        # base_preference = {}
-        # ancestor_preference = {}
-        #
-        # ance_keys_not_in_base = set(
-        #     ance_map.keys()).difference(set(base_map.keys()))
-        #
-        # base_preference['Added'] = []
-        # base_preference['Deleted'] = []
-        # for edge_type in ance_keys_not_in_base:
-        #     base_preference['Added'].extend(ance_map[edge_type])
-        #
-        # for edge in base_edges:
-        #     if edge.edge_attribute not in ance_map.keys():
-        #         base_preference['Deleted'].append(edge)
-        #     else:
-        #         base_preference[edge] = copy(
-        #             ance_map[edge.edge_attribute])
-        #
-        # for edge in ancestor_edges:
-        #     if edge.edge_attribute not in base_map.keys():
-        #         ancestor_preference[edge] = []
-        #     else:
-        #         ancestor_preference[edge] = copy(
-        #             base_map[edge.edge_attribute])
-
         manager = Manager(
             excel_path=[
                 (DATA_DIRECTORY / 'Composition_Diff_JSON_Baseline.xlsx'),
@@ -302,24 +224,76 @@ class TestUtils(unittest.TestCase):
             json_path=(PATTERNS / 'Composition.json'),
         )
         tr = manager.translator
+
+        orig_data = {
+            'Component': ['Thruster Cluster Assembly',
+                          'Propellant Isolation Assembly',
+                          'Spacecraft', ],
+            'Position': ['Thruster-1', 'LV-3', 'ME', ],
+            'Part': ['Small Thruster', 'Latch Valve', 'Main Engine'],
+        }
+        derived_A_lv3 = 'A_propellant isolation assembly qua lv-3 context_lv-3'
+        derived_lv3 = 'propellant isolation assembly qua lv-3 context'
+        orig_ids = {
+            'Element Name': ['Thruster Cluster Assembly',
+                             'Propellant Isolation Assembly',
+                             'Spacecraft',
+                             'Thruster-1',
+                             'LV-3',
+                             'ME',
+                             'Small Thruster',
+                             'Latch Valve',
+                             'Main Engine',
+                             derived_A_lv3,
+                             derived_lv3,
+                             ],
+            'ID': ['_{0}'.format(num) for num in range(100, 111)]
+        }
+        change_data = {
+            'Component': ['Thruster Cluster Assembly',
+                          'Propellant Isolation Assembly',
+                          'Space Ship', ],
+            'Position': ['Thruster-1', 'SV-5', 'ME', ],
+            'Part': ['Big Thruster', 'Solenoid Valve', 'Main Engine'],
+        }
+        change_renm_data = {
+            'new name': ['SV-5', ],
+            'old name': ['LV-3', ],
+        }
         eval = manager.evaluators[0]
         eval1 = manager.evaluators[-1]
+        eval.df = pd.DataFrame(data=orig_data)
+        eval.df_ids = pd.DataFrame(data=orig_ids)
         eval.rename_df_columns()
         eval.add_missing_columns()
         eval.to_property_di_graph()
         pdg = eval.prop_di_graph
 
+        eval1.df = pd.DataFrame(data=change_data)
+        eval1.df_ids = pd.DataFrame(data=orig_ids)
+        eval1.df_renames = pd.DataFrame(data=change_renm_data)
+        eval1.df_renames.set_index('new name', inplace=True)
         eval1.rename_df_columns()
         eval1.add_missing_columns()
         eval1.to_property_di_graph()
         pdg1 = eval1.prop_di_graph
 
+        add_edge = DiEdge(source=Vertex(name='b', id='200'),
+                          target=Vertex(name='c', id='201'),
+                          edge_attribute='orange')
+        del_edge = DiEdge(source=Vertex(name='song',),
+                          target=Vertex(name='tiger',),
+                          edge_attribute='blue')
+
         eval_1_e_dict = pdg.edge_dict
+        eval_1_e_dict.update({del_edge.named_edge_triple: del_edge})
         eval_2_e_dict = pdg1.edge_dict
+        eval_2_e_dict.update({add_edge.named_edge_triple: add_edge})
 
         edge_set_one = eval.edge_set  # get baseline edge set
+        edge_set_one.add(del_edge)
         edge_set_two = eval1.edge_set  # get the changed edge set
-        # print(edge_set_one)
+        edge_set_two.add(add_edge)
 
         # remove common edges
         # have to do this with named edges.
@@ -383,24 +357,43 @@ class TestUtils(unittest.TestCase):
 
         match_dict = match_changes(change_dict=eval_one_unmatch_pref)
 
-        expected_matches = {('s2', 't2', 'type'): ('s2', 'at2', 'type'),
-                            ('s3', 't3', 'owner'): ('as3', 't3', 'owner'),
-                            ('s4', 't4', 'owner'): ('s4', 'at4', 'owner'),
-                            ('s5', 't5', 'memberEnd'):
-                                ('as5', 't5', 'memberEnd'),
-                            ('s6', 't6', 'memberEnd'):
-                                ('s6', 'at6', 'memberEnd'),
-                            ('s7', 't7', 'type'): ('as7', 't7', 'type'),
-                            ('s8', 't8', 'type'): ('s8', 'at8', 'type'),
-                            ('s9', 't9', 'owner'): ('as9', 't9', 'owner'),
-                            ('s10', 't10', 'owner'):
-                                ('s10', 'at10', 'owner'),
-                            ('s11', 't11', 'memberEnd'):
-                                ('as11', 't11', 'memberEnd'),
-                            ('s12', 't12', 'memberEnd'):
-                                ('s12', 'at12', 'memberEnd'),
-                            'Added': [('b', 'c', 'orange'), ],
-                            'Deleted': [('song', 'tiger', 'blue')]}
+        orig = [('A_propellant isolation assembly qua lv-3 context_lv-3',
+                 'propellant isolation assembly qua lv-3 context',
+                 'memberEnd'),
+                ('LV-3', 'Propellant Isolation Assembly', 'owner'),
+                ('propellant isolation assembly qua lv-3 context',
+                 'A_propellant isolation assembly qua lv-3 context_lv-3',
+                 'owner'),
+                ('A_spacecraft qua me context_me', 'ME', 'memberEnd'),
+                ('ME', 'Spacecraft', 'owner'),
+                ('Thruster-1', 'Small Thruster', 'type'),
+                ('propellant isolation assembly qua lv-3 context',
+                 'Propellant Isolation Assembly', 'type'),
+                ('LV-3', 'Latch Valve', 'type'),
+                ('A_propellant isolation assembly qua lv-3 context_lv-3',
+                 'LV-3', 'memberEnd'),
+                ]
+        change = [('A_propellant isolation assembly qua sv-5 context_sv-5',
+                   'propellant isolation assembly qua sv-5 context',
+                   'memberEnd'),
+                  ('SV-5', 'Propellant Isolation Assembly', 'owner'),
+                  ('propellant isolation assembly qua sv-5 context',
+                   'A_propellant isolation assembly qua sv-5 context_sv-5',
+                   'owner'),
+                  ('A_space ship qua me context_me', 'ME', 'memberEnd'),
+                  ('ME', 'Space Ship', 'owner'),
+                  ('Thruster-1', 'Big Thruster', 'type'),
+                  ('propellant isolation assembly qua sv-5 context',
+                   'Propellant Isolation Assembly', 'type'),
+                  ('SV-5', 'Solenoid Valve', 'type'),
+                  ('A_propellant isolation assembly qua sv-5 context_sv-5',
+                   'SV-5', 'memberEnd'),
+                  ]
+        expected_matches = {z[0]: z[1]
+                            for z in zip(orig, change)}
+
+        expected_matches.update({'Added': [('b', 'c', 'orange'), ],
+                                 'Deleted': [('song', 'tiger', 'blue')]})
 
         expected_unstable = {('s1', 't1', 'type'):
                              [('as1', 't1', 'type'),
@@ -424,11 +417,6 @@ class TestUtils(unittest.TestCase):
             else:
                 for edge in pairings[key]:
                     pairings_str[key].append(edge.named_edge_triple)
-
-        print('expected matches')
-        print(expected_matches)
-        print('pairings string')
-        print(pairings_str)
 
         self.assertDictEqual(expected_matches, pairings_str)
 

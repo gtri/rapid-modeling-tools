@@ -266,7 +266,29 @@ def get_node_types_attrs(df=None, node=None,
 
 
 def match_changes(change_dict=None):
-    # count = 0
+    """
+    Attempts to match the original edge to its changed counter part.
+    Accomplished using the ideas from the stable marriage algorithm. The first
+    part of the for loop skips all keys of type string and allocates the
+    added edges to the added pile and the deleted edges to the deleted pile.
+    Starting at scores, each original edge that does not show up exactly in
+    the changed edge set is paird up with all change edges corresponding to the
+    same edge type as the original. Then the list of potential matches
+    (change edges) is compared to the original and scored based on the match()
+    function. Once scored, only keep the highest scores and discard the rest
+    clean up the data. Return the confident matches and the unstable matches.
+
+    Confident match {('Car', 'engine', 'owner'): [(('Vehicle', 'engine',
+    'owner'), 2)]}
+    Unstable match {('Car', 'engine', 'owner'): [(('Engine', 'engine',
+    'owner'), 1)], (('Car', 'wheel', 'owner'), 1), ...}
+
+    Parameters
+    ----------
+    change_dict: dict
+        Each key is an edge from the original graph. The value is a list of
+        edges from the change edge set with the same edge attribute as the key.
+    """
     unstable_pairing = {}
     matched = {}
     str_dict = {}
@@ -311,6 +333,9 @@ def match_changes(change_dict=None):
 
 
 def match(*args, current=None):
+    """
+
+    """
     # current is the original edge and clone is the change
     # this function should only be getting nodes with the same edges
     # if I change this to assume nodes of the same edge attr then I can
