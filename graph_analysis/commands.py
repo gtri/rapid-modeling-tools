@@ -82,7 +82,6 @@ def create_md_model(input_paths, output_path=''):
                 decs_json.extend(decs_uml)
                 edge_json.extend(edge_uml)
 
-            print(decs_json)
             json_out['modification targets'].extend(decs_json)
             json_out['modification targets'].extend(edge_json)
 

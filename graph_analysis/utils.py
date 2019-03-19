@@ -41,12 +41,16 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=''):
     settings = []
 
     for node_type in node_type_cols:
-        vert_type, settings_val = tr.get_uml_settings(
+        path_val, settings_val = tr.get_uml_settings(
             node_key=node_type)
-        if settings_val and 'id' in settings_val:
-            settings_value = get_setting_node_name_from_df(
-                df=df, column=settings_val.split('-')[-1], node=node)
-            settings.extend([{vert_type: value} for value in settings_value])
+        if settings_val:
+            if 'id' in settings_val:
+                settings_value = get_setting_node_name_from_df(
+                    df=df, column=settings_val.split('-')[-1], node=node)
+                settings.extend([{path_val: value}
+                                 for value in settings_value])
+            else:
+                settings.append({path_val: settings_val})
         else:
             settings = []
 
