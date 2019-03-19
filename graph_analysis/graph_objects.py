@@ -311,24 +311,19 @@ class VertexReporterMixin:
                 node_uml_dict = to_uml_json_node(**node_dict)
                 node_uml_list.append(node_uml_dict)
 
-            path_val, settings_val = translator.get_uml_settings(
-                node_key=node_type)
-            if settings_val:
-                if self.settings:
-                    # TODO: Check is this creates an issue
-                    settings_val = set()
-                    for set_dict in self.settings:
-                        item = list(set_dict.items())
-                        path, value = item[0][0], item[0][1]
-                        if value in translator.data.keys():
-                            value = str(translator.data[value])
-                            if '_' != value[0]:
-                                value = 'new_' + value
-                        node_dict.update({'op': 'replace',
-                                          'path': path,
-                                          'value': value})
-                        decorations_dict = to_uml_json_decorations(**node_dict)
-                        node_decorations.append(decorations_dict)
+            if self.settings:
+                for set_dict in self.settings:
+                    item = list(set_dict.items())
+                    path, value = item[0][0], item[0][1]
+                    if value in translator.uml_id.keys():
+                        value = str(translator.uml_id[value])
+                        if '_' != value[0]:
+                            value = 'new_' + value
+                    node_dict.update({'op': 'replace',
+                                      'path': path,
+                                      'value': value})
+                    decorations_dict = to_uml_json_decorations(**node_dict)
+                    node_decorations.append(decorations_dict)
             else:
                 continue
 
