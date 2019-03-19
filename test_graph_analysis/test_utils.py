@@ -93,7 +93,7 @@ class TestUtils(unittest.TestCase):
             df, tr, tr, {'Notes', 'Two such Cols'}, node='Car'
         )
         expect = {
-            'settings_node': [],
+            'settings': [],
             'attributes': node_attr_dict
         }
         self.assertDictEqual(expect, type_set_dict)

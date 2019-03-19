@@ -473,7 +473,7 @@ def to_uml_json_decorations(**kwargs):
         'ops': [
             {
                 'op': kwargs['op'],
-                'path': '/' + kwargs['path'],
+                'path': '/m2/' + kwargs['path'],
                 'value': kwargs['value'],
             }
         ]
