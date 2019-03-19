@@ -314,21 +314,21 @@ class VertexReporterMixin:
             path_val, settings_val = translator.get_uml_settings(
                 node_key=node_type)
             if settings_val:
-                if self.settings_node:
-                    # TODO: Check is this creates and issue
+                if self.settings:
+                    # TODO: Check is this creates an issue
                     settings_val = set()
-                    for node in self.settings_node:
-                        node_id = str(translator.get_uml_id(name=node))
-                        if '_' == node_id[0]:
-                            id = node_id
-                        else:
-                            id = 'new_' + node_id
-                        settings_val.add(id)
-                    node_dict.update({'op': 'replace',
-                                      'path': path_val,
-                                      'value': list(settings_val)})
-                    decorations_dict = to_uml_json_decorations(**node_dict)
-                    node_decorations.append(decorations_dict)
+                    for set_dict in self.settings:
+                        item = list(set_dict.items())
+                        path, value = item[0][0], item[0][1]
+                        if value in translator.data.keys():
+                            value = str(translator.data[value])
+                            if '_' != value[0]:
+                                value = 'new_' + value
+                        node_dict.update({'op': 'replace',
+                                          'path': path,
+                                          'value': value})
+                        decorations_dict = to_uml_json_decorations(**node_dict)
+                        node_decorations.append(decorations_dict)
             else:
                 continue
 
@@ -405,7 +405,7 @@ class Vertex(VertexReporterMixin):
 
     def __init__(self, name=None, node_types=list(),
                  successors=None, predecessors=None, attributes=None,
-                 settings_node=None, id=None, original_name=False,
+                 settings=None, id=None, original_name=False,
                  original_id=None, **kwargs,):
         self.name = name
         if original_id:
@@ -419,7 +419,7 @@ class Vertex(VertexReporterMixin):
         self.successors = successors
         self.predecessors = predecessors
         self.attributes = attributes
-        self.settings_node = settings_node
+        self.settings = settings
         self.original_name = original_name
         # self.original_id = original_id
 
@@ -486,9 +486,9 @@ class Vertex(VertexReporterMixin):
             path_val, settings_val = translator.get_uml_settings(
                 node_key=node_type)
             if settings_val:
-                if self.settings_node:
+                if self.settings:
                     settings_val = list(set(get_uml_id(name=node)
-                                            for node in self.settings_node))
+                                            for node in self.settings))
                 decorations_dict = {
                     'id': get_uml_id(name=self.name),
                     'ops': [

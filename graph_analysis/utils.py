@@ -38,7 +38,7 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=''):
         root_attr_columns=root_attr_cols)
     node_types = {col for col in node_type_cols}
 
-    settings_value = []
+    settings = []
 
     for node_type in node_type_cols:
         vert_type, settings_val = tr.get_uml_settings(
@@ -46,11 +46,11 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=''):
         if settings_val and 'id' in settings_val:
             settings_value = get_setting_node_name_from_df(
                 df=df, column=settings_val.split('-')[-1], node=node)
-            settings = True
+            settings.extend([{vert_type: value} for value in settings_value])
         else:
-            settings_value = []
+            settings = []
 
-    type_setting_dict = {'settings_node': settings_value,
+    type_setting_dict = {'settings': settings,
                          'node_types': list(node_types)}
     type_setting_dict['attributes'] = node_attr_dict
     return type_setting_dict
