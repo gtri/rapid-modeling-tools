@@ -318,11 +318,11 @@ class VertexReporterMixin:
                     # TODO: Check is this creates and issue
                     settings_val = set()
                     for node in self.settings_node:
-                        node_id = translator.get_uml_id(name=node)
+                        node_id = str(translator.get_uml_id(name=node))
                         if '_' == node_id[0]:
                             id = node_id
                         else:
-                            id = 'new_' + str(node_id)
+                            id = 'new_' + node_id
                         settings_val.add(id)
                     node_dict.update({'op': 'replace',
                                       'path': path_val,

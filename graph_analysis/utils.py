@@ -334,7 +334,7 @@ def match_changes(change_dict=None):
 
 def match(*args, current=None):
     """
-
+    Provides the metric for determining the confidence level that
     """
     # current is the original edge and clone is the change
     # this function should only be getting nodes with the same edges
