@@ -40,32 +40,39 @@ class TestUtils(unittest.TestCase):
         node = 'test node'
         id = tr.get_uml_id(name=node)
         id_dict = associate_node_id(tr, node='test node')
+        node_id = tr.uml_id['test node']
 
-        self.assertDictEqual({'id': 'new_0'}, id_dict)
+        self.assertDictEqual({'id': node_id}, id_dict)
 
     def test_associate_successors(self):
         graph = nx.DiGraph()
         graph.add_nodes_from(['zero', 'one', 'two'])
-        graph.add_edges_from([('zero', 'one'), ('zero', 'two')])
+        graph.add_edge('zero', 'one', edge_attribute='type')
+        graph.add_edge('zero', 'two', edge_attribute='type')
         succs = associate_successors(graph, node='zero')
         succ_dict = {
             'successors': [{'source': 'zero',
-                            'target': 'one'},
+                            'target': 'one',
+                            'edge_attribute': 'type', },
                            {'source': 'zero',
-                            'target': 'two'}, ]
+                            'target': 'two',
+                            'edge_attribute': 'type', }, ]
         }
         self.assertDictEqual(succ_dict, succs)
 
     def test_associate_predecessors(self):
         graph = nx.DiGraph()
         graph.add_nodes_from(['zero', 'one', 'two'])
-        graph.add_edges_from([('one', 'zero'), ('two', 'zero')])
+        graph.add_edge('one', 'zero', edge_attribute='type')
+        graph.add_edge('two', 'zero', edge_attribute='type')
         preds = associate_predecessors(graph, node='zero')
         pred_dict = {
             'predecessors': [{'target': 'zero',
-                              'source': 'one'},
+                              'source': 'one',
+                              'edge_attribute': 'type', },
                              {'target': 'zero',
-                              'source': 'two'}, ]
+                              'source': 'two',
+                              'edge_attribute': 'type', }, ]
         }
         self.assertDictEqual(pred_dict, preds)
 
@@ -90,13 +97,27 @@ class TestUtils(unittest.TestCase):
             root_attr_columns={'Notes', 'Two such Cols'})
 
         type_set_dict = associate_node_types_settings(
-            df, tr, tr, {'Notes', 'Two such Cols'}, node='Car'
+            df, tr, {'Notes', 'Two such Cols'}, node='Car'
         )
         expect = {
             'settings': [],
-            'attributes': node_attr_dict
+            'attributes': node_attr_dict,
+            'node_types': ['Atomic Thing'],
         }
         self.assertDictEqual(expect, type_set_dict)
+
+        type_cols, attr_dict = get_node_types_attrs(
+            df=df, node='car', root_node_type='Atomic Thing',
+            root_attr_columns={'Notes', 'Two such Cols'},)
+
+        car_settings = associate_node_types_settings(
+            df, tr, {}, node='car',)
+        car_expect = {
+            'settings': [{'aggregation': 'composite'}],
+            'attributes': {},
+            'node_types': list(type_cols),
+        }
+        self.assertDictEqual(car_expect, car_settings)
 
     def test_associate_renames(self):
         tr = MDTranslator()
@@ -609,7 +630,7 @@ class TestUtils(unittest.TestCase):
             'ops': [
                 {
                     'op': 'decoration',
-                    'path': '/home',
+                    'path': '/m2/home',
                     'value': 'volume',
                 }
             ]

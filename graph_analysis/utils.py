@@ -32,6 +32,32 @@ def associate_predecessors(graph, node=''):
 
 
 def associate_node_types_settings(df, tr, root_attr_cols, node=''):
+    """
+    Packages the settings, node types and attribtues of each node if they
+    exist. Gets the columns where the node shows up and get the attribute
+    columns if the node occupies a role as a root node. For each node type
+    that the vertex in question posesses, check the settings section of the
+    JSON for metadata and associate it to the node if it exists. Finally,
+    return the settings, node types and attributes as a dictionary to be
+    associated on the vertex object at creation.
+
+    Parameters
+    ----------
+    df : Panadas DataFrame
+        The DataFrame that was read in from the spreadsheet and populated by
+        the filling of the subgraph according to the JSON.
+
+    tr : MDTranslator
+        MDTranslator associated with the change Evaluator.
+
+    root_attr_cols : set
+        Collection of DataFrame columns that do not show up in the JSON
+        specification and thus should be interpreted as attributes for the
+        root node.
+
+    node : str
+        Name of the node to get the types and settings for.
+    """
     node_type_cols, node_attr_dict = get_node_types_attrs(
         df=df, node=node,
         root_node_type=tr.get_root_node(),
@@ -61,12 +87,43 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=''):
 
 
 def associate_renames(df_renames, tr, node):
+    """
+    If a node has a rename, as identified in the df_renames then associate
+    the original name and ID to the renamed node.
+
+    Parameters
+    ----------
+    df_renames: Pandas DataFrame
+        The dataframe corresponding to the renames sheet found in a provided
+        change Excel sheet.
+
+    tr : MDTranslator
+        MagicDraw Translator object associated to the current Evaluator.
+
+    node : str
+        Name of the current node to associate the renames to.
+
+    Notes
+    -----
+    If the node argument matches a name in the index of the renames dataframe
+    (the new names stored as the index), then get the original name and
+    generate the original name using the old name from the dataframe and the
+    node string as a string template replacing the new name with the old.
+
+    Certain derived names require additional care to ensure that the original
+    name generated here matches the original name found in the original
+    Evaluator.
+    """
+    # If any part of the node string is in the index of the rename dataframe
+    # then build the original name.
     if any(new_nm.lower() in node.lower() for new_nm in df_renames.index):
         row_index = list(filter(lambda x: x.lower() in node, df_renames.index))
         old_name = df_renames.loc[row_index].get_values()
         row_index = [x.lower() for x in row_index]
         old_name = [x.lower() for x in chain(*old_name)]
         new_old_tup = zip(row_index, old_name)
+        # take the original name and the current name and use the current name
+        # as a template to build up the old name.
         original_name = reduce(
             lambda new, kv: new.replace(*kv), new_old_tup, node)
         if node == original_name:
@@ -76,6 +133,8 @@ def associate_renames(df_renames, tr, node):
             original_name = reduce(
                 lambda new, kv: new.replace(*kv), new_old_tup, node)
 
+        # Get the ID of node and the ID of the original node name that was
+        # generated above.
         original_id = tr.get_uml_id(name=original_name)
         tr.uml_id.update({node: original_id})
         return {'original_name': original_name,
@@ -86,6 +145,10 @@ def associate_renames(df_renames, tr, node):
 
 
 def build_dict(arg):
+    # helper function to the Evaluator.to_property_di_graph() method that
+    # packages the dictionaries returned by the "associate_" family of
+    # functions and then supplies the master dict (one_dict) to the Vertex
+    # obj as **kwargs
     one_dict = {}
     for ar in arg:
         one_dict.update(ar)
@@ -338,7 +401,22 @@ def match_changes(change_dict=None):
 
 def match(*args, current=None):
     """
-    Provides the metric for determining the confidence level that
+    Provides the metric for determining the confidence level that a current
+    change edge represents a change to the original edge.
+
+    Parameters
+    ----------
+
+    args : list
+        list of change edges that have the same edge type as the "current"
+        edge.
+
+    current : DiEdge
+        Edge to which all the edges in *args will be compared against.
+
+    See also
+    --------
+    match_changes
     """
     # current is the original edge and clone is the change
     # this function should only be getting nodes with the same edges
@@ -375,9 +453,20 @@ def is_similar(current=None, clone=None):
 
 
 def to_excel_df(data_dict=None, column_keys=None):
+    """
+    Format the changes in the change and unstable pairs dictionary for an
+    Excel output through a DataFrame. Create the column names and then begin
+    unpacking the data_dict. Depending on the key and the length of the value,
+    sort the data into the appropriate data column. After sorting all of
+    the data, return the DataFrame.
+
+    Parameters
+    ----------
+    data_dict : dict
+        a
+    """
     # Idea: df_data = {'Edit 1': [keys for the changes], 'Edit 2': [values for
     # each key], 'Added': [all added data], 'Deleted': [all deleted data]
-    # TODO: Expand test to test for the new unstable pairs columns
     edit_1 = column_keys[0]
     edit_2 = column_keys[1]
     unstab_original = 'Unstable Matches Original'
