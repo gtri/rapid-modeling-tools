@@ -40,22 +40,16 @@ class TestManager(unittest.TestCase):
         eval_base.add_missing_columns()
         eval_base.to_property_di_graph()
         base_prop_graph = eval_base.prop_di_graph
-        base_prop_graph.create_vertex_set(
-            df=eval_base.df, translator=eval_base.translator,
-        )
-        base_prop_graph.create_edge_set()
+
         base_vert_set = base_prop_graph.vertex_set
-        base_vert_dict = base_prop_graph.vertex_dict
+
         eval_change.rename_df_columns()
         eval_change.add_missing_columns()
         eval_change.to_property_di_graph()
         change_prop_graph = eval_change.prop_di_graph
-        change_prop_graph.create_vertex_set(
-            df=eval_change.df, translator=eval_change.translator,
-        )
-        change_prop_graph.create_edge_set()
+
         change_vert_set = change_prop_graph.vertex_set
-        change_vert_dict = change_prop_graph.vertex_dict
+
         # I want to see if the nodes in the graph have the right ids
         diff_nodes = set(change_prop_graph).difference(set(base_prop_graph))
         diff_dict = {key: eval_change.translator.uml_id[key]
@@ -287,9 +281,6 @@ class TestManager(unittest.TestCase):
 
         change_dict = manager.get_pattern_graph_diff(
             out_directory=DATA_DIRECTORY)
-        for node in eval1.vertex_set:
-            print(node)
-            print(node.original_name)
         self.assertTrue(False,
                         msg='A casing issue is causing matches to be missed')
 
@@ -367,12 +358,11 @@ class TestManager(unittest.TestCase):
                    cd['Rename new name'][0].change_node_to_uml(translator=tr),
                    ]
 
-        changes = manager.graph_difference_to_json(new_col='Rename new name',
-                                                   change_dict=change_dict,
+        changes = manager.graph_difference_to_json(change_dict=change_dict,
                                                    evaluators='0-1',
-                                                   translator=tr)
+                                                   translator=tr,)
 
-        # THis test is super sensitive to the order the IDs are created above
+        # This test is super sensitive to the order the IDs are created above
         # a better way around this would be to assign bs ids manually and
         # the one id that says 'new_1' for as1 to make sure it goes through the
         # correct channels.

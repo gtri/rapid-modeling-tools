@@ -325,6 +325,14 @@ def get_node_types_attrs(df=None, node=None,
         in the excel file that are not part of the 'Columns to Navigation
         Map' and that should be associated to a node if that node is a root
         node.
+
+    Notes
+    -----
+    Columns in the Excel, and by extension the DataFrame, that do not
+    correspond directly to a column in the 'Columns to Navigation Map' are
+    marked as "Attribute Columns". Attribute columns are associated to the
+    root node by row, since all of the data in a row is assumed to be related
+    to the root node.
     """
     node_attr_dict = {}
     mask = df == node
@@ -345,14 +353,14 @@ def get_node_types_attrs(df=None, node=None,
 def match_changes(change_dict=None):
     """
     Attempts to match the original edge to its changed counter part.
-    Accomplished using the ideas from the stable marriage algorithm. The first
+    Accomplished using ideas from the stable marriage algorithm. The first
     part of the for loop skips all keys of type string and allocates the
     added edges to the added pile and the deleted edges to the deleted pile.
     Starting at scores, each original edge that does not show up exactly in
     the changed edge set is paird up with all change edges corresponding to the
     same edge type as the original. Then the list of potential matches
     (change edges) is compared to the original and scored based on the match()
-    function. Once scored, only keep the highest scores and discard the rest
+    function. Once scored, only keep the highest scores and discard the rest,
     clean up the data. Return the confident matches and the unstable matches.
 
     Confident match {('Car', 'engine', 'owner'): [(('Vehicle', 'engine',
@@ -365,6 +373,10 @@ def match_changes(change_dict=None):
     change_dict: dict
         Each key is an edge from the original graph. The value is a list of
         edges from the change edge set with the same edge attribute as the key.
+
+    Notes
+    -----
+    This function also employs the match() function to determine the scores.
     """
     unstable_pairing = {}
     matched = {}
@@ -473,7 +485,18 @@ def to_excel_df(data_dict=None, column_keys=None):
     Parameters
     ----------
     data_dict : dict
-        a
+        Dictionary with keys for the confidently matched changes and the
+        unstable pairs.
+
+    column_keys : list
+        list of column names. The names of the edit columns correspond to the
+        orginal Evaluator (1) and the change Evaluator (>1).
+
+    Notes
+    -----
+    Evaluator.changes_to_excel() calls this function to package the dictionary
+    into a dataframe to be written out to Excel using the builtin Pandas
+    behavior.
     """
     # Idea: df_data = {'Edit 1': [keys for the changes], 'Edit 2': [values for
     # each key], 'Added': [all added data], 'Deleted': [all deleted data]
