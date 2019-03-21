@@ -76,7 +76,7 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=''):
                 settings.extend([{path_val: value}
                                  for value in settings_value])
             elif isinstance(settings_val, list) and any(
-                    'id' in item for item in settings_val):
+                    'id' in item for item in settings_val):  # TODO: Test This
                 id_calls = [id.split('-')[-1]
                             for id in filter(
                                 lambda x: 'id' in x, settings_val)]
