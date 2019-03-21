@@ -315,7 +315,17 @@ class VertexReporterMixin:
                 for set_dict in self.settings:
                     item = list(set_dict.items())
                     path, value = item[0][0], item[0][1]
-                    if isinstance(
+                    if isinstance(value, list) and any(
+                            val in translator.uml_id.keys() for val in value):
+                        values = filter(
+                            lambda x: x in translator.uml_id.keys(), value)
+                        value = []
+                        for val in values:
+                            id_val = str(translator.uml_id[val])
+                            if '_' != id_val[0]:
+                                id_val = 'new_' + id_val
+                            value.append(id_val)
+                    elif isinstance(
                             value, str) and value in translator.uml_id.keys():
                         value = str(translator.uml_id[value])
                         if '_' != value[0]:
