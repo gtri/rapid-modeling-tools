@@ -1,7 +1,7 @@
 import json
-import uuid
 import tempfile
 import unittest
+import uuid
 import warnings
 from pathlib import Path
 
@@ -258,36 +258,7 @@ class TestManager(unittest.TestCase):
             self.assertDictEqual(expected_dict, created_dict)
             self.assertTrue(expected_df.equals(created_df))
 
-    def test_graph_difference_to_json_2(self):
-        self.assertTrue(False)
-        manager = Manager(
-            excel_path=[
-                (DATA_DIRECTORY / 'Composition_Diff_JSON_Baseline.xlsx'),
-                (DATA_DIRECTORY / 'Composition_Diff_JSON_Changed.xlsx'),
-            ],
-            json_path=(PATTERNS / 'Composition.json'),
-        )
-        tr = manager.translator
-        eval = manager.evaluators[0]
-        eval1 = manager.evaluators[-1]
-        eval.rename_df_columns()
-        eval.add_missing_columns()
-        eval.to_property_di_graph()
-        pdg = eval.prop_di_graph
-        # self.assertTrue(False)
-
-        eval1.rename_df_columns()
-        eval1.add_missing_columns()
-        eval1.to_property_di_graph()
-        pdg1 = eval1.prop_di_graph
-
-        change_dict = manager.get_pattern_graph_diff(
-            out_directory=DATA_DIRECTORY)
-        self.assertTrue(False,
-                        msg='A casing issue is causing matches to be missed')
-
     def test_graph_difference_to_json(self):
-        self.assertFalse(True, msg='JSON does not have created nodes')
         manager = Manager(
             excel_path=[
                 DATA_DIRECTORY / 'Composition Example.xlsx'
@@ -303,7 +274,7 @@ class TestManager(unittest.TestCase):
             )
             renm_source = DiEdge(
                 source=Vertex(name='Subaru', id='_001', original_name='Car',
-                    original_id='_001', node_type=['Atomic Thing']),
+                              original_id='_001', node_types=['Atomic Thing']),
                 target=Vertex(name='car', id='_002'),
                 edge_attribute='type',
             )
@@ -315,8 +286,8 @@ class TestManager(unittest.TestCase):
             renm_target = DiEdge(
                 source=Vertex(name='Car', id='_001'),
                 target=Vertex(name='vehicle', id='_003',
-                    original_name='Vehicle', original_id='_003',
-                    node_type=['Composite Thing'],),
+                              original_name='Vehicle', original_id='_003',
+                              node_types=['Composite Thing'],),
                 edge_attribute='type',
             )
             orig_edge3 = DiEdge(
@@ -326,11 +297,11 @@ class TestManager(unittest.TestCase):
             )
             renm_both = DiEdge(
                 source=Vertex(name='Subaru', id='_004',
-                    original_name='subaru', original_id='_001',
-                    node_type=['composite owner']),
+                              original_name='subaru', original_id='_004',
+                              node_types=['composite owner']),
                 target=Vertex(name='vehicle', id='_005',
-                    original_name='Vehicle', original_id='_005',
-                    node_type=['Atomic Thing'],),
+                              original_name='Vehicle', original_id='_005',
+                              node_types=['Atomic Thing'],),
                 edge_attribute='type',
             )
 
@@ -341,7 +312,7 @@ class TestManager(unittest.TestCase):
             )
             new_source = DiEdge(
                 source=Vertex(name='Subaru', id=uuid.uuid4(),
-                    node_type=['Composite Thing'],),
+                              node_types=['Composite Thing'],),
                 target=Vertex(name='car', id='_002'),
                 edge_attribute='type',
             )
@@ -353,7 +324,7 @@ class TestManager(unittest.TestCase):
             new_target = DiEdge(
                 source=Vertex(name='Car', id='_001'),
                 target=Vertex(name='vehicle', id=uuid.uuid4(),
-                    node_type=['Atomic Thing'],),
+                              node_types=['Atomic Thing'],),
                 edge_attribute='type',
             )
             orig_edge6 = DiEdge(
@@ -363,17 +334,17 @@ class TestManager(unittest.TestCase):
             )
             new_both = DiEdge(
                 source=Vertex(name='Subaru', id=uuid.uuid4(),
-                    node_type=['Composite Thing'],),
+                              node_types=['Composite Thing'],),
                 target=Vertex(name='vehicle', id=uuid.uuid4(),
-                    node_type=['Atomic Thing'],),
+                              node_types=['Atomic Thing'],),
                 edge_attribute='type',
             )
 
             added_edge = DiEdge(
                 source=Vertex(name='New Source', id=uuid.uuid4(),
-                    node_types=['Atomic Thing']),
+                              node_types=['Atomic Thing']),
                 target=Vertex(name='New Target', id=uuid.uuid4(),
-                    node_types=['Atomic Thing']),
+                              node_types=['Atomic Thing']),
                 edge_attribute='newEdge',
             )
 
@@ -397,17 +368,31 @@ class TestManager(unittest.TestCase):
                                                        evaluators='0-1',
                                                        translator=tr,
                                                        out_directory=tmpdir)
-            print(changes)
-            self.assertTrue(False)
-            # This test is super sensitive to the order the IDs are created above
-            # a better way around this would be to assign bs ids manually and
-            # the one id that says 'new_1' for as1 to make sure it goes through the
-            # correct channels.
-            for count, change in enumerate(changes):
-                if isinstance(change, tuple) and isinstance(desired[count], tuple):
-                    self.assertTupleEqual(desired[count], change)
+            for item in changes:
+                print(item)
+            rename = 0
+            replace = 0
+            create = 0
+            delete = 0
+            fall_through_ops = []
+            for item in changes:
+                op = item['ops'][0]['op']
+                if op == 'create':
+                    create += 1
+                elif op == 'replace':
+                    replace += 1
+                elif op == 'rename':
+                    rename += 1
+                elif op == 'delete':
+                    delete += 1
                 else:
-                    self.assertDictEqual(desired[count], change)
+                    fall_through_ops.append(op)
+            # expect 4 node Renames
+            # expect 7 edge replaces (1 is from add edge)
+            # expect 6 node creates
+            # expect 1 delete
+            assert rename == 4 and replace == 7 and create == 6 and delete == 1
+            assert not fall_through_ops
 
     def tearDown(self):
         pass

@@ -269,6 +269,23 @@ class Manager:
 
     def graph_difference_to_json(self, change_dict=None, translator=None,
                                  evaluators='', out_directory='', ):
+        """
+        Produce MagicDraw JSON instruction for Player Piano from the
+        confidently identified changes. This method returns a change list,
+        Python list of dictionaries containing MagicDraw instructions, and
+        a JSON file in the out_directory, if provided otherwise in the same
+        directory as the input files. JSON instructions created for
+        Added edges, Deleted edges and changed edges. For Added edges, if the
+        source and target nodes have already been created during this function
+        call then just provide instructions to create the new edges, otherwise
+        create the source and target nodes then link them with an edge. For
+        all Deleted edges, each edge in the list receives a delete operation
+        intentionally leaving the source and target nodes in the model incase
+        they fulfill other roles. Changed edges have two main categories with
+        three subcategories. First, a change edge can either involve a renamed
+        source or target node or a newly created source or target node. Once,
+        it has been identified that the 
+        """
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
         # Naked Key: Value pairs mean delete edge key and add value key.
@@ -281,12 +298,28 @@ class Manager:
         node_renames = []
         create_node = []
         node_dec = []
+        # should the seen ids initially be populated with ids in translator
+        # that are not uuid.uuid4() objects.
+        # set(filter(
+        # lambda x: not isinstance(x, uuid.uuid4()), translator.uml_id.keys()))
         seen_ids = set()
 
         for key, value in change_dict.items():
             if key == 'Added':
                 for edge in value:
-                    # TODO: make creates for nodes
+                    edge_source, edge_target = edge.source, edge.target
+                    if not seen_source:
+                        seen_ids.add(edge_source.id)
+                        s_cr, s_dec, s_edg = edge_source.create_node_to_uml(
+                            translator=translator)
+                        create_node.extend(s_cr)
+                        node_dec.extend(s_dec)
+                    if not seen_target:
+                        seen_ids.add(edge_target.id)
+                        t_cr, t_dec, t_edg = edge_target.create_node_to_uml(
+                            translator=translator)
+                        create_node.extend(t_cr)
+                        node_dec.extend(t_dec)
                     edge_add.append(edge.edge_to_uml(op='replace',
                                                      translator=translator))
             elif key == 'Deleted':
@@ -322,31 +355,26 @@ class Manager:
                 elif source_val.has_rename:
                     # create the value_source/target
                     if not seen_source:
-                        print('source val and not seen source')
                         seen_ids.add(source_val.id)
                         node_renames.append(
                             source_val.change_node_to_uml(
                                 translator=translator)
                         )
-                        print(node_renames)
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif target_val.has_rename:
                     # create the value_source/target
                     if not seen_target:
-                        print('target val and not seen target')
                         seen_ids.add(target_val.id)
                         node_renames.append(
                             target_val.change_node_to_uml(
                                 translator=translator)
                         )
-                        print(node_renames)
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif new_source and new_target:
                     # create both source and target
                     # replace edge
-                    print('new source and target')
                     if not seen_source:
                         seen_ids.add(source_val.id)
                         s_cr, s_dec, s_edg = source_val.create_node_to_uml(
@@ -367,7 +395,6 @@ class Manager:
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif new_source:
-                    print('new source')
                     # create node, replace edge
                     if not seen_source:
                         seen_ids.add(source_val.id)
@@ -378,7 +405,6 @@ class Manager:
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif new_target:
-                    print('new target')
                     # create node, replace edge
                     if not seen_target:
                         seen_ids.add(target_val.id)
