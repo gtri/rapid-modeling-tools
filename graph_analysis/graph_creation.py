@@ -322,26 +322,31 @@ class Manager:
                 elif source_val.has_rename:
                     # create the value_source/target
                     if not seen_source:
+                        print('source val and not seen source')
                         seen_ids.add(source_val.id)
                         node_renames.append(
                             source_val.change_node_to_uml(
                                 translator=translator)
                         )
+                        print(node_renames)
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif target_val.has_rename:
                     # create the value_source/target
                     if not seen_target:
+                        print('target val and not seen target')
                         seen_ids.add(target_val.id)
                         node_renames.append(
                             target_val.change_node_to_uml(
                                 translator=translator)
                         )
+                        print(node_renames)
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif new_source and new_target:
                     # create both source and target
                     # replace edge
+                    print('new source and target')
                     if not seen_source:
                         seen_ids.add(source_val.id)
                         s_cr, s_dec, s_edg = source_val.create_node_to_uml(
@@ -362,6 +367,7 @@ class Manager:
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif new_source:
+                    print('new source')
                     # create node, replace edge
                     if not seen_source:
                         seen_ids.add(source_val.id)
@@ -372,6 +378,7 @@ class Manager:
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif new_target:
+                    print('new target')
                     # create node, replace edge
                     if not seen_target:
                         seen_ids.add(target_val.id)

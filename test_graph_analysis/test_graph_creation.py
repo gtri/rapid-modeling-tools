@@ -1,4 +1,5 @@
 import json
+import uuid
 import tempfile
 import unittest
 import warnings
@@ -258,6 +259,7 @@ class TestManager(unittest.TestCase):
             self.assertTrue(expected_df.equals(created_df))
 
     def test_graph_difference_to_json_2(self):
+        self.assertTrue(False)
         manager = Manager(
             excel_path=[
                 (DATA_DIRECTORY / 'Composition_Diff_JSON_Baseline.xlsx'),
@@ -285,92 +287,127 @@ class TestManager(unittest.TestCase):
                         msg='A casing issue is causing matches to be missed')
 
     def test_graph_difference_to_json(self):
+        self.assertFalse(True, msg='JSON does not have created nodes')
         manager = Manager(
             excel_path=[
                 DATA_DIRECTORY / 'Composition Example.xlsx'
                 for i in range(2)],
             json_path=PATTERNS / 'Composition.json')
         tr = manager.translator
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            orig_edge = DiEdge(
+                source=Vertex(name='Car', id='_001'),
+                target=Vertex(name='car', id='_002'),
+                edge_attribute='type',
+            )
+            renm_source = DiEdge(
+                source=Vertex(name='Subaru', id='_001', original_name='Car',
+                    original_id='_001', node_type=['Atomic Thing']),
+                target=Vertex(name='car', id='_002'),
+                edge_attribute='type',
+            )
+            orig_edge2 = DiEdge(
+                source=Vertex(name='Car', id='_001'),
+                target=Vertex(name='Vehicle', id='_003'),
+                edge_attribute='type',
+            )
+            renm_target = DiEdge(
+                source=Vertex(name='Car', id='_001'),
+                target=Vertex(name='vehicle', id='_003',
+                    original_name='Vehicle', original_id='_003',
+                    node_type=['Composite Thing'],),
+                edge_attribute='type',
+            )
+            orig_edge3 = DiEdge(
+                source=Vertex(name='subaru', id='_004'),
+                target=Vertex(name='Vehicle', id='_005'),
+                edge_attribute='type',
+            )
+            renm_both = DiEdge(
+                source=Vertex(name='Subaru', id='_004',
+                    original_name='subaru', original_id='_001',
+                    node_type=['composite owner']),
+                target=Vertex(name='vehicle', id='_005',
+                    original_name='Vehicle', original_id='_005',
+                    node_type=['Atomic Thing'],),
+                edge_attribute='type',
+            )
 
-        base_inputs = [('s1', 't1', 'type'),
-                       ('s12', 't12', 'memberEnd'),
-                       ('song', 'tiger', 'blue'), ]
+            orig_edge4 = DiEdge(
+                source=Vertex(name='subaru', id='_004'),
+                target=Vertex(name='car', id='_002'),
+                edge_attribute='type',
+            )
+            new_source = DiEdge(
+                source=Vertex(name='Subaru', id=uuid.uuid4(),
+                    node_type=['Composite Thing'],),
+                target=Vertex(name='car', id='_002'),
+                edge_attribute='type',
+            )
+            orig_edge5 = DiEdge(
+                source=Vertex(name='Car', id='_001'),
+                target=Vertex(name='Vehicle', id='_005'),
+                edge_attribute='type',
+            )
+            new_target = DiEdge(
+                source=Vertex(name='Car', id='_001'),
+                target=Vertex(name='vehicle', id=uuid.uuid4(),
+                    node_type=['Atomic Thing'],),
+                edge_attribute='type',
+            )
+            orig_edge6 = DiEdge(
+                source=Vertex(name='Car', id='_007'),
+                target=Vertex(name='Vehicle', id='_005'),
+                edge_attribute='type',
+            )
+            new_both = DiEdge(
+                source=Vertex(name='Subaru', id=uuid.uuid4(),
+                    node_type=['Composite Thing'],),
+                target=Vertex(name='vehicle', id=uuid.uuid4(),
+                    node_type=['Atomic Thing'],),
+                edge_attribute='type',
+            )
 
-        base_df = pd.DataFrame(data={
-            'source': ['s1', 's12', 'song'],
-            'target': [edge[1] for edge in base_inputs],
-            'type': ['type' for i in range(3)],
-            'memberEnd': ['memberEnd' for i in range(3)],
-            'blue': ['blue' for i in range(3)]
-        })
+            added_edge = DiEdge(
+                source=Vertex(name='New Source', id=uuid.uuid4(),
+                    node_types=['Atomic Thing']),
+                target=Vertex(name='New Target', id=uuid.uuid4(),
+                    node_types=['Atomic Thing']),
+                edge_attribute='newEdge',
+            )
 
-        ancestor = [('as1', 't1', 'type'),
-                    ('s12', 'at12', 'memberEnd'),
-                    ('b', 'c', 'orange'), ]
+            del_edge = DiEdge(
+                source=Vertex(name='Old Source', id='_010'),
+                target=Vertex(name='Old Target', id='_011'),
+                edge_attribute='oldEdge',
+            )
+            change_dict = {
+                orig_edge: [renm_source, ],
+                orig_edge2: [renm_target, ],
+                orig_edge3: [renm_both, ],
+                orig_edge4: [new_source, ],
+                orig_edge5: [new_target, ],
+                orig_edge6: [new_both, ],
+                'Added': [added_edge, ],
+                'Deleted': [del_edge, ],
+            }
 
-        base_edges = []
-        base_dict = {}
-        ancestor_edges = []
-        ancestor_dict = {}
-
-        for edge_tuple in base_inputs:
-            source = Vertex(name=edge_tuple[0],
-                            node_types=['component'])
-            target = Vertex(name=edge_tuple[1],
-                            node_types=['Atomic Thing'])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            tr.get_uml_id(name=edge_tuple[0])
-            tr.get_uml_id(name=edge_tuple[1])
-            base_dict[edge_tuple] = edge
-            base_edges.append(edge)
-
-        for edge_tuple in ancestor:
-            source = Vertex(name=edge_tuple[0],
-                            node_types=['component'])
-            target = Vertex(name=edge_tuple[1],
-                            node_types=['Atomic Thing'])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            tr.get_uml_id(name=edge_tuple[0])
-            tr.get_uml_id(name=edge_tuple[1])
-            ancestor_dict[edge_tuple] = edge
-            ancestor_edges.append(edge)
-
-        base_edge = base_dict[('s1', 't1', 'type')]
-        ances_edge = ancestor_dict[('as1', 't1', 'type')]
-        at12 = ancestor_dict[('s12', 'at12', 'memberEnd')].target
-        t12 = base_dict[('s12', 't12', 'memberEnd')].target
-        add_edge = ancestor_dict[('b', 'c', 'orange')]
-        del_edge = base_dict[('song', 'tiger', 'blue')]
-
-        change_dict = {base_edge: [ances_edge, ],
-                       'Rename new name': [at12, ],
-                       'Rename old name': [t12, ],
-                       'Added': [add_edge, ],
-                       'Deleted': [del_edge, ], }
-        cd = change_dict
-        desired = [ances_edge.source.create_node_to_uml(translator=tr)[0][0],
-                   base_edge.edge_to_uml(op='delete', translator=tr),
-                   cd['Deleted'][0].edge_to_uml(op='delete', translator=tr),
-                   ances_edge.edge_to_uml(op='replace', translator=tr),
-                   cd['Added'][0].edge_to_uml(op='replace', translator=tr),
-                   cd['Rename new name'][0].change_node_to_uml(translator=tr),
-                   ]
-
-        changes = manager.graph_difference_to_json(change_dict=change_dict,
-                                                   evaluators='0-1',
-                                                   translator=tr,)
-
-        # This test is super sensitive to the order the IDs are created above
-        # a better way around this would be to assign bs ids manually and
-        # the one id that says 'new_1' for as1 to make sure it goes through the
-        # correct channels.
-        for count, change in enumerate(changes):
-            if isinstance(change, tuple) and isinstance(desired[count], tuple):
-                self.assertTupleEqual(desired[count], change)
-            else:
-                self.assertDictEqual(desired[count], change)
+            changes = manager.graph_difference_to_json(change_dict=change_dict,
+                                                       evaluators='0-1',
+                                                       translator=tr,
+                                                       out_directory=tmpdir)
+            print(changes)
+            self.assertTrue(False)
+            # This test is super sensitive to the order the IDs are created above
+            # a better way around this would be to assign bs ids manually and
+            # the one id that says 'new_1' for as1 to make sure it goes through the
+            # correct channels.
+            for count, change in enumerate(changes):
+                if isinstance(change, tuple) and isinstance(desired[count], tuple):
+                    self.assertTupleEqual(desired[count], change)
+                else:
+                    self.assertDictEqual(desired[count], change)
 
     def tearDown(self):
         pass
