@@ -369,13 +369,13 @@ class Manager:
             if key == 'Added':
                 for edge in value:
                     edge_source, edge_target = edge.source, edge.target
-                    if not seen_source:
+                    if edge_source.id not in seen_ids:
                         seen_ids.add(edge_source.id)
                         s_cr, s_dec, s_edg = edge_source.create_node_to_uml(
                             translator=translator)
                         create_node.extend(s_cr)
                         node_dec.extend(s_dec)
-                    if not seen_target:
+                    if edge_target.id not in seen_ids:
                         seen_ids.add(edge_target.id)
                         t_cr, t_dec, t_edg = edge_target.create_node_to_uml(
                             translator=translator)
