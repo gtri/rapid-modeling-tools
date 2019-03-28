@@ -25,11 +25,11 @@ with(CollectionsAndFiles)
         sysml_package = live_project.getElementByID("_17_0_2_136f03d9_1344498413266_378771_11852");
               
         // dictionary to hold the ids discovered as we go
-        temp_ids = {};
-        temp_elements = {};
+        var temp_ids = {};
+        var temp_elements = {};
         var homeless_elements = [];
-        ends_to_nuke = [];
-        c_ends_to_nuke = [];
+        var ends_to_nuke = [];
+        var c_ends_to_nuke = [];
         
         try {
             // totally butt-pull based on snippet of OpenMBEE code on GitHub - thanks Doris!
@@ -65,7 +65,7 @@ with(CollectionsAndFiles)
         
         try {
             chooser = new JFileChooser();
-            returnVal = chooser.showOpenDialog(parent);
+            returnVal = chooser.showOpenDialog(null);
             if(returnVal == JFileChooser.APPROVE_OPTION) {
                fc = chooser.getSelectedFile();
             }
@@ -259,6 +259,11 @@ with(CollectionsAndFiles)
 											test_val.setValue(op_to_execute['value']);
 										}
 										break;
+									case "isConjugated":
+									    conj = op_to_execute['value'];
+									    if (conj == 'true') {
+									       ele_to_mod.setConjugated(true);
+									    }
 									case "memberEnd":
 										end_element = null;
 										if (op_to_execute['value'].split("_")[0] == 'new') {
@@ -328,6 +333,10 @@ with(CollectionsAndFiles)
                                                element_path_list.push(live_project.getElementByID(op_to_execute['value'][path_place]));
                                            }
                                        }
+                                       
+                                       element_path_list.forEach(function(ele_path) {
+                                           live_log.log("Element path list is " + ele_path);
+                                       });
 									   
 									   // apply the stereotype
 									   
@@ -354,10 +363,10 @@ with(CollectionsAndFiles)
 									       live_log.log("Property Path classifier includes " + ele_asi.getClassifier()[asi_class].getName());
 									   }
 									   
-									   for (asi_slot in ele_asi.getSlot()) {
-                                          live_log.log("Property path ASI includes slot " + ele_asi.getSlot()[asi_slot].getDefiningFeature().getName());
+									   //for (asi_slot in ele_asi.getSlot()) {
+                                       //   live_log.log("Property path ASI includes slot " + ele_asi.getSlot()[asi_slot].getDefiningFeature().getName());
                                           //live_log.log("PP Slot = " + pp_slot.getDefiningFeature().getName());
-                                      }
+                                      //}
 									   
 									   for (prop_path_step in element_path_list){
 									       ele_value = ele_factory.createElementValueInstance();
@@ -371,6 +380,8 @@ with(CollectionsAndFiles)
 									       live_log.log("New element list has value with element " + element_value_list[ele_val].getElement());
 									       live_log.log("New element list has value with element name " + element_value_list[ele_val].getElement().getName());
 									   }
+									   
+									   live_log.log("Element value list is of type " + (typeof element_value_list));
 									   
 									   StereotypesHelper.setStereotypePropertyValue
                                             (ele_to_mod, apply_stereo, "propertyPath", element_value_list, true);
