@@ -92,7 +92,10 @@ class Manager:
         original graph instance to a chagne instance, i.e. it ignores change
         to change comparisons.
 
-        This function
+        This function creates an edge set for all the edges in the original
+        and the change graph and removes all common edges. Then it builds a
+        dictionary paring each remaining original edge to all of the change
+        edges of the same type. After building the dicitionary,
 
         Parameters
         ----------
@@ -143,6 +146,9 @@ class Manager:
 
             # remove common edges
             # have to do this with named edges.
+            # TODO: implement __eq__ and __neq__ methods to the DiEdge then
+            # these set operations can be done without casting to str then
+            # casting back.
             edge_set_one_set = {edge.named_edge_triple
                                 for edge in edge_set_one}
             edge_set_two_set = {edge.named_edge_triple
