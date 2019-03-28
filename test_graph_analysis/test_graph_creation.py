@@ -97,102 +97,102 @@ class TestManager(unittest.TestCase):
     def test_get_pattern_graph_diff(self):
         # this is a bad function and an improper test.
         # The test ignores the obvious problem of non-unique matchings
+        # Want added edge, deleted edge, one matched, one unstable pair
         manager = Manager(
             excel_path=[
                 DATA_DIRECTORY / 'Composition Example.xlsx'
                 for i in range(2)],
             json_path=PATTERNS / 'Composition.json')
-        base_inputs = [('s1', 't1', 'type'),
-                       ('s12', 't12', 'memberEnd'),
-                       ('song', 'tiger', 'blue'), ]
-        base_df = pd.DataFrame(data={
-            'source': ['s1', 's12', 'song'],
-            'target': [edge[1] for edge in base_inputs],
-            'type': ['type' for i in range(3)],
-            'memberEnd': ['memberEnd' for i in range(3)],
-            'blue': ['blue' for i in range(3)]
-        })
+        # Have to create the actual graph object because get_pattern_graph_diff
+        # employs the graph object properties
+        # with 2 different original edges of the same type I can induce a
+        # match based on rename and an unstable pair.
+        og_eval = manager.evaluators[0]
+        og_graph = PropertyDiGraph()
+        og_eval.prop_di_graph = og_graph
+        ch_eval = manager.evaluators[1]
+        ch_graph = PropertyDiGraph()
+        ch_eval.prop_di_graph = ch_graph
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            orig_edge = DiEdge(
+                source=Vertex(name='Car', id='_001'),
+                target=Vertex(name='car', id='_002'),
+                edge_attribute='type',
+            )
+            renm_source = DiEdge(
+                source=Vertex(name='Subaru', id='_001', original_name='Car',
+                              original_id='_001', node_types=['Atomic Thing']),
+                target=Vertex(name='car', id='_002'),
+                edge_attribute='type',
+            )
+            orig_edge2 = DiEdge(
+                source=Vertex(name='Car', id='_001'),
+                target=Vertex(name='Vehicle', id='_003'),
+                edge_attribute='type',
+            )
+            unstab_edge1 = DiEdge(
+                source=Vertex(name='Car', id='_001'),
+                target=Vertex(name='Not Car', id='_100'),
+                edge_attribute='type'
+            )
+            unstab_edge2 = DiEdge(
+                source=Vertex(name='Cup', id='_101'),
+                target=Vertex(name='Vehicle', id='_003'),
+                edge_attribute='type'
+            )
+            added_edge = DiEdge(
+                source=Vertex(name='New Source', id=uuid.uuid4(),
+                              node_types=['Atomic Thing']),
+                target=Vertex(name='New Target', id=uuid.uuid4(),
+                              node_types=['Atomic Thing']),
+                edge_attribute='newEdge',
+            )
+            del_edge = DiEdge(
+                source=Vertex(name='Old Source', id='_010'),
+                target=Vertex(name='Old Target', id='_011'),
+                edge_attribute='oldEdge',
+            )
+            original_edges = [orig_edge, orig_edge2, del_edge]
+            change_edge = [renm_source, unstab_edge1,
+                           unstab_edge2, added_edge]
+            orig_attrs = [{'diedge': edge,
+                           'edge_attribute': edge.edge_attribute}
+                           for edge in original_edges]
+            change_attrs = [{'diedge': edge,
+                             'edge_attribute': edge.edge_attribute}
+                             for edge in change_edge]
+            for edge in zip(original_edges, orig_attrs):
+                og_graph.add_node(edge[0].source.name,
+                                  **{edge[0].source.name: edge[0].source})
+                og_graph.add_node(edge[0].target.name,
+                                  **{edge[0].target.name: edge[0].target})
+                og_graph.add_edge(edge[0].source.name, edge[0].target.name,
+                                  **edge[1])
+            for edge in zip(change_edge, change_attrs):
+                ch_graph.add_node(edge[0].source.name,
+                                  **{edge[0].source.name: edge[0].source})
+                ch_graph.add_node(edge[0].target.name,
+                                  **{edge[0].target.name: edge[0].target})
+                ch_graph.add_edge(edge[0].source.name, edge[0].target.name,
+                                  **edge[1])
 
-        ancestor = [('as1', 't1', 'type'),
-                    ('s12', 'at12', 'memberEnd'), ('b', 'c', 'orange')]
+            ch_dict = manager.get_pattern_graph_diff(out_directory=tmpdir)
 
-        base_edges = []
-        base_vertex_dict = {}
-        base_dict = {}
-        ancestor_edges = []
-        ancestor_vertex_dict = {}
-        ancestor_dict = {}
+            ch_dict = ch_dict['0-1']
 
-        for edge_tuple in base_inputs:
-            source = Vertex(name=edge_tuple[0],
-                            node_types=['component'])
-            target = Vertex(name=edge_tuple[1],
-                            node_types=['Atomic Thing'])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            base_vertex_dict[edge_tuple[0]] = source
-            base_vertex_dict[edge_tuple[1]] = target
-            base_dict[edge_tuple] = edge
-            base_edges.append(edge)
+            changes = ch_dict['Changes']
+            add = changes['Added']  # a list
+            deld = changes['Deleted']  # a list
+            unstab = ch_dict['Unstable Pairs']  # DiEdge: [DiEdge ...]
+            unstab[orig_edge2] = set(unstab[orig_edge2])
+            change = changes[orig_edge]
 
-        for edge_tuple in ancestor:
-            source = Vertex(name=edge_tuple[0],
-                            node_types=['component'])
-            target = Vertex(name=edge_tuple[1],
-                            node_types=['Atomic Thing'])
-            edge = DiEdge(source=source, target=target,
-                          edge_attribute=edge_tuple[2])
-            ancestor_vertex_dict[edge_tuple[0]] = source
-            ancestor_vertex_dict[edge_tuple[1]] = target
-            ancestor_dict[edge_tuple] = edge
-            ancestor_edges.append(edge)
-
-        manager.evaluators[0].df = base_df
-        manager.evaluators[0].prop_di_graph = PropertyDiGraph()
-        manager.evaluators[1].prop_di_graph = PropertyDiGraph()
-        manager.evaluators[0].prop_di_graph.edge_set = set(base_edges)
-        manager.evaluators[1].prop_di_graph.edge_set = set(ancestor_edges)
-        manager.evaluators[0].prop_di_graph.vertex_dict = base_vertex_dict
-        manager.evaluators[1].prop_di_graph.vertex_dict = ancestor_vertex_dict
-        manager.evaluators[0].prop_di_graph.edge_dict = base_dict
-        manager.evaluators[1].prop_di_graph.edge_dict = ancestor_dict
-        df_data = {'new name': ['at12'],
-                   'old name': ['t12']}
-        manager.evaluators[1].df_renames = pd.DataFrame(data=df_data)
-        self.assertTrue(manager.evaluators[1].has_rename)
-
-        match_dict = manager.get_pattern_graph_diff()
-
-        match_dict_str = {}
-        added_to_str = []
-        deleted_to_str = []
-        add_del = ('Added', 'Deleted')
-        for key in match_dict['0-1']['Changes']:
-            if isinstance(key, str):
-                if key in add_del:
-                    match_dict_str.update({key:
-                                           [value.named_edge_triple
-                                            for value in match_dict[
-                                                '0-1']['Changes'][key]]})
-                    continue
-                else:
-                    vals = []
-                    for value in match_dict['0-1']['Changes'][key]:
-                        vals.append(value.name)
-                    match_dict_str.update({key: vals})
-            else:
-                match_dict_str.update({key.named_edge_triple:
-                                       match_dict[
-                                           '0-1'][
-                                           'Changes'][
-                                           key][0].named_edge_triple})
-
-        expected_matches = {('s1', 't1', 'type'): ('as1', 't1', 'type'),
-                            'Rename new name': ['at12'],
-                            'Rename old name': ['t12'],
-                            'Added': [('b', 'c', 'orange'), ],
-                            'Deleted': [('song', 'tiger', 'blue'), ], }
-        self.assertDictEqual(expected_matches, match_dict_str)
+            assert change[0] == renm_source
+            assert add == [added_edge]
+            assert deld == [del_edge]
+            assert unstab == {orig_edge2: {unstab_edge1, renm_source,
+                                           unstab_edge2}}
 
     def test_changes_to_excel(self):
         manager = Manager(

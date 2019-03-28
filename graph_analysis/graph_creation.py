@@ -88,8 +88,9 @@ class Manager:
     def get_pattern_graph_diff(self, out_directory=''):
         """
         Compares the graph describing an Original MagicDraw model to the graph
-        describing an Updated MagicDraw model. If neither of the graphs is an
-        original graph then the function will not compare them.
+        describing an Updated MagicDraw model. This method only compares an
+        original graph instance to a chagne instance, i.e. it ignores change
+        to change comparisons.
 
         This function
 
@@ -223,15 +224,40 @@ class Manager:
 
     def changes_to_excel(self, out_directory=''):
         """
+        Write the changes from the get_pattern_graph_diff() method to an Excel
+        file. The changes displayed in the file are intended to inform the user
+        of the changes that the change_json will make to the model when
+        implemented in MagicDraw and to display the changes that the user will
+        have to make on their own to bring the model up to date. In other words
+        the Excel file generated here displays the complete set of differences
+        between the original and the change file and the likely changes that
+        update the original file to be equivalent with the specified change
+        file. This method produces an Excel file by flattening the
+        evaluator_change_dict variable and writing it to a Python dictionary,
+        which can be interpreted as a Pandas DataFrame and written out to an
+        Excel file.
 
         Parameters
         ----------
+        out_directory : str
+            string representation of the desired output directory. If
+            out_directory is not specified then the output directory will by
+            the same as the input directory.
 
         Notes
         -----
+        This function could be expanded to produce a more "readable" Excel
+        file. Currently it just produces a "raw" Excel file, which becomes
+        particularly apparent when viewing the Unstable Matches Original
+        and Unstable Matches Change columns of the Excel, as a background on
+        the idea of the Stable Marriage Algorithm helps interpret the displayed
+        data.
 
         See Also
         --------
+        get_pattern_graph_diff() for the generation of the match dictionary
+        to_excel_df() for the process of transforming the dictionary into a
+        DataFrame.
         """
         # TODO: When length of value > 1 put these changes into
         # Unstable Original: [key*len(value)] Unstable Change: [value]
@@ -283,8 +309,43 @@ class Manager:
         intentionally leaving the source and target nodes in the model incase
         they fulfill other roles. Changed edges have two main categories with
         three subcategories. First, a change edge can either involve a renamed
-        source or target node or a newly created source or target node. Once,
-        it has been identified that the 
+        source or target node or a newly created source or target node. Once
+        identified as a rename (respectively newly created), the edge is
+        sorted into three scenarios, both the source and target node represent
+        renamed (respectively new) nodes, or the source or target node
+        corresponds to a rename (respectively new) node operation. After
+        identifying all of the changes and producing the associated
+        dictionaries, the operations are sorted to place created nodes and
+        their decorations first, followed by deleted edges, renamed nodes and
+        ending with added edges.
+
+        Parameters
+        ----------
+        change_dict : dict
+            Dictionary of confident changes. Two static keys 'Added' and
+            'Deleted' with associated lists of added and deleted nodes
+            respectively. The remaining key value pairs in the change_dict
+            represent confident changes with the key being an edge from the
+            original Evaluator and the value being a list comprised of the
+            likely change edge.
+
+        translator : MDTranslator
+            MagicDraw Translator object associated with the current update
+            evaluator.
+
+        evaluators : str
+            Number of the two evaluators under consideration. The original
+            evaulator always receives the numebr 0 while each change evaluator
+            has a number 1-n with n being the nth evaluator.
+
+        out_directory : str
+            String specifying the output directory
+
+        Notes
+        -----
+        Any edge not meeting one of the eight criteria defined will fall
+        through to the else case and become an edge replace operation.
+        The get_pattern_graph_diff() method automatically calls this method.
         """
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
