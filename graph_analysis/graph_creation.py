@@ -370,23 +370,31 @@ class Manager:
         # set(filter(
         # lambda x: not isinstance(x, uuid.uuid4()), translator.uml_id.keys()))
         seen_ids = set()
+        for k, v in translator.uml_id.items():
+            if isinstance(v, str):
+                seen_ids.add(v)
 
         for key, value in change_dict.items():
             if key == 'Added':
                 for edge in value:
                     edge_source, edge_target = edge.source, edge.target
+                    # if source or target id in seen ids then do below
+                    # else (both source and target in seen ids then just add
+                    # the edge (the floating add edge under the else statment)
                     if edge_source.id not in seen_ids:
                         seen_ids.add(edge_source.id)
                         s_cr, s_dec, s_edg = edge_source.create_node_to_uml(
                             translator=translator)
                         create_node.extend(s_cr)
                         node_dec.extend(s_dec)
+                        edge_add.extend(s_edg)
                     if edge_target.id not in seen_ids:
                         seen_ids.add(edge_target.id)
                         t_cr, t_dec, t_edg = edge_target.create_node_to_uml(
                             translator=translator)
                         create_node.extend(t_cr)
                         node_dec.extend(t_dec)
+                        edge_add.extend(t_edg)
                     edge_add.append(edge.edge_to_uml(op='replace',
                                                      translator=translator))
             elif key == 'Deleted':
@@ -448,6 +456,7 @@ class Manager:
                             translator=translator)
                         create_node.extend(s_cr)
                         node_dec.extend(s_dec)
+                        edge_add.extend(s_edg)
                         # This could be double creating edges.
                         # just creating node and decorations because. Excluding
                         # the edges maintains promise of change json to user
@@ -459,6 +468,7 @@ class Manager:
                             translator=translator)
                         create_node.extend(t_cr)
                         node_dec.extend(t_dec)
+                        edge_add.extend(t_edg)
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif new_source:
@@ -469,6 +479,7 @@ class Manager:
                             translator=translator)
                         create_node.extend(s_cr)
                         node_dec.extend(s_dec)
+                        edge_add.extend(s_edg)
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 elif new_target:
@@ -479,6 +490,7 @@ class Manager:
                             translator=translator)
                         create_node.extend(t_cr)
                         node_dec.extend(t_dec)
+                        edge_add.extend(t_edg)
                     edge_add.append(value[0].edge_to_uml(
                         op='replace', translator=translator))
                 else:
