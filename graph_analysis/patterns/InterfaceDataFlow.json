@@ -72,8 +72,12 @@
         "Comp A Context"
     ],
     "Pattern Graph Edge Labels": [
+        "memberEnd",
         "owner",
+        "memberEnd",
         "association",
+        "type",
+        "owner",
         "owner",
         "role",
         "end",
@@ -81,8 +85,12 @@
         "type",
         "owner",
         "owner",
+        "memberEnd",
         "owner",
+        "memberEnd",
         "association",
+        "type",
+        "owner",
         "end",
         "role",
         "owner",
@@ -92,16 +100,32 @@
     ],
     "Pattern Graph Edges": [
         [
+            "A_CompA Context_CompA",
+            "Comp A Context"
+        ],
+        [
             "Comp A Context",
             "A_CompA Context_CompA"
         ],
         [
+            "A_CompA Context_CompA",
+            "Comp A"
+        ],
+        [
             "Comp A",
             "A_CompA Context_CompA"
         ],
         [
             "Comp A",
+            "Component A"
+        ],
+        [
+            "Comp A",
             "Context"
+        ],
+        [
+            "C_Outport_Inport-end1",
+            "C_Outport_Inport"
         ],
         [
             "C_Outport_Inport-end1",
@@ -128,12 +152,28 @@
             "Context"
         ],
         [
+            "A_CompB Context_CompB",
+            "Comp B Context"
+        ],
+        [
             "Comp B Context",
             "A_CompB Context_CompB"
         ],
         [
+            "A_CompB Context_CompB",
+            "Comp B"
+        ],
+        [
             "Comp B",
             "A_CompB Context_CompB"
+        ],
+        [
+            "Comp B",
+            "Component B"
+        ],
+        [
+            "C_Outport_Inport-end2",
+            "C_Outport_Inport"
         ],
         [
             "C_Outport_Inport",
@@ -162,16 +202,32 @@
     ],
     "Pattern Spanning Tree Edges": [
         [
+            "A_CompA Context_CompA",
+            "Comp A Context"
+        ],
+        [
             "Comp A Context",
             "A_CompA Context_CompA"
         ],
         [
+            "A_CompA Context_CompA",
+            "Comp A"
+        ],
+        [
             "Comp A",
             "A_CompA Context_CompA"
         ],
         [
             "Comp A",
+            "Component A"
+        ],
+        [
+            "Comp A",
             "Context"
+        ],
+        [
+            "C_Outport_Inport-end1",
+            "C_Outport_Inport"
         ],
         [
             "C_Outport_Inport-end1",
@@ -198,12 +254,28 @@
             "Context"
         ],
         [
+            "A_CompB Context_CompB",
+            "Comp B Context"
+        ],
+        [
             "Comp B Context",
             "A_CompB Context_CompB"
         ],
         [
+            "A_CompB Context_CompB",
+            "Comp B"
+        ],
+        [
             "Comp B",
             "A_CompB Context_CompB"
+        ],
+        [
+            "Comp B",
+            "Component B"
+        ],
+        [
+            "C_Outport_Inport-end2",
+            "C_Outport_Inport"
         ],
         [
             "C_Outport_Inport",
@@ -231,8 +303,12 @@
         ]
     ],
     "Pattern Spanning Tree Edge Labels": [
+        "memberEnd",
         "owner",
+        "memberEnd",
         "association",
+        "type",
+        "owner",
         "owner",
         "role",
         "end",
@@ -240,8 +316,12 @@
         "type",
         "owner",
         "owner",
+        "memberEnd",
         "owner",
+        "memberEnd",
         "association",
+        "type",
+        "owner",
         "end",
         "role",
         "owner",
@@ -322,7 +402,9 @@
         "Inport": {
             "isConjugated": "true"
         },
-        "C_Outport_Inport-end2": null,
+        "C_Outport_Inport-end2": {
+			"propertyPath" : ["id-Comp B"]
+		},
         "C_Outport_Inport": null,
         "Comp B": null,
         "A_CompB Context_CompB": null,
@@ -330,7 +412,9 @@
         "Context": null,
         "Component A": null,
         "Outport": null,
-        "C_Outport_Inport-end1": null,
+        "C_Outport_Inport-end1": {
+			"propertyPath" : ["id-Comp A"]
+		},
         "Comp A": null,
         "A_CompA Context_CompA": null,
         "Comp A Context": null
