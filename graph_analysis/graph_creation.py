@@ -402,108 +402,61 @@ class Manager:
                     edge_del.append(edge.edge_to_uml(op='delete',
                                                      translator=translator))
             else:
-                # Key is DiEdge Obj (Original), Value[0] is DiEdge Obj (Change)
-                source_key, target_key = key.source, key.target
                 source_val, target_val = value[0].source, value[0].target
-                seen_source = any(
-                    saw_id == source_val.id for saw_id in seen_ids)
-                seen_target = any(
-                    saw_id == target_val.id for saw_id in seen_ids)
-                new_source = isinstance(source_val.id, type(uuid.uuid4()))
-                new_target = isinstance(target_val.id, type(uuid.uuid4()))
-                if source_val.has_rename and target_val.has_rename:
-                    # create the value_source/target
-                    if not seen_source:
-                        seen_ids.add(source_val.id)
+                # Using filter as mathematical ~selective~ or.
+                eligible = list(filter(lambda x: x.id not in seen_ids,
+                                       [source_val, target_val]))
+                has_rename = list(
+                    filter(lambda x: x.has_rename, eligible))
+                is_new = list(
+                    filter(lambda x: isinstance(x.id, type(uuid.uuid4())),
+                           eligible))
+                if has_rename:
+                    for node in has_rename:
+                        seen_ids.add(node.id)
                         node_renames.append(
-                            source_val.change_node_to_uml(
-                                translator=translator)
-                        )
-                    if not seen_target:
-                        seen_ids.add(target_val.id)
-                        node_renames.append(
-                            target_val.change_node_to_uml(
-                                translator=translator)
-                        )
-                    edge_add.append(value[0].edge_to_uml(
-                        op='replace', translator=translator))
-                elif source_val.has_rename:
-                    # create the value_source/target
-                    if not seen_source:
-                        seen_ids.add(source_val.id)
-                        node_renames.append(
-                            source_val.change_node_to_uml(
-                                translator=translator)
-                        )
-                    edge_add.append(value[0].edge_to_uml(
-                        op='replace', translator=translator))
-                elif target_val.has_rename:
-                    # create the value_source/target
-                    if not seen_target:
-                        seen_ids.add(target_val.id)
-                        node_renames.append(
-                            target_val.change_node_to_uml(
-                                translator=translator)
-                        )
-                    edge_add.append(value[0].edge_to_uml(
-                        op='replace', translator=translator))
-                elif new_source and new_target:
-                    # create both source and target
-                    # replace edge
-                    if not seen_source:
-                        seen_ids.add(source_val.id)
-                        s_cr, s_dec, s_edg = source_val.create_node_to_uml(
+                            node.change_node_to_uml(translator=translator))
+                    else:
+                        edge_add.append(
+                            value[0].edge_to_uml(
+                                op='replace', translator=translator))
+                if is_new:
+                    for node in is_new:
+                        seen_ids.add(node.id)
+                        n_cr, n_dec, n_edg = node.create_node_to_uml(
                             translator=translator)
-                        create_node.extend(s_cr)
-                        node_dec.extend(s_dec)
-                        edge_add.extend(s_edg)
-                        # This could be double creating edges.
-                        # just creating node and decorations because. Excluding
-                        # the edges maintains promise of change json to user
-                        # that only changes made are those listed in json. To
-                        # find missing nodes and such look in the Excel.
-                    if not seen_target:
-                        seen_ids.add(target_val.id)
-                        t_cr, t_dec, t_edg = target_val.create_node_to_uml(
-                            translator=translator)
-                        create_node.extend(t_cr)
-                        node_dec.extend(t_dec)
-                        edge_add.extend(t_edg)
-                    edge_add.append(value[0].edge_to_uml(
-                        op='replace', translator=translator))
-                elif new_source:
-                    # create node, replace edge
-                    if not seen_source:
-                        seen_ids.add(source_val.id)
-                        s_cr, s_dec, s_edg = source_val.create_node_to_uml(
-                            translator=translator)
-                        create_node.extend(s_cr)
-                        node_dec.extend(s_dec)
-                        edge_add.extend(s_edg)
-                    edge_add.append(value[0].edge_to_uml(
-                        op='replace', translator=translator))
-                elif new_target:
-                    # create node, replace edge
-                    if not seen_target:
-                        seen_ids.add(target_val.id)
-                        t_cr, t_dec, t_edg = target_val.create_node_to_uml(
-                            translator=translator)
-                        create_node.extend(t_cr)
-                        node_dec.extend(t_dec)
-                        edge_add.extend(t_edg)
-                    edge_add.append(value[0].edge_to_uml(
-                        op='replace', translator=translator))
-                else:
-                    edge_add.append(value[0].edge_to_uml(
-                        op='replace', translator=translator
-                    ))
+                        create_node.extend(n_cr)
+                        node_dec.extend(n_dec)
+                        edge_add.extend(n_edg)
+                    else:
+                        edge_add.append(
+                            value[0].edge_to_uml(
+                                op='replace', translator=translator))
+                if not has_rename and not is_new:
+                    edge_add.append(
+                        value[0].edge_to_uml(
+                            op='replace', translator=translator))
 
         if create_node:
             change_list.extend(create_node)
             change_list.extend(node_dec)
         change_list.extend(edge_del)
         change_list.extend(node_renames)
-        change_list.extend(edge_add)
+
+        def make_string(e_a):
+            if isinstance(e_a['ops'][0]['value'], list):
+                e_a_value = e_a['ops'][0]['value'][0]
+            else:
+                e_a_value = e_a['ops'][0]['value']
+            return str(e_a['id']) + str(e_a_value) \
+                + str(e_a['ops'][0]['path'])
+        e_a_dict = dict((e_a_tup[0], e_a_tup[1])
+                        for e_a_tup in zip(
+                            map(make_string, edge_add), edge_add)
+                        )
+        print(e_a_dict.keys())
+        print(no_variable_by_name)
+        change_list.extend(list(e_a_dict.values()))
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)

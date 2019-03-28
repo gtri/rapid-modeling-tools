@@ -158,10 +158,10 @@ class TestManager(unittest.TestCase):
                            unstab_edge2, added_edge]
             orig_attrs = [{'diedge': edge,
                            'edge_attribute': edge.edge_attribute}
-                           for edge in original_edges]
+                          for edge in original_edges]
             change_attrs = [{'diedge': edge,
                              'edge_attribute': edge.edge_attribute}
-                             for edge in change_edge]
+                            for edge in change_edge]
             for edge in zip(original_edges, orig_attrs):
                 og_graph.add_node(edge[0].source.name,
                                   **{edge[0].source.name: edge[0].source})
@@ -304,7 +304,6 @@ class TestManager(unittest.TestCase):
                               node_types=['Atomic Thing'],),
                 edge_attribute='type',
             )
-
             orig_edge4 = DiEdge(
                 source=Vertex(name='subaru', id='_004'),
                 target=Vertex(name='car', id='_002'),
@@ -339,7 +338,6 @@ class TestManager(unittest.TestCase):
                               node_types=['Atomic Thing'],),
                 edge_attribute='type',
             )
-
             added_edge = DiEdge(
                 source=Vertex(name='New Source', id=uuid.uuid4(),
                               node_types=['Atomic Thing']),
@@ -347,7 +345,6 @@ class TestManager(unittest.TestCase):
                               node_types=['Atomic Thing']),
                 edge_attribute='newEdge',
             )
-
             del_edge = DiEdge(
                 source=Vertex(name='Old Source', id='_010'),
                 target=Vertex(name='Old Target', id='_011'),
@@ -368,8 +365,7 @@ class TestManager(unittest.TestCase):
                                                        evaluators='0-1',
                                                        translator=tr,
                                                        out_directory=tmpdir)
-            for item in changes:
-                print(item)
+
             rename = 0
             replace = 0
             create = 0
