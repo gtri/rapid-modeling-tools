@@ -21,7 +21,8 @@ from graph_analysis.utils import (associate_node_id,
                                   create_column_values_under,
                                   get_node_types_attrs,
                                   get_setting_node_name_from_df, make_object,
-                                  match, match_changes, to_excel_df,
+                                  make_string, match, match_changes,
+                                  remove_duplicates, to_excel_df,
                                   to_uml_json_decorations, to_uml_json_edge,
                                   to_uml_json_node)
 
@@ -592,6 +593,41 @@ class TestUtils(unittest.TestCase):
         excel_df = pd.DataFrame(data=dict([
             (k, pd.Series(v)) for k, v in excel_data.items()]))
         self.assertTrue(expected_df.equals(excel_df))
+
+    def test_make_string(self):
+        attr_dict = {
+            'id': '_001',
+            'ops': [
+                {
+                    'value': '_002',
+                    'path': '/m2/path'
+                }
+            ]
+        }
+        str_repr = make_string(attr_dict)
+        assert str_repr == '_001_002/m2/path'
+
+        attr_dict_cr = {
+            'id': '_001',
+            'ops': [
+                {
+                    'name': 'new node',
+                    'path': None,
+                }
+            ]
+        }
+        str_repr_cr = make_string(attr_dict_cr, create=True)
+        assert str_repr_cr == '_001new nodeNone'
+
+    def test_remove_duplicates(self):
+        attr_dict = {'id': '_001',
+                     'ops': [{'value': '_002', 'path': '/m2/path', }, ]}
+        attr_dict_cr = {
+            'id': '_001', 'ops': [{'value': 'new node', 'path': None, }, ], }
+        input = [attr_dict, attr_dict, attr_dict_cr]
+        fil_in = remove_duplicates(input)
+        assert [attr_dict, attr_dict_cr] == fil_in
+        pass
 
     def test_to_uml_json_node(self):
         in_dict = {

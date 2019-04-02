@@ -18,7 +18,7 @@ from .utils import (associate_node_id, associate_node_types_settings,
                     associate_successors, build_dict,
                     create_column_values_singleton, create_column_values_space,
                     create_column_values_under, make_object, match_changes,
-                    to_excel_df, truncate_microsec)
+                    remove_duplicates, to_excel_df, truncate_microsec)
 
 
 class Manager:
@@ -438,25 +438,12 @@ class Manager:
                             op='replace', translator=translator))
 
         if create_node:
-            change_list.extend(create_node)
-            change_list.extend(node_dec)
-        change_list.extend(edge_del)
-        change_list.extend(node_renames)
+            change_list.extend(remove_duplicates(create_node, create=True))
+            change_list.extend(remove_duplicates(node_dec))
+        change_list.extend(remove_duplicates(edge_del))
+        change_list.extend(remove_duplicates(node_renames))
 
-        def make_string(e_a):
-            if isinstance(e_a['ops'][0]['value'], list):
-                e_a_value = e_a['ops'][0]['value'][0]
-            else:
-                e_a_value = e_a['ops'][0]['value']
-            return str(e_a['id']) + str(e_a_value) \
-                + str(e_a['ops'][0]['path'])
-        e_a_dict = dict((e_a_tup[0], e_a_tup[1])
-                        for e_a_tup in zip(
-                            map(make_string, edge_add), edge_add)
-                        )
-        print(e_a_dict.keys())
-        print(no_variable_by_name)
-        change_list.extend(list(e_a_dict.values()))
+        # change_list.extend(list(e_a_dict.values()))
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)

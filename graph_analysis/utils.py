@@ -573,6 +573,33 @@ def get_setting_node_name_from_df(df=None, column=None, node=None):
         masked_df.isnull()).dropna(axis=0, how='all')[column].tolist()
 
 
+def make_string(attr_dict, create=False):
+    # attr_dict follows to to_uml_json_* structure
+    if create:
+        ops_in_value = 'name'
+    else:
+        ops_in_value = 'value'
+    if isinstance(attr_dict['ops'][0][ops_in_value], list):
+        e_a_value = attr_dict['ops'][0][ops_in_value][0]
+    else:
+        e_a_value = attr_dict['ops'][0][ops_in_value]
+    return str(attr_dict['id']) + str(e_a_value) \
+        + str(attr_dict['ops'][0]['path'])
+
+
+def remove_duplicates(input, create=False):
+    # input is a list of dicts
+    seen = set()
+    filtered_list = []
+    for attr_dict in input:
+        str_repr = make_string(attr_dict, create=create)
+        if str_repr not in seen:
+            seen.add(str_repr)
+            filtered_list.append(attr_dict)
+
+    return filtered_list
+
+
 def to_uml_json_node(**kwargs):
     return {
         'id': kwargs['id'],
