@@ -196,21 +196,7 @@ class TestVertex(unittest.TestCase):
                      'Atomic Thing': ['engine', 'Car'],
                      'edge type': ['owner', 'type']}
         test_graph_df = pd.DataFrame(data=data_dict)
-        Test_Graph = nx.DiGraph()
-        Temp_Graph = nx.DiGraph()
-        Temp_Graph = nx.from_pandas_edgelist(
-            df=test_graph_df, source='component',
-            target='Atomic Thing', edge_attr='edge type',
-            create_using=Temp_Graph)
-        edge_label_dict = {'edge type': 'owner'}
-        Test_Graph.add_nodes_from(Temp_Graph)
-        Test_Graph.add_edge('Car', 'engine', edge_attribute='owner')
-        Test_Graph.add_edge('engine', 'Car',
-                            edge_attribute='type')
-
-        verticies = create_vertex_objects(
-            df=test_graph_df, graph=Test_Graph)
-
+        Test_Graph = PropertyDiGraph()
         vertex_1_connections = [{'source': 'Car',
                                  'target': 'engine',
                                  'edge_attribute': 'owner'},
@@ -223,11 +209,28 @@ class TestVertex(unittest.TestCase):
                                 {'source': 'Car',
                                  'target': 'engine',
                                  'edge_attribute': 'owner'}]
+        car = Vertex(name='Car',
+                     successors=[vertex_1_connections[0]],
+                     predecessors=[vertex_1_connections[1]])
+        engine = Vertex(name='engine',
+                        successors=[vertex_2_connections[0]],
+                        predecessors=[vertex_2_connections[1]])
+        Test_Graph.add_node(car, **{'Car': car})
+        Test_Graph.add_node(engine, **{'engine': engine})
+        Test_Graph.add_edge('Car', 'engine',
+                            **{'diedge': DiEdge(source=car,
+                                                target=engine,
+                                                edge_attribute='owner')})
+        Test_Graph.add_edge('engine', 'Car',
+                            **{'diedge': DiEdge(source=engine,
+                                                target=car,
+                                                edge_attribute='type'), },)
         vertex_connections_dict = {0: vertex_1_connections,
                                    1: vertex_2_connections}
-        for index, vertex in enumerate(verticies):
-            self.assertListEqual(
-                vertex_connections_dict[index], vertex.connections)
+
+        # Check that the edges are associated properly and then check that
+        # source and target are assigned properly in the connections dicts.
+        assert False, 'Fix this test build a graph a la to_prop_di_graph, test'
 
     def test_vertex_to_dict(self):
         # This also tests the Vertex.to_dict() method in a round about way
@@ -256,35 +259,42 @@ class TestVertex(unittest.TestCase):
         data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
+        car_id = translator.get_uml_id(name='Car')
         vertex_car = Vertex(
             name='Car',
+            id=car_id,
             node_types=['Atomic Thing', 'Composite Thing'],
-            successors={'engine': {
-                'edge_attribute': 'owner'}},
-            predecessors={'engine': {
-                'edge_attribute': 'type'
-            }},
+            successors=[{'target': 'engine',
+                         'source': 'Car',
+                         'edge_attribute': 'owner', }, ],
+            predecessors=[{'source': 'engine',
+                           'target': 'Car',
+                           'edge_attribute': 'type', }, ],
             attributes=[{'Notes': 'Test Note'}]
         )
         vertex_car_uml, car_decs, edge_car_uml = vertex_car.create_node_to_uml(
             translator=translator
         )
 
+        engine_id = translator.get_uml_id(name='engine')
         vertex_engine = Vertex(
             name='engine',
+            id=engine_id,
             node_types=['component', 'component'],
-            successors={'Car': {
-                'edge_attribute': 'type'}},
-            predecessors={'Car': {
-                'edge_attribute': 'owner'}},
-            settings_node=['Car']
+            successors=[{'target': 'Car',
+                         'source': 'engine',
+                         'edge_attribute': 'type', }, ],
+            predecessors=[{'source': 'Car',
+                           'target': 'engine',
+                           'edge_attribute': 'owner', }, ],
+            settings=[{'aggregation': 'composite'}]
         )
         engine_uml = vertex_engine.create_node_to_uml(
             translator=translator
         )
 
         car_node_uml = [{
-            'id': 'new_0',
+            'id': 'new_' + str(car_id),
             'ops': [
                 {
                     'op': 'create',
@@ -300,22 +310,22 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(car_node_uml, vertex_car_uml)
 
         car_edge_uml = [{
-            'id': 'new_0',
+            'id': 'new_' + str(car_id),
             'ops': [
                 {
                     'op': 'replace',
                     'path': '/m2/owner',
-                    'value': 'new_1',
+                    'value': 'new_' + str(engine_id),
                 }
             ]
         },
             {
-            'id': 'new_1',
+            'id': 'new_' + str(engine_id),
             'ops': [
                 {
                     'op': 'replace',
                     'path': '/m2/type',
-                    'value': 'new_0',
+                    'value': 'new_' + str(car_id),
                 }
             ]
         }]
@@ -323,7 +333,7 @@ class TestVertex(unittest.TestCase):
         self.assertListEqual(car_edge_uml, edge_car_uml)
 
         engine_node_uml = [{
-            'id': 'new_1',
+            'id': 'new_' + str(engine_id),
             'ops': [
                 {
                     'op': 'create',
@@ -337,22 +347,22 @@ class TestVertex(unittest.TestCase):
         }]
 
         engine_decoration_uml = [{
-            'id': 'new_1',
+            'id': 'new_' + str(engine_id),
             'ops': [
                 {
                     'op': 'replace',
-                    'path': '/aggregation',
-                    'value': ['new_0'],
+                    'path': '/m2/aggregation',
+                    'value': 'composite',
                 }
             ]
         },
             {
-            'id': 'new_1',
+            'id': 'new_' + str(engine_id),
             'ops': [
                 {
                     'op': 'replace',
-                    'path': '/aggregation',
-                    'value': ['new_0'],
+                    'path': '/m2/aggregation',
+                    'value': 'composite',
                 }
             ]
         }]
@@ -362,22 +372,22 @@ class TestVertex(unittest.TestCase):
             self.assertDictEqual(engine_uml[1][count], decs_dict)
 
         engine_edge_uml = [{
-            'id': 'new_1',
+            'id': 'new_' + str(engine_id),
             'ops': [
                 {
                     'op': 'replace',
                     'path': '/m2/type',
-                    'value': 'new_0',
+                    'value': 'new_' + str(car_id),
                 }
             ]
         },
             {
-            'id': 'new_0',
+            'id': 'new_' + str(car_id),
             'ops': [
                 {
                     'op': 'replace',
                     'path': '/m2/owner',
-                    'value': 'new_1',
+                    'value': 'new_' + str(engine_id),
                 }
             ]
         }]
@@ -389,8 +399,10 @@ class TestVertex(unittest.TestCase):
         data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
+        car_id = translator.get_uml_id(name='Car')
         vertex_car = Vertex(
             name='Car',
+            id=car_id,
             node_types=['Atomic Thing', 'Composite Thing'],
             successors={'engine': {
                 'edge_attribute': 'owner'}},
@@ -401,7 +413,7 @@ class TestVertex(unittest.TestCase):
         )
 
         car_rename_uml = [{
-            'id': 'new_0',
+            'id': 'new_' + str(car_id),
             'ops': [
                 {
                     'op': 'rename',
@@ -424,8 +436,10 @@ class TestVertex(unittest.TestCase):
         data = json.loads(data)
 
         translator = MDTranslator(json_data=data)
+        car_id = translator.get_uml_id(name='Car')
         vertex_car = Vertex(
             name='Car',
+            id=car_id,
             node_types=['Atomic Thing', 'Composite Thing'],
             successors={'engine': {
                 'edge_attribute': 'owner'}},
@@ -436,7 +450,7 @@ class TestVertex(unittest.TestCase):
         )
 
         car_delete_uml = [{
-            'id': 'new_0',
+            'id': 'new_' + str(car_id),
             'ops': [
                 {
                     'op': 'delete',
