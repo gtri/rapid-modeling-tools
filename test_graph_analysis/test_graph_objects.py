@@ -464,9 +464,8 @@ class TestVertex(unittest.TestCase):
         for node_name in node_names:
             uml_id_names.append(translator.get_uml_id(name=node_name))
 
-        expected_uml_names = ['new_0', 'new_1', 'new_0']
-        self.assertListEqual(expected_uml_names, uml_id_names)
-        self.assertEqual(2, translator.uml_id['count'])
+        assert uml_id_names[0] == uml_id_names[2]
+        assert uml_id_names[0] != uml_id_names[1]
 
         edge_names = ['type', 'owner', 'type']
         edge_id_names = []
@@ -474,9 +473,8 @@ class TestVertex(unittest.TestCase):
             edge_id_names.append(translator.get_uml_id(name=edge_name))
 
         expected_uml_edge_names = ['new_2', 'new_3', 'new_2']
-        self.assertListEqual(
-            expected_uml_edge_names, edge_id_names)
-        self.assertEqual(4, translator.uml_id['count'])
+        assert edge_id_names[0] == edge_id_names[2]
+        assert edge_id_names[0] != edge_id_names[1]
 
     def tearDown(self):
         pass

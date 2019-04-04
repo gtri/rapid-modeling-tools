@@ -441,9 +441,8 @@ class Manager:
             change_list.extend(remove_duplicates(create_node, create=True))
             change_list.extend(remove_duplicates(node_dec))
         change_list.extend(remove_duplicates(edge_del))
-        change_list.extend(remove_duplicates(node_renames))
-
-        # change_list.extend(list(e_a_dict.values()))
+        change_list.extend(remove_duplicates(node_renames, create=True))
+        change_list.extend(remove_duplicates(edge_add))
 
         json_out = {'modification targets': []}
         json_out['modification targets'].extend(change_list)

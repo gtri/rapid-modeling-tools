@@ -331,6 +331,12 @@ class TestManager(unittest.TestCase):
                 target=Vertex(name='Vehicle', id='_005'),
                 edge_attribute='type',
             )
+            new_sub = Vertex(name='Subaru', id=uuid.uuid4(),
+                             node_types=['Composite Thing'],)
+            sub_cons = {'successors': [{'source': 'Subaru',
+                                        'target': 'Car',
+                                        'edge_attribute': 'type'}]}
+            new_sub.successrs = sub_cons
             new_both = DiEdge(
                 source=Vertex(name='Subaru', id=uuid.uuid4(),
                               node_types=['Composite Thing'],),
