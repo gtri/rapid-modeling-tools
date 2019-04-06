@@ -48,12 +48,9 @@ class TestPropertyDiGraph(unittest.TestCase):
                            'A_wheel qua hub context_hub',
                            'A_engine qua drive output context_drive output',
                            'wheel qua hub context'}
-        self.Graph.create_vertex_set(
-            df=self.evaluator.df,
-            translator=self.translator)
         self.assertSetEqual(expect_vert_set, self.Graph.named_vertex_set)
 
-    def test_create_vertex_set(self):
+    def test_vertex_set(self):
         # idea is to check that the vertex_set contains the vert objects expect
         # check that each element in the vertex_set is a vertex object and
         # then check their names.
@@ -67,23 +64,17 @@ class TestPropertyDiGraph(unittest.TestCase):
                            'A_wheel qua hub context_hub',
                            'A_engine qua drive output context_drive output',
                            'wheel qua hub context'}
-        self.Graph.create_vertex_set()
+
         for vertex in self.Graph.vertex_set:
             self.assertIsInstance(vertex, Vertex)
             self.assertIn(vertex.name, expect_vert_set)
 
-        dict_keys_set = set(self.Graph.vertex_dict.keys())
-        self.assertSetEqual(expect_vert_set, dict_keys_set)
-
-    def test_create_edge_set(self):
+    def test_edge_set(self):
         # check each element of edge_set is infact a DiEdge then that it should
         # be an edge at all.
         # TODO: Find a way to use the self.Graph.edges tuples with the
         # edge attr because these show up as source, targ.
         translator = self.translator
-        self.Graph.create_vertex_set(df=self.evaluator.df,
-                                     translator=self.translator)
-        self.Graph.create_edge_set()
         data_dict = {'Composite Thing': ['Car', 'Car',
                                          'Wheel', 'Engine'],
                      'component': ['engine', 'rear driver',
@@ -140,45 +131,6 @@ class TestPropertyDiGraph(unittest.TestCase):
             self.assertIsInstance(edge, DiEdge)
             self.assertIn(edge.named_edge_triple, expected_edge_set)
 
-    def test_create_vertex_objects(self):
-        # This also tests the Vertex.to_dict() method in a round about way
-        data_dict = {'Component': ['Car', 'engine'],
-                     'Position': ['engine', 'Car'],
-                     'edge type': ['owner', 'type']}
-        test_graph_df = pd.DataFrame(data=data_dict)
-        Test_Graph = nx.DiGraph()
-        Temp_Graph = nx.DiGraph()
-        Temp_Graph = nx.from_pandas_edgelist(
-            df=test_graph_df, source='Component',
-            target='Position', edge_attr='edge type',
-            create_using=Temp_Graph)
-        edge_label_dict = {'edge type': 'owner'}
-        Test_Graph.add_nodes_from(Temp_Graph)
-        Test_Graph.add_edge('Car', 'engine', edge_attribute='owner')
-        Test_Graph.add_edge('engine', 'Car',
-                            edge_attribute='type')
-
-        vertices = create_vertex_objects(
-            df=test_graph_df, graph=Test_Graph)
-
-        vertex_1_dict = {'name': 'Car',
-                         'node types': {'Component', 'Position'},
-                         'successors': {'engine': {'edge_attribute': 'owner'}},
-                         'predecessors': {'engine':
-                                          {'edge_attribute': 'type'}},
-                         'attributes': None}
-
-        vertex_2_dict = {'name': 'engine',
-                         'node types': {'Component', 'Position'},
-                         'successors': {'Car': {'edge_attribute': 'type'}},
-                         'predecessors': {'Car': {'edge_attribute': 'owner'}},
-                         'attributes': None}
-
-        vertex_dicts = [vertex_1_dict, vertex_2_dict]
-
-        for index, vertex in enumerate(vertices):
-            self.assertDictEqual(vertex_dicts[index], vertex.to_dict())
-
     def tearDown(self):
         pass
 
@@ -215,8 +167,8 @@ class TestVertex(unittest.TestCase):
         engine = Vertex(name='engine',
                         successors=[vertex_2_connections[0]],
                         predecessors=[vertex_2_connections[1]])
-        Test_Graph.add_node(car, **{'Car': car})
-        Test_Graph.add_node(engine, **{'engine': engine})
+        Test_Graph.add_node('Car', **{'Car': car})
+        Test_Graph.add_node('engine', **{'engine': engine})
         Test_Graph.add_edge('Car', 'engine',
                             **{'diedge': DiEdge(source=car,
                                                 target=engine,
@@ -225,12 +177,10 @@ class TestVertex(unittest.TestCase):
                             **{'diedge': DiEdge(source=engine,
                                                 target=car,
                                                 edge_attribute='type'), },)
-        vertex_connections_dict = {0: vertex_1_connections,
-                                   1: vertex_2_connections}
-
-        # Check that the edges are associated properly and then check that
-        # source and target are assigned properly in the connections dicts.
-        assert False, 'Fix this test build a graph a la to_prop_di_graph, test'
+        assert (Test_Graph.nodes['Car']['Car'].connections ==
+                vertex_1_connections)
+        assert (Test_Graph.nodes['engine']['engine'].connections ==
+                vertex_2_connections)
 
     def test_vertex_to_dict(self):
         # This also tests the Vertex.to_dict() method in a round about way

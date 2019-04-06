@@ -3,32 +3,6 @@ import networkx as nx
 from .utils import to_uml_json_decorations, to_uml_json_edge, to_uml_json_node
 
 
-def create_vertex_objects(df=None, graph=None):
-    """Returns a list of Vertex objects.
-
-    Parameters
-    ----------
-    df : Pandas DataFrame
-        The DataFrame from the Evaluator after the implied nodes have been
-        created.
-
-    graph : PropertyDiGraph
-        The Property Directed Graph that the Vertices should be created from.
-    """
-    vertex_list = []
-    for node in graph.nodes:
-        mask = df == node
-        node_type_columns = df[mask].dropna(
-            axis=1, how='all').columns
-        node_types = {col for col in node_type_columns}
-        vertex = Vertex(name=node, node_types=node_types,
-                        successors=graph.succ[node].copy(),
-                        predecessors=graph.pred[node].copy())
-        vertex_list.append(vertex)
-
-    return vertex_list
-
-
 class PropertyDiGraph(nx.DiGraph):
     """
     Class for aggregating the Excel data from the Evaluator into a Directed
