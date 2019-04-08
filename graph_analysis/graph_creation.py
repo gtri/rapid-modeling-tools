@@ -35,7 +35,7 @@ class Manager:
     assumed to be of the same type and thus to correspond to the same set of
     data keys.
 
-    Attribtues
+    Parameters
     ----------
     excel_path : list
         list of paths to Excel Files.
@@ -44,6 +44,8 @@ class Manager:
         string representing a path to a *.json file that is the key to decoding
         the Excel inputs into MagicDraw compatiable outputs.
 
+    Attributes
+    ----------
     json_data : dictionary
         The json data associated with the json_path.
 
@@ -72,12 +74,19 @@ class Manager:
         self.json_data = data
 
     def create_evaluators(self):
+        """
+        Create an instance of the Evaluator class for each Excel file provided.
+        Each Evaluator recieves a copy of the Translator updated by the
+        original Evaluator.
+        """
+        # TODO: Include a flag from the commands to the manager to pass to
+        # this method that indicates create vs compare
         # TODO: Give baseline translator to change files but also to create
         # files if multiple create files in a create command. Issue?
         path_name = [excel_file.name for excel_file in self.excel_path]
 
         for count, excel_file in enumerate(self.excel_path):
-            if count != 0:
+            if count != 0:  # TODO: include flag to indicate create or compare
                 translator = self.evaluators[0].translator
             else:
                 translator = self.translator
@@ -194,6 +203,7 @@ class Manager:
                 eval_one_unmatch_pref['Added'].extend(
                     eval_two_unmatch_map[edge_type])
 
+            # builds main dict used for matching and determines add/del edges
             for edge in eval_one_unmatched:
                 if edge.edge_attribute not in eval_two_unmatch_map.keys():
                     eval_one_unmatch_pref['Deleted'].append(edge)
@@ -282,12 +292,14 @@ class Manager:
             evals_comp = key.split('-')
             edit_left_dash = 'Edit {0}'.format(str(int(evals_comp[0]) + 1))
             edit_right_dash = 'Edit {0}'.format(str(int(evals_comp[-1]) + 1))
+            # Outer dict keys
             column_headers = [edit_left_dash, edit_right_dash]
 
             for in_key in difference_dict:
                 if not difference_dict[in_key]:
                     continue
                 column_headers.append(in_key)
+                # flatten evaluator_change_dict from nested struct to flat dict
                 input_dict.update(difference_dict[in_key])
             df_data = to_excel_df(data_dict=input_dict,
                                   column_keys=column_headers)
@@ -365,10 +377,8 @@ class Manager:
         node_renames = []
         create_node = []
         node_dec = []
-        # should the seen ids initially be populated with ids in translator
-        # that are not uuid.uuid4() objects.
-        # set(filter(
-        # lambda x: not isinstance(x, uuid.uuid4()), translator.uml_id.keys()))
+
+        # initially populates with translator ids that are not uuid objs.
         seen_ids = set()
         for k, v in translator.uml_id.items():
             if isinstance(v, str):
@@ -376,11 +386,9 @@ class Manager:
 
         for key, value in change_dict.items():
             if key == 'Added':
+                # Create added edges if have not been created yet
                 for edge in value:
                     edge_source, edge_target = edge.source, edge.target
-                    # if source or target id in seen ids then do below
-                    # else (both source and target in seen ids then just add
-                    # the edge (the floating add edge under the else statment)
                     if edge_source.id not in seen_ids:
                         seen_ids.add(edge_source.id)
                         s_cr, s_dec, s_edg = edge_source.create_node_to_uml(
@@ -398,10 +406,11 @@ class Manager:
                     edge_add.append(edge.edge_to_uml(op='replace',
                                                      translator=translator))
             elif key == 'Deleted':
+                # deleted edges, this is the only command to issue a delete op
                 for edge in value:
                     edge_del.append(edge.edge_to_uml(op='delete',
                                                      translator=translator))
-            else:
+            else:  # All other keys are <DiEdge>: [<DiEdge>]
                 source_val, target_val = value[0].source, value[0].target
                 # Using filter as mathematical ~selective~ or.
                 eligible = list(filter(lambda x: x.id not in seen_ids,
@@ -416,7 +425,7 @@ class Manager:
                         seen_ids.add(node.id)
                         node_renames.append(
                             node.change_node_to_uml(translator=translator))
-                    else:
+                    else:  # Create edge since the change node uml does not
                         edge_add.append(
                             value[0].edge_to_uml(
                                 op='replace', translator=translator))
@@ -432,11 +441,13 @@ class Manager:
                         edge_add.append(
                             value[0].edge_to_uml(
                                 op='replace', translator=translator))
+                # if both source and target are known just replace the edge
                 if not has_rename and not is_new:
                     edge_add.append(
                         value[0].edge_to_uml(
                             op='replace', translator=translator))
 
+        # remove_duplicates only has local knowledge
         if create_node:
             change_list.extend(remove_duplicates(create_node, create=True))
             change_list.extend(remove_duplicates(node_dec))
@@ -482,10 +493,21 @@ class Evaluator:
     Attributes
     ----------
     df : Pandas DataFrame
-        DataFrame constructed from reading the Excel File.
+        DataFrame constructed from reading the Excel Pattern SHeet.
+
+    df_ids : Pandas DataFrame
+        DataFrame constructed from reading the Excel Ids Sheet, if exists.
+
+    df_renames : Pandas DataFrame
+        DataFrame constructed from reading the Excel Renames Sheet, if exists.
 
     prop_di_graph : PropertyDiGraph
-        PropertyDiGraph constructed from the data in the df.
+        PropertyDiGraph constructed from the data in the df. Nodes keyed by
+        string of the node name. The value corresponding to the node is the
+        Vertex object. Similarly for edges, edges keyed by strings with the
+        corresponding DiEdge object associated as an attribute.
+        See NetworkX for more information on the dict of dicts structure of
+        NX Graphs.
 
     root_node_attr_columns : set
         Set of column names in the initial read of the Excel file that do not
@@ -495,11 +517,8 @@ class Evaluator:
 
     Properties
     ----------
-    named_vertex_set : set
-        Returns the named vertex set from the PropertyDiGraph.
-
-    vertex_set : set
-        Returns the vertex set from the PropertyDiGraph
+    has_rename : Bool
+        True if there was a nonempty renames sheet, false otherwise.
     """
 
     # TODO: Consider moving function calls into init since they should be run
@@ -519,12 +538,15 @@ class Evaluator:
 
     @property
     def has_rename(self):
-        if not self.df_renames.empty:
+        if not self.df_renames.empty:  # if renames sheet exists and nonempty
             return True
         else:
             return False
 
     def sheets_to_dataframe(self, excel_file=None):
+        """
+        Explain purpose of function, what it does and how.
+        """
         # TODO: Generalize/Standardize this function
         patterns = [pattern.name.split('.')[0].lower()
                     for pattern in PATTERNS.glob('*.json')]
@@ -549,7 +571,6 @@ class Evaluator:
                     self.translator.uml_id.update(
                         self.df_ids.to_dict(
                             orient='dict')[self.df_ids.columns[0]])
-                # elif sheet.lower() in renames:
                 # Maybe you named the rename sheet Pattern Renames
                 elif any(renm_str in sheet.lower() for renm_str in renames):
                     self.df_renames = pd.read_excel(
@@ -560,8 +581,9 @@ class Evaluator:
                         if row[0] in self.translator.uml_id.keys():
                             # replace instances of this with those in 1
                             if len(row) == 2:
+                                # TODO: Move to fn set_newname_as_rename_index?
                                 if not self.df_renames.index.is_object():
-                                    # do the thing set the index as new name
+                                    # set the index as new name
                                     old_mask = self.df_renames == row[0]
                                     old_masked_df = self.df_renames[
                                         old_mask].dropna(how='all', axis=0)
@@ -588,8 +610,9 @@ class Evaluator:
                             })
                         elif row[1] in self.translator.uml_id.keys():
                             if len(row) == 2:
+                                # TODO: Move to fn set_newname_as_rename_index?
                                 if not self.df_renames.index.is_object():
-                                    # do the thing set the index as new name
+                                    # set the index as new name
                                     old_mask = self.df_renames == row[1]
                                     old_masked_df = self.df_renames[
                                         old_mask].dropna(how='all', axis=0)
@@ -615,10 +638,12 @@ class Evaluator:
                             self.translator.uml_id.update(
                                 {row[0]: self.translator.uml_id[row[1]]}
                             )
-                else:
+                else:  # What triggers this, if there is a Pattern sheet and
+                # a Pattern ID or a Pattern Rename then does the main data
+                # ever get read in??
+                # TODO: Break this function down and test edge cases.
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df.dropna(how='all', inplace=True)
-            # elif sheet.lower() in renames:
             # Hopefully you explcitly named the Rename sheet
             elif any(renm_str in sheet.lower() for renm_str in renames):
                 self.df_renames = pd.read_excel(excel_file,
@@ -633,6 +658,7 @@ class Evaluator:
                     elif row[0] in self.translator.uml_id.keys():
                         # then replace instances of this with those in 1
                         if len(row) == 2:
+                            # TODO: Move to fn set_newname_as_rename_index?
                             if not self.df_renames.index.is_object():
                                 # do the thing set the index as new name
                                 old_mask = self.df_renames == row[0]
@@ -661,6 +687,7 @@ class Evaluator:
                     elif row[1] in self.translator.uml_id.keys():
                         # row[1] is old, row[0] is new
                         if len(row) == 2:
+                            # TODO: Move to fn set_newname_as_rename_index?
                             if not self.df_renames.index.is_object():
                                 # do the thing set the index as new name
                                 old_mask = self.df_renames == row[1]
@@ -714,11 +741,11 @@ class Evaluator:
                 self.df.rename(columns={column: new_column_name}, inplace=True)
             except KeyError:
                 # We continue because these columns are additional data
-                # that we will associate to the Vertex as attrs.
+                # that we will associate to the Root Vertex as attrs.
                 self.root_node_attr_columns.add(column)
 
     def add_missing_columns(self):
-        """Adds the missing column to the dataframe. These columns are ones
+        """Adds the derived nodes to the dataframe. These columns are ones
         required to fillout the pattern in the MDTranslator that were not
         specified by the user. The MDTranslator provides a template for naming
         these inferred columns.
