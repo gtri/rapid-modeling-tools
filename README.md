@@ -59,4 +59,8 @@
     * `anaconda-project run test -k "<test method name>"`
         * The double quotes are significant
 
+* **Producing a Test Report**
+    * `anaconda-project run test --cov=test_graph_analysis`
+        * `test_graph_analysis` is only directory containing tests. Other test directories could be passed, if the exist, to create a coverage report for the test files in those directories.
+
 Shane Connelly (shane.connelly@gtri.gatech.edu)

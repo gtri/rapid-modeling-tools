@@ -27,6 +27,7 @@ env_specs:
     - scipy
     - networkx >=2.1
     - pytest
+    - pytest-cov
     - jupyterlab
     - xlrd >=0.9.0
     - python >=3.6,<3.7  # not in setup
