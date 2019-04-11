@@ -39,7 +39,7 @@ class TestUpdateJSON(unittest.TestCase):
         parametric = (PATTERNS / 'Parametric.json').read_text()
         parametric = json.loads(parametric)
         parametric_graph = [
-            [e[0][0], e[0][1], e[1][0]]
+            [e[0][0], e[0][1], e[1]]
             for e in zip(
                 parametric['Pattern Graph Edges'],
                 parametric['Pattern Graph Edge Labels'])

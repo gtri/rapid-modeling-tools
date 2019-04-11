@@ -1,8 +1,5 @@
 {
     "Columns to Navigation Map": {
-        "System Value": [
-            "blockValue"
-        ],
         "Binds To": [
             "blockValue",
             "owner",
@@ -13,38 +10,6 @@
             "C_value_blockValue-end2",
             "role",
             "value"
-        ],
-        "Constraint": [
-            "blockValue",
-            "owner",
-            "Parametric Context",
-            "owner",
-            "constUse",
-            "type",
-            "Constraint Block",
-            "owner",
-            "Constraint Spec"
-        ],
-        "Constraint Use": [
-            "blockValue",
-            "owner",
-            "Parametric Context",
-            "owner",
-            "constUse"
-        ],
-        "Constraint Name": [
-            "blockValue",
-            "owner",
-            "Parametric Context",
-            "owner",
-            "constUse",
-            "type",
-            "Constraint Block"
-        ],
-        "System Value Unit": [
-            "blockValue",
-            "type",
-            "blockValueType"
         ],
         "Bound Value Unit": [
             "blockValue",
@@ -59,256 +24,203 @@
             "type",
             "valueType"
         ],
+        "Constraint": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "constUse",
+            "type",
+            "Constraint Block",
+            "owner",
+            "Constraint Spec"
+        ],
+        "Constraint Name": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "constUse",
+            "type",
+            "Constraint Block"
+        ],
+        "Constraint Use": [
+            "blockValue",
+            "owner",
+            "Parametric Context",
+            "owner",
+            "constUse"
+        ],
         "Context": [
             "blockValue",
             "owner",
             "Parametric Context"
+        ],
+        "System Value": [
+            "blockValue"
+        ],
+        "System Value Unit": [
+            "blockValue",
+            "type",
+            "blockValueType"
         ]
     },
-    "Pattern Graph Vertices": [
-        "Parametric Context",
-        "blockValue",
-        "C_value_blockValue",
-        "value",
-        "constUse",
-        "Constraint Block",
-        "blockValueType",
-        "valueType",
-        "context1",
-        "constUse context2",
-        "A_context1_blockValue",
-        "A_constUse context2_constUse",
-        "C_value_blockValue-end1",
-        "C_value_blockValue-end2",
-        "Constraint Spec"
-    ],
-    "Pattern Graph Edge Labels": [
-        "type",
-        "type",
-        "type",
-        "type",
-        "owner",
-        "owner",
-        "owner",
-        "owner",
-        "owner",
-        "owner",
-        "owner",
-        "role",
-        "role",
-        "owner",
-        "owner",
-        "type",
-        "memberEnd",
-        "memberEnd",
-        "memberEnd",
-        "memberEnd"
-    ],
     "Pattern Graph Edges": [
         [
             "context1",
-            "Parametric Context"
+            "Parametric Context",
+            "type"
         ],
         [
             "constUse context2",
-            "Parametric Context"
+            "Parametric Context",
+            "type"
         ],
         [
             "blockValue",
-            "blockValueType"
+            "blockValueType",
+            "type"
         ],
         [
             "value",
-            "valueType"
+            "valueType",
+            "type"
         ],
         [
             "context1",
-            "A_context1_blockValue"
+            "A_context1_blockValue",
+            "owner"
         ],
         [
             "constUse context2",
-            "A_constUse context2_constUse"
+            "A_constUse context2_constUse",
+            "owner"
         ],
         [
             "blockValue",
-            "Parametric Context"
+            "Parametric Context",
+            "owner"
         ],
         [
             "value",
-            "Constraint Block"
+            "Constraint Block",
+            "owner"
         ],
         [
             "C_value_blockValue-end1",
-            "C_value_blockValue"
+            "C_value_blockValue",
+            "owner"
         ],
         [
             "C_value_blockValue-end2",
-            "C_value_blockValue"
+            "C_value_blockValue",
+            "owner"
         ],
         [
             "constUse",
-            "Parametric Context"
+            "Parametric Context",
+            "owner"
         ],
         [
             "C_value_blockValue-end1",
-            "blockValue"
+            "blockValue",
+            "role"
         ],
         [
             "C_value_blockValue-end2",
-            "value"
+            "value",
+            "role"
         ],
         [
             "C_value_blockValue",
-            "Parametric Context"
+            "Parametric Context",
+            "owner"
         ],
         [
             "Constraint Spec",
-            "Constraint Block"
+            "Constraint Block",
+            "owner"
         ],
         [
             "constUse",
-            "Constraint Block"
+            "Constraint Block",
+            "type"
         ],
         [
             "A_context1_blockValue",
-            "context1"
+            "context1",
+            "memberEnd"
         ],
         [
             "A_context1_blockValue",
-            "blockValue"
-        ],
-        [
-            "A_constUse context2_constUse",
-            "constUse context2"
-        ],
-        [
-            "A_constUse context2_constUse",
-            "constUse"
-        ]
-    ],
-    "Pattern Spanning Tree Edges": [
-        [
-            "context1",
-            "Parametric Context"
-        ],
-        [
-            "constUse context2",
-            "Parametric Context"
-        ],
-        [
-            "value",
-            "valueType"
-        ],
-        [
-            "context1",
-            "A_context1_blockValue"
-        ],
-        [
-            "constUse context2",
-            "A_constUse context2_constUse"
-        ],
-        [
             "blockValue",
-            "Parametric Context"
+            "memberEnd"
         ],
         [
-            "C_value_blockValue-end1",
-            "C_value_blockValue"
+            "A_constUse context2_constUse",
+            "constUse context2",
+            "memberEnd"
         ],
         [
-            "C_value_blockValue-end2",
-            "C_value_blockValue"
-        ],
-        [
+            "A_constUse context2_constUse",
             "constUse",
-            "Parametric Context"
-        ],
-        [
-            "C_value_blockValue-end1",
-            "blockValue"
-        ],
-        [
-            "C_value_blockValue-end2",
-            "value"
-        ],
-        [
-            "Constraint Spec",
-            "Constraint Block"
-        ],
-        [
-            "constUse",
-            "Constraint Block"
+            "memberEnd"
         ]
-    ],
-    "Pattern Spanning Tree Edge Labels": [
-        "type",
-        "type",
-        "type",
-        "owner",
-        "owner",
-        "owner",
-        "owner",
-        "owner",
-        "owner",
-        "role",
-        "role",
-        "owner",
-        "type"
     ],
     "Root Node": "blockValue",
     "Vertex MetaTypes": {
-        "Parametric Context": "Class",
-        "blockValue": "Property",
-        "C_value_blockValue": "Connector",
-        "value": "Port",
-        "constUse": "Property",
-        "Constraint Block": "Class",
-        "blockValueType": "DataType",
-        "valueType": "DataType",
-        "context1": "Property",
-        "constUse context2": "Property",
-        "A_context1_blockValue": "Association",
         "A_constUse context2_constUse": "Association",
+        "A_context1_blockValue": "Association",
+        "C_value_blockValue": "Connector",
         "C_value_blockValue-end1": "ConnectorEnd",
         "C_value_blockValue-end2": "ConnectorEnd",
-        "Constraint Spec": "Constraint"
-    },
-    "Vertex Stereotypes": {
-        "Parametric Context": "Block",
-        "blockValue": "ValueProperty",
-        "C_value_blockValue": null,
-        "value": "ConstraintParameter",
-        "constUse": "ConstraintProperty",
-        "Constraint Block": "ConstraintBlock",
-        "blockValueType": "ValueType",
-        "valueType": "ValueType",
-        "context1": null,
-        "constUse context2": null,
-        "A_context1_blockValue": null,
-        "A_constUse context2_constUse": null,
-        "C_value_blockValue-end1": null,
-        "C_value_blockValue-end2": "NestedConnectorEnd",
-        "Constraint Spec": null
+        "Constraint Block": "Class",
+        "Constraint Spec": "Constraint",
+        "Parametric Context": "Class",
+        "blockValue": "Property",
+        "blockValueType": "DataType",
+        "constUse": "Property",
+        "constUse context2": "Property",
+        "context1": "Property",
+        "value": "Port",
+        "valueType": "DataType"
     },
     "Vertex Settings": {
-        "Parametric Context": null,
-        "blockValue": null,
-        "C_value_blockValue": null,
-        "value": null,
-        "constUse": {
-            "aggregation": "composite"
-        },
-        "Constraint Block": null,
-        "blockValueType": null,
-        "valueType": null,
-        "context1": null,
-        "constUse context2": null,
-        "A_context1_blockValue": null,
         "A_constUse context2_constUse": null,
+        "A_context1_blockValue": null,
+        "C_value_blockValue": null,
         "C_value_blockValue-end1": null,
         "C_value_blockValue-end2": {
             "propertyPath": "id-constUse"
         },
-        "Constraint Spec": null
+        "Constraint Block": null,
+        "Constraint Spec": null,
+        "Parametric Context": null,
+        "blockValue": null,
+        "blockValueType": null,
+        "constUse": {
+            "aggregation": "composite"
+        },
+        "constUse context2": null,
+        "context1": null,
+        "value": null,
+        "valueType": null
+    },
+    "Vertex Stereotypes": {
+        "A_constUse context2_constUse": null,
+        "A_context1_blockValue": null,
+        "C_value_blockValue": null,
+        "C_value_blockValue-end1": null,
+        "C_value_blockValue-end2": "NestedConnectorEnd",
+        "Constraint Block": "ConstraintBlock",
+        "Constraint Spec": null,
+        "Parametric Context": "Block",
+        "blockValue": "ValueProperty",
+        "blockValueType": "ValueType",
+        "constUse": "ConstraintProperty",
+        "constUse context2": null,
+        "context1": null,
+        "value": "ConstraintParameter",
+        "valueType": "ValueType"
     }
 }
