@@ -52,282 +52,132 @@
             "FlowType"
         ]
     },
-    "Pattern Graph Vertices": [
-        "FlowType",
-        "Flow",
-        "Component B",
-        "Common IF",
-        "Inport",
-        "C_Outport_Inport-end2",
-        "C_Outport_Inport",
-        "Comp B",
-        "A_CompB Context_CompB",
-        "Comp B Context",
-        "Context",
-        "Component A",
-        "Outport",
-        "C_Outport_Inport-end1",
-        "Comp A",
-        "A_CompA Context_CompA",
-        "Comp A Context"
-    ],
-    "Pattern Graph Edge Labels": [
-        "memberEnd",
-        "owner",
-        "memberEnd",
-        "association",
-        "type",
-        "owner",
-        "owner",
-        "role",
-        "end",
-        "owner",
-        "type",
-        "owner",
-        "owner",
-        "memberEnd",
-        "owner",
-        "memberEnd",
-        "association",
-        "type",
-        "owner",
-        "end",
-        "role",
-        "owner",
-        "type",
-        "owner",
-        "type"
-    ],
     "Pattern Graph Edges": [
         [
             "A_CompA Context_CompA",
-            "Comp A Context"
+            "Comp A Context",
+			"memberEnd"
         ],
         [
             "Comp A Context",
-            "A_CompA Context_CompA"
+            "A_CompA Context_CompA",
+			"owner"
         ],
         [
             "A_CompA Context_CompA",
-            "Comp A"
+            "Comp A",
+			"memberEnd"
         ],
         [
             "Comp A",
-            "A_CompA Context_CompA"
+            "A_CompA Context_CompA",
+			"association"
         ],
         [
             "Comp A",
-            "Component A"
+            "Component A",
+			"type"
         ],
         [
             "Comp A",
-            "Context"
+            "Context",
+			"owner"
         ],
         [
             "C_Outport_Inport-end1",
-            "C_Outport_Inport"
+            "C_Outport_Inport",
+			"owner"
         ],
         [
             "C_Outport_Inport-end1",
-            "Outport"
+            "Outport",
+			"role"
         ],
         [
             "C_Outport_Inport",
-            "C_Outport_Inport-end1"
+            "C_Outport_Inport-end1",
+			"end"
         ],
         [
             "Outport",
-            "Component A"
+            "Component A",
+			"owner"
         ],
         [
             "Outport",
-            "Common IF"
+            "Common IF",
+			"type"
         ],
         [
             "C_Outport_Inport",
-            "Context"
+            "Context",
+			"owner"
         ],
         [
             "Comp B",
-            "Context"
+            "Context",
+			"owner"
         ],
         [
             "A_CompB Context_CompB",
-            "Comp B Context"
+            "Comp B Context",
+			"memberEnd"
         ],
         [
             "Comp B Context",
-            "A_CompB Context_CompB"
+            "A_CompB Context_CompB",
+			"owner"
         ],
         [
             "A_CompB Context_CompB",
-            "Comp B"
+            "Comp B",
+			"memberEnd"
         ],
         [
             "Comp B",
-            "A_CompB Context_CompB"
+            "A_CompB Context_CompB",
+			"association"
         ],
         [
             "Comp B",
-            "Component B"
+            "Component B",
+			"type"
         ],
         [
             "C_Outport_Inport-end2",
-            "C_Outport_Inport"
+            "C_Outport_Inport",
+			"owner"
         ],
         [
             "C_Outport_Inport",
-            "C_Outport_Inport-end2"
+            "C_Outport_Inport-end2",
+			"end"
         ],
         [
             "C_Outport_Inport-end2",
-            "Inport"
+            "Inport",
+			"role"
         ],
         [
             "Inport",
-            "Component B"
+            "Component B",
+			"owner"
         ],
         [
             "Inport",
-            "Common IF"
+            "Common IF",
+			"type"
         ],
         [
             "Flow",
-            "Common IF"
+            "Common IF",
+			"owner"
         ],
         [
             "Flow",
-            "FlowType"
+            "FlowType",
+			"type"
         ]
-    ],
-    "Pattern Spanning Tree Edges": [
-        [
-            "A_CompA Context_CompA",
-            "Comp A Context"
-        ],
-        [
-            "Comp A Context",
-            "A_CompA Context_CompA"
-        ],
-        [
-            "A_CompA Context_CompA",
-            "Comp A"
-        ],
-        [
-            "Comp A",
-            "A_CompA Context_CompA"
-        ],
-        [
-            "Comp A",
-            "Component A"
-        ],
-        [
-            "Comp A",
-            "Context"
-        ],
-        [
-            "C_Outport_Inport-end1",
-            "C_Outport_Inport"
-        ],
-        [
-            "C_Outport_Inport-end1",
-            "Outport"
-        ],
-        [
-            "C_Outport_Inport",
-            "C_Outport_Inport-end1"
-        ],
-        [
-            "Outport",
-            "Component A"
-        ],
-        [
-            "Outport",
-            "Common IF"
-        ],
-        [
-            "C_Outport_Inport",
-            "Context"
-        ],
-        [
-            "Comp B",
-            "Context"
-        ],
-        [
-            "A_CompB Context_CompB",
-            "Comp B Context"
-        ],
-        [
-            "Comp B Context",
-            "A_CompB Context_CompB"
-        ],
-        [
-            "A_CompB Context_CompB",
-            "Comp B"
-        ],
-        [
-            "Comp B",
-            "A_CompB Context_CompB"
-        ],
-        [
-            "Comp B",
-            "Component B"
-        ],
-        [
-            "C_Outport_Inport-end2",
-            "C_Outport_Inport"
-        ],
-        [
-            "C_Outport_Inport",
-            "C_Outport_Inport-end2"
-        ],
-        [
-            "C_Outport_Inport-end2",
-            "Inport"
-        ],
-        [
-            "Inport",
-            "Component B"
-        ],
-        [
-            "Inport",
-            "Common IF"
-        ],
-        [
-            "Flow",
-            "Common IF"
-        ],
-        [
-            "Flow",
-            "FlowType"
-        ]
-    ],
-    "Pattern Spanning Tree Edge Labels": [
-        "memberEnd",
-        "owner",
-        "memberEnd",
-        "association",
-        "type",
-        "owner",
-        "owner",
-        "role",
-        "end",
-        "owner",
-        "type",
-        "owner",
-        "owner",
-        "memberEnd",
-        "owner",
-        "memberEnd",
-        "association",
-        "type",
-        "owner",
-        "end",
-        "role",
-        "owner",
-        "type",
-        "owner",
-        "type"
     ],
     "Root Node": "C_Outport_Inport",
     "Vertex MetaTypes": {

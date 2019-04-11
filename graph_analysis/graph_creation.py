@@ -639,9 +639,9 @@ class Evaluator:
                                 {row[0]: self.translator.uml_id[row[1]]}
                             )
                 else:  # What triggers this, if there is a Pattern sheet and
-                # a Pattern ID or a Pattern Rename then does the main data
-                # ever get read in??
-                # TODO: Break this function down and test edge cases.
+                    # a Pattern ID or a Pattern Rename then does the main data
+                    # ever get read in??
+                    # TODO: Break this function down and test edge cases.
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df.dropna(how='all', inplace=True)
             # Hopefully you explcitly named the Rename sheet
@@ -840,17 +840,17 @@ class Evaluator:
         )
         for index, pair in enumerate(
                 self.translator.get_pattern_graph_edges()):
-            edge_type = self.translator.get_edge_type(index=index)
-            self.df[edge_type] = edge_type
-            df_temp = self.df[[pair[0], pair[1], edge_type]]
+            # edge_type = self.translator.get_edge_type(index=index)
+            self.df[pair[2]] = pair[2]
+            df_temp = self.df[[pair[0], pair[1], pair[2]]]
             GraphTemp = nx.DiGraph()
             GraphTemp = nx.from_pandas_edgelist(
                 df=df_temp, source=pair[0],
-                target=pair[1], edge_attr=edge_type,
+                target=pair[1], edge_attr=pair[2],
                 create_using=GraphTemp)
             self.prop_di_graph.add_nodes_from(GraphTemp.nodes)
             self.prop_di_graph.add_edges_from(GraphTemp.edges,
-                                              edge_attribute=edge_type)
+                                              edge_attribute=pair[2])
 
         pdg = self.prop_di_graph
         tr = self.translator
@@ -974,12 +974,18 @@ class MDTranslator:
         return self.data['Columns to Navigation Map']
 
     def get_pattern_graph(self):
-        return self.data['Pattern Graph Vertices']
+        # change to return a set of 0, 1 index from pattern graph edges.
+        data = self.data['Pattern Graph Edges']
+        vert_set = set()
+        for edge in data:
+            vert_set.update(set([edge[0], edge[1]]))
+        return list(vert_set)
 
     def get_pattern_graph_edges(self):
         return self.data['Pattern Graph Edges']
 
     def get_edge_type(self, index=None):
+        # TODO: I think this function is depricated.
         return self.data['Pattern Graph Edge Labels'][index]
 
     def get_col_uml_names(self, column=None):

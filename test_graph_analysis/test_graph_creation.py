@@ -13,6 +13,50 @@ from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 
 
+class TestUpdateJSON(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def test_refactor_json(self):
+        composition = (PATTERNS / 'Composition.json').read_text()
+        composition = json.loads(composition)
+        pat_graph_edges = [[e[0][0], e[0][1], e[1]]
+                           for e in zip(
+            composition['Pattern Graph Edges'],
+            composition['Pattern Graph Edge Labels'])
+        ]
+        composition.update({'Pattern Graph Edges': pat_graph_edges})
+        composition.pop('Pattern Graph Vertices', None)
+        composition.pop('Pattern Graph Edge Labels', None)
+        composition.pop('Pattern Spanning Tree Edges', None)
+        composition.pop('Pattern Spanning Tree Edge Labels', None)
+        interface = (PATTERNS / 'InterfaceDataFlow.json').read_text()
+        interface = json.loads(interface)
+        assert composition.keys() == interface.keys()
+        (PATTERNS / 'Composition.json').write_text(
+            json.dumps(composition, indent=4, sort_keys=True))
+
+        parametric = (PATTERNS / 'Parametric.json').read_text()
+        parametric = json.loads(parametric)
+        parametric_graph = [
+            [e[0][0], e[0][1], e[1][0]]
+            for e in zip(
+                parametric['Pattern Graph Edges'],
+                parametric['Pattern Graph Edge Labels'])
+        ]
+        parametric.update({'Pattern Graph Edges': parametric_graph})
+        parametric.pop('Pattern Graph Vertices', None)
+        parametric.pop('Pattern Graph Edge Labels', None)
+        parametric.pop('Pattern Spanning Tree Edges', None)
+        parametric.pop('Pattern Spanning Tree Edge Labels', None)
+        assert parametric.keys() == interface.keys()
+        (PATTERNS / 'Parametric.json').write_text(
+            json.dumps(parametric, indent=4, sort_keys=True))
+
+    def tearDown(self):
+        pass
+
+
 class TestManager(unittest.TestCase):
 
     def setUp(self):
@@ -609,14 +653,46 @@ class TestMDTranslator(unittest.TestCase):
         self.assertListEqual(
             cols_to_nav, list(self.translator.get_cols_to_nav_map().keys()))
 
-    def test_get_pattern_graph(self):
-        pattern_graph = ['Composite Thing',
-                         'Atomic Thing',
-                         'A_composite owner_component',
-                         'composite owner',
-                         'component']
-        self.assertListEqual(pattern_graph,
-                             self.translator.get_pattern_graph())
+    def test_MD_get_pattern_graph(self):
+        # TODO: Remove commented test once all of JSON refactored.
+        # below test works on the old JSON model.
+        # pattern_graph = ['Composite Thing',
+        #                  'Atomic Thing',
+        #                  'A_composite owner_component',
+        #                  'composite owner',
+        #                  'component']
+        # self.assertListEqual(pattern_graph,
+        #                      self.translator.get_pattern_graph())
+        data = (PATTERNS / 'InterfaceDataFlowRefactored.json').read_text()
+        data = json.loads(data)
+        translator = MDTranslator(json_data=data)
+        expect = {"A_CompA Context_CompA",
+                  "Comp A Context", "Comp A Context",
+                  "A_CompA Context_CompA", "A_CompA Context_CompA",
+                  "Comp A", "Comp A",
+                  "A_CompA Context_CompA", "Comp A",
+                  "Component A", "Comp A",
+                  "Context", "C_Outport_Inport-end1",
+                  "C_Outport_Inport", "C_Outport_Inport-end1",
+                  "Outport", "C_Outport_Inport",
+                  "C_Outport_Inport-end1", "Outport",
+                  "Component A", "Outport",
+                  "Common IF", "C_Outport_Inport",
+                  "Context", "Comp B",
+                  "Context", "A_CompB Context_CompB",
+                  "Comp B Context", "Comp B Context",
+                  "A_CompB Context_CompB", "A_CompB Context_CompB",
+                  "Comp B", "Comp B",
+                  "A_CompB Context_CompB", "Comp B",
+                  "Component B", "C_Outport_Inport-end2",
+                  "C_Outport_Inport", "C_Outport_Inport",
+                  "C_Outport_Inport-end2", "C_Outport_Inport-end2",
+                  "Inport", "Inport",
+                  "Component B", "Inport",
+                  "Common IF", "Flow",
+                  "Common IF", "Flow",
+                  "FlowType", }
+        assert set(translator.get_pattern_graph()) == expect
 
     def test_get_pattern_graph_edges(self):
         node_pairs_list = self.translator.get_pattern_graph_edges()
