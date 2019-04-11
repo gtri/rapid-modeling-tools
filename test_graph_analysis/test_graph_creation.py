@@ -13,50 +13,6 @@ from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 
 
-class TestUpdateJSON(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def test_refactor_json(self):
-        composition = (PATTERNS / 'Composition.json').read_text()
-        composition = json.loads(composition)
-        pat_graph_edges = [[e[0][0], e[0][1], e[1]]
-                           for e in zip(
-            composition['Pattern Graph Edges'],
-            composition['Pattern Graph Edge Labels'])
-        ]
-        composition.update({'Pattern Graph Edges': pat_graph_edges})
-        composition.pop('Pattern Graph Vertices', None)
-        composition.pop('Pattern Graph Edge Labels', None)
-        composition.pop('Pattern Spanning Tree Edges', None)
-        composition.pop('Pattern Spanning Tree Edge Labels', None)
-        interface = (PATTERNS / 'InterfaceDataFlow.json').read_text()
-        interface = json.loads(interface)
-        assert composition.keys() == interface.keys()
-        (PATTERNS / 'Composition.json').write_text(
-            json.dumps(composition, indent=4, sort_keys=True))
-
-        parametric = (PATTERNS / 'Parametric.json').read_text()
-        parametric = json.loads(parametric)
-        parametric_graph = [
-            [e[0][0], e[0][1], e[1]]
-            for e in zip(
-                parametric['Pattern Graph Edges'],
-                parametric['Pattern Graph Edge Labels'])
-        ]
-        parametric.update({'Pattern Graph Edges': parametric_graph})
-        parametric.pop('Pattern Graph Vertices', None)
-        parametric.pop('Pattern Graph Edge Labels', None)
-        parametric.pop('Pattern Spanning Tree Edges', None)
-        parametric.pop('Pattern Spanning Tree Edge Labels', None)
-        assert parametric.keys() == interface.keys()
-        (PATTERNS / 'Parametric.json').write_text(
-            json.dumps(parametric, indent=4, sort_keys=True))
-
-    def tearDown(self):
-        pass
-
-
 class TestManager(unittest.TestCase):
 
     def setUp(self):
@@ -114,18 +70,13 @@ class TestManager(unittest.TestCase):
                 for i in range(2)],
             json_path=PATTERNS / 'Composition.json')
         expected_keys = ['Columns to Navigation Map',
-                         'Pattern Graph Vertices',
-                         'Pattern Graph Edge Labels',
                          'Pattern Graph Edges',
-                         'Pattern Spanning Tree Edges',
-                         'Pattern Spanning Tree Edge Labels',
                          'Root Node',
                          'Vertex MetaTypes',
-                         'Vertex Stereotypes',
-                         'Vertex Settings']
+                         'Vertex Settings',
+                         'Vertex Stereotypes']
 
-        self.assertListEqual(expected_keys, list(
-            manager.json_data.keys()))
+        assert expected_keys == list(manager.json_data.keys())
 
     def test_create_evaluators(self):
         manager = Manager(
@@ -546,12 +497,13 @@ class TestEvaluator(unittest.TestCase):
         evaluator = Evaluator(
             excel_file=DATA_DIRECTORY / 'Composition Example.xlsx',
             translator=self.translator)
-        evaluator.translator.get_pattern_graph().append('cardinal')
-        evaluator.translator.get_pattern_graph().append('component context')
-        evaluator.translator.get_pattern_graph().append(
-            'A_composite owner_component-end1'
-        )
-        # self.assertTrue(False, msg='Extend this to get the if case in space')
+        evaluator.translator.data['Pattern Graph Edges'].extend(
+            [['cardinal', 'Atomic Thing', 'owner'],
+             ['Composite Thing', 'component context', 'type'],
+             ['A_composite owner_component-end1',
+              'A_composite owner_component', 'memberEnd']
+             ])
+
         data_dict = {
             'Composite Thing': ['Car', 'Wheel', 'Engine'],
             'component': ['chassis', 'tire', 'mount'],
@@ -649,21 +601,12 @@ class TestMDTranslator(unittest.TestCase):
         self.assertEqual(root_node, self.translator.get_root_node())
 
     def test_get_cols_to_nav_map(self):
-        cols_to_nav = ['Component', 'Position', 'Part']
+        cols_to_nav = ['Component', 'Part', 'Position', ]
         self.assertListEqual(
             cols_to_nav, list(self.translator.get_cols_to_nav_map().keys()))
 
     def test_MD_get_pattern_graph(self):
-        # TODO: Remove commented test once all of JSON refactored.
-        # below test works on the old JSON model.
-        # pattern_graph = ['Composite Thing',
-        #                  'Atomic Thing',
-        #                  'A_composite owner_component',
-        #                  'composite owner',
-        #                  'component']
-        # self.assertListEqual(pattern_graph,
-        #                      self.translator.get_pattern_graph())
-        data = (PATTERNS / 'InterfaceDataFlowRefactored.json').read_text()
+        data = (PATTERNS / 'InterfaceDataFlow.json').read_text()
         data = json.loads(data)
         translator = MDTranslator(json_data=data)
         expect = {"A_CompA Context_CompA",

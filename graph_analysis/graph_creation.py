@@ -771,6 +771,7 @@ class Evaluator:
         columns_to_create = list(set(
             self.translator.get_pattern_graph()).difference(
             set(self.df.columns)))
+        print(columns_to_create)
         # TODO: Weak solution to the creation order problem.
         columns_to_create = sorted(columns_to_create, key=len)
 
@@ -986,7 +987,11 @@ class MDTranslator:
 
     def get_edge_type(self, index=None):
         # TODO: I think this function is depricated.
-        return self.data['Pattern Graph Edge Labels'][index]
+        for count, edge in enumerate(self.data['Pattern Graph Edges']):
+            if index == count:
+                return edge[-1]
+        else:
+            return None
 
     def get_col_uml_names(self, column=None):
         return self.data['Columns to Navigation Map'][column][-1]
