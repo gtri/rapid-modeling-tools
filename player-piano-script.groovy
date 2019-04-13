@@ -650,6 +650,9 @@ try {
 							if (op_to_execute['stereotype'] instanceof ArrayList) {
 								new_stereo = op_to_execute['stereotype'].get(0);
 							}
+							else {
+								new_stereo = op_to_execute['stereotype'];
+							}
 						}
 						
 						//new_stereo = op_to_execute['stereotype'];
