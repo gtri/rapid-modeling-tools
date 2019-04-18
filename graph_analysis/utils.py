@@ -398,6 +398,8 @@ def match_changes(change_dict=None):
         matched[suitor] = list(zip(change_dict[suitor], scores))
         matched[suitor] = sorted(matched[suitor],
                                  reverse=True, key=lambda elem: elem[1])
+        # TODO: Consider using Reduce or filter.
+        # Could probably use reduce instead of this if else with a while loop
         if len(matched[suitor]) == 1:
             matched[suitor] = [matched[suitor][0][0]]
         elif len(matched[suitor]) > 1:
@@ -434,7 +436,7 @@ def match(*args, current=None):
         edge.
 
     current : DiEdge
-        Edge to which all the edges in *args will be compared against.
+        Edge to which all the edges in `args` will be compared against.
 
     See also
     --------
