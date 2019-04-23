@@ -191,8 +191,10 @@ class VertexReporterMixin:
         return to_uml_json_node(**node_dict)
 
     def create_node_to_uml(self, old_name='', translator=None):
-        """Returns two lists of dictionaries formatted for JSON output to the
-        MagicDraw interface layer. The first list returned contains the vertex
+        """Returns two lists of dictionaries formatted for JSON output to
+        the MagicDraw interface layer.
+
+        The first list returned contains the vertex
         and its values with additional subdictionaries if that particular
         Vertex had more than one node_type. The second list returned contains
         all of the connections of the Vertex.
@@ -204,23 +206,36 @@ class VertexReporterMixin:
             JSON data file that translates the information from the Python
             meanigns here to MagicDraw terminology.
 
+        Returns
+        -------
+        node_uml_list : list of dicts
+            List of dictionaries containing the information for MagicDraw
+            to create the node.
+        node_decorations : list of dicts
+            List of dictionaries containing the information for MagicDraw
+            to associate additional "decorations" to the created nodes.
+            Decorations here refers to the patterns settings key.
+        edge_uml_list : list of dicts
+            List of dictionaries that list all of the edges eminating or
+            coming into the node this operation runs on.
+
         Notes
         -----
-        First, the function loops over the node_types attribute. For the first
-        node_type attribute encountered (regardless of its value), the metadata
-        associated with that node_type is recorded. Subsequent loop iterations
-        provide additional node_type information.
-        While iterating the node_type information, the function checks
-        for nodes with settings values under the vertex settings key in the
-        JSON. If a node has a settings value then the ID of the associated
-        settings node is retreived and associated to the node_decorations list.
-        Next, the edge_uml_list is built using the connections property. From
-        there, a source and target id are identified from the connections
-        information and the get_uml_id function.
-        With all of these lists populated, the function returns the
-        node_uml_list, node_decorations, and the edge_uml_list to be packaged
-        for the final JSON output. The JSON file contains all of the vertex
-        data first followed by the edge data.
+        First, the function loops over the node_types attribute. For the
+        first node_type attribute encountered (regardless of its value),
+        the metadata associated with that node_type is recorded.
+        Subsequent loop iterations provide additional node_type
+        information. While iterating the node_type information, the
+        function checks for nodes with settings values under the vertex
+        settings key in the JSON. If a node has a settings value then the
+        ID of the associated settings node is retreived and associated to
+        the node_decorations list. Next, the edge_uml_list is built using
+        the connections property. From there, a source and target id are
+        identified from the connections information and the get_uml_id
+        function. With all of these lists populated, the function returns
+        the node_uml_list, node_decorations, and the edge_uml_list to be
+        packaged for the final JSON output. The JSON file contains all of
+        the vertex data first followed by the edge data.
         """
         node_uml_list = []
         node_decorations = []
@@ -309,25 +324,37 @@ class VertexReporterMixin:
 
 class Vertex(VertexReporterMixin):
     """
-    Class for representing the node data from the PropertyDiGraph as an object.
+    Class for representing the node data from the PropertyDiGraph as an
+    object.
 
-    Vertex provides convenient access to the properties of the nodes in the
-    PropertyDiGraph and critically provides the method for packaging itself
-    for the MagicDraw interface layer.
+    Vertex provides convenient access to the properties of the nodes in
+    the PropertyDiGraph and critically provides the method for packaging
+    itself for the MagicDraw interface layer.
 
     Properties
     ----------
-    connections : list
-        List of dictionaries with successors first and predecessors after. The
-        dictionaries contain source, target key value pairs.
+    connections : list of dicts
+        List of dictionaries with successors first and predecessors after.
+        The dictionaries contain source, target key value pairs.
 
     Parameters
     ----------
-    name : string
-        Name attribute of the vertex object that is the same as the name in the
-        Evaluator.df entires.
+    name : str
+        Name attribute of the vertex object that is the same as the name
+        in the Evaluator.df entires.
 
-    node_types : set
+    original_name : str
+        Corresponding original name from the Evaluator.df_renames.
+
+    id : str or UUID4
+        Either the MagicDraw ID, if the object already exists in MagicDraw
+        or a UUID4 object if the object does not exist in MagicDraw.
+
+    original_id : str
+        Corresponding original ID from the vertex indicated by
+        Evaluator.df_renames.
+
+    node_types : list
         Set of strings that reflects the names of the columns under which
         the name of this vertex can be found in the Evaluator.df
 
@@ -338,7 +365,11 @@ class Vertex(VertexReporterMixin):
         Set of predecessors saved off from the PropertyDiGraph
 
     attribtues : dictionary
-        Dictionary holding the data encapsulated in the root_node_attr_columns
+        Dictionary holding the data encapsulated in the
+        root_node_attr_columns.
+
+    settings : str
+        Vertex settings provided by the node type and the JSON.
 
     Notes
     -----
@@ -360,14 +391,12 @@ class Vertex(VertexReporterMixin):
         else:
             self.id = id
             self.original_id = original_id
-        # self.id = id
         self.node_types = node_types
         self.successors = successors
         self.predecessors = predecessors
         self.attributes = attributes
         self.settings = settings
         self.original_name = original_name
-        # self.original_id = original_id
 
     def __repr__(self):
         return 'Vertex Obj({0}, {1})'.format(
@@ -375,6 +404,10 @@ class Vertex(VertexReporterMixin):
 
     @property
     def has_rename(self):
+        """
+        Returns True if the Vertex has the original name or original ID
+        attribute.
+        """
         if self.original_name or self.original_id:
             return True
         else:
@@ -382,7 +415,8 @@ class Vertex(VertexReporterMixin):
 
     @property
     def connections(self):
-        """Returns a list of dictionaries with key value pairs for source and
+        """
+        Returns a list of dictionaries with key value pairs for source and
         target node names.
         """
         connections = []
@@ -393,7 +427,8 @@ class Vertex(VertexReporterMixin):
         return connections
 
     def to_dict(self):
-        """Produces a dictionary for the attributes. Used to test that
+        """
+        Produces a dictionary for the attributes. Used to test that
         the object was created properly.
         """
         return {'name': self.name,
@@ -475,9 +510,9 @@ class Vertex(VertexReporterMixin):
 
 class DiEedgeReporterMixin:
     """
-    Mixin that supplies the functions for a Directed Edge to package itself
-    to JSON for consumption by MagicDraw. It contains a write method for
-    changed edges.
+    Mixin that supplies the functions for a Directed Edge to package
+    itself to JSON for consumption by MagicDraw. It contains a write
+    method for changed edges.
     """
 
     def edge_to_uml(self, op='', translator=None):
@@ -495,6 +530,12 @@ class DiEedgeReporterMixin:
             it reads the instructions for this edge
 
         translator : MDTranslator
+
+        Returns
+        -------
+        to_uml_json_edge : function
+            Call to the utility function of the same name to create the
+            edge update JSON.
         """
         id_val = str(self.source.id)
         if '_' == id_val[0]:
@@ -516,22 +557,29 @@ class DiEedgeReporterMixin:
 
 
 class DiEdge(DiEedgeReporterMixin):
-    """A Directed Edge object stores the source and target vertex objects
+    """
+    A Directed Edge object stores the source and target vertex objects
     along with the edge attribute connecting the two.
 
     This Class was created to facilitate the graph difference exploration
-    The Directed Edges are returned as triples (source, target, edge_attribtue)
+    The Directed Edges are returned as triples
+    (source, target, edge_attribtue).
 
     Properties
     ----------
+    has_rename : Bool
+        Returns True if either the source or the target vertex.has_rename
+        property returns True.
+
     named_edge_triple : tuple
         Triple with the source.name and target.name attributes and the
         edge_attribute string.
 
     edge_vert_type_triple : tuple
-        The triple with the source.node_types and target.node_types attributes
-        and the edge_attribute string. Should this property be updated to
-        return multiple triples if there are multiple node_types?
+        The triple with the source.node_types and target.node_types
+        attributes and the edge_attribute string. Should this property be
+        updated to return multiple triples if there are multiple
+        node_types?
 
     edge_triple : tuple
         The triple with the source and target Vertex objects and the
@@ -545,7 +593,7 @@ class DiEdge(DiEedgeReporterMixin):
     target : Vertex
         The Vertex at the tip fo the directed edge
 
-    edge_attribute : string
+    edge_attribute : str
         The string that describes the edge type
 
     __len__ : Reference
@@ -569,18 +617,32 @@ class DiEdge(DiEedgeReporterMixin):
 
     @property
     def has_rename(self):
+        """
+        True is either source.has_rename or target.has_rename is True.
+        """
         return self.source.has_rename or self.target.has_rename
 
     @property
     def named_edge_triple(self):
+        """
+        Returns as (source.name, target.name, edge_attribute)
+        """
         return (self.source.name, self.target.name, self.edge_attribute)
 
     @property
     def edge_vert_type_triple(self):
+        """
+        Returns a 3-tuple of
+        (source.node_type, target.node_type, edge_attribute).
+        """
         return (self.source.node_types,
                 self.target.node_types,
                 self.edge_attribute)
 
     @property
     def edge_triple(self):
+        """
+        Returns a 3-tuple with the source and target Vertex objects and
+        the edge_attribute string (source, target, edge_attribute).
+        """
         return (self.source, self.target, self.edge_attribute)
