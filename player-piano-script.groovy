@@ -39,8 +39,12 @@ try {
 	temp_ids = {};
 	temp_elements = {};
 	homeless_elements = [];
+	
+	// these are all hacks to fight Cameo's built-in auto-production of elements.
 	ends_to_nuke = [];
 	c_ends_to_nuke = [];
+	pps_to_save = [];
+	assocs_to_clean = [];
 	
 	// try to make the element picker
 	try {
@@ -391,6 +395,38 @@ try {
 										homeless_elements.remove(ele_to_mod);
 									}
 									break;
+								case 'pp_end':
+									// fake meta-attribute - participant property because of name collision
+									
+									pp_element = null;
+									
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										pp_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										pp_element = live_project.getElementByID(op_to_execute['value']);
+									}
+								   
+									item_edited_value_reported = '';
+									
+									// apply the stereotype
+								   
+									apply_stereo = StereotypesHelper.getStereotype(live_project, 'ParticipantProperty');
+								   
+									// element to get the slot defining feature from
+																								   
+									com.nomagic.uml2.ext.jmi.helpers.StereotypesHelper.addStereotype(ele_to_mod, apply_stereo);
+								   
+									ele_asi = ele_to_mod.getAppliedStereotypeInstance();
+								   
+									for (asi_class in ele_asi.getClassifier()) {
+										verification_log.add('Participant property stereotype classifier includes ' +
+											asi_class.getName() + ' for ' + item_to_edit_reported);
+									}
+									
+									StereotypesHelper.setStereotypePropertyValue(ele_to_mod,
+										apply_stereo, 'end', pp_element, true);
+									
 								case 'propertyPath':
 								   element_path_list = [];
 								   element_value_list = [];
@@ -445,12 +481,12 @@ try {
 									   verification_log.add("Element value points to " + ele_value.getElement().getHumanName());
 								   }
 								   
-								   verification_log.add("element value list is of Java class " + element_value_list.toArray().getClass());
+									verification_log.add("element value list is of Java class " + element_value_list.toArray().getClass());
 								   
-								   StereotypesHelper.setStereotypePropertyValue(ele_to_mod,
+									StereotypesHelper.setStereotypePropertyValue(ele_to_mod,
 										apply_stereo, 'propertyPath', element_value_list.toArray(), true);
 								   
-								   verification_log.add('Trying to apply value for ' +
+									verification_log.add('Trying to apply value for ' +
 										com.nomagic.magicdraw.sysml.util.SysMLProfile.ELEMENTPROPERTYPATH_PROPERTYPATH_PROPERTY + 
 										' on stereotype ' + apply_stereo.getName() + ' on end with role ' + item_to_edit_reported);
 										
@@ -663,6 +699,9 @@ try {
 							new_meta + ' ' + new_name + ' with stereotype ' + new_stereo + ')');
 						
 						try {
+							
+							new_assoc = false;
+							new_prop = false;
 						
 							switch(new_meta) {
 						
@@ -678,6 +717,9 @@ try {
 									temp_ids[item_to_edit] = new_element.getID();
 									temp_elements[item_to_edit] = new_element;
 									new_element.setName(new_name);
+									
+									new_prop = true;
+									
 									break;
 								case 'Port':
 									new_element = ele_factory.createPortInstance();
@@ -694,6 +736,19 @@ try {
 									
 									ends_to_nuke.add(new_element.getMemberEnd()[0]);
 									ends_to_nuke.add(new_element.getMemberEnd()[1]);
+									
+									break;
+								case 'AssociationClass':
+									new_element = ele_factory.createAssociationClassInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									
+									ends_to_nuke.add(new_element.getMemberEnd()[0]);
+									ends_to_nuke.add(new_element.getMemberEnd()[1]);
+									
+									new_assoc = true;
 									
 									break;
 								case 'Connector':
@@ -747,6 +802,21 @@ try {
 								
 								com.nomagic.uml2.ext.jmi.helpers.InstanceSpecificationHelper.setClassifierForInstanceSpecification(	
 									class_list, ele_asi, true);
+									
+								// if stereotype is a particular SysML stereotype, see if it is generating additional elements
+								
+								if (new_stereo.equals("Block") && new_assoc) {
+									execution_status_log.add("Making AssociationBlock");
+									for (attr in new_element.getOwnedAttribute()) {
+										execution_status_log.add("Have an owned attribute called " + attr.getName());
+									}
+									assocs_to_clean.add(new_element);
+								}
+								
+								if (new_stereo.equals("ParticipantProperty") && new_prop) {
+									execution_status_log.add("Making ParticipantProperty");
+									pps_to_save.add(new_element);
+								}
 									
 								//execution_status_log.add("Instance specification helper done for " + new_stereo);
 							}
@@ -822,6 +892,29 @@ try {
 		
 		SessionManager.getInstance().closeSession();
 		execution_status_log.add('Closed modeling session successfully.');
+		
+		if (assocs_to_clean.size() > 0) {
+			SessionManager.getInstance().createSession('Override Cameo automatic element creation');
+		}
+		
+		for (assoc in assocs_to_clean) {
+			execution_status_log.add("Checking " + assoc.getHumanName());
+			all_remove = [];
+			for (attr in assoc.getOwnedAttribute()) {
+				execution_status_log.add("Found " + attr.getHumanName() + " under " + assoc.getHumanName());
+				if (!pps_to_save.contains(attr)) {
+					execution_status_log.add("Should remove " + attr.getHumanName() + " under " + assoc.getHumanName());
+					all_remove.add(attr);
+				}
+			}
+			for (remove in all_remove) {
+				remove.setOwner(null);
+			}
+		}
+		
+		if (assocs_to_clean.size() > 0) {
+			SessionManager.getInstance().closeSession();
+		}
 		
 	}
 
