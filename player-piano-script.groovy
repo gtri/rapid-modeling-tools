@@ -46,6 +46,8 @@ try {
 	pps_to_save = [];
 	assocs_to_clean = [];
 	
+	create_list = [];
+	
 	// try to make the element picker
 	try {
 		// totally butt-pull based on snippet of OpenMBEE code on GitHub - thanks Doris!
@@ -82,6 +84,9 @@ try {
 	stringBuilder = null;
 	reader = null;
 	
+	read_path = "";
+	read_name = "";
+	
 	try {
 		dialogParent = MDDialogParentProvider.getProvider().getDialogParent();
 		chooser = new JFileChooser();
@@ -95,6 +100,10 @@ try {
 		stringBuilder = new StringBuilder();
 		
 		execution_status_log.add('Opened file ' + fc.getAbsolutePath());
+		
+		found_path = fc.toPath();
+		read_path = found_path.getParent().toString();
+		read_name = found_path.getFileName();
 	}
 	catch(Exception e){
 		execution_status_log.add('Failed to open file.');
@@ -303,6 +312,25 @@ try {
 										test_val.setValue(op_to_execute['value']);
 									}
 									break;
+								case 'defaultValueSpec':
+									value_element = null;
+									
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										value_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										value_element = live_project.getElementByID(op_to_execute['value']);
+									}
+									
+									item_edited_value_reported = value_element.getID() + '(' + value_element.getHumanName() + ')';
+									
+									replace_log.add('(' + attribute_to_hit + ') Default Value for ' + item_to_edit_reported + ' is '
+										+ item_edited_value_reported);
+										
+									ele_to_mod.setDefaultValue(value_element);
+									value_element.setOwner(ele_to_mod);
+									
+									break;
 								case "end":
 									end_element = null;
 									if (op_to_execute['value'].split('_')[0] == 'new') {
@@ -321,6 +349,32 @@ try {
 									
 									end_element.setOwner(ele_to_mod);
 									break;
+								case 'general':
+									general_element = null;
+									
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										general_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										general_element = live_project.getElementByID(op_to_execute['value']);
+									}
+									
+									item_edited_value_reported = general_element.getID() + '(' + general_element.getHumanName() + ')';
+									
+									replace_log.add('(' + attribute_to_hit + ') General classifier for ' + item_to_edit_reported + ' is '
+										+ item_edited_value_reported);
+									
+									// TODO: need to check for existing generalization
+									
+									new_element = ele_factory.createGeneralizationInstance();
+									
+									new_element.setGeneral(general_element);
+									new_element.setSpecific(ele_to_mod);
+									
+									new_element.setOwner(ele_to_mod);
+									
+									break;
+									
 								case 'isConjugated':
 									replace_log.add('(' + attribute_to_hit + ') Setting isConjugated flag to ' + op_to_execute['value'] + ' on ' + 	
 										item_to_edit_reported);
@@ -507,6 +561,9 @@ try {
 								    }
 								   
 								   break;
+								case 'redefines':
+									// ignore for now because I can't find the right API calls
+									break;
 								case 'role':
 									role_element = null;
 									if (op_to_execute['value'].split('_')[0] == 'new') {
@@ -774,8 +831,15 @@ try {
 									new_element.setName(new_name);
 									homeless_elements.add(new_element);
 									break;
-								 
-							}   
+								case 'LiteralString':
+									new_element = ele_factory.createLiteralStringInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									break;
+							}
+
+							create_list.add(new_element);
 							
 							if (new_stereo != null && new_stereo != "") {
 								
@@ -902,7 +966,7 @@ try {
 			all_remove = [];
 			for (attr in assoc.getOwnedAttribute()) {
 				execution_status_log.add("Found " + attr.getHumanName() + " under " + assoc.getHumanName());
-				if (!pps_to_save.contains(attr)) {
+				if (!pps_to_save.contains(attr) && StereotypesHelper.hasStereotype(attr, "ParticipantProperty")) {
 					execution_status_log.add("Should remove " + attr.getHumanName() + " under " + assoc.getHumanName());
 					all_remove.add(attr);
 				}
@@ -924,6 +988,18 @@ catch(Exception e) {
     execution_status_log.add(e.getMessage());
 }
 finally {
+	
+	execution_status_log.add("Writing ID's to " + read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
+	csv_file = new File(read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
+	
+	file_writer = new FileWriter(csv_file);
+	
+	for (created in create_list) {
+		file_writer.write(created.getName() + "," + created.getID() + "\n");
+	}
+	
+	file_writer.close();
+	
 	// uncomment below to expose detailed logs
 	live_log.log('Execution steps:');
 	for (entry in execution_status_log) {
@@ -949,4 +1025,9 @@ finally {
 	for (entry in verification_log) {
 		//live_log.log(entry);
 	}
+	
+	// render created names and id's into a file for slotting into other files
+	
+	
+	
 }
