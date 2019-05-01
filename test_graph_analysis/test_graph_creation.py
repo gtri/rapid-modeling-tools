@@ -70,18 +70,13 @@ class TestManager(unittest.TestCase):
                 for i in range(2)],
             json_path=PATTERNS / 'Composition.json')
         expected_keys = ['Columns to Navigation Map',
-                         'Pattern Graph Vertices',
-                         'Pattern Graph Edge Labels',
                          'Pattern Graph Edges',
-                         'Pattern Spanning Tree Edges',
-                         'Pattern Spanning Tree Edge Labels',
                          'Root Node',
                          'Vertex MetaTypes',
-                         'Vertex Stereotypes',
-                         'Vertex Settings']
+                         'Vertex Settings',
+                         'Vertex Stereotypes']
 
-        self.assertListEqual(expected_keys, list(
-            manager.json_data.keys()))
+        assert expected_keys == list(manager.json_data.keys())
 
     def test_create_evaluators(self):
         manager = Manager(
@@ -502,12 +497,13 @@ class TestEvaluator(unittest.TestCase):
         evaluator = Evaluator(
             excel_file=DATA_DIRECTORY / 'Composition Example.xlsx',
             translator=self.translator)
-        evaluator.translator.get_pattern_graph().append('cardinal')
-        evaluator.translator.get_pattern_graph().append('component context')
-        evaluator.translator.get_pattern_graph().append(
-            'A_composite owner_component-end1'
-        )
-        # self.assertTrue(False, msg='Extend this to get the if case in space')
+        evaluator.translator.data['Pattern Graph Edges'].extend(
+            [['cardinal', 'Atomic Thing', 'owner'],
+             ['Composite Thing', 'component context', 'type'],
+             ['A_composite owner_component-end1',
+              'A_composite owner_component', 'memberEnd']
+             ])
+
         data_dict = {
             'Composite Thing': ['Car', 'Wheel', 'Engine'],
             'component': ['chassis', 'tire', 'mount'],
@@ -605,18 +601,41 @@ class TestMDTranslator(unittest.TestCase):
         self.assertEqual(root_node, self.translator.get_root_node())
 
     def test_get_cols_to_nav_map(self):
-        cols_to_nav = ['Component', 'Position', 'Part']
+        cols_to_nav = ['Component', 'Part', 'Position', ]
         self.assertListEqual(
             cols_to_nav, list(self.translator.get_cols_to_nav_map().keys()))
 
-    def test_get_pattern_graph(self):
-        pattern_graph = ['Composite Thing',
-                         'Atomic Thing',
-                         'A_composite owner_component',
-                         'composite owner',
-                         'component']
-        self.assertListEqual(pattern_graph,
-                             self.translator.get_pattern_graph())
+    def test_MD_get_pattern_graph(self):
+        data = (PATTERNS / 'InterfaceDataFlow.json').read_text()
+        data = json.loads(data)
+        translator = MDTranslator(json_data=data)
+        expect = {"A_CompA Context_CompA",
+                  "Comp A Context", "Comp A Context",
+                  "A_CompA Context_CompA", "A_CompA Context_CompA",
+                  "Comp A", "Comp A",
+                  "A_CompA Context_CompA", "Comp A",
+                  "Component A", "Comp A",
+                  "Context", "C_Outport_Inport-end1",
+                  "C_Outport_Inport", "C_Outport_Inport-end1",
+                  "Outport", "C_Outport_Inport",
+                  "C_Outport_Inport-end1", "Outport",
+                  "Component A", "Outport",
+                  "Common IF", "C_Outport_Inport",
+                  "Context", "Comp B",
+                  "Context", "A_CompB Context_CompB",
+                  "Comp B Context", "Comp B Context",
+                  "A_CompB Context_CompB", "A_CompB Context_CompB",
+                  "Comp B", "Comp B",
+                  "A_CompB Context_CompB", "Comp B",
+                  "Component B", "C_Outport_Inport-end2",
+                  "C_Outport_Inport", "C_Outport_Inport",
+                  "C_Outport_Inport-end2", "C_Outport_Inport-end2",
+                  "Inport", "Inport",
+                  "Component B", "Inport",
+                  "Common IF", "Flow",
+                  "Common IF", "Flow",
+                  "FlowType", }
+        assert set(translator.get_pattern_graph()) == expect
 
     def test_get_pattern_graph_edges(self):
         node_pairs_list = self.translator.get_pattern_graph_edges()
