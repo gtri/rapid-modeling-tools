@@ -8,6 +8,27 @@ from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 
 
 def create_md_model(input_paths, output_path=''):
+    """
+    For each Excel file in input_paths create a JSON file that creates
+    the desired model in MagicDraw, as long as it corresponds to a valid
+    pattern sheet.
+
+    Parameters
+    ----------
+    input_paths : list of str
+        List of strings parsed from the command line.
+
+    output_path : str
+        String of the desired location for the output. This is optional
+        and if omitted then the output files will be placed in the same
+        directory as the input files.
+
+    Returns
+    -------
+    output : JSON file
+        Generates a JSON file as output that the Player Piano digests to
+        generate a new MagicDraw model.
+    """
     json_patterns = {
         pattern_path.parts[-1].split('.')[0].lower(): pattern_path
         for pattern_path in PATTERNS.glob('*.json')
@@ -99,6 +120,30 @@ def create_md_model(input_paths, output_path=''):
 
 
 def compare_md_model(inputs, output_path=''):
+    """
+    Produces difference files (JSON and Excel) for the original file to
+    each change file provided.
+
+    Parameters
+    ----------
+    inputs : list of strs
+        List of file paths parsed from the command line.
+
+    output_path : str
+        String of the desired location for the output. This is optional
+        and if omitted then the output files will be placed in the same
+        directory as the input files.
+
+    Returns
+    -------
+    output_json : JSON file
+        Generates a JSON file as output that the Player Piano digests to
+        update the original Model.
+    output_excel : Excel file
+        Generates an Excel file that lists the confident changes (ones
+        made by the JSON) and the unstable pairs so the user can make the
+        determiniation on those changes on their own.
+    """
     provided_paths = inputs
     wkbk_paths = []
     here = Path(os.getcwd())

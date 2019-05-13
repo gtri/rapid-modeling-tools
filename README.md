@@ -11,6 +11,16 @@
     * `anaconda-project run setup`.
     * This command packages the code and facilitates the other functionality.
 
+**Generating Documentation**
+* To generate the Documentation that lives in the ./doc directory you will
+need to run two commands.
+    * First make sure you have a doc/ directory at the same level as the
+    `anaconda-project.yml` file.
+    * `anaconda-project run build-sphinx`
+    * `anaconda-project run make html`
+    * Documentation should be in `./doc/_build/html` and you should open
+    `index.html` using your browser.
+
 **Command Line Interaction with Ingrid Nerdman (Rick's Cafe American)**
 * `anaconda-project run cli <specify commands and inputs/outputs>`
 
