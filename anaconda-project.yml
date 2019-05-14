@@ -37,6 +37,7 @@ env_specs:
     - jupyterlab
     - sphinx
     - xlrd >=0.9.0
+    - openpyxl
     - python >=3.6,<3.7  # not in setup
 skip_imports:
   environment: 791165f23caea54dd5a06ac3de7c794b365bb3d3
