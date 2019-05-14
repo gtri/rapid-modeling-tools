@@ -210,6 +210,37 @@ def make_object(obj, kwargs):
     return obj(**kwargs)
 
 
+def set_newname_as_rename_index(df_renames, row, ind):
+    """
+    Set the index of the Rename dataframe to be the new names.
+
+    Parameters
+    ----------
+    df_renames : Pandas DataFrame
+        df_renames created from reading the renames sheet from the Excel.
+
+    row : tuple
+        tuple representing the current row from the DataFrame.
+
+    ind : int
+        index specifying which column contains node names that existed in the
+        original graph.
+
+    Returns
+    -------
+    df_renames : Pandas DataFrame
+        Returns the dataframe that it received with the index set as the
+        columns corresponding to the new names.
+    """
+    mask = df_renames == row[ind]
+    masked_df = df_renames[mask].dropna(how='all', axis=0)
+    new_names = df_renames.T.index.where(masked_df.isnull()).tolist()
+    new_col = list(chain.from_iterable(new_names))
+    new_name = list(filter(lambda x: isinstance(x, str), new_col))
+    df_renames.set_index(new_name, inplace=True)
+    return df_renames
+
+
 def create_column_values_under(prefix=None, first_node_data=None,
                                second_node_data=None, suffix=''):
     """
