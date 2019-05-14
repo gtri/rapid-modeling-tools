@@ -38,20 +38,19 @@ class Manager:
     Parameters
     ----------
     excel_path : list
-        list of paths to Excel Files.
+        list of paths to Excel Files, parsed from the command line.
 
-    json_path : string
-        string representing a path to a *.json file that is the key to decoding
-        the Excel inputs into MagicDraw compatiable outputs.
+    json_path : str
+        string indicating which JSON file to load from the patterns
+        directory.
 
     Attributes
     ----------
-    json_data : dictionary
+    json_data : dict
         The json data associated with the json_path.
 
     translator : MDTranslator
-        The MDTranslator object which can be passed to classes that require its
-        functionality.
+        The MDTranslator object created from the json_data
 
     evaluators : Evaluator
         list of the Evaluators created for each Excel file in the excel_path.
@@ -68,6 +67,7 @@ class Manager:
         self.create_evaluators()
 
     def get_json_data(self):
+        """ Load the json data using the json_path"""
         json_path = Path(self.json_path)
         data = (json_path).read_text()
         data = json.loads(data)
@@ -75,9 +75,7 @@ class Manager:
 
     def create_evaluators(self):
         """
-        Create an instance of the Evaluator class for each Excel file provided.
-        Each Evaluator recieves a copy of the Translator updated by the
-        original Evaluator.
+        Create an Evaluator object for each excel file in the excel_path
         """
         # TODO: Include a flag from the commands to the manager to pass to
         # this method that indicates create vs compare
@@ -85,6 +83,8 @@ class Manager:
         # files if multiple create files in a create command. Issue?
         path_name = [excel_file.name for excel_file in self.excel_path]
 
+        # For compare each changed excel file gets a copy of the original
+        # translator.
         for count, excel_file in enumerate(self.excel_path):
             if count != 0:  # TODO: include flag to indicate create or compare
                 translator = self.evaluators[0].translator
@@ -96,45 +96,54 @@ class Manager:
 
     def get_pattern_graph_diff(self, out_directory=''):
         """
-        Compares the graph describing an Original MagicDraw model to the graph
-        describing an Updated MagicDraw model. This method only compares an
-        original graph instance to a chagne instance, i.e. it ignores change
+        Compares the graph describing an Original MagicDraw model to the
+        graph describing an Updated MagicDraw model, ignoring change
         to change comparisons.
 
-        This function creates an edge set for all the edges in the original
-        and the change graph and removes all common edges. Then it builds a
-        dictionary paring each remaining original edge to all of the change
-        edges of the same type. After building the dicitionary,
+        Uses a stable marriage approach to compare edges from the original
+        that do not exist in the change to edges in the change that do not
+        exist int he original and assigns a score to each based
+        on the likely hood that the original edge was altered to match a
+        certain change. Only compares changes of the same edge type to a
+        particular original edge and adds additional emphasis on edges
+        with matching renames.
+
+        After matching, generates a json file and places it in the
+        out_directory if specified, otherwise drops it in the same
+        directory as the original file.
 
         Parameters
         ----------
-        out_directory : string
-            Desired directory for the output files. The directory specified
-            here will be pushed to the json and excel writing functions.
+        out_directory : str
+            Desired directory for the output files. Directory specified
+            here shared with the json and excel writing functions.
+
+        Returns
+        -------
+        evaluator_change_dict : dict of dict
+            Outer key for the identified changes and the unstable changes.
+            Inner keys for the identified changes include an Added key,
+            Deleted and the remaning represent an Original
+            DiEdge paired with its Change DiEdge.
 
         Notes
         -----
-        For each pair of Evaluators such that one Evaluator is the original and
-        the other Evaluator has a Rename DataFrame the function compares their
-        graphs for differences. First, the function identifies the updated
-        file and gets the new name information and builds a rename dictionary
-        to then replace the objects that have changed names with the names
-        from the original file.
-
-        After masking the new names with their corresponding old name the edges
-        from both graphs are arranged into dictionary by edge type; removing
-        edges shared by both the original and changed alon gthe way.
-
-        Once prepared, the match_changes function preforms a version of the
-        stable marriage algorithm to pair off the changes and identify any
-        changes where the desired change is unclear.
-
-        Finally, the algorithm puts everything back in place and sends the
-        changes to JSON creation and Excel creation.
+        For each pair of Evaluators (Original, Change), compare the edge
+        sets removing the common edges. Then with the edge sets fashion
+        a dictionary with original edge objects as keys securing a value
+        list of all change edges of the same type. Run a version of the
+        stable marriage algorithm over this dictionary by scoring each
+        value edge on its likely ness to be the updated key. Any key
+        that makes it through the matching algorithm with more than one
+        potential match becomes an unstable pair (borrowed language
+        from the unstable marriage algorith). With all of the edges
+        analyzed, the function sends the edges to JSON and Excel creation.
 
         See Also
         --------
-        match_changes
+        utils.match_changes
+        changes_to_excel
+        graph_difference_to_json
         """
         evaluator_dict = {evaluator: index for index, evaluator in enumerate(
             self.evaluators
@@ -240,25 +249,34 @@ class Manager:
 
     def changes_to_excel(self, out_directory=''):
         """
-        Write the changes from the get_pattern_graph_diff() method to an Excel
-        file. The changes displayed in the file are intended to inform the user
-        of the changes that the change_json will make to the model when
-        implemented in MagicDraw and to display the changes that the user will
-        have to make on their own to bring the model up to date. In other words
-        the Excel file generated here displays the complete set of differences
-        between the original and the change file and the likely changes that
-        update the original file to be equivalent with the specified change
-        file. This method produces an Excel file by flattening the
-        evaluator_change_dict variable and writing it to a Python dictionary,
-        which can be interpreted as a Pandas DataFrame and written out to an
+        Write the changes from the get_pattern_graph_diff() method to an
         Excel file.
+
+        The changes displayed in the file are intended to inform the user
+        of the changes that the change_json will make to the model when
+        implemented in MagicDraw and to display the changes that the user
+        will have to make on their own to bring the model up to date.
+        In other words the Excel file generated here displays the complete
+        set of differences between the original and the change file and
+        the likely changes that update the original file to be equivalent
+        with the specified change file. This method produces an Excel file
+        by flattening the evaluator_change_dict variable and writing it to
+        a Python dictionary, which can be interpreted as a
+        Pandas DataFrame and written out to an Excel file.
 
         Parameters
         ----------
         out_directory : str
             string representation of the desired output directory. If
-            out_directory is not specified then the output directory will by
-            the same as the input directory.
+            out_directory is not specified then the output directory will
+            by the same as the input directory.
+
+        Returns
+        -------
+        df_output : Excel File
+            !!This is not actually returned!! Creates an Excel File in the
+            `out_directory` if provided otherwise it places the generated
+            file in the same directory as the input file.
 
         Notes
         -----
@@ -271,9 +289,10 @@ class Manager:
 
         See Also
         --------
-        get_pattern_graph_diff() for the generation of the match dictionary
-        to_excel_df() for the process of transforming the dictionary into a
-        DataFrame.
+        get_pattern_graph_diff() : for the generation of the match
+            dictionary
+        to_excel_df() : for the process of transforming the
+            dictionary into a Pandas DataFrame.
         """
         # TODO: When length of value > 1 put these changes into
         # Unstable Original: [key*len(value)] Unstable Change: [value]
@@ -311,17 +330,23 @@ class Manager:
             df_output.to_excel(
                 (outdir / outfile), sheet_name=key, index=False)
 
-    def graph_difference_to_json(self, change_dict=None, translator=None,
-                                 evaluators='', out_directory='', ):
+    def graph_difference_to_json(
+            self,
+            change_dict=None,
+            translator=None,
+            evaluators='',
+            out_directory='', ):
         """
         Produce MagicDraw JSON instruction for Player Piano from the
-        confidently identified changes. This method returns a change list,
-        Python list of dictionaries containing MagicDraw instructions, and
-        a JSON file in the out_directory, if provided otherwise in the same
-        directory as the input files. JSON instructions created for
-        Added edges, Deleted edges and changed edges. For Added edges, if the
-        source and target nodes have already been created during this function
-        call then just provide instructions to create the new edges, otherwise
+        confidently identified changes.
+
+        This method returns a change list, Python list of dictionaries
+        containing MagicDraw instructions, and a JSON file in the
+        out_directory, if provided otherwise in the same directory as the
+        input files. JSON instructions created for Added edges, Deleted
+        edges and changed edges. For Added edges, if the source and target
+        nodes have already been created during this function call then
+        just provide instructions to create the new edges, otherwise
         create the source and target nodes then link them with an edge. For
         all Deleted edges, each edge in the list receives a delete operation
         intentionally leaving the source and target nodes in the model incase
@@ -359,11 +384,23 @@ class Manager:
         out_directory : str
             String specifying the output directory
 
+        Returns
+        -------
+        change_list : list of dicts
+            The list of change instructions. NOTE: This function also
+            generates a JSON file and places it in the `out_directory`
+            if specified otherwise it places the JSON file in the same
+            directory as the input file.
+
         Notes
         -----
         Any edge not meeting one of the eight criteria defined will fall
         through to the else case and become an edge replace operation.
-        The get_pattern_graph_diff() method automatically calls this method.
+        The `get_pattern_graph_diff()` method automatically calls this method.
+
+        See Also
+        --------
+        get_pattern_graph_diff
         """
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
@@ -413,10 +450,14 @@ class Manager:
             else:  # All other keys are <DiEdge>: [<DiEdge>]
                 source_val, target_val = value[0].source, value[0].target
                 # Using filter as mathematical ~selective~ or.
+                # TODO: rewrite this to be more explciit, google style does
+                # not approve of this approach.
                 eligible = list(filter(lambda x: x.id not in seen_ids,
                                        [source_val, target_val]))
+                # List consisting of at most 2 items s.t. has_rename returns T
                 has_rename = list(
                     filter(lambda x: x.has_rename, eligible))
+                # List consisting of at most 2 items s.t. id is type uuid
                 is_new = list(
                     filter(lambda x: isinstance(x.id, type(uuid.uuid4())),
                            eligible))
@@ -472,53 +513,67 @@ class Manager:
 
 
 class Evaluator:
-    """Class for creating the PropertyDiGraph from the Excel data with the help
-    of the MDTranslator.
+    """
+    Class for creating the `PropertyDiGraph` from the Excel data with the
+    help of the `MDTranslator`.
 
-    Evaluator produces a Pandas DataFrame from the Excel path provided by the
-    Manager. The Evaluator then updates the DataFrame with column headers
-    compliant with MagidDraw and infers required columns from the data stored
-    in the MDTranslator. With the filled out DataFrame the Evaluator produces
-    the PropertyDiGraph.
+    `Evaluator` produces a `Pandas DataFrame` from the Excel path provided
+    by the `Manager`. The `Evaluator` then updates the DataFrame with
+    column headers compliant with MagidDraw and infers required columns
+    from the data stored in the `MDTranslator`. With the filled out
+    DataFrame the `Evaluator` produces the `PropertyDiGraph`.
 
     Parameters
     ----------
-    excel_file : string
+    excel_file : str or Path
         String to an Excel File
 
     translator : MDTranslator
-        MDTranslator object that holds the data from the *.json file
+        `MDTranslator` object that holds the data from the JSON file
         associated with this type of Excel File.
 
     Attributes
     ----------
     df : Pandas DataFrame
-        DataFrame constructed from reading the Excel Pattern SHeet.
+        DataFrame constructed from reading the Excel Pattern Sheet.
 
     df_ids : Pandas DataFrame
         DataFrame constructed from reading the Excel Ids Sheet, if exists.
 
     df_renames : Pandas DataFrame
-        DataFrame constructed from reading the Excel Renames Sheet, if exists.
+        DataFrame constructed from reading the Excel Renames Sheet,
+        if exists.
 
     prop_di_graph : PropertyDiGraph
-        PropertyDiGraph constructed from the data in the df. Nodes keyed by
-        string of the node name. The value corresponding to the node is the
-        Vertex object. Similarly for edges, edges keyed by strings with the
-        corresponding DiEdge object associated as an attribute.
-        See NetworkX for more information on the dict of dicts structure of
-        NX Graphs.
+        `PropertyDiGraph` constructed from the data in the `df`. Nodes
+        keyed by string of the node name. The value corresponding to the
+        node is the `Vertex` object. Similarly for edges, edges keyed by
+        strings with the corresponding `DiEdge` object associated as an
+        attribute. See NetworkX for more information on the dict of dicts
+        structure of NX Graphs.
 
     root_node_attr_columns : set
-        Set of column names in the initial read of the Excel file that do not
-        appear as Vertices in the MDTranslator definition of the expected
-        Vertices. The columns collected here will later be associated to the
-        corresponding root node as additional attributes.
+        Set of column names in the initial read of the Excel file that
+        do not appear as `Vertices` in the `MDTranslator` definition of
+        the expected `Vertices`. The columns collected here will later be
+        associated to the corresponding root node as additional attributes.
 
     Properties
     ----------
     has_rename : Bool
         True if there was a nonempty renames sheet, false otherwise.
+
+    named_vertex_set : set of strings
+        Returns a vertex set populated by vertex.name
+
+    vertex_set : set of Vertex objects
+        Returns a vertex set containing `Vertex` objects.
+
+    named_edge_set : set of strings
+        Returns an edge set of the edges represented as a string.
+
+    edge_set : set of DiEdge objects
+        Returns an edge set contaning `DiEdge` objects.
     """
 
     # TODO: Consider moving function calls into init since they should be run
@@ -543,9 +598,45 @@ class Evaluator:
         else:
             return False
 
+    @property
+    def named_vertex_set(self):
+        return self.prop_di_graph.get_vertex_set_named(df=self.df)
+
+    @property
+    def vertex_set(self):
+        return self.prop_di_graph.vertex_set
+
+    @property
+    def named_edge_set(self):
+        return self.prop_di_graph.named_edge_set
+
+    @property
+    def edge_set(self):
+        return self.prop_di_graph.edge_set
+
     def sheets_to_dataframe(self, excel_file=None):
         """
-        Explain purpose of function, what it does and how.
+        Parse Excel sheet name and assign them to corresponding Evaluator
+        dataframes.
+
+        Iterate over sheets and associate the sheet data to the relevant
+        `Evaluator` dataframe (`df`, `df_ids`, `df_renames`). Upon
+        encountering the ids sheet, update the `MDTranslator.uml_id`
+        dictionary with the provided ids. For the rename sheet, set the
+        columns containing the updated names to be the index of the
+        dataframe.
+
+        Parameters
+        ----------
+        excel_file : str or Path
+            string representation or path to Excel file.
+
+        Raises
+        ------
+        RuntimeError
+            The rename sheet does not have exactly two columns.
+            Renames has both old names in both the old and new columns.
+            Unrecognized sheet name.
         """
         # TODO: Generalize/Standardize this function
         patterns = [pattern.name.split('.')[0].lower()
@@ -559,6 +650,7 @@ class Evaluator:
                    'changed name', 'change names', 'changed_names',
                    'changenames', 'changed_names']
         xls = pd.ExcelFile(excel_file, on_demand=True)
+        # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(xls.sheet_names):  # Alphabetical sort
             # Find the Pattern Sheet
             if any(pattern in sheet.lower() for pattern in patterns):
@@ -730,9 +822,10 @@ class Evaluator:
                     ))
 
     def rename_df_columns(self):
-        """Returns renamed DataFrame columns from their Excel name to their
-        MagicDraw name. Any columns in the Excel DataFrame that are not in the
-        json are recorded as attribute columns.
+        """
+        Returns renamed DataFrame columns from their Excel name to their
+        MagicDraw name. Any columns in the Excel DataFrame that are not in
+        the json are recorded as attribute columns.
         """
         for column in self.df.columns:
             try:
@@ -745,26 +838,37 @@ class Evaluator:
                 self.root_node_attr_columns.add(column)
 
     def add_missing_columns(self):
-        """Adds the derived nodes to the dataframe. These columns are ones
-        required to fillout the pattern in the MDTranslator that were not
-        specified by the user. The MDTranslator provides a template for naming
-        these inferred columns.
+        """Add derived nodes to the dataframe.
+
+        These columns are ones required to fillout the pattern in the
+        `MDTranslator` that were not specified by the user. The
+        `MDTranslator` provides a template for naming these inferred
+        columns.
 
         Notes
         -----
         Stepping through the function, first a list of column names that
-        appear in the JSON but not the Excel are compiled by computing the
-        difference between the expected column set from the Translator and the
-        initial dataframe columns. Then those columns are sorted by length
-        to ensure that longer column names constructed of multiple shorter
-        columns do not fail when searching the dataframe.
+        appear in the JSON but not the Excel are compiled by computing
+        the difference between the expected column set from the
+        Translator and the initial dataframe columns. Then those columns
+        are sorted by length to ensure that longer column names
+        constructed of multiple shorter columns do not fail when searching
+        the dataframe.
+
             e.g. Suppose we need to construct the column
             A_composite owner_component. Sorting by length ensures that
             columns_to_create = ['component', 'composite owner',
             'A_composite owner_component']
+
         Then for each column name in columns to create, the column name is
-        checked for particular string properties and the inferred column values
-        are determined based on the desired column name.
+        checked for particular string properties and the inferred column
+        values are determined based on the desired column name.
+
+        See Also
+        --------
+        create_column_values_under
+        create_column_values_space
+        create_column_values_singleton
         """
         # from a collection of vertex pairs, create all of the columns for
         # for which data is required but not present in the excel.
@@ -830,11 +934,13 @@ class Evaluator:
                     )
 
     def to_property_di_graph(self):
-        """Creates a PropertyDiGraph from the completely filled out dataframe.
-        To achieve this, we loop over the Pattern Graph Edges defined in the
-        JSON and take each pair of columns and the edge type as a source,
-        target pair with the edge attribute corresponding to the edge type
-        defined in the JSON.
+        """
+        Creates a PropertyDiGraph from the completely filled out dataframe.
+
+        To achieve this, we loop over the Pattern Graph Edges defined in
+        the JSON and take each pair of columns and the edge type as a
+        source, target pair with the edge attribute corresponding to the
+        edge type defined in the JSON.
         """
         self.prop_di_graph = PropertyDiGraph(
             root_attr_columns=self.root_node_attr_columns
@@ -905,37 +1011,24 @@ class Evaluator:
         # pdg has associated vertex obj and associated edge obj in edj dict.
         return pdg
 
-    @property
-    def named_vertex_set(self):
-        return self.prop_di_graph.get_vertex_set_named(df=self.df)
-
-    @property
-    def vertex_set(self):
-        return self.prop_di_graph.vertex_set
-
-    @property
-    def named_edge_set(self):
-        return self.prop_di_graph.named_edge_set
-
-    @property
-    def edge_set(self):
-        return self.prop_di_graph.edge_set
-
 
 class MDTranslator:
     """
+    Class that contains all of the JSON data.
+
     Class to serve as the Rosetta Stone for taking column headers from the
-    Excel input to the MagicDraw compatible output. More specifically, this
-    class provides access to data in the JSON file allowing the Evaluator to
-    determine which columns are required to fill out the pattern that are
-    missing in the input Excel and to associate edge types along the directed
-    edges. Furthermore, while the Vertex is packaged in to_uml_json() the
-    translator provides metadata information required by MagicDraw for block
-    creation keyed by the node_type.
+    Excel input to the MagicDraw compatible output. More specifically,
+    this class provides access to data in the JSON file allowing the
+    Evaluator to determine which columns are required to fill out the
+    pattern that are missing in the input Excel and to associate edge
+    types along the directed edges. Furthermore, while the Vertex is
+    packaged in `to_uml_json()` the translator provides metadata
+    information required by MagicDraw for block creation keyed by the
+    `node_type`.
 
     Parameters
     ----------
-    data : dictionary
+    data : dict
         The JSON data saved off when the Manager accessed the JSON file.
     """
 
@@ -944,22 +1037,22 @@ class MDTranslator:
         self.uml_id = {}
 
     def get_uml_id(self, name=None):
-        """Returns the UML_ID for the corresponding vertex name provided. If the
-        name provided does not exist as a key in the UML_ID dictionary than a
-        new key is created using that name and the value increments with
-        new_<ith new number>.
+        """
+        Returns the UML_ID for the corresponding vertex name provided.
+
+        If the name provided does not exist as a key in the UML_ID
+        dictionary than create a new uuid for that node.
 
         Parameters
         ----------
         name : string
-            The Vertex.name attribute
+            The `Vertex.name` attribute
 
-        Notes
-        -----
-        This will be updated to become a nested dictionary
-        with the first key being the name and the inner key will be the
-        new_<ith new number> key and the value will be the UUID created
-        by MagicDraw.
+        Returns
+        -------
+        id : str or UUID4 object
+            Returns the string id given by MagicDraw loaded through the
+            sheets to dataframe method or creates a new UUID4 object.
         """
         # TODO: write test function for this
         if name in self.uml_id.keys():
@@ -969,9 +1062,15 @@ class MDTranslator:
             return self.uml_id[name]
 
     def get_root_node(self):
+        """
+        Returns the root node value from the JSON.
+        """
         return self.data['Root Node']
 
     def get_cols_to_nav_map(self):
+        """
+        Returns the columns to nagivation map value.
+        """
         return self.data['Columns to Navigation Map']
 
     def get_pattern_graph(self):
@@ -983,6 +1082,9 @@ class MDTranslator:
         return list(vert_set)
 
     def get_pattern_graph_edges(self):
+        """
+        Returns the pattern graph edges.
+        """
         return self.data['Pattern Graph Edges']
 
     def get_edge_type(self, index=None):
@@ -994,15 +1096,28 @@ class MDTranslator:
             return None
 
     def get_col_uml_names(self, column=None):
+        """
+        Returns the MagicDraw name of the passed column (str).
+        """
         return self.data['Columns to Navigation Map'][column][-1]
 
     def get_uml_metatype(self, node_key=None):
+        """
+        Returns the vertex metatype for the given node_key (str).
+        """
         return self.data['Vertex MetaTypes'][node_key]
 
     def get_uml_stereotype(self, node_key=None):
+        """
+        Returns the vertex stereotype for the given node_key (str).
+        """
         return self.data['Vertex Stereotypes'][node_key]
 
     def get_uml_settings(self, node_key=None):
+        """
+        Returns the settings key and settings value from the vertex
+        settings for the node_key (str).
+        """
         uml_phrase = self.data['Vertex Settings'][node_key]
 
         try:
