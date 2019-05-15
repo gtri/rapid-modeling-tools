@@ -13,12 +13,22 @@ import pandas as pd
 
 from . import OUTPUT_DIRECTORY, PATTERNS
 from .graph_objects import DiEdge, PropertyDiGraph, Vertex
-from .utils import (associate_node_id, associate_node_types_settings,
-                    associate_predecessors, associate_renames,
-                    associate_successors, build_dict,
-                    create_column_values_singleton, create_column_values_space,
-                    create_column_values_under, make_object, match_changes,
-                    remove_duplicates, to_excel_df, truncate_microsec)
+from .utils import (
+    associate_node_id,
+    associate_node_types_settings,
+    associate_predecessors,
+    associate_renames,
+    associate_successors,
+    build_dict,
+    create_column_values_singleton,
+    create_column_values_space,
+    create_column_values_under,
+    make_object,
+    match_changes,
+    remove_duplicates,
+    to_excel_df,
+    truncate_microsec,
+)
 
 
 class Manager:
@@ -91,10 +101,12 @@ class Manager:
             else:
                 translator = self.translator
             self.evaluators.append(
-                Evaluator(excel_file=excel_file,
-                          translator=deepcopy(translator)))
+                Evaluator(
+                    excel_file=excel_file, translator=deepcopy(translator)
+                )
+            )
 
-    def get_pattern_graph_diff(self, out_directory=''):
+    def get_pattern_graph_diff(self, out_directory=""):
         """
         Compares the graph describing an Original MagicDraw model to the
         graph describing an Updated MagicDraw model, ignoring change
@@ -145,9 +157,10 @@ class Manager:
         changes_to_excel
         graph_difference_to_json
         """
-        evaluator_dict = {evaluator: index for index, evaluator in enumerate(
-            self.evaluators
-        )}
+        evaluator_dict = {
+            evaluator: index
+            for index, evaluator in enumerate(self.evaluators)
+        }
         self.evaluator_change_dict = {}
         orig_eval = self.evaluators[0]
 
@@ -167,87 +180,100 @@ class Manager:
             # TODO: implement __eq__ and __neq__ methods to the DiEdge then
             # these set operations can be done without casting to str then
             # casting back.
-            edge_set_one_set = {edge.named_edge_triple
-                                for edge in edge_set_one}
-            edge_set_two_set = {edge.named_edge_triple
-                                for edge in edge_set_two}
+            edge_set_one_set = {
+                edge.named_edge_triple for edge in edge_set_one
+            }
+            edge_set_two_set = {
+                edge.named_edge_triple for edge in edge_set_two
+            }
 
             # Remove edges common to each but preserve set integrity for
             # each evaluator
-            eval_one_unmatched_named = list(edge_set_one_set.difference(
-                edge_set_two_set))
-            eval_two_unmatched_named = list(edge_set_two_set.difference(
-                edge_set_one_set
-            ))
+            eval_one_unmatched_named = list(
+                edge_set_one_set.difference(edge_set_two_set)
+            )
+            eval_two_unmatched_named = list(
+                edge_set_two_set.difference(edge_set_one_set)
+            )
 
             # Organize edges in dictionary based on type (this goes on for
             # multiple lines)
-            eval_one_unmatched = [eval_1_e_dict[edge]
-                                  for edge in eval_one_unmatched_named]
-            eval_two_unmatched = [eval_2_e_dict[edge]
-                                  for edge in eval_two_unmatched_named]
+            eval_one_unmatched = [
+                eval_1_e_dict[edge] for edge in eval_one_unmatched_named
+            ]
+            eval_two_unmatched = [
+                eval_2_e_dict[edge] for edge in eval_two_unmatched_named
+            ]
 
-            eval_one_unmatch_map = dict((edge.edge_attribute, list())
-                                        for edge in eval_one_unmatched)
-            eval_two_unmatch_map = dict((edge.edge_attribute, list())
-                                        for edge in eval_two_unmatched)
+            eval_one_unmatch_map = dict(
+                (edge.edge_attribute, list()) for edge in eval_one_unmatched
+            )
+            eval_two_unmatch_map = dict(
+                (edge.edge_attribute, list()) for edge in eval_two_unmatched
+            )
 
             for edge in eval_one_unmatched:
-                eval_one_unmatch_map[edge.edge_attribute].append(
-                    edge)
+                eval_one_unmatch_map[edge.edge_attribute].append(edge)
             for edge in eval_two_unmatched:
-                eval_two_unmatch_map[edge.edge_attribute].append(
-                    edge)
+                eval_two_unmatch_map[edge.edge_attribute].append(edge)
 
             eval_one_unmatch_pref = {}
             eval_two_unmatch_pref = {}
 
             ance_keys_not_in_base = set(
-                eval_two_unmatch_map.keys()).difference(
-                    set(eval_one_unmatch_map))
+                eval_two_unmatch_map.keys()
+            ).difference(set(eval_one_unmatch_map))
 
-            eval_one_unmatch_pref['Added'] = []
-            eval_one_unmatch_pref['Deleted'] = []
+            eval_one_unmatch_pref["Added"] = []
+            eval_one_unmatch_pref["Deleted"] = []
             for edge_type in ance_keys_not_in_base:
-                eval_one_unmatch_pref['Added'].extend(
-                    eval_two_unmatch_map[edge_type])
+                eval_one_unmatch_pref["Added"].extend(
+                    eval_two_unmatch_map[edge_type]
+                )
 
             # builds main dict used for matching and determines add/del edges
             for edge in eval_one_unmatched:
                 if edge.edge_attribute not in eval_two_unmatch_map.keys():
-                    eval_one_unmatch_pref['Deleted'].append(edge)
+                    eval_one_unmatch_pref["Deleted"].append(edge)
                 else:
-                    eval_one_unmatch_pref[edge] = copy(eval_two_unmatch_map[
-                        edge.edge_attribute])
+                    eval_one_unmatch_pref[edge] = copy(
+                        eval_two_unmatch_map[edge.edge_attribute]
+                    )
             for edge in eval_two_unmatched:
                 if edge.edge_attribute not in eval_one_unmatch_map.keys():
                     eval_two_unmatch_pref[edge] = []
                 else:
-                    eval_two_unmatch_pref[edge] = copy(eval_one_unmatch_map[
-                        edge.edge_attribute])
+                    eval_two_unmatch_pref[edge] = copy(
+                        eval_one_unmatch_map[edge.edge_attribute]
+                    )
 
             # Run the matching algorithm
             # Always expect the input dict to be Original: Chagnes.
             # Functions down the line hold this expectation.
             eval_one_matches = match_changes(
-                change_dict=eval_one_unmatch_pref)
+                change_dict=eval_one_unmatch_pref
+            )
 
-            changes_and_unstable = {'Changes': eval_one_matches[0],
-                                    'Unstable Pairs': eval_one_matches[1]}
+            changes_and_unstable = {
+                "Changes": eval_one_matches[0],
+                "Unstable Pairs": eval_one_matches[1],
+            }
 
-            key = '{0}-{1}'.format(evaluator_dict[pair[0]],
-                                   evaluator_dict[pair[1]])
+            key = "{0}-{1}".format(
+                evaluator_dict[pair[0]], evaluator_dict[pair[1]]
+            )
 
-            self.graph_difference_to_json(change_dict=eval_one_matches[0],
-                                          translator=pair[1].translator,
-                                          evaluators=key,
-                                          out_directory=out_directory)
-            self.evaluator_change_dict.update(
-                {key: changes_and_unstable})
+            self.graph_difference_to_json(
+                change_dict=eval_one_matches[0],
+                translator=pair[1].translator,
+                evaluators=key,
+                out_directory=out_directory,
+            )
+            self.evaluator_change_dict.update({key: changes_and_unstable})
 
         return self.evaluator_change_dict
 
-    def changes_to_excel(self, out_directory=''):
+    def changes_to_excel(self, out_directory=""):
         """
         Write the changes from the get_pattern_graph_diff() method to an
         Excel file.
@@ -298,8 +324,10 @@ class Manager:
         # Unstable Original: [key*len(value)] Unstable Change: [value]
         for key in self.evaluator_change_dict:
             outfile = Path(
-                'Model Diffs {0}-{1}.xlsx'.format(
-                    key, truncate_microsec(curr_time=datetime.now().time())))
+                "Model Diffs {0}-{1}.xlsx".format(
+                    key, truncate_microsec(curr_time=datetime.now().time())
+                )
+            )
 
             if out_directory:
                 outdir = out_directory
@@ -308,9 +336,9 @@ class Manager:
 
             difference_dict = self.evaluator_change_dict[key]
             input_dict = {}
-            evals_comp = key.split('-')
-            edit_left_dash = 'Edit {0}'.format(str(int(evals_comp[0]) + 1))
-            edit_right_dash = 'Edit {0}'.format(str(int(evals_comp[-1]) + 1))
+            evals_comp = key.split("-")
+            edit_left_dash = "Edit {0}".format(str(int(evals_comp[0]) + 1))
+            edit_right_dash = "Edit {0}".format(str(int(evals_comp[-1]) + 1))
             # Outer dict keys
             column_headers = [edit_left_dash, edit_right_dash]
 
@@ -320,22 +348,25 @@ class Manager:
                 column_headers.append(in_key)
                 # flatten evaluator_change_dict from nested struct to flat dict
                 input_dict.update(difference_dict[in_key])
-            df_data = to_excel_df(data_dict=input_dict,
-                                  column_keys=column_headers)
+            df_data = to_excel_df(
+                data_dict=input_dict, column_keys=column_headers
+            )
 
-            df_output = pd.DataFrame(data=dict([
-                (k, pd.Series(v)) for k, v in df_data.items()
-            ]))
+            df_output = pd.DataFrame(
+                data=dict([(k, pd.Series(v)) for k, v in df_data.items()])
+            )
 
             df_output.to_excel(
-                (outdir / outfile), sheet_name=key, index=False)
+                (outdir / outfile), sheet_name=key, index=False
+            )
 
     def graph_difference_to_json(
-            self,
-            change_dict=None,
-            translator=None,
-            evaluators='',
-            out_directory='', ):
+        self,
+        change_dict=None,
+        translator=None,
+        evaluators="",
+        out_directory="",
+    ):
         """
         Produce MagicDraw JSON instruction for Player Piano from the
         confidently identified changes.
@@ -407,7 +438,7 @@ class Manager:
         # Naked Key: Value pairs mean delete edge key and add value key.
         # Purposefully excluding unstable pairs because the Human can make
         # those changes so they are clear.
-        static_keys = ['Added', 'Deleted', ]
+        static_keys = ["Added", "Deleted"]
         change_list = []
         edge_del = []
         edge_add = []
@@ -422,71 +453,89 @@ class Manager:
                 seen_ids.add(v)
 
         for key, value in change_dict.items():
-            if key == 'Added':
+            if key == "Added":
                 # Create added edges if have not been created yet
                 for edge in value:
                     edge_source, edge_target = edge.source, edge.target
                     if edge_source.id not in seen_ids:
                         seen_ids.add(edge_source.id)
                         s_cr, s_dec, s_edg = edge_source.create_node_to_uml(
-                            translator=translator)
+                            translator=translator
+                        )
                         create_node.extend(s_cr)
                         node_dec.extend(s_dec)
                         edge_add.extend(s_edg)
                     if edge_target.id not in seen_ids:
                         seen_ids.add(edge_target.id)
                         t_cr, t_dec, t_edg = edge_target.create_node_to_uml(
-                            translator=translator)
+                            translator=translator
+                        )
                         create_node.extend(t_cr)
                         node_dec.extend(t_dec)
                         edge_add.extend(t_edg)
-                    edge_add.append(edge.edge_to_uml(op='replace',
-                                                     translator=translator))
-            elif key == 'Deleted':
+                    edge_add.append(
+                        edge.edge_to_uml(op="replace", translator=translator)
+                    )
+            elif key == "Deleted":
                 # deleted edges, this is the only command to issue a delete op
                 for edge in value:
-                    edge_del.append(edge.edge_to_uml(op='delete',
-                                                     translator=translator))
+                    edge_del.append(
+                        edge.edge_to_uml(op="delete", translator=translator)
+                    )
             else:  # All other keys are <DiEdge>: [<DiEdge>]
                 source_val, target_val = value[0].source, value[0].target
                 # Using filter as mathematical ~selective~ or.
                 # TODO: rewrite this to be more explciit, google style does
                 # not approve of this approach.
-                eligible = list(filter(lambda x: x.id not in seen_ids,
-                                       [source_val, target_val]))
+                eligible = list(
+                    filter(
+                        lambda x: x.id not in seen_ids,
+                        [source_val, target_val],
+                    )
+                )
                 # List consisting of at most 2 items s.t. has_rename returns T
-                has_rename = list(
-                    filter(lambda x: x.has_rename, eligible))
+                has_rename = list(filter(lambda x: x.has_rename, eligible))
                 # List consisting of at most 2 items s.t. id is type uuid
                 is_new = list(
-                    filter(lambda x: isinstance(x.id, type(uuid.uuid4())),
-                           eligible))
+                    filter(
+                        lambda x: isinstance(x.id, type(uuid.uuid4())),
+                        eligible,
+                    )
+                )
                 if has_rename:
                     for node in has_rename:
                         seen_ids.add(node.id)
                         node_renames.append(
-                            node.change_node_to_uml(translator=translator))
+                            node.change_node_to_uml(translator=translator)
+                        )
                     else:  # Create edge since the change node uml does not
                         edge_add.append(
                             value[0].edge_to_uml(
-                                op='replace', translator=translator))
+                                op="replace", translator=translator
+                            )
+                        )
                 if is_new:
                     for node in is_new:
                         seen_ids.add(node.id)
                         n_cr, n_dec, n_edg = node.create_node_to_uml(
-                            translator=translator)
+                            translator=translator
+                        )
                         create_node.extend(n_cr)
                         node_dec.extend(n_dec)
                         edge_add.extend(n_edg)
                     else:
                         edge_add.append(
                             value[0].edge_to_uml(
-                                op='replace', translator=translator))
+                                op="replace", translator=translator
+                            )
+                        )
                 # if both source and target are known just replace the edge
                 if not has_rename and not is_new:
                     edge_add.append(
                         value[0].edge_to_uml(
-                            op='replace', translator=translator))
+                            op="replace", translator=translator
+                        )
+                    )
 
         # remove_duplicates only has local knowledge
         if create_node:
@@ -496,10 +545,13 @@ class Manager:
         change_list.extend(remove_duplicates(node_renames, create=True))
         change_list.extend(remove_duplicates(edge_add))
 
-        json_out = {'modification targets': []}
-        json_out['modification targets'].extend(change_list)
-        outfile = Path('graph_diff_changes_{0}({1}).json'.format(
-            evaluators, truncate_microsec(curr_time=datetime.now())))
+        json_out = {"modification targets": []}
+        json_out["modification targets"].extend(change_list)
+        outfile = Path(
+            "graph_diff_changes_{0}({1}).json".format(
+                evaluators, truncate_microsec(curr_time=datetime.now())
+            )
+        )
 
         if out_directory:
             outdir = out_directory
@@ -507,7 +559,8 @@ class Manager:
             outdir = OUTPUT_DIRECTORY
 
         (outdir / outfile).write_text(
-            json.dumps(json_out, indent=4, sort_keys=True))
+            json.dumps(json_out, indent=4, sort_keys=True)
+        )
 
         return change_list
 
@@ -639,16 +692,40 @@ class Evaluator:
             Unrecognized sheet name.
         """
         # TODO: Generalize/Standardize this function
-        patterns = [pattern.name.split('.')[0].lower()
-                    for pattern in PATTERNS.glob('*.json')]
-        ids = ['id', 'ids', 'identification number',
-               'id number', 'uuid', 'mduuid', 'magicdraw id',
-               'magic draw id', 'magicdraw identification',
-               'identification numbers', 'id_numbers', 'id_number']
-        renames = ['renames', 'rename', 'new names', 'new name', 'newnames',
-                   'newname', 'new_name', 'new_names', 'changed names',
-                   'changed name', 'change names', 'changed_names',
-                   'changenames', 'changed_names']
+        patterns = [
+            pattern.name.split(".")[0].lower()
+            for pattern in PATTERNS.glob("*.json")
+        ]
+        ids = [
+            "id",
+            "ids",
+            "identification number",
+            "id number",
+            "uuid",
+            "mduuid",
+            "magicdraw id",
+            "magic draw id",
+            "magicdraw identification",
+            "identification numbers",
+            "id_numbers",
+            "id_number",
+        ]
+        renames = [
+            "renames",
+            "rename",
+            "new names",
+            "new name",
+            "newnames",
+            "newname",
+            "new_name",
+            "new_names",
+            "changed names",
+            "changed name",
+            "change names",
+            "changed_names",
+            "changenames",
+            "changed_names",
+        ]
         xls = pd.ExcelFile(excel_file, on_demand=True)
         # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(xls.sheet_names):  # Alphabetical sort
@@ -656,19 +733,21 @@ class Evaluator:
             if any(pattern in sheet.lower() for pattern in patterns):
                 # Maybe you named the ids sheet Pattern IDs I will find it
                 if any(id_str in sheet.lower() for id_str in ids):
-                    self.df_ids = pd.read_excel(
-                        excel_file, sheet_name=sheet)
+                    self.df_ids = pd.read_excel(excel_file, sheet_name=sheet)
                     self.df_ids.set_index(
-                        self.df_ids.columns[0], inplace=True)
+                        self.df_ids.columns[0], inplace=True
+                    )
                     self.translator.uml_id.update(
-                        self.df_ids.to_dict(
-                            orient='dict')[self.df_ids.columns[0]])
+                        self.df_ids.to_dict(orient="dict")[
+                            self.df_ids.columns[0]
+                        ]
+                    )
                 # Maybe you named the rename sheet Pattern Renames
                 elif any(renm_str in sheet.lower() for renm_str in renames):
                     self.df_renames = pd.read_excel(
-                        excel_file, sheet_name=sheet)
-                    self.df_renames.dropna(
-                        how='all', inplace=True)
+                        excel_file, sheet_name=sheet
+                    )
+                    self.df_renames.dropna(how="all", inplace=True)
                     for row in self.df_renames.itertuples(index=False):
                         if row[0] in self.translator.uml_id.keys():
                             # replace instances of this with those in 1
@@ -678,28 +757,35 @@ class Evaluator:
                                     # set the index as new name
                                     old_mask = self.df_renames == row[0]
                                     old_masked_df = self.df_renames[
-                                        old_mask].dropna(how='all', axis=0)
+                                        old_mask
+                                    ].dropna(how="all", axis=0)
                                     # should return new names col and nan
                                     new_names = self.df_renames.T.index.where(
-                                        old_masked_df.isnull()).tolist()
+                                        old_masked_df.isnull()
+                                    ).tolist()
                                     new_col = list(
-                                        chain.from_iterable(new_names))
+                                        chain.from_iterable(new_names)
+                                    )
                                     new_name = list(
                                         filter(
-                                            lambda x: isinstance(
-                                                x, str), new_col))
+                                            lambda x: isinstance(x, str),
+                                            new_col,
+                                        )
+                                    )
                                     self.df_renames.set_index(
-                                        new_name, inplace=True)
+                                        new_name, inplace=True
+                                    )
                             else:
                                 raise RuntimeError(
-                                    'Unexpected columns in Rename Sheet. \
-                                     Expected 2 but found more than 2.')
-                            self.df.replace(to_replace=row[0],
-                                            value=row[1],
-                                            inplace=True)
-                            self.translator.uml_id.update({
-                                row[1]: self.translator.uml_id[row[0]]
-                            })
+                                    "Unexpected columns in Rename Sheet. \
+                                     Expected 2 but found more than 2."
+                                )
+                            self.df.replace(
+                                to_replace=row[0], value=row[1], inplace=True
+                            )
+                            self.translator.uml_id.update(
+                                {row[1]: self.translator.uml_id[row[0]]}
+                            )
                         elif row[1] in self.translator.uml_id.keys():
                             if len(row) == 2:
                                 # TODO: Move to fn set_newname_as_rename_index?
@@ -707,26 +793,33 @@ class Evaluator:
                                     # set the index as new name
                                     old_mask = self.df_renames == row[1]
                                     old_masked_df = self.df_renames[
-                                        old_mask].dropna(how='all', axis=0)
+                                        old_mask
+                                    ].dropna(how="all", axis=0)
                                     # should return new names col and nan
                                     new_names = self.df_renames.T.index.where(
-                                        old_masked_df.isnull()).tolist()
+                                        old_masked_df.isnull()
+                                    ).tolist()
                                     new_col = list(
-                                        chain.from_iterable(new_names))
+                                        chain.from_iterable(new_names)
+                                    )
                                     new_name = list(
                                         filter(
-                                            lambda x: isinstance(
-                                                x, str), new_col))
+                                            lambda x: isinstance(x, str),
+                                            new_col,
+                                        )
+                                    )
                                     self.df_renames.set_index(
-                                        new_name, inplace=True)
+                                        new_name, inplace=True
+                                    )
                             else:
                                 raise RuntimeError(
-                                    'Unexpected columns in Rename Sheet. \
-                                     Expected 2 but found more than 2.')
+                                    "Unexpected columns in Rename Sheet. \
+                                     Expected 2 but found more than 2."
+                                )
                             # same as above in other direction
-                            self.df.replace(to_replace=row[1],
-                                            value=row[0],
-                                            inplace=True)
+                            self.df.replace(
+                                to_replace=row[1], value=row[0], inplace=True
+                            )
                             self.translator.uml_id.update(
                                 {row[0]: self.translator.uml_id[row[1]]}
                             )
@@ -735,18 +828,18 @@ class Evaluator:
                     # ever get read in??
                     # TODO: Break this function down and test edge cases.
                     self.df = pd.read_excel(excel_file, sheet_name=sheet)
-                    self.df.dropna(how='all', inplace=True)
+                    self.df.dropna(how="all", inplace=True)
             # Hopefully you explcitly named the Rename sheet
             elif any(renm_str in sheet.lower() for renm_str in renames):
-                self.df_renames = pd.read_excel(excel_file,
-                                                sheet_name=sheet)
-                self.df_renames.dropna(
-                    how='all', inplace=True)
-                index_name = ''
+                self.df_renames = pd.read_excel(excel_file, sheet_name=sheet)
+                self.df_renames.dropna(how="all", inplace=True)
+                index_name = ""
                 for row in self.df_renames.itertuples(index=False):
-                    if all(row[i] in self.translator.uml_id.keys()
-                            for i in (0, 1)):
-                        raise RuntimeError('Both old and new in keys')
+                    if all(
+                        row[i] in self.translator.uml_id.keys()
+                        for i in (0, 1)
+                    ):
+                        raise RuntimeError("Both old and new in keys")
                     elif row[0] in self.translator.uml_id.keys():
                         # then replace instances of this with those in 1
                         if len(row) == 2:
@@ -755,26 +848,32 @@ class Evaluator:
                                 # do the thing set the index as new name
                                 old_mask = self.df_renames == row[0]
                                 old_masked_df = self.df_renames[
-                                    old_mask].dropna(how='all', axis=0)
+                                    old_mask
+                                ].dropna(how="all", axis=0)
                                 # should return name of new names col and nan
                                 new_names = self.df_renames.T.index.where(
-                                    old_masked_df.isnull()).tolist()
-                                new_col = list(
-                                    chain.from_iterable(new_names))
+                                    old_masked_df.isnull()
+                                ).tolist()
+                                new_col = list(chain.from_iterable(new_names))
                                 new_name = list(
                                     filter(
-                                        lambda x: isinstance(x, str), new_col))
+                                        lambda x: isinstance(x, str), new_col
+                                    )
+                                )
                                 self.df_renames.set_index(
-                                    new_name, inplace=True)
+                                    new_name, inplace=True
+                                )
                         else:
                             raise RuntimeError(
-                                'Unexpected columns in Rename Sheet. \
-                                 Expected 2 but found more than 2.')
-                        self.df.replace(to_replace=row[0], value=row[1],
-                                        inplace=True)
-                        self.translator.uml_id.update({
-                            row[1]: self.translator.uml_id[row[0]]
-                        })
+                                "Unexpected columns in Rename Sheet. \
+                                 Expected 2 but found more than 2."
+                            )
+                        self.df.replace(
+                            to_replace=row[0], value=row[1], inplace=True
+                        )
+                        self.translator.uml_id.update(
+                            {row[1]: self.translator.uml_id[row[0]]}
+                        )
                         continue
                     elif row[1] in self.translator.uml_id.keys():
                         # row[1] is old, row[0] is new
@@ -784,42 +883,48 @@ class Evaluator:
                                 # do the thing set the index as new name
                                 old_mask = self.df_renames == row[1]
                                 old_masked_df = self.df_renames[
-                                    old_mask].dropna(how='all', axis=0)
+                                    old_mask
+                                ].dropna(how="all", axis=0)
                                 # should return name of new names col and nan
                                 new_names = self.df_renames.T.index.where(
-                                    old_masked_df.isnull()).tolist()
-                                new_col = list(
-                                    chain.from_iterable(new_names))
+                                    old_masked_df.isnull()
+                                ).tolist()
+                                new_col = list(chain.from_iterable(new_names))
                                 new_name = list(
                                     filter(
-                                        lambda x: isinstance(x, str), new_col))
+                                        lambda x: isinstance(x, str), new_col
+                                    )
+                                )
                                 self.df_renames.set_index(
-                                    new_name, inplace=True)
+                                    new_name, inplace=True
+                                )
                         else:
                             raise RuntimeError(
-                                'Unexpected columns in Rename Sheet. \
-                                 Expected 2 but found more than 2.')
+                                "Unexpected columns in Rename Sheet. \
+                                 Expected 2 but found more than 2."
+                            )
                         # same as above in other direction
-                        self.df.replace(to_replace=row[1], value=row[0],
-                                        inplace=True)
+                        self.df.replace(
+                            to_replace=row[1], value=row[0], inplace=True
+                        )
                         self.translator.uml_id.update(
                             {row[0]: self.translator.uml_id[row[1]]}
                         )
                         continue
-            elif any(id_str in sheet.lower() for id_str in ids) and \
-                    not any(pattern in sheet.lower() for pattern in patterns):
-                self.df_ids = pd.read_excel(
-                    excel_file, sheet_name=sheet)
-                self.df_ids.set_index(
-                    self.df_ids.columns[0], inplace=True)
+            elif any(id_str in sheet.lower() for id_str in ids) and not any(
+                pattern in sheet.lower() for pattern in patterns
+            ):
+                self.df_ids = pd.read_excel(excel_file, sheet_name=sheet)
+                self.df_ids.set_index(self.df_ids.columns[0], inplace=True)
                 self.translator.uml_id.update(
-                    self.df_ids.to_dict(
-                        orient='dict')[self.df_ids.columns[0]])
+                    self.df_ids.to_dict(orient="dict")[self.df_ids.columns[0]]
+                )
             else:
                 raise RuntimeError(
-                    'Unrecognized sheet names for: {0}'.format(
+                    "Unrecognized sheet names for: {0}".format(
                         excel_file.name
-                    ))
+                    )
+                )
 
     def rename_df_columns(self):
         """
@@ -830,8 +935,11 @@ class Evaluator:
         for column in self.df.columns:
             try:
                 new_column_name = self.translator.get_col_uml_names(
-                    column=column)
-                self.df.rename(columns={column: new_column_name}, inplace=True)
+                    column=column
+                )
+                self.df.rename(
+                    columns={column: new_column_name}, inplace=True
+                )
             except KeyError:
                 # We continue because these columns are additional data
                 # that we will associate to the Root Vertex as attrs.
@@ -872,16 +980,18 @@ class Evaluator:
         """
         # from a collection of vertex pairs, create all of the columns for
         # for which data is required but not present in the excel.
-        columns_to_create = list(set(
-            self.translator.get_pattern_graph()).difference(
-            set(self.df.columns)))
+        columns_to_create = list(
+            set(self.translator.get_pattern_graph()).difference(
+                set(self.df.columns)
+            )
+        )
         print(columns_to_create)
         # TODO: Weak solution to the creation order problem.
         columns_to_create = sorted(columns_to_create, key=len)
 
-        under = '_'
-        space = ' '
-        dash = '-'
+        under = "_"
+        space = " "
+        dash = "-"
         if columns_to_create:
             for col in columns_to_create:
                 if under in col:
@@ -895,7 +1005,7 @@ class Evaluator:
                             prefix=col_data_vals[0],
                             first_node_data=first_node_data,
                             second_node_data=second_node_data,
-                            suffix=suff
+                            suffix=suff,
                         )
                     else:
                         col_data_vals = col.split(sep=under)
@@ -905,32 +1015,34 @@ class Evaluator:
                             prefix=col_data_vals[0],
                             first_node_data=first_node_data,
                             second_node_data=second_node_data,
-                            suffix=''
+                            suffix="",
                         )
                 elif space in col:
                     col_data_vals = col.split(sep=space)
                     root_col_name = self.translator.get_root_node()
                     if col_data_vals[0] in self.df.columns:
                         first_node_data = self.df.loc[:, col_data_vals[0]]
-                        second_node_data = [col_data_vals[-1]
-                                            for i in range(
-                                                len(first_node_data))]
+                        second_node_data = [
+                            col_data_vals[-1]
+                            for i in range(len(first_node_data))
+                        ]
                     else:
                         first_node_data = self.df.iloc[:, 0]
                         second_node_data = self.df.loc[:, root_col_name]
                     self.df[col] = create_column_values_space(
                         first_node_data=first_node_data,
-                        second_node_data=second_node_data
+                        second_node_data=second_node_data,
                     )
                 else:
                     col_data_vals = col
                     root_col_name = self.translator.get_root_node()
                     first_node_data = self.df.iloc[:, 0]
                     second_node_data = [
-                        col for count in range(len(first_node_data))]
+                        col for count in range(len(first_node_data))
+                    ]
                     self.df[col] = create_column_values_singleton(
                         first_node_data=first_node_data,
-                        second_node_data=second_node_data
+                        second_node_data=second_node_data,
                     )
 
     def to_property_di_graph(self):
@@ -946,18 +1058,23 @@ class Evaluator:
             root_attr_columns=self.root_node_attr_columns
         )
         for index, pair in enumerate(
-                self.translator.get_pattern_graph_edges()):
+            self.translator.get_pattern_graph_edges()
+        ):
             # edge_type = self.translator.get_edge_type(index=index)
             self.df[pair[2]] = pair[2]
             df_temp = self.df[[pair[0], pair[1], pair[2]]]
             GraphTemp = nx.DiGraph()
             GraphTemp = nx.from_pandas_edgelist(
-                df=df_temp, source=pair[0],
-                target=pair[1], edge_attr=pair[2],
-                create_using=GraphTemp)
+                df=df_temp,
+                source=pair[0],
+                target=pair[1],
+                edge_attr=pair[2],
+                create_using=GraphTemp,
+            )
             self.prop_di_graph.add_nodes_from(GraphTemp.nodes)
-            self.prop_di_graph.add_edges_from(GraphTemp.edges,
-                                              edge_attribute=pair[2])
+            self.prop_di_graph.add_edges_from(
+                GraphTemp.edges, edge_attribute=pair[2]
+            )
 
         pdg = self.prop_di_graph
         tr = self.translator
@@ -965,17 +1082,22 @@ class Evaluator:
         # Est list of lists with dict for each node contaiing its name
         # node is already a string because of networkx functionality
         # idea is to build up kwargs to instantiate a vertex object.
-        node_atters = [[{'name': node}
-                        for node in list(pdg)]]
+        node_atters = [[{"name": node} for node in list(pdg)]]
 
         # various functions required to get different vertex attrs
         # partialy instantiate each function so that each fn only needs node
-        associate_funs = [partial(associate_node_id, tr),
-                          partial(associate_successors, pdg),
-                          partial(associate_predecessors, pdg),
-                          partial(associate_node_types_settings, self.df,
-                                  tr, self.root_node_attr_columns),
-                          partial(associate_renames, self.df_renames, tr), ]
+        associate_funs = [
+            partial(associate_node_id, tr),
+            partial(associate_successors, pdg),
+            partial(associate_predecessors, pdg),
+            partial(
+                associate_node_types_settings,
+                self.df,
+                tr,
+                self.root_node_attr_columns,
+            ),
+            partial(associate_renames, self.df_renames, tr),
+        ]
 
         # apply each function to each node.
         # map(function, iterable)
@@ -997,13 +1119,15 @@ class Evaluator:
         # build edges container
         edges = []
         for edge, data in pdg.edges.items():
-            diedge = DiEdge(source=pdg.nodes[edge[0]][edge[0]],
-                            target=pdg.nodes[edge[1]][edge[1]],
-                            edge_attribute=data['edge_attribute'])
+            diedge = DiEdge(
+                source=pdg.nodes[edge[0]][edge[0]],
+                target=pdg.nodes[edge[1]][edge[1]],
+                edge_attribute=data["edge_attribute"],
+            )
             # The inner key must be a string thus 'diedge' instead of
             # pdg.edges[edge][edge] which would mimic behavior for nodes
             # pdg.nodes[node][node]
-            edges.append((edge, {'diedge': diedge}))
+            edges.append((edge, {"diedge": diedge}))
         for edge in edges:
             # unpack each edge and the edge attribute dict for the add_edge fn
             pdg.add_edge(*edge[0], **edge[1])
@@ -1065,17 +1189,17 @@ class MDTranslator:
         """
         Returns the root node value from the JSON.
         """
-        return self.data['Root Node']
+        return self.data["Root Node"]
 
     def get_cols_to_nav_map(self):
         """
         Returns the columns to nagivation map value.
         """
-        return self.data['Columns to Navigation Map']
+        return self.data["Columns to Navigation Map"]
 
     def get_pattern_graph(self):
         # change to return a set of 0, 1 index from pattern graph edges.
-        data = self.data['Pattern Graph Edges']
+        data = self.data["Pattern Graph Edges"]
         vert_set = set()
         for edge in data:
             vert_set.update(set([edge[0], edge[1]]))
@@ -1085,11 +1209,11 @@ class MDTranslator:
         """
         Returns the pattern graph edges.
         """
-        return self.data['Pattern Graph Edges']
+        return self.data["Pattern Graph Edges"]
 
     def get_edge_type(self, index=None):
         # TODO: I think this function is depricated.
-        for count, edge in enumerate(self.data['Pattern Graph Edges']):
+        for count, edge in enumerate(self.data["Pattern Graph Edges"]):
             if index == count:
                 return edge[-1]
         else:
@@ -1099,26 +1223,26 @@ class MDTranslator:
         """
         Returns the MagicDraw name of the passed column (str).
         """
-        return self.data['Columns to Navigation Map'][column][-1]
+        return self.data["Columns to Navigation Map"][column][-1]
 
     def get_uml_metatype(self, node_key=None):
         """
         Returns the vertex metatype for the given node_key (str).
         """
-        return self.data['Vertex MetaTypes'][node_key]
+        return self.data["Vertex MetaTypes"][node_key]
 
     def get_uml_stereotype(self, node_key=None):
         """
         Returns the vertex stereotype for the given node_key (str).
         """
-        return self.data['Vertex Stereotypes'][node_key]
+        return self.data["Vertex Stereotypes"][node_key]
 
     def get_uml_settings(self, node_key=None):
         """
         Returns the settings key and settings value from the vertex
         settings for the node_key (str).
         """
-        uml_phrase = self.data['Vertex Settings'][node_key]
+        uml_phrase = self.data["Vertex Settings"][node_key]
 
         try:
             uml_phrase.keys()

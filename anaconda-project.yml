@@ -25,10 +25,17 @@ commands:
   make-html:
     windows: cd doc && make html
 
+  black-source:
+    windows: black -l 78 setup.py graph_analysis
+
+  black-tests:
+    windows: black -l 78 setup.py test_graph_analysis
+
 env_specs:
   default:
     packages:
     - numpy
+    - black
     - pandas
     - scipy
     - networkx >=2.1

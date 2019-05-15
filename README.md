@@ -1,3 +1,5 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+
 **Starting the Environment**
 * Install `miniconda3` to a location on your computer separate from `Anaconda`
 * Enter the top level directory containing the `anaconda-project.yml` file

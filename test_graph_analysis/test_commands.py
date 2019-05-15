@@ -9,7 +9,6 @@ from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS, ROOT
 
 
 class TestCommands(unittest.TestCase):
-
     def setUp(self):
         pass
 
@@ -23,55 +22,61 @@ class TestCommands(unittest.TestCase):
         # expected files.
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            composition_changed = 'Composition Example 2 Model Changed 2.xlsx'
+            composition_changed = "Composition Example 2 Model Changed 2.xlsx"
             excel_files = [
-                (DATA_DIRECTORY / 'Composition Example 2 Model Baseline.xlsx'),
+                (
+                    DATA_DIRECTORY
+                    / "Composition Example 2 Model Baseline.xlsx"
+                ),
                 (DATA_DIRECTORY / composition_changed),
-                (DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx'),
-                (DATA_DIRECTORY / 'Composition Example 2.xlsx'),
-                (DATA_DIRECTORY / 'Composition Example With Props.xlsx'),
-                (DATA_DIRECTORY / 'Invalid Pattern.xlsx'),
-                (DATA_DIRECTORY / 'Sample Equations.xlsx')]
+                (DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx"),
+                (DATA_DIRECTORY / "Composition Example 2.xlsx"),
+                (DATA_DIRECTORY / "Composition Example With Props.xlsx"),
+                (DATA_DIRECTORY / "Invalid Pattern.xlsx"),
+                (DATA_DIRECTORY / "Sample Equations.xlsx"),
+            ]
             for xl_file in excel_files:
                 copy2(DATA_DIRECTORY / xl_file, tmpdir)
 
             wkbk_path = [
-                ROOT / 'graph_analysis' / 'patterns' / 'Composition.json',
-                DATA_DIRECTORY / 'Composition Example 2.xlsx',
+                ROOT / "graph_analysis" / "patterns" / "Composition.json",
+                DATA_DIRECTORY / "Composition Example 2.xlsx",
                 tmpdir,
             ]
             create_md_model(wkbk_path)
             # expect 4
-            cr_json = list(tmpdir.glob('*.json'))
+            cr_json = list(tmpdir.glob("*.json"))
             self.assertEqual(5, len(cr_json))
             self.assertTrue(
-                (DATA_DIRECTORY / 'Composition Example 2.json').is_file())
+                (DATA_DIRECTORY / "Composition Example 2.json").is_file()
+            )
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
                 out_tmp_dir = Path(out_tmp_dir)
                 create_md_model(wkbk_path, out_tmp_dir)
-                new_json = list(out_tmp_dir.glob('*.json'))
+                new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(5, len(new_json))
 
     def test_compare_md_model(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
             excel_files = [
-                DATA_DIRECTORY / 'Composition Example 2 Model Baseline.xlsx',
-                DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx',
-                DATA_DIRECTORY / 'Composition Example 2 Model Changed 2.xlsx',
-                DATA_DIRECTORY / 'Composition Example Model Baseline.xlsx',
-                DATA_DIRECTORY / 'Composition Example Model Changed.xlsx',
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed 2.xlsx",
+                DATA_DIRECTORY / "Composition Example Model Baseline.xlsx",
+                DATA_DIRECTORY / "Composition Example Model Changed.xlsx",
             ]
             for xl in excel_files:
                 copy2(DATA_DIRECTORY / xl, tmpdir)
 
-            original = tmpdir / 'Composition Example 2 Model Baseline.xlsx'
-            updated = [tmpdir / 'Composition Example 2 Model Changed.xlsx',
-                       tmpdir / 'Composition Example 2 Model Changed 2.xlsx'
-                       ]
-            orig = tmpdir / 'Composition Example Model Baseline.xlsx'
-            update = tmpdir / 'Composition Example Model Changed.xlsx'
+            original = tmpdir / "Composition Example 2 Model Baseline.xlsx"
+            updated = [
+                tmpdir / "Composition Example 2 Model Changed.xlsx",
+                tmpdir / "Composition Example 2 Model Changed 2.xlsx",
+            ]
+            orig = tmpdir / "Composition Example Model Baseline.xlsx"
+            update = tmpdir / "Composition Example Model Changed.xlsx"
 
             inputs = [original]
             inputs.extend(updated)
@@ -83,10 +88,10 @@ class TestCommands(unittest.TestCase):
             ins = [orig, update]
             compare_md_model(ins)
             # expect 3 json and 3 more excel files
-            cr_json = list(tmpdir.glob('*.json'))
+            cr_json = list(tmpdir.glob("*.json"))
             self.assertEqual(3, len(cr_json))
             # check for created excel files by name
-            diff_files = list(tmpdir.glob('Model Diffs*.xlsx'))
+            diff_files = list(tmpdir.glob("Model Diffs*.xlsx"))
             self.assertEqual(3, len(diff_files))
 
             with tempfile.TemporaryDirectory() as tmpdir2:
@@ -94,27 +99,27 @@ class TestCommands(unittest.TestCase):
                 compare_md_model(inputs, outdir)
                 compare_md_model(ins, outdir)
                 # expect 3 json and 3 more excel files
-                cr_json = list(outdir.glob('*.json'))
+                cr_json = list(outdir.glob("*.json"))
                 self.assertEqual(3, len(cr_json))
-                diff_files = list(tmpdir.glob('Model Diffs*.xlsx'))
+                diff_files = list(tmpdir.glob("Model Diffs*.xlsx"))
                 self.assertEqual(3, len(diff_files))
 
     def test_compare_md_model_dir(self):
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir = Path(tempdir)
             excel_files = [
-                DATA_DIRECTORY / 'Composition Example 2 Model Baseline.xlsx',
-                DATA_DIRECTORY / 'Composition Example 2 Model Changed.xlsx',
-                DATA_DIRECTORY / 'Composition Example 2 Model Changed 2.xlsx',
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed 2.xlsx",
             ]
             for xl in excel_files:
                 copy2(DATA_DIRECTORY / xl, tempdir)
 
-            original = tempdir / 'Composition Example 2 Model Baseline.xlsx'
+            original = tempdir / "Composition Example 2 Model Baseline.xlsx"
 
             compare_md_model([original, tempdir])
-            dir_json = list(tempdir.glob('*.json'))
-            dir_xl = list(tempdir.glob('Model Diff*.xlsx'))
+            dir_json = list(tempdir.glob("*.json"))
+            dir_xl = list(tempdir.glob("Model Diff*.xlsx"))
             self.assertEqual(2, len(dir_json))
             self.assertEqual(2, len(dir_xl))
 

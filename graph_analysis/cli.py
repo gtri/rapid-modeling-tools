@@ -9,18 +9,18 @@ def main():
     :return:
     """
 
-    print('I am shocked, shocked to find that gambling is going on in here!')
+    print("I am shocked, shocked to find that gambling is going on in here!")
 
     parser = argparse.ArgumentParser(
         description="A simple CLI for parsing an Excel Workbook and "
-                    "generating SysML Graph JSON instructions to be used "
-                    "with the Player Piano.",
+        "generating SysML Graph JSON instructions to be used "
+        "with the Player Piano."
     )
 
     parser.add_argument(
         "-c",
         "--create",
-        nargs='?',
+        nargs="?",
         help="Create a JSON file for the Player Piano to make in a MD Diagram",
         const=True,
     )
@@ -28,25 +28,25 @@ def main():
     parser.add_argument(
         "-C",
         "--compare",
-        nargs='?',
-        help=("Compare a baseline Excel File with a collection of Change Files"
-              + " Must supply the original file first and then the changes"),
+        nargs="?",
+        help=(
+            "Compare a baseline Excel File with a collection of Change Files"
+            + " Must supply the original file first and then the changes"
+        ),
         const=True,
     )
 
     parser.add_argument(
-        "-i",
-        "--input",
-        nargs='*',
-        help="Path to Excel Workbook(s)",
-        type=str,
+        "-i", "--input", nargs="*", help="Path to Excel Workbook(s)", type=str
     )
 
     parser.add_argument(
         "-o",
         "--output",
-        help=("Path/Directory where the JSON file(s) should be placed"
-              + " Default behavior will place the JSON in the input location"),
+        help=(
+            "Path/Directory where the JSON file(s) should be placed"
+            + " Default behavior will place the JSON in the input location"
+        ),
         type=str,
     )
 
@@ -60,16 +60,13 @@ def main():
     parser.add_argument(
         "-U",
         "--updated",
-        nargs='*',
+        nargs="*",
         help="Change files to be compared to the Original.",
         type=str,
     )
 
     parser.add_argument(
-        "-v",
-        "--version",
-        help="version information",
-        action="store_true",
+        "-v", "--version", help="version information", action="store_true"
     )
 
     args = parser.parse_args()

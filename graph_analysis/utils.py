@@ -11,43 +11,53 @@ from random import shuffle
 # the importing.
 
 
-def associate_node_id(tr, node=''):
+def associate_node_id(tr, node=""):
     """
     Returns a dictionary with key 'id' and value as the ID associated
     with the node string.
     """
-    return {'id': tr.get_uml_id(name=node)}
+    return {"id": tr.get_uml_id(name=node)}
 
 
-def associate_successors(graph, node=''):
+def associate_successors(graph, node=""):
     """
     Returns a dictionary with outer key 'successors' securing a value list
     of dictionaries associating the source, target and edge_attribute
     with the corresponding Vertex.name strings for each successor to the
     passed node.
     """
-    return {'successors': [{'source': node,
-                            'target': succ,
-                            'edge_attribute': graph.succ[
-                                node][succ]['edge_attribute']}
-                           for succ in graph.succ[node]]}
+    return {
+        "successors": [
+            {
+                "source": node,
+                "target": succ,
+                "edge_attribute": graph.succ[node][succ]["edge_attribute"],
+            }
+            for succ in graph.succ[node]
+        ]
+    }
 
 
-def associate_predecessors(graph, node=''):
+def associate_predecessors(graph, node=""):
     """
     Returns a dictionary with outer key 'predecessors' securing a value
     list of dictionaries associating the source, target and
     edge_attribute with the corresponding Vertex.name strings for each
     predecessor to the passed node.
     """
-    return {'predecessors': [{'source': pred,
-                              'target': node,
-                              'edge_attribute': graph.pred[
-                                  node][pred]['edge_attribute']}
-                             for pred in graph.pred[node]]}
+    return {
+        "predecessors": [
+            {
+                "source": pred,
+                "target": node,
+                "edge_attribute": graph.pred[node][pred]["edge_attribute"],
+            }
+            for pred in graph.pred[node]
+        ]
+    }
 
 
-def associate_node_types_settings(df, tr, root_attr_cols, node=''):
+def associate_node_types_settings(df, tr, root_attr_cols, node=""):
     """
     Packages the settings, node types and attribtues of each node if they
     exist.
@@ -83,40 +93,46 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=''):
         list of dicts behind the attributes key.
     """
     node_type_cols, node_attr_dict = get_node_types_attrs(
-        df=df, node=node,
+        df=df,
+        node=node,
         root_node_type=tr.get_root_node(),
-        root_attr_columns=root_attr_cols)
+        root_attr_columns=root_attr_cols,
+    )
     node_types = {col for col in node_type_cols}
 
     settings = []
 
     for node_type in node_type_cols:
-        path_val, settings_val = tr.get_uml_settings(
-            node_key=node_type)
+        path_val, settings_val = tr.get_uml_settings(node_key=node_type)
         if settings_val:
-            if 'id' in settings_val:
+            if "id" in settings_val:
                 settings_value = get_setting_node_name_from_df(
-                    df=df, column=settings_val.split('-')[-1], node=node)
-                settings.extend([{path_val: value}
-                                 for value in settings_value])
+                    df=df, column=settings_val.split("-")[-1], node=node
+                )
+                settings.extend(
+                    [{path_val: value} for value in settings_value]
+                )
             elif isinstance(settings_val, list) and any(
-                    'id' in item for item in settings_val):  # TODO: Test This
-                id_calls = [id.split('-')[-1]
-                            for id in filter(
-                                lambda x: 'id' in x, settings_val)]
+                "id" in item for item in settings_val
+            ):  # TODO: Test This
+                id_calls = [
+                    id.split("-")[-1]
+                    for id in filter(lambda x: "id" in x, settings_val)
+                ]
                 for col in id_calls:
                     settings_value = get_setting_node_name_from_df(
-                        df=df, column=col, node=node)
-                    settings.extend([{path_val: [value]}
-                                     for value in settings_value])
+                        df=df, column=col, node=node
+                    )
+                    settings.extend(
+                        [{path_val: [value]} for value in settings_value]
+                    )
             else:
                 settings.append({path_val: settings_val})
         else:
             settings = []
 
-    type_setting_dict = {'settings': settings,
-                         'node_types': list(node_types)}
-    type_setting_dict['attributes'] = node_attr_dict
+    type_setting_dict = {"settings": settings, "node_types": list(node_types)}
+    type_setting_dict["attributes"] = node_attr_dict
     return type_setting_dict
 
 
@@ -159,7 +175,9 @@ def associate_renames(df_renames, tr, node):
     # If any part of the node string is in the index of the rename dataframe
     # then build the original name.
     if any(new_nm.lower() in node.lower() for new_nm in df_renames.index):
-        row_index = list(filter(lambda x: x.lower() in node, df_renames.index))
+        row_index = list(
+            filter(lambda x: x.lower() in node, df_renames.index)
+        )
         old_name = df_renames.loc[row_index].get_values()
         row_index = [x.lower() for x in row_index]
         old_name = [x.lower() for x in chain(*old_name)]
@@ -167,23 +185,23 @@ def associate_renames(df_renames, tr, node):
         # take the original name and the current name and use the current name
         # as a template to build up the old name.
         original_name = reduce(
-            lambda new, kv: new.replace(*kv), new_old_tup, node)
+            lambda new, kv: new.replace(*kv), new_old_tup, node
+        )
         if node == original_name:
             row_index = list(filter(lambda x: x in node, df_renames.index))
             old_name = df_renames.loc[row_index].get_values()
             new_old_tup = zip(row_index, chain(*old_name))
             original_name = reduce(
-                lambda new, kv: new.replace(*kv), new_old_tup, node)
+                lambda new, kv: new.replace(*kv), new_old_tup, node
+            )
 
         # Get the ID of node and the ID of the original node name that was
         # generated above.
         original_id = tr.get_uml_id(name=original_name)
         tr.uml_id.update({node: original_id})
-        return {'original_name': original_name,
-                'original_id': original_id}
+        return {"original_name": original_name, "original_id": original_id}
     else:
-        return {'original_name': None,
-                'original_id': None}
+        return {"original_name": None, "original_id": None}
 
 
 def build_dict(arg):
@@ -210,8 +228,9 @@ def make_object(obj, kwargs):
     return obj(**kwargs)
 
 
-def create_column_values_under(prefix=None, first_node_data=None,
-                               second_node_data=None, suffix=''):
+def create_column_values_under(
+    prefix=None, first_node_data=None, second_node_data=None, suffix=""
+):
     """
     Returns the column values for an inferred dataframe column that has
     underscores in the column name.
@@ -252,17 +271,18 @@ def create_column_values_under(prefix=None, first_node_data=None,
     To produce the dataframe entires of the form:
     df['A_composite owner_component'] = A_<composite owner>_<component>
     """
-    under = '_'
-    dash = '-'
+    under = "_"
+    dash = "-"
     column_values = []
     for count, first_data in enumerate(first_node_data):
-        tmp_list = [prefix
-                    + under
-                    + first_data.lower()
-                    + under
-                    + second_node_data[count].lower()
-                    + suffix
-                    ]
+        tmp_list = [
+            prefix
+            + under
+            + first_data.lower()
+            + under
+            + second_node_data[count].lower()
+            + suffix
+        ]
 
         column_values.extend(tmp_list)
 
@@ -302,24 +322,26 @@ def create_column_values_space(first_node_data=None, second_node_data=None):
     second_node_data='BOOT' then the value returned would be
     'car qua boot context'
     """
-    space = ' '
+    space = " "
     column_values = []
     for count, first_data in enumerate(first_node_data):
-        tmp_list = [first_data.lower()
-                    + space
-                    + 'qua'
-                    + space
-                    + second_node_data[count].lower()
-                    + space
-                    + 'context'
-                    ]
+        tmp_list = [
+            first_data.lower()
+            + space
+            + "qua"
+            + space
+            + second_node_data[count].lower()
+            + space
+            + "context"
+        ]
         column_values.extend(tmp_list)
 
     return column_values
 
 
 def create_column_values_singleton(
-        first_node_data=None, second_node_data=None):
+    first_node_data=None, second_node_data=None
+):
     """
     Returns the column values for an inferred dataframe column that is
     only one word.
@@ -354,20 +376,20 @@ def create_column_values_singleton(
     If the first_node_data='CAR' and the second_node_data='context1' then the
     value returned would be 'car context1'
     """
-    space = ' '
+    space = " "
     column_values = []
     for count, first_data in enumerate(first_node_data):
-        tmp_list = [first_data.lower()
-                    + space
-                    + second_node_data[count].lower()
-                    ]
+        tmp_list = [
+            first_data.lower() + space + second_node_data[count].lower()
+        ]
         column_values.extend(tmp_list)
 
     return column_values
 
 
-def get_node_types_attrs(df=None, node=None,
-                         root_node_type=None, root_attr_columns=None):
+def get_node_types_attrs(
+    df=None, node=None, root_node_type=None, root_attr_columns=None
+):
     """
     Returns the type of node that specified vertex is acting as and
     returns the attributes associated with that node if the passed node is
@@ -414,16 +436,19 @@ def get_node_types_attrs(df=None, node=None,
     """
     node_attr_dict = {}
     mask = df == node
-    node_mask_columns = df[mask].dropna(axis=1, how='all').columns
-    node_type_columns = set(node_mask_columns).difference(
-        root_attr_columns)
+    node_mask_columns = df[mask].dropna(axis=1, how="all").columns
+    node_type_columns = set(node_mask_columns).difference(root_attr_columns)
     root_attribute_list = list(root_attr_columns)
 
     # want to check if node in root nodes.values the column not the attrs.
     if node in df[root_node_type].values:
         root_node_df = df.loc[df[root_node_type] == node]
-        node_attr_dict = root_node_df[root_attribute_list].dropna(
-            axis=1, how='all').dropna(axis=0, how='all').to_dict('records')
+        node_attr_dict = (
+            root_node_df[root_attribute_list]
+            .dropna(axis=1, how="all")
+            .dropna(axis=0, how="all")
+            .to_dict("records")
+        )
 
     return node_type_columns, node_attr_dict
 
@@ -477,22 +502,22 @@ def match_changes(change_dict=None):
     matched = {}
     str_dict = {}
 
-    add_del = ('Added', 'Deleted')
+    add_del = ("Added", "Deleted")
     for suitor in change_dict:
         # TODO: generalize key skip method
         if suitor in add_del:
             str_dict[suitor] = change_dict[suitor]
             if not change_dict[suitor] and suitor not in add_del:
                 # TODO: I think this will cause issues in the json output.
-                deleted_set = set(
-                    str_dict['Deleted']).add(set(suitor))
-                update_dict = {'Deleted': list(deleted_set)}
+                deleted_set = set(str_dict["Deleted"]).add(set(suitor))
+                update_dict = {"Deleted": list(deleted_set)}
                 str_dict.update(update_dict)
             continue
         scores = match(*change_dict[suitor], current=suitor)
         matched[suitor] = list(zip(change_dict[suitor], scores))
-        matched[suitor] = sorted(matched[suitor],
-                                 reverse=True, key=lambda elem: elem[1])
+        matched[suitor] = sorted(
+            matched[suitor], reverse=True, key=lambda elem: elem[1]
+        )
         # TODO: Consider using Reduce or filter.
         # Could probably use reduce instead of this if else with a while loop
         if len(matched[suitor]) == 1:
@@ -510,8 +535,9 @@ def match_changes(change_dict=None):
                     j += 1
                     if j >= len(matched[suitor]):
                         break
-                unstable_pairing[suitor] = [matched[suitor][k][0]
-                                            for k in range(j)]
+                unstable_pairing[suitor] = [
+                    matched[suitor][k][0] for k in range(j)
+                ]
                 matched.pop(suitor)
 
     matched.update(str_dict)
@@ -550,10 +576,14 @@ def match(*args, current=None):
     scores = []
     for clone in args:
         if current.edge_attribute == clone.edge_attribute:
-            source_condit = (clone.source.original_id == current.source.id
-                             or clone.source.id == current.source.id)
-            target_condit = (clone.target.original_id == current.target.id
-                             or clone.target.id == current.target.id)
+            source_condit = (
+                clone.source.original_id == current.source.id
+                or clone.source.id == current.source.id
+            )
+            target_condit = (
+                clone.target.original_id == current.target.id
+                or clone.target.id == current.target.id
+            )
             if source_condit and target_condit:
                 scores.append(2)
                 return scores
@@ -612,29 +642,28 @@ def to_excel_df(data_dict=None, column_keys=None):
     # each key], 'Added': [all added data], 'Deleted': [all deleted data]
     edit_1 = column_keys[0]
     edit_2 = column_keys[1]
-    unstab_original = 'Unstable Matches Original'
-    unstab_change = 'Unstable Matches Change'
-    df_data = {edit_1: [],
-               edit_2: [],
-               unstab_original: [],
-               unstab_change: [], }
+    unstab_original = "Unstable Matches Original"
+    unstab_change = "Unstable Matches Change"
+    df_data = {edit_1: [], edit_2: [], unstab_original: [], unstab_change: []}
     for key in data_dict:
         if isinstance(key, str):
             if not data_dict[key]:
                 continue
             try:
                 check = data_dict[key][0].named_edge_triple
-                df_data.update({key: [val.named_edge_triple
-                                      for val in data_dict[key]]})
+                df_data.update(
+                    {key: [val.named_edge_triple for val in data_dict[key]]}
+                )
             except AttributeError:
-                df_data.update({key: [val.name
-                                      for val in data_dict[key]]})
+                df_data.update({key: [val.name for val in data_dict[key]]})
         else:
             if len(data_dict[key]) > 1:
-                repeat_key = [key.named_edge_triple for i in range(
-                    len(data_dict[key]))]
+                repeat_key = [
+                    key.named_edge_triple for i in range(len(data_dict[key]))
+                ]
                 multiple_vals = [
-                    val.named_edge_triple for val in data_dict[key]]
+                    val.named_edge_triple for val in data_dict[key]
+                ]
                 # multiple_vals = data_dict[key]
                 df_data[unstab_original].extend(repeat_key)
                 df_data[unstab_change].extend(multiple_vals)
@@ -682,9 +711,12 @@ def get_setting_node_name_from_df(df=None, column=None, node=None):
     """
 
     mask = df == node
-    masked_df = df[mask].dropna(axis=0, how='all')
-    return df.where(
-        masked_df.isnull()).dropna(axis=0, how='all')[column].tolist()
+    masked_df = df[mask].dropna(axis=0, how="all")
+    return (
+        df.where(masked_df.isnull())
+        .dropna(axis=0, how="all")[column]
+        .tolist()
+    )
 
 
 def make_string(attr_dict, create=False):
@@ -712,15 +744,18 @@ def make_string(attr_dict, create=False):
     """
     # attr_dict follows to to_uml_json_* structure
     if create:
-        ops_in_value = 'name'
+        ops_in_value = "name"
     else:
-        ops_in_value = 'value'
-    if isinstance(attr_dict['ops'][0][ops_in_value], list):
-        e_a_value = attr_dict['ops'][0][ops_in_value][0]
+        ops_in_value = "value"
+    if isinstance(attr_dict["ops"][0][ops_in_value], list):
+        e_a_value = attr_dict["ops"][0][ops_in_value][0]
     else:
-        e_a_value = attr_dict['ops'][0][ops_in_value]
-    return str(attr_dict['id']) + str(e_a_value) \
-        + str(attr_dict['ops'][0]['path'])
+        e_a_value = attr_dict["ops"][0][ops_in_value]
+    return (
+        str(attr_dict["id"])
+        + str(e_a_value)
+        + str(attr_dict["ops"][0]["path"])
+    )
 
 
 def remove_duplicates(input, create=False):
@@ -769,17 +804,17 @@ def to_uml_json_node(**kwargs):
     VertexReporterMixin
     """
     return {
-        'id': kwargs['id'],
-        'ops': [
+        "id": kwargs["id"],
+        "ops": [
             {
-                'op': kwargs['op'],
-                'name': kwargs['name'],
-                'path': kwargs['path'],
-                'metatype': kwargs['metatype'],
-                'stereotype': kwargs['stereotype'],
-                'attributes': kwargs['attributes'],
+                "op": kwargs["op"],
+                "name": kwargs["name"],
+                "path": kwargs["path"],
+                "metatype": kwargs["metatype"],
+                "stereotype": kwargs["stereotype"],
+                "attributes": kwargs["attributes"],
             }
-        ]
+        ],
     }
 
 
@@ -792,14 +827,14 @@ def to_uml_json_decorations(**kwargs):
     VertexReporterMixin
     """
     return {
-        'id': kwargs['id'],
-        'ops': [
+        "id": kwargs["id"],
+        "ops": [
             {
-                'op': kwargs['op'],
-                'path': '/m2/' + kwargs['path'],
-                'value': kwargs['value'],
+                "op": kwargs["op"],
+                "path": "/m2/" + kwargs["path"],
+                "value": kwargs["value"],
             }
-        ]
+        ],
     }
 
 
@@ -812,14 +847,14 @@ def to_uml_json_edge(**kwargs):
     DiEdgeReporterMixin
     """
     return {
-        'id': kwargs['id'],
-        'ops': [
+        "id": kwargs["id"],
+        "ops": [
             {
-                'op': kwargs['op'],
-                'path': '/m2/' + kwargs['path'],
-                'value': kwargs['value']
+                "op": kwargs["op"],
+                "path": "/m2/" + kwargs["path"],
+                "value": kwargs["value"],
             }
-        ]
+        ],
     }
 
 
@@ -827,5 +862,5 @@ def truncate_microsec(curr_time=None):
     """
     Returns Hours Minutes Seconds.
     """
-    time_str = curr_time.strftime('%H %M %S %f')
+    time_str = curr_time.strftime("%H %M %S %f")
     return time_str[0:-3]
