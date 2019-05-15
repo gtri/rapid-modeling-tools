@@ -116,11 +116,14 @@ def create_md_model(input_paths, output_path=""):
                     ".json"
                 )
             else:
-                outfile = (
-                    Path(output_path)
-                    .joinpath(wkbk.parts[-1])
-                    .with_suffix(".json")
-                )
+                outpath = Path(output_path)
+                if not outpath.is_absolute():
+                    if outpath.parts[-1] == here.parts[-1]:
+                        outpath = here
+                    else:
+                        outpath = here / outpath
+                outfile = Path(outpath).joinpath(
+                    wkbk.parts[-1]).with_suffix('.json')
 
             (outfile).write_text(
                 json.dumps(json_out, indent=4, sort_keys=True)
@@ -173,6 +176,12 @@ def compare_md_model(inputs, output_path=""):
         wkbk_paths.extend(p)
 
     if output_path:
+        output_path = Path(output_path)
+        if not output_path.is_absolute():
+            if output_path.parts[-1] == here.parts[-1]:
+                output_path = here
+            else:
+                output_path = here / output_path
         if not output_path.is_dir():
             raise RuntimeError("Please provide an output directory")
         outpath = output_path
