@@ -830,7 +830,6 @@ class Evaluator:
         columns_to_create = list(set(
             self.translator.get_pattern_graph()).difference(
             set(self.df.columns)))
-        print(columns_to_create)
         # TODO: Weak solution to the creation order problem.
         columns_to_create = sorted(columns_to_create, key=len)
 

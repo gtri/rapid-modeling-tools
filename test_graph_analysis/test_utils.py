@@ -1,5 +1,4 @@
 import json
-import pprint as pp
 import tempfile
 import unittest
 from copy import copy
