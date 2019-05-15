@@ -837,6 +837,18 @@ try {
 									temp_elements[item_to_edit] = new_element;
 									new_element.setName(new_name);
 									break;
+								case 'LiteralInteger':
+									new_element = ele_factory.createLiteralIntegerInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									break;
+								case 'LiteralReal':
+									new_element = ele_factory.createLiteralRealInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									break;
 							}
 
 							create_list.add(new_element);
@@ -995,7 +1007,12 @@ finally {
 	file_writer = new FileWriter(csv_file);
 	
 	for (created in create_list) {
-		file_writer.write(created.getName() + "," + created.getID() + "\n");
+		if (created instanceof NamedElement) {
+			file_writer.write(created.getName() + "," + created.getID() + "\n");
+		}
+		else {
+			file_writer.write(created.getHumanName() + "," + created.getID() + "\n");
+		}
 	}
 	
 	file_writer.close();
