@@ -23,7 +23,7 @@ commands:
     windows: sphinx-apidoc -f -o doc graph_analysis
 
   make-html:
-    windows: cd doc && make html
+    windows: cd doc && make.bat html
 
 env_specs:
   default:

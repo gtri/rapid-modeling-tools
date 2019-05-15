@@ -1,10 +1,15 @@
+# ** Using Ingrid Nerdman**
+
+**Cloning the Repo**
+* Ensure that your github account has an associated SSH key
+
 **Starting the Environment**
-* Install `miniconda3` to a location on your computer separate from `Anaconda`
-* Enter the top level directory containing the `anaconda-project.yml` file
-* `activate <path to miniconda3>`
-* The environment should boot up
-* If the environment does not boot through this method:
-    * `activate envs\default`
+* Install `miniconda3` to a location on your computer, separate from `Anaconda`
+* Using **Anaconda Prompt** navigate to the  top level directory containing the `anaconda-project.yml` file
+* Then issuing `anaconda-project run <command>` will boot up the Ingrid_nerdman environment and execute the command.
+* If the environment does not boot through this method, after the environment has been created:
+    * `activate envs\default` manually boots up the environment created by the `anaconda-project run` commands
+    * Typically, the `anaconda-project run <command>` does not work without an internet connection.
 
 **First Things First**
 * After booting the environment specified by the anaconda-project.yml file run the command:
@@ -21,7 +26,7 @@ need to run two commands.
     * Documentation should be in `./doc/_build/html` and you should open
     `index.html` using your browser.
 
-**Command Line Interaction with Ingrid Nerdman (Rick's Cafe American)**
+## **Command Line Interaction with Ingrid Nerdman (Rick's Cafe American)**
 * `anaconda-project run cli <specify commands and inputs/outputs>`
 
     * Help:
