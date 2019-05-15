@@ -5,6 +5,7 @@
 
 **Starting the Environment**
 * Install `miniconda3` to a location on your computer, separate from `Anaconda`
+* Open **Anaconda Prompt** and `conda install anaconda-project` to the base environment.
 * Using **Anaconda Prompt** navigate to the  top level directory containing the `anaconda-project.yml` file
 * Then issuing `anaconda-project run <command>` will boot up the Ingrid_nerdman environment and execute the command.
 * If the environment does not boot through this method, after the environment has been created:
