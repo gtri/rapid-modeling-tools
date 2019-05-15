@@ -251,7 +251,7 @@ def set_newname_as_rename_index(df_renames, row, ind):
         columns corresponding to the new names.
     """
     mask = df_renames == row[ind]
-    masked_df = df_renames[mask].dropna(how='all', axis=0)
+    masked_df = df_renames[mask].dropna(how="all", axis=0)
     new_names = df_renames.T.index.where(masked_df.isnull()).tolist()
     new_col = list(chain.from_iterable(new_names))
     new_name = list(filter(lambda x: isinstance(x, str), new_col))

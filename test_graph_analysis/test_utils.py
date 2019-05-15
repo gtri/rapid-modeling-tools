@@ -11,19 +11,29 @@ import pandas as pd
 
 from graph_analysis.graph_creation import Manager, MDTranslator
 from graph_analysis.graph_objects import DiEdge, Vertex
-from graph_analysis.utils import (associate_node_id,
-                                  associate_node_types_settings,
-                                  associate_predecessors, associate_renames,
-                                  associate_successors, build_dict,
-                                  create_column_values_singleton,
-                                  create_column_values_space,
-                                  create_column_values_under,
-                                  get_node_types_attrs,
-                                  get_setting_node_name_from_df, make_object,
-                                  make_string, match, match_changes,
-                                  remove_duplicates, to_excel_df,
-                                  to_uml_json_decorations, to_uml_json_edge,
-                                  to_uml_json_node)
+from graph_analysis.utils import (
+    associate_node_id,
+    associate_node_types_settings,
+    associate_predecessors,
+    associate_renames,
+    associate_successors,
+    build_dict,
+    create_column_values_singleton,
+    create_column_values_space,
+    create_column_values_under,
+    get_node_types_attrs,
+    get_setting_node_name_from_df,
+    make_object,
+    make_string,
+    match,
+    match_changes,
+    remove_duplicates,
+    set_newname_as_rename_index,
+    to_excel_df,
+    to_uml_json_decorations,
+    to_uml_json_edge,
+    to_uml_json_node,
+)
 
 from . import DATA_DIRECTORY, PATTERNS
 
@@ -177,8 +187,8 @@ class TestUtils(unittest.TestCase):
 
     def test_set_newname_as_rename_index(self):
         data = {
-            'new names': ['new name 1', 'new name 2'],
-            'old names': ['old name 1', 'old name 2']
+            "new names": ["new name 1", "new name 2"],
+            "old names": ["old name 1", "old name 2"],
         }
         df = pd.DataFrame(data=data)
         for row in df.itertuples(index=False):
@@ -186,8 +196,8 @@ class TestUtils(unittest.TestCase):
                 df_0 = set_newname_as_rename_index(df, row, 0)
 
         data1 = {
-            'previous name': ['prev name 1', 'prev name 2'],
-            'update name': ['update name 1', 'update name 2']
+            "previous name": ["prev name 1", "prev name 2"],
+            "update name": ["update name 1", "update name 2"],
         }
         df1 = pd.DataFrame(data=data1)
         for row in df1.itertuples(index=False):
@@ -195,9 +205,9 @@ class TestUtils(unittest.TestCase):
                 df_1 = set_newname_as_rename_index(df1, row, 1)
 
         df_index = pd.DataFrame(data=data)
-        df_index.set_index('old names', inplace=True)
+        df_index.set_index("old names", inplace=True)
         df1_index = pd.DataFrame(data=data1)
-        df1_index.set_index('previous name', inplace=True)
+        df1_index.set_index("previous name", inplace=True)
 
         assert df_0.equals(df_index) and df_1.equals(df1_index)
 

@@ -13,12 +13,23 @@ import pandas as pd
 
 from . import OUTPUT_DIRECTORY, PATTERNS
 from .graph_objects import DiEdge, PropertyDiGraph, Vertex
-from .utils import (associate_node_id, associate_node_types_settings,
-                    associate_predecessors, associate_renames,
-                    associate_successors, build_dict,
-                    create_column_values_singleton, create_column_values_space,
-                    create_column_values_under, make_object, match_changes,
-                    remove_duplicates, to_excel_df, truncate_microsec)
+from .utils import (
+    associate_node_id,
+    associate_node_types_settings,
+    associate_predecessors,
+    associate_renames,
+    associate_successors,
+    build_dict,
+    create_column_values_singleton,
+    create_column_values_space,
+    create_column_values_under,
+    make_object,
+    match_changes,
+    remove_duplicates,
+    set_newname_as_rename_index,
+    to_excel_df,
+    truncate_microsec,
+)
 
 
 class Manager:
@@ -682,16 +693,40 @@ class Evaluator:
             Unrecognized sheet name.
         """
         # TODO: Generalize/Standardize this function
-        patterns = [pattern.name.split('.')[0].lower()
-                    for pattern in PATTERNS.glob('*.json')]
-        ids = ['id', 'ids', 'identification number',
-               'id number', 'uuid', 'mduuid', 'magicdraw id',
-               'magic draw id', 'magicdraw identification',
-               'identification numbers', 'id_numbers', 'id_number']
-        renames = ['renames', 'rename', 'new names', 'new name', 'newnames',
-                   'newname', 'new_name', 'new_names', 'changed names',
-                   'changed name', 'change names', 'changed_names',
-                   'changenames', 'changed_names']
+        patterns = [
+            pattern.name.split(".")[0].lower()
+            for pattern in PATTERNS.glob("*.json")
+        ]
+        ids = [
+            "id",
+            "ids",
+            "identification number",
+            "id number",
+            "uuid",
+            "mduuid",
+            "magicdraw id",
+            "magic draw id",
+            "magicdraw identification",
+            "identification numbers",
+            "id_numbers",
+            "id_number",
+        ]
+        renames = [
+            "renames",
+            "rename",
+            "new names",
+            "new name",
+            "newnames",
+            "newname",
+            "new_name",
+            "new_names",
+            "changed names",
+            "changed name",
+            "change names",
+            "changed_names",
+            "changenames",
+            "changed_names",
+        ]
         excel_sheets = pd.read_excel(excel_file, sheet_name=None)
         # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(excel_sheets):  # Alphabetical sort
@@ -711,8 +746,7 @@ class Evaluator:
                 # Maybe you named the rename sheet Pattern Renames
                 elif any(renm_str in sheet.lower() for renm_str in renames):
                     self.df_renames = excel_sheets[sheet]
-                    self.df_renames.dropna(
-                        how='all', inplace=True)
+                    self.df_renames.dropna(how="all", inplace=True)
                     for row in self.df_renames.itertuples(index=False):
                         if row[0] in self.translator.uml_id.keys():
                             # replace instances of this with those in 1
@@ -759,13 +793,12 @@ class Evaluator:
                     # ever get read in??
                     # TODO: Break this function down and test edge cases.
                     self.df = excel_sheets[sheet]
-                    self.df.dropna(how='all', inplace=True)
+                    self.df.dropna(how="all", inplace=True)
             # Hopefully you explcitly named the Rename sheet
             elif any(renm_str in sheet.lower() for renm_str in renames):
                 self.df_renames = excel_sheets[sheet]
-                self.df_renames.dropna(
-                    how='all', inplace=True)
-                index_name = ''
+                self.df_renames.dropna(how="all", inplace=True)
+                index_name = ""
                 for row in self.df_renames.itertuples(index=False):
                     if all(
                         row[i] in self.translator.uml_id.keys()
@@ -815,11 +848,11 @@ class Evaluator:
                             {row[0]: self.translator.uml_id[row[1]]}
                         )
                         continue
-            elif any(id_str in sheet.lower() for id_str in ids) and \
-                    not any(pattern in sheet.lower() for pattern in patterns):
+            elif any(id_str in sheet.lower() for id_str in ids) and not any(
+                pattern in sheet.lower() for pattern in patterns
+            ):
                 self.df_ids = excel_sheets[sheet]
-                self.df_ids.set_index(
-                    self.df_ids.columns[0], inplace=True)
+                self.df_ids.set_index(self.df_ids.columns[0], inplace=True)
                 self.translator.uml_id.update(
                     self.df_ids.to_dict(orient="dict")[self.df_ids.columns[0]]
                 )
@@ -884,9 +917,11 @@ class Evaluator:
         """
         # from a collection of vertex pairs, create all of the columns for
         # for which data is required but not present in the excel.
-        columns_to_create = list(set(
-            self.translator.get_pattern_graph()).difference(
-            set(self.df.columns)))
+        columns_to_create = list(
+            set(self.translator.get_pattern_graph()).difference(
+                set(self.df.columns)
+            )
+        )
         # TODO: Weak solution to the creation order problem.
         columns_to_create = sorted(columns_to_create, key=len)
 

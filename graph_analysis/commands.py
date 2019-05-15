@@ -122,8 +122,11 @@ def create_md_model(input_paths, output_path=""):
                         outpath = here
                     else:
                         outpath = here / outpath
-                outfile = Path(outpath).joinpath(
-                    wkbk.parts[-1]).with_suffix('.json')
+                outfile = (
+                    Path(outpath)
+                    .joinpath(wkbk.parts[-1])
+                    .with_suffix(".json")
+                )
 
             (outfile).write_text(
                 json.dumps(json_out, indent=4, sort_keys=True)
