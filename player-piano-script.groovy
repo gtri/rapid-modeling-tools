@@ -11,7 +11,7 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.*;
 import com.nomagic.uml2.ext.jmi.helpers.*;
 // Other third party libraries
 
-// big outer try - checks on load of API's, key files, etc.
+// big outer try for exception handling and reporting
 try {
 	
 	// Have a general log for steps along the way in the program.
@@ -30,7 +30,7 @@ try {
 	
 	verification_log = new ArrayList<String>();
 
-	// get hooks into Cameo for use later
+	// get hooks into MagicDraw for use later
 	live_app = com.nomagic.magicdraw.core.Application.getInstance();
 	live_log = live_app.getGUILog();
 	live_project = live_app.getProject();
@@ -40,7 +40,7 @@ try {
 	temp_elements = {};
 	homeless_elements = [];
 	
-	// these are all hacks to fight Cameo's built-in auto-production of elements.
+	// these are all hacks to fight MagicDraw's built-in auto-production of elements.
 	ends_to_nuke = [];
 	c_ends_to_nuke = [];
 	pps_to_save = [];
@@ -50,7 +50,7 @@ try {
 	
 	// try to make the element picker
 	try {
-		// totally butt-pull based on snippet of OpenMBEE code on GitHub - thanks Doris!
+		// Let the user pick a default location for elements without explicitly defined owners
 		sel = new SelectElementInfo(false, false, null, true);
 		dialogParent = MDDialogParentProvider.getProvider().getDialogParent();
 		ele_selection = ElementSelectionDlgFactory.create(dialogParent);
@@ -94,7 +94,7 @@ try {
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
 		   fc = chooser.getSelectedFile();
 		}
-	// It feels weird to use imported Java to load files - there must be a pure JavaScript way to do this
+	
 		fis = new FileReader(chooser.getSelectedFile());
 		reader = new BufferedReader(fis);
 		stringBuilder = new StringBuilder();
@@ -114,7 +114,7 @@ try {
 	
 	parsed_model = null;
 	
-	// create a new class and use reflection to create it
+	// big try to interpret the list of modification instructions
 	
 	try {
 		// Load the file contents into a string buffer and then use JSON utilities to create
@@ -143,8 +143,6 @@ try {
 		finally{
 		
 		}
-		
-		// change object can now be cycled to make changes on selected objects
 		
 		// start the editing session to make changes to the model
 		
@@ -177,7 +175,7 @@ try {
 					item_edited_value_reported = '';
 					
 					try {
-						// if item was created this session, you can't get it by ID.
+						// if item was created this session, you can't get it by ID. This is the workaround
 						
 						ele_to_mod = null;
 						
@@ -202,7 +200,7 @@ try {
 							attribute_to_hit = op_to_execute['path'].split('/m2/')[1];
 						}
 						
-						// This is the cheat for loading M1 value properties directly from spreadsheet.
+						// This is the cheat for loading M1 value properties directly from spreadsheet. Will eventually be fixed.
 													
 						value_shortcuts = op_to_execute['value'];
 						if (value_shortcuts != null && attribute_to_hit == null){
@@ -269,7 +267,7 @@ try {
 							}
 						}
 						
-						// Path constructed correctly with appropriate metamodel level identified.
+						// apply meta-attribute changes
 						
 						try {
 							
@@ -523,11 +521,6 @@ try {
 								   asi_class.getName() + ' for ' + item_to_edit_reported);
 								   }
 								   
-								   //for (asi_slot in ele_asi.getSlot()) {
-								   //   live_log.log('Property path ASI includes slot ' + ele_asi.getSlot()[asi_slot].getDefiningFeature().getName());
-									  //live_log.log('PP Slot = ' + pp_slot.getDefiningFeature().getName());
-								  //}
-								   
 								   for (prop_path_step in element_path_list){
 									   ele_value = ele_factory.createElementValueInstance();
 									   ele_value.setElement(prop_path_step);
@@ -733,6 +726,8 @@ try {
 				
 				else if (op_type == 'create') {
 					
+					// create new elements using the appropriate calls on the ElementsFactory
+					
 					try {
 					
 						new_name = op_to_execute['name'];
@@ -747,8 +742,6 @@ try {
 								new_stereo = op_to_execute['stereotype'];
 							}
 						}
-						
-						//new_stereo = op_to_execute['stereotype'];
 						
 						new_element = null;
 						
@@ -970,7 +963,7 @@ try {
 		execution_status_log.add('Closed modeling session successfully.');
 		
 		if (assocs_to_clean.size() > 0) {
-			SessionManager.getInstance().createSession('Override Cameo automatic element creation');
+			SessionManager.getInstance().createSession('Override MagicDraw automatic element creation');
 		}
 		
 		for (assoc in assocs_to_clean) {
