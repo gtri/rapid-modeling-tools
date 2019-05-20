@@ -1,50 +1,55 @@
 name: Ingrid_Nerdman
 
-platforms:
-- win-64
-
-channels:
-- defaults
-
 commands:
   test:
-    windows: cd test_graph_analysis && pytest
+    windows: pytest
+    unix: pytest
 
   jupyter:
     windows: cd notebooks && jupyter
+    unix: cd notebooks && jupyter
 
   setup:
     windows: python -m pip install -e . --no-deps --ignore-installed
+    unix: python -m pip install -e . --no-deps --ignore-installed
 
   cli:
     windows: graph-analysis
+    unix: graph-analysis
 
   build-sphinx:
     windows: sphinx-apidoc -f -o doc graph_analysis
+    unix: sphinx-apidoc -f -o doc graph_analysis
 
   make-html:
     windows: cd doc && make.bat html
+    unix: cd doc && make html
 
-  black-source:
-    windows: black -l 78 setup.py graph_analysis
-
-  black-tests:
-    windows: black -l 78 setup.py test_graph_analysis
+  black:
+    windows: black -l 78 setup.py src test
+    unix: black -l 78 setup.py src test
 
 env_specs:
   default:
+    channels:
+    - defaults
+    - conda-forge
+    inherit_from:
+    - graph-analysis-dev
     packages:
-    - numpy
     - black
-    - pandas
-    - scipy
-    - networkx >=2.1
+    - jupyterlab
     - pytest
     - pytest-cov
-    - jupyterlab
+    - python >=3.6,<3.7
     - sphinx
-    - xlrd >=0.9.0
+  graph-analysis-dev:
+    channels:
+    - defaults
+    packages:
+    - networkx >=2.3
+    - numpy
     - openpyxl
-    - python >=3.6,<3.7  # not in setup
-skip_imports:
-  environment: 791165f23caea54dd5a06ac3de7c794b365bb3d3
+    - pandas
+    - scipy
+    - xlrd >=0.9.0

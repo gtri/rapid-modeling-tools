@@ -7,29 +7,43 @@ the BSD 3-Clause license. See the LICENSE file for details.
 
 # Learn more: https://github.com/kennethreitz/setup.py
 
+import re
+from pathlib import Path
+
 from setuptools import find_packages, setup
 
-with open("README.md") as f:
-    readme = f.read()
-
-with open("LICENSE") as f:
-    license = f.read()
+NAME = "graph_analysis"
+HERE = Path(__file__).parent
+SRC = HERE / "src" / NAME
+VERSION_RE = r""".*__version__ = (['"])(\d+\.\d+\.\d+.*)\1.*"""
 
 setup(
-    name="ricks-cafe-american",
-    version="0.1.0",
+    # TODO: non-cute name
+    name=NAME,
+    version=re.findall(VERSION_RE, (SRC / "_version.py").read_text())[0][1],
+    # TODO: better description
     description="Sample package for Python-Guide.org",
-    long_description=readme,
+    long_description=(HERE / "README.md").read_text(),
+    long_description_content_type="text/markdown",
     author="Georgia Tech Research Corporation",
-    author_email="support@gtri.gatech.edu",
+    # TODO: real email
+    author_email="ingrid-nerdman@gtri.gatech.edu",
+    # TODO: better description
     url="https://github.com/kennethreitz/samplemod",
-    license=license,
-    # move the good stuff into a dir called source then pull packages
-    # from source
-    packages=find_packages(exclude=("test_graph_analysis", "docs")),
+    license="BSD-3-Clause",
+    package_dir={"": "src"},
+    packages=setuptools.find_packages("src"),
     entry_points={
         "console_scripts": ["graph-analysis = graph_analysis.cli:main"]
     },
-    install_requires=["pandas", "scipy", "networkx >=2.1", "xlrd >=0.9.0"],
-    tests_require=["pytest", "unittest"],
+    classifiers=[
+        "Intended Audience :: Developers",
+        "Intended Audience :: Information Technology",
+        "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+    ],
+    install_requires=["pandas", "scipy", "networkx >=2.3", "xlrd >=0.9.0"],
+    tests_require=["pytest-cov"],
+    zip_safe=False,
 )

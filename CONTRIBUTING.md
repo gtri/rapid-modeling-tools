@@ -12,8 +12,7 @@
 Keep the style consistant
 
 ```
-anaconda-project run black-source
-anaconda-project run black-tests
+anaconda-project run black
 ```
 
 Keep the coverage up by adding unit tests

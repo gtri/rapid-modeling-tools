@@ -13,3 +13,6 @@ test_graph_analysis/data_test/graph_diff*
 test_graph_analysis/data_test/Model Diffs*
 .coverage
 data
+junit.xml
+htmlcov
+coverage.xml
