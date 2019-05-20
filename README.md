@@ -59,12 +59,6 @@ need to run two commands.
 * run ```anaconda-project run jupyter lab```
     * This will launch a jupyter lab session in the notebooks directory
 
-**Producing a `changes_uml.json`**
-* In the `test_graph_analysis/test_graph_creation`
-* If commented, uncomment the `class TestProduceJson` and all of its methods
-* `anaconda-project run test -k "test_json_creation"`
-* A `changes_uml.json` should be created and placed within the `data` directory
-
 **Testing**
 
 * **Running all of the Tests**
@@ -78,5 +72,5 @@ need to run two commands.
         * The double quotes are significant
 
 * **Producing a Test Report**
-    * `anaconda-project run test --cov=test_graph_analysis`
-        * `test_graph_analysis` is only directory containing tests. Other test directories could be passed, if the exist, to create a coverage report for the test files in those directories.
+    * `anaconda-project run test --cov=test`
+        * `test` is only directory containing tests. Other test directories could be passed, if the exist, to create a coverage report for the test files in those directories.

@@ -18,8 +18,8 @@ commands:
     unix: graph-analysis
 
   build-sphinx:
-    windows: sphinx-apidoc -f -o doc graph_analysis
-    unix: sphinx-apidoc -f -o doc graph_analysis
+    windows: sphinx-apidoc -f -o doc src/graph_analysis
+    unix: sphinx-apidoc -f -o doc src/graph_analysis
 
   make-html:
     windows: cd doc && make.bat html
