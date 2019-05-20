@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 =======
 # ** Using Ingrid Nerdman**
 
 **Cloning the Repo**
 * Ensure that your github account has an associated SSH key
->>>>>>> INGRID-16-error-with-excelfile-file-on_demand-true-when-attempting-tests-on-clean-install
 
 **Starting the Environment**
 * Install `miniconda3` to a location on your computer, separate from `Anaconda`

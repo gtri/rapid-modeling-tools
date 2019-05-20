@@ -5,8 +5,8 @@
 - Clone the repo
 - Install [anaconda-project](https://anaconda.org/anaconda/anaconda-project)
 
-Make changes
-
+    ### Make changes
+    - Create an issue to accompany pull requests to describe changes.
 ## Code Quality
 
 Keep the style consistant
@@ -21,6 +21,10 @@ Keep the coverage up by adding unit tests
 ```
 anaconda-project run test
 ```
+
+## For Questions
+
+- Email: <ingrid-nerdman@gtri.gatech.edu>
 
 <!-- ## Building -->
 
