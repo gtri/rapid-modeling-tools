@@ -1,4 +1,4 @@
-name: graph-analysis-dev
+name: model-processing-dev
 channels:
 - defaults
 dependencies:

@@ -16,9 +16,9 @@ from shutil import copy2
 import networkx as nx
 import pandas as pd
 
-from graph_analysis.graph_creation import Manager, MDTranslator
-from graph_analysis.graph_objects import DiEdge, Vertex
-from graph_analysis.utils import (
+from model_processing.graph_creation import Manager, MDTranslator
+from model_processing.graph_objects import DiEdge, Vertex
+from model_processing.utils import (
     associate_node_id,
     associate_node_types_settings,
     associate_predecessors,

@@ -12,8 +12,8 @@ from pathlib import Path
 import networkx as nx
 import pandas as pd
 
-from graph_analysis.graph_creation import Evaluator, MDTranslator
-from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
+from model_processing.graph_creation import Evaluator, MDTranslator
+from model_processing.graph_objects import DiEdge, PropertyDiGraph, Vertex
 
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 

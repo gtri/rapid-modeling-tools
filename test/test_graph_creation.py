@@ -14,8 +14,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from graph_analysis.graph_creation import Evaluator, Manager, MDTranslator
-from graph_analysis.graph_objects import DiEdge, PropertyDiGraph, Vertex
+from model_processing.graph_creation import Evaluator, Manager, MDTranslator
+from model_processing.graph_objects import DiEdge, PropertyDiGraph, Vertex
 
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 

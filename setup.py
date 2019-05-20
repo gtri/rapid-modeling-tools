@@ -12,7 +12,7 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
-NAME = "graph_analysis"
+NAME = "model_processing"
 HERE = Path(__file__).parent
 SRC = HERE / "src" / NAME
 VERSION_RE = r""".*__version__ = (['"])(\d+\.\d+\.\d+.*)\1.*"""
@@ -26,15 +26,14 @@ setup(
     long_description=(HERE / "README.md").read_text(),
     long_description_content_type="text/markdown",
     author="Georgia Tech Research Corporation",
-    # TODO: real email
     author_email="ingrid-nerdman@gtri.gatech.edu",
-    # TODO: better description
+    # TODO: better url
     url="https://github.com/kennethreitz/samplemod",
     license="BSD-3-Clause",
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
     entry_points={
-        "console_scripts": ["graph-analysis = graph_analysis.cli:main"]
+        "console_scripts": ["model-processing = model_processing.cli:main"]
     },
     classifiers=[
         "Intended Audience :: Developers",

@@ -9,7 +9,7 @@ import os
 import warnings
 from pathlib import Path
 
-from graph_analysis.graph_creation import *
+from model_processing.graph_creation import *
 
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 
@@ -82,7 +82,7 @@ def create_md_model(input_paths, output_path=""):
                     )
                     patts = (
                         "New patterns may be added in the"
-                        + " graph_analysis/patterns directory"
+                        + " model_processing/patterns directory"
                     )
                     warnings.warn(
                         "\n" + warn_msg + "\n" + patterns_msg + "\n" + patts
@@ -230,7 +230,7 @@ def compare_md_model(inputs, output_path=""):
                 )
                 patts = (
                     "New patterns may be added in the"
-                    + " graph_analysis/patterns directory"
+                    + " model_processing/patterns directory"
                 )
                 warnings.warn(
                     "\n" + warn_msg + "\n" + patterns_msg + "\n" + patts

@@ -55,7 +55,7 @@ need to run two commands.
 **Using Jupyter Lab**
 * create a ```notebooks``` directory in the top level
 * run ```anaconda-project run setup```
-    * This make it so you can import graph_analysis as a module
+    * This make it so you can import model_processing as a module
 * run ```anaconda-project run jupyter lab```
     * This will launch a jupyter lab session in the notebooks directory
 

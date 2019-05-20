@@ -7,6 +7,7 @@
 
     ### Make changes
     - Create an issue to accompany pull requests to describe changes.
+
 ## Code Quality
 
 Keep the style consistant

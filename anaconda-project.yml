@@ -14,12 +14,12 @@ commands:
     unix: python -m pip install -e . --no-deps --ignore-installed
 
   cli:
-    windows: graph-analysis
-    unix: graph-analysis
+    windows: model-processing
+    unix: model-processing
 
   build-sphinx:
-    windows: sphinx-apidoc -f -o doc src/graph_analysis
-    unix: sphinx-apidoc -f -o doc src/graph_analysis
+    windows: sphinx-apidoc -f -o doc src/model_processing
+    unix: sphinx-apidoc -f -o doc src/model_processing
 
   make-html:
     windows: cd doc && make.bat html
@@ -35,7 +35,7 @@ env_specs:
     - defaults
     - conda-forge
     inherit_from:
-    - graph-analysis-dev
+    - model-processing-dev
     packages:
     - black
     - jupyterlab
@@ -43,7 +43,7 @@ env_specs:
     - pytest-cov
     - python >=3.6,<3.7
     - sphinx
-  graph-analysis-dev:
+  model-processing-dev:
     channels:
     - defaults
     packages:

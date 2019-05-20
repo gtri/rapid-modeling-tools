@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 from shutil import copy2
 
-from graph_analysis.commands import compare_md_model, create_md_model
+from model_processing.commands import compare_md_model, create_md_model
 
 from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS, ROOT
 
@@ -46,7 +46,7 @@ class TestCommands(unittest.TestCase):
                 copy2(DATA_DIRECTORY / xl_file, tmpdir)
 
             wkbk_path = [
-                ROOT / "graph_analysis" / "patterns" / "Composition.json",
+                ROOT / "model_processing" / "patterns" / "Composition.json",
                 DATA_DIRECTORY / "Composition Example 2.xlsx",
                 tmpdir,
             ]

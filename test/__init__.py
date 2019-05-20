@@ -7,11 +7,11 @@ the BSD 3-Clause license. See the LICENSE file for details.
 
 from pathlib import Path
 
-import graph_analysis
+import model_processing
 
 HERE = Path(__file__).parent
 ROOT = HERE.parent
 
 DATA_DIRECTORY = HERE / "data_test"
-PATTERNS = Path(graph_analysis.__file__).parent / "patterns"
+PATTERNS = Path(model_processing.__file__).parent / "patterns"
 OUTPUT_DIRECTORY = ROOT / "data"

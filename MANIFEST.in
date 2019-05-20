@@ -1,2 +1,2 @@
 include LICENSE
-recursive-include src/graph_analysis *.json
+recursive-include src/model_processing *.json
