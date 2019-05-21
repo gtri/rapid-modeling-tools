@@ -47,7 +47,7 @@ class TestCommands(unittest.TestCase):
 
             wkbk_path = [
                 ROOT / "model_processing" / "patterns" / "Composition.json",
-                DATA_DIRECTORY / "Composition Example 2.xlsx",
+                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx",
                 tmpdir,
             ]
             create_md_model(wkbk_path)
