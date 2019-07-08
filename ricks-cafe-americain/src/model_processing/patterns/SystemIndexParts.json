@@ -1,0 +1,144 @@
+{
+    "Columns to Navigation Map": {
+        "Component": [
+            "Composite Thing"
+        ],
+        "Part": [
+            "Atomic Thing"
+        ],
+		"Context": [
+			"composite owner"
+		],
+        "Role": [
+            "component"
+        ],
+		"Position PP": [
+			"posPP"
+		],
+		"Composite PP": [
+			"compositePP"
+		],
+		"Assoc": [
+			"A_composite owner_component"
+		],
+		"Location": [
+			"spatial"
+		],
+		"Encoding": [
+			"spatialEnc"
+		],
+		"Location Value": [
+			"spatialVal"
+		]
+    },
+    "Pattern Graph Edges": [
+        [
+            "composite owner",
+            "Composite Thing",
+            "type"
+        ],
+        [
+            "component",
+            "Atomic Thing",
+            "type"
+        ],
+        [
+            "A_composite owner_component",
+            "composite owner",
+            "memberEnd"
+        ],
+        [
+            "A_composite owner_component",
+            "component",
+            "memberEnd"
+        ],
+        [
+            "component",
+            "Composite Thing",
+            "owner"
+        ],
+        [
+            "composite owner",
+            "A_composite owner_component",
+            "owner"
+        ],
+		[
+			"posPP",
+			"A_composite owner_component",
+			"owner"
+		],
+		[
+			"spatial",
+			"A_composite owner_component",
+			"owner"
+		],
+		[
+			"spatial",
+			"spatialEnc",
+			"type"
+		],
+		[
+			"compositePP",
+			"A_composite owner_component",
+			"owner"
+		],
+		[
+			"posPP",
+			"Atomic Thing",
+			"type"
+		],
+		[
+			"compositePP",
+			"Composite Thing",
+			"type"
+		],
+		[
+			"spatial",
+			"spatialVal",
+			"defaultValueSpec"
+		]
+    ],
+    "Root Node": "component",
+    "Vertex MetaTypes": {
+        "A_composite owner_component": "AssociationClass",
+        "Atomic Thing": "Class",
+        "Composite Thing": "Class",
+        "component": "Property",
+        "composite owner": "Property",
+		"posPP": "Property",
+		"compositePP": "Property",
+		"spatial" : "Property",
+		"spatialEnc": "DataType",
+		"spatialVal": "LiteralInteger"
+    },
+    "Vertex Settings": {
+        "A_composite owner_component": null,
+        "Atomic Thing": null,
+        "Composite Thing": null,
+        "component": {
+            "aggregation": "composite"
+        },
+        "composite owner": null,
+		"posPP": {
+            "pp_end": "id-component"
+        },
+		"compositePP": {
+            "pp_end": "id-composite owner"
+        },
+		"spatial" : null,
+		"spatialEnc": null,
+		"spatialVal": null
+    },
+    "Vertex Stereotypes": {
+        "A_composite owner_component": "Block",
+        "Atomic Thing": "Block",
+        "Composite Thing": "Block",
+        "component": "PartProperty",
+        "composite owner": null,
+		"posPP": "ParticipantProperty",
+		"compositePP": "ParticipantProperty",
+		"spatial" : "ValueProperty",
+		"spatialEnc": "ValueType",
+		"spatialVal": null
+    }
+}

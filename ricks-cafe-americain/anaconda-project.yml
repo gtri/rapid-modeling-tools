@@ -1,0 +1,55 @@
+name: Ingrid_Nerdman
+
+commands:
+  test:
+    windows: pytest
+    unix: pytest
+
+  jupyter:
+    windows: cd notebooks && jupyter
+    unix: cd notebooks && jupyter
+
+  setup:
+    windows: python -m pip install -e . --no-deps --ignore-installed
+    unix: python -m pip install -e . --no-deps --ignore-installed
+
+  cli:
+    windows: model-processing
+    unix: model-processing
+
+  build-sphinx:
+    windows: sphinx-apidoc -f -o doc src/model_processing
+    unix: sphinx-apidoc -f -o doc src/model_processing
+
+  make-html:
+    windows: cd doc && make.bat html
+    unix: cd doc && make html
+
+  black:
+    windows: black -l 78 setup.py src test
+    unix: black -l 78 setup.py src test
+
+env_specs:
+  default:
+    channels:
+    - defaults
+    - conda-forge
+    inherit_from:
+    - model-processing-dev
+    packages:
+    - black
+    - jupyterlab
+    - pytest
+    - pytest-cov
+    - python >=3.6,<3.7
+    - sphinx
+  model-processing-dev:
+    channels:
+    - defaults
+    packages:
+    - networkx >=2.3
+    - numpy
+    - openpyxl
+    - pandas
+    - scipy
+    - xlrd >=0.9.0

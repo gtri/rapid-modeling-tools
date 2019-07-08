@@ -1,0 +1,2 @@
+include LICENSE
+recursive-include src/model_processing *.json
