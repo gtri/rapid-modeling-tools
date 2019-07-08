@@ -16,3 +16,5 @@ data
 junit.xml
 htmlcov
 coverage.xml
+anaconda-project
+%HOMEDRIVE%%HOMEPATH%/.conda/environments.txt
