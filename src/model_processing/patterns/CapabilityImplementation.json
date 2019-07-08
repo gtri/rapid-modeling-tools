@@ -1,0 +1,203 @@
+{
+    "Columns to Navigation Map": {
+        "Function": [
+            "Func"
+        ],
+		"Implementation of Function": [
+            "Behavior"
+        ],
+		"Function Performer": [
+            "Performer"
+        ],
+		"Performer Behavior": [
+            "BehaviorUse"
+        ],
+		"Under Condition": [
+            "Condition"
+        ],
+		"Sliced Function Behavior": [
+            "slicedBehavior"
+        ],
+		"performs C": [
+            "performs"
+        ],
+		"behaviorCB C": [
+            "behaviorCB"
+        ],
+		"performed by C": [
+            "performed by"
+        ],
+		"implementation context C": [
+            "implementation context"
+        ],
+		"A_implementation context_behaviorCB C": [
+            "A_implementation context_behaviorCB"
+        ],
+		"A_performed by_performs C": [
+            "A_performed by_performs"
+        ],
+		"func C": [
+            "func"
+        ],
+		"func context C": [
+            "funcContext"
+        ],
+		"A_func context_func C": [
+            "A_func context_func"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "BehaviorUse",
+			"Performer",
+            "owner"
+        ],
+		[
+            "performs",
+			"Func",
+            "owner"
+        ],
+		[
+            "func",
+			"Condition",
+            "owner"
+        ],
+		[
+            "func",
+			"Func",
+            "type"
+        ],
+		[
+            "behaviorCB",
+			"Behavior",
+            "type"
+        ],
+		[
+            "performs",
+			"Performer",
+            "type"
+        ],
+		[
+            "performed by",
+			"Func",
+            "type"
+        ],
+		[
+            "behaviorCB",
+			"Func",
+            "owner"
+        ],
+		[
+            "Func",
+            "slicedBehavior",
+            "classifierBehavior"
+        ],
+		[
+            "BehaviorUse",
+			"Behavior",
+            "method"
+        ],
+		[
+            "A_performed by_performs",
+            "performed by",
+            "memberEnd"
+        ],
+		[
+            "performed by",
+			"A_performed by_performs",
+            "owner"
+        ],
+		[
+            "A_performed by_performs",
+			"performs",
+            "memberEnd"
+        ],
+		[
+            "A_implementation context_behaviorCB",
+			"implementation context",
+            "memberEnd"
+        ],
+		[
+            "implementation context",
+			"A_implementation context_behaviorCB",
+            "owner"
+        ],
+		[
+            "A_implementation context_behaviorCB",
+			"behaviorCB",
+            "memberEnd"
+        ],
+		[
+            "A_func context_func",
+			"funcContext",
+            "memberEnd"
+        ],
+		[
+            "A_func context_func",
+			"func",
+            "memberEnd"
+        ],
+		[
+            "funcContext",
+			"A_func context_func",
+            "owner"
+        ],
+		[
+			"Behavior",
+			"slicedBehavior",
+            "general"
+        ]
+    ],
+    "Root Node": "func",
+    "Vertex MetaTypes": {
+        "Func" : "Class",
+		"Behavior" : "Activity",
+		"Performer" : "Class",
+		"BehaviorUse" : "Operation",
+		"Condition" : "Class",
+		"slicedBehavior" : "Activity",
+		"performs" : "Property",
+		"behaviorCB" : "Property",
+		"performed by" : "Property",
+		"implementation context" : "Property",
+		"A_implementation context_behaviorCB" : "Association",
+		"A_performed by_performs" : "Association",
+		"func" : "Property",
+		"funcContext" : "Property",
+		"A_func context_func" : "Association"
+    },
+    "Vertex Stereotypes": {
+        "Func" : "Block",
+		"Behavior" : null,
+		"Performer" : "Block",
+		"BehaviorUse" : null,
+		"Condition" : "Block",
+		"slicedBehavior" : null,
+		"performs" : "ReferenceProperty",
+		"behaviorCB" : "ClassifierBehaviorProperty",
+		"performed by" : null,
+		"implementation context" : null,
+		"A_implementation context_behaviorCB" : null,
+		"A_performed by_performs" : null,
+		"func" : "ReferenceProperty",
+		"funcContext" : null,
+		"A_func context_func" : null
+    },
+    "Vertex Settings": {
+        "Func" : null,
+		"Behavior" : null,
+		"Performer" : null,
+		"BehaviorUse" : null,
+		"Condition" : null,
+		"slicedBehavior" : null,
+		"performs" : null,
+		"behaviorCB" : null,
+		"performed by" : null,
+		"implementation context" : null,
+		"A_implementation context_behaviorCB" : null,
+		"A_performed by_performs" : null,
+		"func" : null,
+		"funcContext" : null,
+		"A_func context_func" : null
+    }
+}

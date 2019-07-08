@@ -1,0 +1,47 @@
+{
+    "Columns to Navigation Map": {
+        "General Type": [
+            "General"
+        ],
+		"Specific Type": [
+            "Specific"
+        ],
+		"General Property": [
+            "redefinedProp"
+        ],
+		"Specific Property": [
+            "redefiningProp"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "Specific",
+            "General",
+            "general"
+        ],
+		[
+            "redefiningProp",
+            "redefinedProp",
+            "redefines"
+        ]
+    ],
+    "Root Node": "redefiningProp",
+    "Vertex MetaTypes": {
+        "General": "Class",
+        "Specific": "Class",
+        "redefinedProp": "Property",
+        "redefiningProp": "Property"
+    },
+    "Vertex Settings": {
+        "General": null,
+        "Specific": null,
+        "redefinedProp": null,
+        "redefiningProp": null
+    },
+    "Vertex Stereotypes": {
+        "General": "Block",
+        "Specific": "Block",
+        "redefinedProp": null,
+        "redefiningProp": null
+    }
+}

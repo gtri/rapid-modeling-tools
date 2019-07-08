@@ -1,0 +1,138 @@
+{
+    "Columns to Navigation Map": {
+        "Function": [
+            "Func"
+        ],
+		"Implementation of Function": [
+            "Behavior"
+        ],
+		"Function Performer": [
+            "Performer"
+        ],
+		"Performer Behavior": [
+            "BehaviorUse"
+        ],
+		"performs C": [
+            "performs"
+        ],
+		"behaviorCB C": [
+            "behaviorCB"
+        ],
+		"performed by C": [
+            "performed by"
+        ],
+		"implementation context C": [
+            "implementation context"
+        ],
+		"A_implementation context_behaviorCB C": [
+            "A_implementation context_behaviorCB"
+        ],
+		"A_performed by_performs C": [
+            "A_performed by_performs"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "BehaviorUse",
+			"Performer",
+            "owner"
+        ],
+		[
+            "performs",
+			"Func",
+            "owner"
+        ],
+		[
+            "behaviorCB",
+			"Behavior",
+            "type"
+        ],
+		[
+            "performed by",
+			"Performer",
+            "type"
+        ],
+		[
+            "behaviorCB",
+			"Func",
+            "owner"
+        ],
+		[
+            "Func",
+            "Behavior",
+            "classifierBehavior"
+        ],
+		[
+            "BehaviorUse",
+			"Behavior",
+            "method"
+        ],
+		[
+            "A_performed by_performs",
+            "performed by",
+            "memberEnd"
+        ],
+		[
+            "performs",
+			"A_performed by_performs",
+            "owner"
+        ],
+		[
+            "A_performed by_performs",
+			"performs",
+            "memberEnd"
+        ],
+		[
+            "A_implementation context_behaviorCB",
+			"implementation context",
+            "memberEnd"
+        ],
+		[
+            "implementation context",
+			"A_implementation context_behaviorCB",
+            "owner"
+        ],
+		[
+            "A_implementation context_behaviorCB",
+			"behaviorCB",
+            "memberEnd"
+        ]
+    ],
+    "Root Node": "Func",
+    "Vertex MetaTypes": {
+        "Func" : "Class",
+		"Behavior" : "Activity",
+		"Performer" : "Class",
+		"BehaviorUse" : "Operation",
+		"performs" : "Property",
+		"behaviorCB" : "Property",
+		"performed by" : "Property",
+		"implementation context" : "Property",
+		"A_implementation context_behaviorCB" : "Association",
+		"A_performed by_performs" : "Association"
+    },
+    "Vertex Stereotypes": {
+        "Func" : "Block",
+		"Behavior" : null,
+		"Performer" : "Block",
+		"BehaviorUse" : null,
+		"performs" : "ReferenceProperty",
+		"behaviorCB" : "ClassifierBehaviorProperty",
+		"performed by" : null,
+		"implementation context" : null,
+		"A_implementation context_behaviorCB" : null,
+		"A_performed by_performs" : null
+    },
+    "Vertex Settings": {
+        "Func" : null,
+		"Behavior" : null,
+		"Performer" : null,
+		"BehaviorUse" : null,
+		"performs" : null,
+		"behaviorCB" : null,
+		"performed by" : null,
+		"implementation context" : null,
+		"A_implementation context_behaviorCB" : null,
+		"A_performed by_performs" : null
+    }
+}

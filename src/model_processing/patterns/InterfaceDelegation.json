@@ -1,0 +1,153 @@
+{
+    "Columns to Navigation Map": {
+        "Comp A C": [
+            "Comp A"
+        ],
+        "C_Source Port_Target Port-end1C": [
+            "C_Source Port_Target Port-end1"
+        ],
+        "SPC": [
+            "Source Port"
+        ],
+        "Delegate": [
+            "Component A"
+        ],
+        "Delegating Assembly": [
+            "Context"
+        ],
+        "C_Source Port_Target PortC": [
+            "C_Source Port_Target Port"
+        ],
+        "C_Source Port_Target Port-end2C": [
+            "C_Source Port_Target Port-end2"
+        ],
+        "TPC": [
+            "Target Port"
+        ],
+        "Source Interface": [
+            "SourceIF"
+        ]
+    },
+    "Pattern Graph Edges": [
+		[
+            "Comp A",
+            "Component A",
+			"type"
+        ],
+        [
+            "Comp A",
+            "Context",
+			"owner"
+        ],
+        [
+            "C_Source Port_Target Port-end1",
+            "C_Source Port_Target Port",
+			"owner"
+        ],
+        [
+            "C_Source Port_Target Port-end1",
+            "Source Port",
+			"role"
+        ],
+        [
+            "C_Source Port_Target Port",
+            "C_Source Port_Target Port-end1",
+			"end"
+        ],
+        [
+            "Source Port",
+            "Context",
+			"owner"
+        ],
+		[
+            "Target Port",
+            "Component A",
+			"owner"
+        ],
+        [
+            "Source Port",
+            "SourceIF",
+			"type"
+        ],
+        [
+            "C_Source Port_Target Port",
+            "Context",
+			"owner"
+        ],
+        [
+            "C_Source Port_Target Port-end2",
+            "C_Source Port_Target Port",
+			"owner"
+        ],
+        [
+            "C_Source Port_Target Port",
+            "C_Source Port_Target Port-end2",
+			"end"
+        ],
+        [
+            "C_Source Port_Target Port-end2",
+            "Target Port",
+			"role"
+        ],
+        [
+            "Target Port",
+            "SourceIF",
+			"type"
+        ]
+    ],
+    "Root Node": "C_Source Port_Target Port",
+    "Vertex MetaTypes": {
+        "SourceIF": "Class",
+		"TargetIF": "Class",
+        "Target Port": "Port",
+        "C_Source Port_Target Port-end2": "ConnectorEnd",
+        "C_Source Port_Target Port": "Connector",
+        "Context": "Class",
+        "Component A": "Class",
+        "Source Port": "Port",
+        "C_Source Port_Target Port-end1": "ConnectorEnd",
+        "Comp A": "Property"
+    },
+    "Vertex Stereotypes": {
+        "SourceIF": [
+            "InterfaceBlock"
+        ],
+        "Target Port": [
+            "ProxyPort"
+        ],
+        "C_Source Port_Target Port-end2": [
+            "NestedConnectorEnd"
+        ],
+        "C_Source Port_Target Port": [
+			"BindingConnector"
+		],
+        "Context": [
+            "Block"
+        ],
+        "Component A": [
+            "Block"
+        ],
+        "Source Port": [
+            "ProxyPort"
+        ],
+        "C_Source Port_Target Port-end1": [
+            "NestedConnectorEnd"
+        ],
+        "Comp A": [
+            "PartProperty"
+        ]
+    },
+    "Vertex Settings": {
+        "SourceIF": null,
+        "Target Port": null,
+        "C_Source Port_Target Port-end2": {
+			"propertyPath" : ["id-Comp A"]
+		},
+        "C_Source Port_Target Port": null,
+        "Context": null,
+        "Component A": null,
+        "Source Port": null,
+        "C_Source Port_Target Port-end1": null,
+        "Comp A": null
+    }
+}
