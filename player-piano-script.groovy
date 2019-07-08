@@ -9,6 +9,7 @@ import com.nomagic.magicdraw.ui.dialogs.selection.*;
 import com.nomagic.magicdraw.openapi.uml.*;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.*;
 import com.nomagic.uml2.ext.jmi.helpers.*;
+import com.nomagic.uml2.ext.magicdraw.compositestructures.mdinternalstructures.*;
 // Other third party libraries
 
 // big outer try for exception handling and reporting
@@ -295,7 +296,31 @@ try {
 									
 									ele_to_mod.setAssociation(end_element);
 									
-									break;   
+									break;
+								case 'classifierBehavior':
+									behavior_element = null;
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										behavior_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										behavior_element = live_project.getElementByID(op_to_execute['value']);
+									}
+									
+									item_edited_value_reported = behavior_element.getID() + '(' +
+										behavior_element.getHumanName() + ')';
+									
+									replace_log.add('(' + attribute_to_hit + ') Setting method on ' + item_to_edit_reported + ' to ' +
+										item_edited_value_reported);
+									
+									ele_to_mod.setClassifierBehavior(behavior_element);
+									
+									behavior_element.setOwner(ele_to_mod);
+									
+									if (homeless_elements.contains(behavior_element)) {
+										homeless_elements.remove(behavior_element);
+									}
+									
+									break;
 								case 'defaultValue':
 									
 									replace_log.add('(' + attribute_to_hit + ') Applying default value of ' + op_to_execute['value'] + ' to ' + 	
@@ -325,8 +350,9 @@ try {
 									replace_log.add('(' + attribute_to_hit + ') Default Value for ' + item_to_edit_reported + ' is '
 										+ item_edited_value_reported);
 										
-									ele_to_mod.setDefaultValue(value_element);
 									value_element.setOwner(ele_to_mod);
+										
+									ele_to_mod.setDefaultValue(value_element);
 									
 									break;
 								case "end":
@@ -364,12 +390,17 @@ try {
 									
 									// TODO: need to check for existing generalization
 									
-									new_element = ele_factory.createGeneralizationInstance();
-									
-									new_element.setGeneral(general_element);
-									new_element.setSpecific(ele_to_mod);
-									
-									new_element.setOwner(ele_to_mod);
+									if (ele_to_mod.getGeneral().contains(general_element)) {
+										
+									}
+									else {
+										new_element = ele_factory.createGeneralizationInstance();
+										
+										new_element.setGeneral(general_element);
+										new_element.setSpecific(ele_to_mod);
+										
+										new_element.setOwner(ele_to_mod);
+									}
 									
 									break;
 									
@@ -380,6 +411,26 @@ try {
 									if (conj == 'true') {
 									   ele_to_mod.setConjugated(true);
 									}
+									break;
+								case 'lower':
+									lower_element = null;
+									
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										lower_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										lower_element = live_project.getElementByID(op_to_execute['value']);
+									}
+									
+									item_edited_value_reported = lower_element.getID() + '(' + lower_element.getHumanName() + ')';
+									
+									replace_log.add('(' + attribute_to_hit + ') Default Value for ' + item_to_edit_reported + ' is '
+										+ item_edited_value_reported);
+										
+									lower_element.setOwner(ele_to_mod);
+										
+									ele_to_mod.setLowerValue(lower_element);
+									
 									break;
 								case 'memberEnd':
 									end_element = null;
@@ -398,6 +449,26 @@ try {
 									// API forces you to go the opposite direction
 									
 									end_element.setAssociation(ele_to_mod);
+									break;
+								case 'method':
+									behavior_element = null;
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										behavior_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										behavior_element = live_project.getElementByID(op_to_execute['value']);
+									}
+									
+									item_edited_value_reported = behavior_element.getID() + '(' +
+										behavior_element.getHumanName() + ')';
+									
+									replace_log.add('(' + attribute_to_hit + ') Setting method on ' + item_to_edit_reported + ' to ' +
+										item_edited_value_reported);
+									
+									// This is how to set properties that are collections in Groovy
+									
+									ele_to_mod.getMethod().add(behavior_element);
+									
 									break;
 								case 'nestedClassifier':
 									owned_element = null;
@@ -555,7 +626,24 @@ try {
 								   
 								   break;
 								case 'redefines':
-									// ignore for now because I can't find the right API calls
+									redefined_element = null;
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										redefined_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										redefined_element = live_project.getElementByID(op_to_execute['value']);
+									}
+									
+									item_edited_value_reported = redefined_element.getID() + '(' +
+										redefined_element.getHumanName() + ')';
+									
+									replace_log.add('(' + attribute_to_hit + ') Setting method on ' + item_to_edit_reported + ' to ' +
+										item_edited_value_reported);
+									
+									// This is how to set properties that are collections in Groovy
+									
+									ele_to_mod.getRedefinedElement().add(redefined_element);
+									
 									break;
 								case 'role':
 									role_element = null;
@@ -589,6 +677,26 @@ try {
 										item_edited_value_reported);
 									
 									ele_to_mod.setType(typing_element);
+									break;
+								case 'upper':
+									upper_element = null;
+									
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										upper_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										upper_element = live_project.getElementByID(op_to_execute['value']);
+									}
+									
+									item_edited_value_reported = upper_element.getID() + '(' + upper_element.getHumanName() + ')';
+									
+									replace_log.add('(' + attribute_to_hit + ') Default Value for ' + item_to_edit_reported + ' is '
+										+ item_edited_value_reported);
+										
+									upper_element.setOwner(ele_to_mod);
+										
+									ele_to_mod.setUpperValue(upper_element);
+									
 									break;
 								default:
 									execution_status_log.add("Processing attribute " + attribute_to_hit);
@@ -729,8 +837,12 @@ try {
 					// create new elements using the appropriate calls on the ElementsFactory
 					
 					try {
-					
 						new_name = op_to_execute['name'];
+						old_name = new_name;
+						split_name = new_name.split("::");
+						if (split_name.size() > 1) {
+							new_name = split_name[1];
+						}
 						new_meta = op_to_execute['metatype'];
 						new_stereo = "";
 						
@@ -746,7 +858,7 @@ try {
 						new_element = null;
 						
 						create_log.add('Creating element id = ' + item_to_edit + '(' + 
-							new_meta + ' ' + new_name + ' with stereotype ' + new_stereo + ')');
+							new_meta + ' ' + old_name + ' with stereotype ' + new_stereo + ')');
 						
 						try {
 							
@@ -762,6 +874,13 @@ try {
 									new_element.setName(new_name);
 									homeless_elements.add(new_element);
 									break;
+								case 'Activity':
+									new_element = ele_factory.createActivityInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
 								case 'Property':
 									new_element = ele_factory.createPropertyInstance();
 									temp_ids[item_to_edit] = new_element.getID();
@@ -770,6 +889,12 @@ try {
 									
 									new_prop = true;
 									
+									break;
+								case 'Operation':
+									new_element = ele_factory.createOperationInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
 									break;
 								case 'Port':
 									new_element = ele_factory.createPortInstance();
@@ -842,9 +967,15 @@ try {
 									temp_elements[item_to_edit] = new_element;
 									new_element.setName(new_name);
 									break;
+								case 'LiteralUnlimitedNatural':
+									new_element = ele_factory.createLiteralUnlimitedNaturalInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									break;
 							}
 
-							create_list.add(new_element);
+							create_list.add([old_name, new_element]);
 							
 							if (new_stereo != null && new_stereo != "") {
 								
@@ -999,13 +1130,19 @@ finally {
 	
 	file_writer = new FileWriter(csv_file);
 	
+	file_writer.write("Element Name, ID" + "\n");
+	
 	for (created in create_list) {
-		if (created instanceof NamedElement) {
+		/*if (created instanceof NamedElement) {
 			file_writer.write(created.getName() + "," + created.getID() + "\n");
+		}
+		else if (created instanceof ConnectorEnd) {
+			file_writer.write(created.getOwner().getName() + "-end," + created.getID() + "\n");
 		}
 		else {
 			file_writer.write(created.getHumanName() + "," + created.getID() + "\n");
-		}
+		}*/
+		file_writer.write(created[0] + "," + created[1].getID() + "\n");
 	}
 	
 	file_writer.close();
@@ -1013,7 +1150,7 @@ finally {
 	// uncomment below to expose detailed logs
 	live_log.log('Execution steps:');
 	for (entry in execution_status_log) {
-		live_log.log(entry);
+		//live_log.log(entry);
 	}
 	live_log.log('Elements processed:');
 	for (entry in command_processing_log) {
@@ -1025,7 +1162,7 @@ finally {
 	}
 	live_log.log('Relationship replace commands:');
 	for (entry in replace_log) {
-		//live_log.log(entry);
+		live_log.log(entry);
 	}
 	live_log.log('Element rename commands:');
 	for (entry in rename_log) {
