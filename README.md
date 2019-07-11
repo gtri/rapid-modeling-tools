@@ -12,4 +12,4 @@ The player-piano component works with MagicDraw to interpret model modification 
 
 The ingrid-quick-start provides a basic starting spreadsheet with an example to show how to calculate model modification commands.
 
-Each of these projects has their own sub README with more details.
+Each of these projects has their own sub README with more details. Please contact ingrid-nerdman@gtri.gatech.edu with questions.
