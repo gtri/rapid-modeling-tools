@@ -32,3 +32,13 @@ The `ingrid-quick-start` provides a basic starting spreadsheet with an example (
 
 
 Each of these projects has their own sub README with more details. Please contact `ingrid-nerdman@gtri.gatech.edu` with questions.
+
+### Goals to Bring Rapid Modeling Tools to a 1.0 Release:
+
+Owing to the difficulty of automatic testing with the MagicDraw software the exact MagicDraw versions supported remains unknown. However, we have seen success with Cameo 19.0 and Python 3.6+.
+
+- Establish Ingrid Nerdman as a MagicDraw plugin
+- Include CI
+- Expand coverage of the UML Metamodel in both JSON subgraph definition and Player Piano capability
+
+This tool is intended for MBSE professionals and advanced technical users. Users of this tool set do so at their own risk.

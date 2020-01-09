@@ -1,6 +1,6 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 =======
-# ** Using Ingrid Nerdman**
+# **Using Ingrid Nerdman**
 
 **Cloning the Repo**
 * Ensure that your github account has an associated SSH key
