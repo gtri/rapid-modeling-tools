@@ -1,15 +1,19 @@
 # Rapid Modeling Tools
 
-## AKA "Ingrid Nerdman"
+## "Ingrid Nerdman (Ingestion Grid Nerdman)"
 
 Developed at Georgia Tech Research Institute by Shane Connelly and Bjorn Cole. Government sponsorship (SOCOM TALOS) acknowledged.
 
-This repository collects multiple tools to allow for rapid data entry into object modeling languages such as UML and SysML. The goal of this project is to allow for rapid entry of model data that shares common modeling patterns and approaches. While it was built to work with the UML metamodel, it could in principle support several others that have a defined metamodel and graph orientation.
+### About
 
-The repository includes Rick's Cafe Americain, which examines spreadsheets with metadata and calculates how to either create a new model from scratch or make updates to a model to match the data in the spreadsheets.
+Rapid Modeling Tools contains two constituent programs. The `ingrid` tool translates spreadsheet data into object modeling languages such as UML and SysML using a JSON subgraph description. Development of Ingrid focused on the UML metamodel but could in principle support other modeling languages that have a defined metamodel and graph orientation. The `player-piano` works with MagicDraw, as a macro, to interpret the JSON model modification instructions, output from the Ingrid program to, in the MagicDraw API. As long as the user knows the API commands for another modeling tool such as Rhapsody, Capella or Papayrus the instructions produced by Ingrid could build models in those programs. The functionality developed here leaves the door open for the user to build up REST messages in the future.
 
-The player-piano component works with MagicDraw to interpret model modification instructions in the MagicDraw API. It is very easy to change this over to work with other tools such as Rhapsody, Capella, or Papyrus if you know the API commands to add and modify modeling relationships. You could even build up REST messages!
+### Getting Started
 
-The ingrid-quick-start provides a basic starting spreadsheet with an example to show how to calculate model modification commands.
+The `ingrid-quick-start` provides a basic starting spreadsheet with an example (model included) to show how to calculate model modification commands, both create and compare.
 
-Each of these projects has their own sub README with more details. Please contact ingrid-nerdman@gtri.gatech.edu with questions.
+### Installation
+
+To install **Rapid Modeling Tools**
+
+Each of these projects has their own sub README with more details. Please contact `ingrid-nerdman@gtri.gatech.edu` with questions.

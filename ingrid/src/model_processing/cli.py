@@ -15,7 +15,7 @@ def main():
     :return:
     """
 
-    print("I am shocked, shocked to find that gambling is going on in here!")
+    print("Modeling the Model")
 
     parser = argparse.ArgumentParser(
         description="A simple CLI for parsing an Excel Workbook and "
