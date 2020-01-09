@@ -8,7 +8,9 @@ Developed at Georgia Tech Research Institute by Shane Connelly and Bjorn Cole. G
 
 **We suggest that you clone this repository.**
 
-Cloning the repository provides you access to add additional meta model JSON descriptions and update the `player-piano` to create novel model elements.
+Cloning the repository provides you access to add meta model JSON descriptions and update the `player-piano` to create novel model elements.
+
+**Both `ingrid` and `player-piano` have README files detailing further steps for setup.**
 
 ### About
 
