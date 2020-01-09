@@ -10,7 +10,17 @@ Developed at Georgia Tech Research Institute by Shane Connelly and Bjorn Cole. G
 
 Cloning the repository provides you access to add meta model JSON descriptions and update the `player-piano` to create novel model elements.
 
-**Both `ingrid` and `player-piano` have README files detailing further steps for setup.**
+**Ingrid:**
+
+- Clone `Rapid Modeling Tools`
+- Create a Python environment from the `environment.yml`
+- Run `setup.py`
+- Detailed instructions found in the `README.md` in the `ingrid` directory
+
+**Player Piano**
+- In MagicDraw Tools > Macros > Organice Macros
+- Provide the name Player Piano, the language as Groovy and browse the file explorer to the location of this project `.../player-piano/player-piano-script.groovy` and click okay
+- Detailed instructions with images found in `ingrid-quick-start`
 
 ### About
 
