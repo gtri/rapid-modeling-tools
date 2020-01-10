@@ -36,60 +36,21 @@ Here we present two methods to install and work with Ingrid, either using [Anaco
 * Booting the environment created by the `environment.yml` file gives that virtual environment access to the model_processing library
 * You may interact with the Ingrid tool for model creation, comparison, document generation, and code testing from the command line while within the environment containing the project
     * View these commands in the `anaconda-project.yml` file through a text editor
-
-<!-- **Starting the Environment**
-* Install `miniconda3` to a location on your computer, separate from `Anaconda`
-* Open **Anaconda Prompt** and `conda install anaconda-project` to the base environment.
-* Using **Anaconda Prompt** navigate to the  top level directory containing the `anaconda-project.yml` file
-* Then issuing `anaconda-project run <command>` will boot up the Ingrid_nerdman environment and execute the command.
-* If the environment does not boot through this method, after the environment has been created:
-    * `activate envs\default` manually boots up the environment created by the `anaconda-project run` commands
-    * Typically, the `anaconda-project run <command>` does not work without an internet connection.
-
-**First Things First**
-* After booting the environment specified by the anaconda-project.yml file run the command:
-    * `anaconda-project run setup`.
-    * This command packages the code and facilitates the other functionality. -->
+* **Ingrid Interactions Without Anaconda Project**
+    * Open the terminal program used to install Ingrid
+    * Issue commands on the command line from the appropriate directory, see `anaconda-project.yml`
+        * E.g. in the `ingrid` directory run `pytest` to run all the tests
+        * E.g. `model_processing --create --input "<path/to/file/filename>" --output "<path\to\output\directory>"`
 
 **Generating Documentation**
-* To generate the Documentation that lives in the ./doc directory you will
+* To generate the Documentation that lives in the `./doc` directory you will
 need to run two commands.
-    * First make sure you have a doc/ directory at the same level as the
+    * First make sure you have a `doc/` directory at the same level as the
     `anaconda-project.yml` file.
     * `anaconda-project run build-sphinx`
     * `anaconda-project run make html`
-    * Documentation should be in `./doc/_build/html` and you should open
+    * Documentation should be in `./doc/_build/html` and open
     `index.html` using your browser.
-
-## **Command Line Interaction with Ingrid Nerdman (Rick's Cafe American)**
-* `anaconda-project run cli <specify commands and inputs/outputs>`
-
-    * Help:
-        * `anaconda-project run cli -h (or --help)`
-        * Will produce help text that specifies the
-
-    * Creating a new model:
-        * Input File: `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"`
-            * If your filename has spaces then wrap your path in quotes:
-                * `"path\to\file\filename"`
-            * Omitting `-o <outdir>` will cause the program to place your creation instruction json next to your input file with the same name but a `.json` extension.
-        * Input Directory: `anaconda-project run cli --create --input "<path\to\directory>"`
-            * Option to add a `--output "<path\to\output\directory>"` but if none provided then the program will place the produced `.json` files into the input directory.
-
-    * Compare one or more models to a common ancestor:
-        * This program only compares one family of files at a time. Meaning that if the user desires to compare multiple families of files then the program must be run once for each of the desired comparisons.
-            * A family of files is an Original File and the Updated Files that are to be compared against the Original.
-        * `anaconda-project run cli --compare --original <path\to\original\file\filename> --update "<path\to\update\directory>"`
-            * If your filename has spaces then wrap your path in quotes:
-                * `"path\to\file\filename"`
-            * Optionally the user can provide an output directory by specifying `--output "<path\to\output\directory>"`
-
-**Using Jupyter Lab**
-* create a ```notebooks``` directory in the top level
-* run ```anaconda-project run setup```
-    * This make it so you can import model_processing as a module
-* run ```anaconda-project run jupyter lab```
-    * This will launch a jupyter lab session in the notebooks directory
 
 **Testing**
 
@@ -105,4 +66,3 @@ need to run two commands.
 
 * **Producing a Test Report**
     * `anaconda-project run test --cov=test`
-        * `test` is only directory containing tests. Other test directories could be passed, if the exist, to create a coverage report for the test files in those directories.
