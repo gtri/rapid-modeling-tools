@@ -2,23 +2,23 @@
 
 ## Why Was This Tool Made?
 
-The idea behind Ingrid Nerdman was that a great deal of system model information can be described (from a modeling structure perspective) with a relatively small number of common patterns. The rest is basically a data entry problem, which is why so many systems engineering products are captured in spreadsheets. Spreadsheets alone lack enough structure to make differences in the kinds of information captured (components vs. functions, for example) easily apparent to computers, or even non subject matter experts. On the other hand, subject matter experts are not experts in data structures are putting semantic annotations on data. Ingrid attempts to be the best of both worlds. It is in fact, inspired by the approach taken by the Maple MBSE tool and Excel Import in Cameo Systems Modeler.
+Ingrid Nerdman capitalizes on the wealth of system model information described in a small number of common modeling patterns, from a modeling structure perspective. After identifying a common modeling patter, the systems engineering task becomes that of a data entry problem resulting in many systems engineering products capturing data in spreadsheets. Spreadsheets alone lack the structure to mark differences in the kids of information captured (components vs. functions), readily apparent to computers or even non-subject matter experts. Meanwhile, subject matter experts endow the data with semantic annotations without understanding how to express those annotations through the data structures. Thus, Ingrid seeks to address these issues by combining the data collection, semantic annotation and model creation into one workflow. Inspired by the approach taken by the Maple MBSE tool and the Excel Import in Cameo Systems Modeler, Ingrid Nerdman collects data from subject matter experts and non-subject matter experts in the form of an Excel spreadsheet and creates a wholly formed Cameo Model.
 
-It is a common problem on MBSE tasks that the volume of information to capture frequently overwhelms modeling teams and forces modelers to spend all their time transcribing data. This prevents them from being able to take full advantage of their models and prepare queries and reports that would support the larger engineering team. Automating the most straightforward and voluminous part of the data wrangling effort, which is collecting the data and structuring it according to common modeling patterns, allows the modeling experts to focus on best uses of those data.
+Commonly on MBSE projects, modeling professionals find themselves overwhelmed by the volume of information to capture, spending inordinate amounts of time transcribing those data. Ultimately, hurting the productivity of the team and preventing them from taking full advantage of their models; preparing queries and reports to support the larger engineering team. Automating the most straightforward and voluminous parts of the data wrangling effort, collecting and structuring the data according to common modeling patterns, allows the modeling experts to focus on best uses of those dat.
 
-### If it Was Inspired by Commercial Tools, Why Make a New One?
+### If Inspired by Commercial Tools, Why Make a New One?
 
-There are a couple of reasons. Mostly it involves filling in gaps left behind by existing tools.
+Primarily because it involves filling in gaps left behind by existing tools.
 
-For one - Maple MBSE does not do comparisons between baseline models and updates on its own. It relies upon the facilities of the Teamwork Cloud or other modeling tools. Having Ingrid perform the change calculations makes it independent of the modeling tool to be used. It should be equally compatible with Cameo, Integrity Modeler, Rhapsody, Papyrus, or any other modeling tool of course. This also allows for engineers that do not have access to any of these tools act as configuration managers to check that the data being collected and updated are ready to go into the model.
+For one - Maple MBSE does not do comparisons between baseline models and updates on its own. It relies upon the facilities of the Teamwork Cloud or other modeling tools. Having Ingrid perform the change calculations makes it independent of the modeling tool used. It should be compatible with Cameo, Integrity Modeler, Rhapsody, Papyrus, or any other modeling tool. This also allows for engineers that do not have access to any of these tools to act as configuration managers to check that the collected and updated data are ready to go into the model.
 
-For another - Cameo importers work well with string or value fields but do not handle importing the connections between modeling elements well at all. Thus to make more complete model updates, additional effort was needed. Here we can point out that the existence of the Excel and CSV imports lead the Ingrid team to de-emphasize bulk loading of these values and focus on the development of importing model elements and their links to each other.
+For another - Cameo importers work well with string or value fields but do not handle importing the connections between modeling elements gracefully. Thus to making complete model updates requires additional effort. Here we can point out that the existence of the Excel and CSV imports lead the Ingrid team to de-emphasize bulk loading of these values and focus on the development of importing model elements and their links to each other.
 
 ## How Do I Get the Tool?
 
 You have already succeeded in step one, which is to make it to this site. The tool is set up to be installed within a controlled conda environment after it is cloned from this Git repository.
 
-See the README.md file for step-by-step install instructions for the Rick's Cafe component.
+See the README.md file for step-by-step install instructions for the Ingrid component.
 
 The Player Piano component is a Groovy script intended to be run in Cameo System Modeler through the macro facility.
 
