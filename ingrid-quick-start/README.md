@@ -38,50 +38,50 @@ Once the macro is loaded, it there will now be a Tools > Macros > Player Piano m
 
 ## The Example Model
 
-Included with the distribution is an Excel file that is configured to calculate inputs to the modeling templates. It uses multiple formulas to allow the entry of architectural entities and relationships in a modeling style that is compatible with but does not require knowledge of SysML. The model captures the basic composition of a system from its major working components and also connections and interfaces between them. Just for fun, it's an open source description of a Tesla 3-style electric sedan. The sheet will require exports to work with the Ingrid Nerdman workflow, but otherwise it is set up for immediate use.
+The distribution of this tool includes a configured Excel file with the capability to calculate inputs to the modeling templates. The Excel file uses multiple formulas facilitating the entry of architectural entities and relationships in a modeling style compatible with SysML and requires no knowledge of SysML. The model captures the basic composition of a system, the major working components, connections and interfaces between them. As a fun and illustrative exercise, the file provided here outlines the open source description of a Tesla 3-style electric sedan. To incorporate the example Excel file into the Ingrid Nerdman workflow, the user must export individual, black tabbed, sheets; otherwise, the Excel file is configured for immediate use.
 
 ### Major Tabs
 
-The first tab in the example model sheet is a readme that guides you through the use of the sheets. Multiple sheets support the entry of useful information like the description of components, the way in which they are composed into their immediate assembly parent, full assembly paths for components, and connections between components. These sheets are then processed to fill information into the SysML-oriented templates that match specific, pre-defined modeling patterns.
+The first tab in the example model serves as a README to guide you through the use of the other sheets. Multiple sheets support the entry of useful information like the description of components, their composition into their assembly parent, full assembly paths for components, and connections between components. Using formulas within these sheets process the data to fill information into the SysML-oriented templates matching specific, pre-defined modeling patterns (living as JSON templates for the Ingrid tool).
 
 ## Processing Steps
 
 ### Creating the Input Files
 
-The black-colored tabs are intended for direct export to the input file form. The easiest way to do this is to use Excel's built-in copy capability to create a new workbook with only the sheet in it. This will leave the links in cells active. To remove that dependency, you can bulk select (such as by holding Ctrl-Shift and using the arrow keys) the data table and copy-paste special (values) to make the cells simply have values in them.
+Directly export black-colored tabs for processing with Ingrid. To export the black-colored tabs, use Excel's built-in copy capability to create a new workbook containing only the desired sheet. This leaves the links inherent to the cells active. Removing this dependency, involves bulk selecting (such as holding Ctrl-Shift and using the arrow keys) the data followed by copy-paste special (values) to make cells containing the values.
 
 ![](excel_copy_screen.png)
 
-The first sheet you do this for should have a name like "<PatternName> Starter.xlsx." The rest should be started as "<PatternName> Update.xlsx." Further steps will be taken to set baselines and add references to elements that are created in MagicDraw through the Player Piano scripting.
-For this example, the "SystemParts" tab will be the starter file and the others will be updates.
+Name the first sheet you export with the following convention "<PatternName> Starter.xlsx." The rest of the sheets should follow a similar convention "<PatternName> Update.xlsx." The Player Piano script takes further steps to set baselines and add references to the elements crated in MagicDraw. In this example, we use the "SystemParts" tab as the starter file and compute the others as updates.
 
 ### First Import Using "Create" Mode
 
-Once the "SystemParts" tab has been exported to "System Parts Starter.xlsx," you can run the Rick's Cafe component in create mode through the following command (assuming the files are in a directory parallel to the ricks-cafe-american directory). The command will generate a new json file.
+Once exported, run the "System Parts Starter.xlsx" file through the Ingrid component in create mode by issuing the following command (assuming the files located in a directory parallel to the `ingrid` directory). This command will generate a new JSON file.
 
-anaconda-project run cli --create --input "..\Ingrid Quick Start\System Parts Starter.xlsx"
+`anaconda-project run cli --create --input "..\Ingrid Quick Start\System Parts Starter.xlsx"`
 
 In Cameo, open the "Import Example Base.mdzip" file. Then use the Tools > Macros > Player Piano menu item to launch the player piano script. Select a Package to be your default landing package ("Core Model"):
 
 ![](select_package_screen.png)
 
-Then select your new `*.json` file to be the source of update instructions.
+Then select your new `*.json` file to be the source of update instructions. If you did not specify the output directory then `ingrid` placed the output JSON in the same directory as the input file.
 
 After the script runs, you should see a bunch of new modeling elements in the Package:
 
 ![](post_import_ct_screen.png)
 
-In addition to the model update, there will be a new `*.csv` file with the same name as your `*.json` file. It is a report that is generated by Player Piano to tell you what new elements were created as well as what the new ID's are in order to support further calculations.
+In addition to the model update, there will be a new `*.csv` file with the same name as your `*.json` file.
+The Player Piano generates this `*.csv` file to inform you of the newly created model elements as well as their associated MagicDraw IDs, required for further calculations.
 
 ### Adding Updates from Other Patterns Using "Compare" Mode
 
-It is time to add more to the model. The next step would be to use the "System Spatial Parts Update.xlsx" as the update file. Open the file (it should just be the one SystemSpatialParts tab) and add a "Renames" tab. Make cell A1 "new name" and cell B1 "old name." Then make a "SystemSpatialParts IDs" tab. For that sheet, copy all the data and headers from the just-created `*.csv` file and paste it into this new IDs tab. Save this whole thing. Then re-save off to "System Spatial Parts Baseline.xlsx." Then run the command
+To add more information to the model, use the "System Spatial Parts Update.xlsx" as the update file. Open the file (it should just be the one SystemSpatialParts tab) and add a "Renames" tab. Name Cell A1 "new name" and cell B1 "old name." Now make a "SystemSpatialParts IDs" tab. Populate this sheet by copying all the data and the headers from the just-created `*.csv` file and paste it into the new IDs tab. Save this file. Similarly, include the IDs in the "System Spatial Parts Baseline.xlsx" and re-save this file. Now issue the command:
 
-anaconda-project run cli --compare --original "..\Ingrid Quick Start\System Spatial Parts Baseline.xlsx" --update "..\Ingrid Quick Start\System Spatial Parts Update.xlsx"
+`anaconda-project run cli --compare --original "..\Ingrid Quick Start\System Spatial Parts Baseline.xlsx" --update "..\Ingrid Quick Start\System Spatial Parts Update.xlsx"`
 
-This will generate a new "graph_diff_changes 0-1(date-time).json" output file with new instructions. Rename this to System Spatial Parts Update.json.
+This generates a new "graph_diff_changes 0-1(date-time).json" output file with new instructions. Rename this to "System Spatial Parts Update.json."
 
-Now run the Player Piano macro as before. You will have additional elements in your model. And also a new `*.csv` file recording the new elements.
+Run the Player Piano macro as before to find new model elements, and a new `*.csv` file recording the new elements with their IDs.
 
 ![](post_update_ct_screen.png)
 
@@ -89,7 +89,15 @@ You can continue to do the same with the "Interface Connection" tab and the "Int
 
 ### Rename Components and Updating Using "Compare" Mode
 
-Blah
+Part of Ingrid's change computations includes renames. To preform a simple rename, suppose you have an excel file titled "Composition Baseline.xlsx" which contains an entry "Car". Further suppose that you wish to rename all references to "Car" to "Tesla". For such an action, create a copy of the "Composition Baseline.xlsx", rename all instances of "Car" to "Tesla" in the pattern sheet, in the renames sheet under the "new name" column populate a cell with "Tesla" and the corresponding "old name" cell with "Car", and ensure that the IDs sheet contains the IDs for the model and save this changed sheet as "Composition Update.xlsx." Now issue the compare command as before:
+
+`anaconda-project run cli --compare --original "..\Composition Baseline.xlsx" --update "..\Composition Update.xlsx"`
+
+Once again, execute the Player Piano macro on the created JSON change file and you have now updated all instance of Car in your model to Tesla.
+
+Ingrid supports computing model changes and renames simultaneously. This serves as a rudimentary example of the functionality.
+
+Whenever computing changes, Ingrid generates a human readable Excel file, with the same name as the "graph_diff_changes..." JSON file, intended to alert the user to the changes the JSON file will make in the model and any instances where Ingrid could not determine the user's intention.
 
 ### Modifying Interface Type Using "Compare" Mode
 
