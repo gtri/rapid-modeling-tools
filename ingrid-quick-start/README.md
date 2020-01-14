@@ -22,7 +22,7 @@ See the README.md file for step-by-step install instructions for the Ingrid comp
 
 The Player Piano component is a Groovy script intended to be run in Cameo System Modeler through the macro facility.
 
-The player piano takes the basic commands created by the ricks-cafe code (e.g., create, replace, rename elements and attributes) and makes them compatible with the Cameo OpenAPI. A similar script could be written for any other modeling tool.
+The player piano takes the basic commands created by the ingrid code (e.g., create, replace, rename elements and attributes) and makes them compatible with the Cameo OpenAPI. A similar script could be written for any other modeling tool.
 
 In Cameo, go to the Tools > Macros > Organize Macros menu as shown below. Then click the "Add" button to get to the Macro Information Dialog.
 
