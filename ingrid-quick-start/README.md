@@ -75,7 +75,7 @@ The Player Piano generates this `*.csv` file to inform you of the newly created 
 
 ### Adding Updates from Other Patterns Using "Compare" Mode
 
-To add more information to the model, use the "System Spatial Parts Update.xlsx" as the update file. Open the file (it should just be the one SystemSpatialParts tab) and add a "Renames" tab. Name Cell A1 "new name" and cell B1 "old name." Now make a "SystemSpatialParts IDs" tab. Populate this sheet by copying all the data and the headers from the just-created `*.csv` file and paste it into the new IDs tab. Save this file. Similarly, include the IDs in the "System Spatial Parts Baseline.xlsx" and re-save this file. Now issue the command:
+To add more information to the model, use the "System Spatial Parts Update.xlsx" as the update file. Open the file (it should contain the singular SystemSpatialParts tab) and add a "Renames" tab. Name Cell A1 "new name" and cell B1 "old name." Now make a "SystemSpatialParts IDs" tab. Populate this sheet by copying all the data and the headers from the newly-created `*.csv` file and paste it into the new IDs tab. Save this file. Similarly, include the IDs in the "System Spatial Parts Baseline.xlsx" and re-save this file. Now issue the command:
 
 `anaconda-project run cli --compare --original "..\Ingrid Quick Start\System Spatial Parts Baseline.xlsx" --update "..\Ingrid Quick Start\System Spatial Parts Update.xlsx"`
 
