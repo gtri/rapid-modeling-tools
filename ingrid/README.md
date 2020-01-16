@@ -20,9 +20,14 @@ Here we present two methods to install and work with Ingrid, either using [Anaco
 * You can now interact with the `ingrid` directory and import `model_processing` as a package and access all the methods
 * **Ingrid Interactions Through Anaconda Project**
     * Open the terminal program used to install Ingrid
-    * Issue commands listed in `anaconda-project.yml` by typing `anaconda-project run <command name (and flags if applicable)`
+    * Issue commands listed in `anaconda-project.yml` by typing `anaconda-project run <command name (and flags if applicable)>`
         * E.g. `anaconda-project run test`
         * E.g. `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"`
+        * E.g. `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
+        * Note: `cli` does **not** require the user to specify an output directory. If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
+        * **Help Messages**
+            * `anaconda-project -h` prints all `anaconda-project run <command>` options
+            * `anaconda-project run cli -h` prints the help information for the command line integration
 
 ### Without using Anaconda Project
 
@@ -41,6 +46,20 @@ Here we present two methods to install and work with Ingrid, either using [Anaco
     * Issue commands on the command line from the appropriate directory, see `anaconda-project.yml`
         * E.g. in the `ingrid` directory run `pytest` to run all the tests
         * E.g. `model_processing --create --input "<path/to/file/filename>" --output "<path\to\output\directory>"`
+        * E.g. `model_processing --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
+        * Note: `model_processing` does **not** require the user to specify an output directory. If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
+        * **Help Messages**
+            * `model_processing -h` prints the help messages for the command line integration
+
+**Structure of Command Line Integration (cli) Commands**
+
+Let's dissect a "compare" operation.
+* **With Anaconda Project**
+    * `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
+        * `anaconda-project run cli`: tells the terminal to open the `anaconda-project` script. Then scan for the command titled `cli` and execute that command. This translates to the invocation of the `model_processing` program.
+        * Now that we have invoced the `model_processing` program we supply it the rest of the arguments.
+        * At this point, `anaconda-project` passes the rest of the arguments to the `model_processing` program.
+        * At a high level, that means the `model_processing` program understands the flags `--compare`, `--original`, `--update`, and `--output`.
 
 **Generating Documentation**
 * To generate the Documentation that lives in the `./doc` directory you will

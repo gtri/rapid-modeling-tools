@@ -279,6 +279,8 @@ try {
 						try {
 
 							item_to_edit_reported = ele_to_mod.getID() + '(' + ele_to_mod.getHumanName() + ')';
+							// ================================================
+							// Add a switch case to cover a new meta-attribute
 
 							switch(attribute_to_hit) {
 								case 'Documentation':
@@ -704,6 +706,9 @@ try {
 									ele_to_mod.setUpperValue(upper_element);
 
 									break;
+
+									// End of new stereotype definition
+									// =======================================
 								default:
 									execution_status_log.add("Processing attribute " + attribute_to_hit);
 									key_member = null;
@@ -873,6 +878,9 @@ try {
 							new_assoc = false;
 							new_prop = false;
 
+							// ================================================
+							// Create new switch cases for new Metatypes here.
+
 							switch(new_meta) {
 
 								case 'Class':
@@ -988,6 +996,9 @@ try {
 										"edge paths supported by a switch case as well.");
 									break;
 							}
+
+							// End of new metatype addition.
+							// ================================================
 
 							create_list.add([old_name, new_element]);
 

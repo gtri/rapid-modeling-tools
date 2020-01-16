@@ -18,21 +18,9 @@ For another - Cameo importers work well with string or value fields but do not h
 
 You have already succeeded in step one, which is to make it to this site. The tool is set up to be installed within a controlled conda environment after it is cloned from this Git repository.
 
-See the README.md file for step-by-step install instructions for the Ingrid component.
+See [../ingrid/README.md](../ingrid/README.md) for step-by-step install instructions for the Ingrid component.
 
-The Player Piano component is a Groovy script intended to be run in Cameo System Modeler through the macro facility.
-
-The player piano takes the basic commands created by the ingrid code (e.g., create, replace, rename elements and attributes) and makes them compatible with the Cameo OpenAPI. A similar script could be written for any other modeling tool.
-
-In Cameo, go to the Tools > Macros > Organize Macros menu as shown below. Then click the "Add" button to get to the Macro Information Dialog.
-
-![](macros_organize_screen.png)
-
-![](macro_config_screen.png)
-
-In the Macro Information dialog, set the macro name to "Player Piano." Set the Macro Language to Groovy and then locate the player-piano-script.groovy file and set it as the file for the macro. Press OK and the macro should now be loaded into your Cameo installation.
-
-Once the macro is loaded, it there will now be a Tools > Macros > Player Piano menu item. Use this to launch the macro.
+See [../player-piano/Readme.md](../player-piano/Readme.md) for step-by-step installation instructions for the Player Piano component.
 
 # Quick Start
 
@@ -49,6 +37,8 @@ The first tab in the example model serves as a README to guide you through the u
 ### Creating the Input Files
 
 Directly export black-colored tabs for processing with Ingrid. To export the black-colored tabs, use Excel's built-in copy capability to create a new workbook containing only the desired sheet. This leaves the links inherent to the cells active. Removing this dependency, involves bulk selecting (such as holding Ctrl-Shift and using the arrow keys) the data followed by copy-paste special (values) to make cells containing the values.
+
+**It is imperative that you name the sheet containing this data after the modeling patter you choose to use. Be sure that this pattern has an accompanying JSON file in the patterns directory.** In effect if you wish to create a composition model then the sheet containing the data mentioned above should be named "Composition" to mirror the `composition.json` file in the `.../patterns` directory. See the guide to creating a JSON pattern template to learn how to define your own modeling pattern.
 
 ![](excel_copy_screen.png)
 
