@@ -15,7 +15,7 @@ Cloning the repository provides you access to add meta model JSON descriptions a
 - Clone `Rapid Modeling Tools`
 - Create a Python environment from the `environment.yml`
 - Run `setup.py`
-- Detailed instructions found in the [README.md](ingrid/README.md) in the `ingrid` directory
+- Detailed instructions found in the [README.md](ingrid/README.md) in the `ingrid` directory for usage with anaconda-project and without anaconda-project
 
 **Player Piano**
 - In MagicDraw Tools > Macros > Organice Macros
@@ -28,7 +28,7 @@ Rapid Modeling Tools contains two constituent programs. The `ingrid` tool transl
 
 ### Getting Started
 
-The `ingrid-quick-start` provides a basic starting spreadsheet with an example (model included) to show how to calculate model modification commands, both create and compare.
+The [ingrid-quick-start](ingrid-quick-start/README.md) provides a basic starting spreadsheet with an example (model included) to show how to calculate model modification commands, both create and compare.
 
 
 Each of these projects has their own sub README with more details. Please contact `ingrid-nerdman@gtri.gatech.edu` with questions.
