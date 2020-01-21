@@ -21,10 +21,11 @@ Here we present two methods to install and work with Ingrid, either using [Anaco
 * **Ingrid Interactions Through Anaconda Project**
     * Open the terminal program used to install Ingrid
     * Issue commands listed in `anaconda-project.yml` by typing `anaconda-project run <command name (and flags if applicable)>`
-        * E.g. `anaconda-project run test`
-        * E.g. `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"`
-        * E.g. `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
-        * Note: `cli` does **not** require the user to specify an output directory. If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
+        * `anaconda-project run test`
+        * `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"`
+        * `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
+        * **Note:** `anaconda-project run cli` does **not** require the user to specify an `--output` directory.
+            * If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
         * **Help Messages**
             * `anaconda-project list-commands` prints all `anaconda-project run <command>` options
             * `anaconda-project run cli -h` prints the help information for the command line integration
@@ -45,16 +46,17 @@ Here we present two methods to install and work with Ingrid, either using [Anaco
 * **Ingrid Interactions Without Anaconda Project**
     * Open the terminal program used to install Ingrid
     * Issue commands on the command line from the appropriate directory, see `anaconda-project.yml`
-        * E.g. in the `ingrid` directory run `pytest` to run all the tests
-        * E.g. `model_processing --create --input "<path/to/file/filename>" --output "<path\to\output\directory>"`
-        * E.g. `model_processing --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
-        * Note: `model_processing` does **not** require the user to specify an output directory. If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
+        * In the `ingrid` directory run `pytest` to run all the tests
+        * `model_processing --create --input "<path/to/file/filename>" --output "<path\to\output\directory>"`
+        * `model_processing --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
+        * **Note:** `model_processing` does **not** require the user to specify a `--output` directory.
+            * If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
         * **Help Messages**
             * `model_processing -h` prints the help messages for the command line integration
 
-**Structure of Command Line Integration (cli) Commands**
+### Structure of Command Line Integration (cli) Commands
 
-Dissecting a "compare" operation:
+**Dissecting a "compare" operation:**
 
 * **Without Anaconda Project**
     * `model-processing --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
@@ -77,7 +79,8 @@ Dissecting a "compare" operation:
         * At this point, `anaconda-project` passes the rest of the arguments to the `model_processing` program.
             * Read above for a description of the `model_processing` program and how it parses commands.
 
-**Generating Documentation**
+### Generating Documentation
+
 * To generate the Documentation that lives in the `./doc` directory you will
 need to run two commands.
     * First make sure you have a `doc/` directory at the same level as the
@@ -87,7 +90,7 @@ need to run two commands.
     * Documentation should be in `./doc/_build/html` and open
     `index.html` using your browser.
 
-**Testing**
+### Testing
 
 * **Run all the Tests**
     * `anaconda-project run test`

@@ -15,12 +15,12 @@ Cloning the repository provides you access to add meta model JSON descriptions a
 - Clone `Rapid Modeling Tools`
 - Create a Python environment from the `environment.yml`
 - Run `setup.py`
-- Detailed instructions found in the `README.md` in the `ingrid` directory
+- Detailed instructions found in the [README.md](ingrid/READEME.md) in the `ingrid` directory
 
 **Player Piano**
 - In MagicDraw Tools > Macros > Organice Macros
 - Provide the name Player Piano, the language as Groovy and browse the file explorer to the location of this project `.../player-piano/player-piano-script.groovy` and click okay
-- Detailed instructions with images found in `ingrid-quick-start`
+- Detailed instructions with images found in the [Readme.md](player-piano/Readme.md) in the `player-piano` directory
 
 ### About
 
