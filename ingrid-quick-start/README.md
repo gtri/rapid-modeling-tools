@@ -42,7 +42,7 @@ Directly export black-colored tabs for processing with Ingrid. To export the bla
 
 ![](excel_copy_screen.png)
 
-Name the first sheet you export with the following convention "<PatternName> Starter.xlsx." The rest of the sheets should follow a similar convention "<PatternName> Update.xlsx." The Player Piano script takes further steps to set baselines and add references to the elements crated in MagicDraw. In this example, we use the "SystemParts" tab as the starter file and compute the others as updates.
+Name the first sheet you export with the following convention "_PatternName_ Starter.xlsx." The rest of the sheets should follow a similar convention "_PatternName_ Update.xlsx." The Player Piano script takes further steps to set baselines and add references to the elements crated in MagicDraw. In this example, we use the "SystemParts" tab as the starter file and compute the others as updates.
 
 ### First Import Using "Create" Mode
 
