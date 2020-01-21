@@ -18,9 +18,9 @@ For another - Cameo importers work well with string or value fields but do not h
 
 You have already succeeded in step one, which is to make it to this site. The tool is set up to be installed within a controlled conda environment after it is cloned from this Git repository.
 
-See [../ingrid/README.md](../ingrid/README.md) for step-by-step install instructions for the Ingrid component.
+See [the ingrid README.md](../ingrid/README.md) for step-by-step install instructions for the Ingrid component.
 
-See [../player-piano/Readme.md](../player-piano/Readme.md) for step-by-step installation instructions for the Player Piano component.
+See [the player-piano Readme.md](../player-piano/Readme.md) for step-by-step installation instructions for the Player Piano component.
 
 # Quick Start
 
