@@ -26,8 +26,9 @@ Here we present two methods to install and work with Ingrid, either using [Anaco
         * E.g. `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
         * Note: `cli` does **not** require the user to specify an output directory. If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
         * **Help Messages**
-            * `anaconda-project -h` prints all `anaconda-project run <command>` options
+            * `anaconda-project list-commands` prints all `anaconda-project run <command>` options
             * `anaconda-project run cli -h` prints the help information for the command line integration
+            * `anaconda-project run <command> -h` prints the help information for any command, if that command has associated help information.
 
 ### Without using Anaconda Project
 
@@ -53,13 +54,28 @@ Here we present two methods to install and work with Ingrid, either using [Anaco
 
 **Structure of Command Line Integration (cli) Commands**
 
-Let's dissect a "compare" operation.
+Dissecting a "compare" operation:
+
+* **Without Anaconda Project**
+    * `model-processing --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
+        * `model-processing` alerts the command line integration script that we wish to execute the `ingrid` functionality with the following arguments.
+        * At a high level, that means that the `model_processing` program understands the flags `--compare`, `--original`, `--update`, and `--output`.
+            * In reality, `model_processing` understands `--compare` and `--compare` expects inputs of `--original` and `--update` with an optional `--output`.
+            * `--original` should be followed by a relative or absolute file path to the original Excel file.
+                * Placing the file path in quotations `" "` allows for spaces, which would otherwise be interpreted as separate arguments.
+            * `--update` should be a relative or absolute file path to the update Excel file(s).
+                * Ingrid handles more than one compare by computing the differences of each update file relative to the original file. Ingrid does not check for difference between any two files given in the update list since user intention may not be confidently interpreted.
+            * `--output` should be a path to a directory where the user wishes for Ingrid to place the results of the `--compare` command.
+                * `--output` is optional and if not specified then Ingrid places all outputs in the same directory as the input file.
+    * These explanations generalize to the `--create` command.
+
+
 * **With Anaconda Project**
     * `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
         * `anaconda-project run cli`: tells the terminal to open the `anaconda-project` script. Then scan for the command titled `cli` and execute that command. This translates to the invocation of the `model_processing` program.
-        * Now that we have invoced the `model_processing` program we supply it the rest of the arguments.
+        * Now that we have invoked the `model_processing` program we supply it the rest of the arguments.
         * At this point, `anaconda-project` passes the rest of the arguments to the `model_processing` program.
-        * At a high level, that means the `model_processing` program understands the flags `--compare`, `--original`, `--update`, and `--output`.
+            * Read above for a description of the `model_processing` program and how it parses commands.
 
 **Generating Documentation**
 * To generate the Documentation that lives in the `./doc` directory you will
@@ -73,13 +89,13 @@ need to run two commands.
 
 **Testing**
 
-* **Running all of the Tests**
+* **Run all the Tests**
     * `anaconda-project run test`
 
-* **Running a single Test File**
+* **Run a single Test File**
     * `anaconda-project run test <test file name.py>`
 
-* **Running a single Test Case**
+* **Run a single Test Case**
     * `anaconda-project run test -k "<test method name>"`
         * The double quotes are significant
 
