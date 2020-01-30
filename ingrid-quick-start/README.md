@@ -38,7 +38,7 @@ The first tab in the example model serves as a README to guide you through the u
 
 Directly export black-colored tabs for processing with Ingrid. To export the black-colored tabs, use Excel's built-in copy capability to create a new workbook containing only the desired sheet. This leaves the links inherent to the cells active. Removing this dependency, involves bulk selecting (such as holding Ctrl-Shift and using the arrow keys) the data followed by copy-paste special (values) to make cells containing the values.
 
-**It is imperative that you name the sheet containing this data after the modeling patter you choose to use. Be sure that this pattern has an accompanying JSON file in the patterns directory.** In effect if you wish to create a composition model then the sheet containing the data mentioned above should be named "Composition" to mirror the `composition.json` file in the [patterns](../ingrid/src/model_processing/patterns) directory. See the guide to creating a JSON pattern template to learn how to define your own modeling pattern.
+**It is imperative that you name the sheet containing this data after the modeling pattern you choose to use. Be sure that this pattern has an accompanying JSON file in the patterns directory.** In effect if you wish to create a composition model then the sheet containing the data mentioned above should be named "Composition" to mirror the `composition.json` file in the [patterns](../ingrid/src/model_processing/patterns) directory. See the guide to creating a JSON pattern template to learn how to define your own modeling pattern.
 
 ![](excel_copy_screen.png)
 
@@ -89,9 +89,9 @@ Ingrid supports computing model changes and renames simultaneously. This serves 
 
 Whenever computing changes, Ingrid generates a human readable Excel file, with the same name as the "graph_diff_changes..." JSON file, intended to alert the user to the changes the JSON file will make in the model and any instances where Ingrid could not determine the user's intention.
 
-### Modifying Interface Type Using "Compare" Mode
+<!-- ### Modifying Interface Type Using "Compare" Mode
 
-Blah
+Blah -->
 
 ### Possible Issues
 
