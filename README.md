@@ -6,17 +6,12 @@ Developed at Georgia Tech Research Institute by Shane Connelly and Bjorn Cole. G
 
 ### Installation
 
-<<<<<<< HEAD
 **We suggest that you clone this repository.**
-=======
-The repository includes a translator, formerly known as Rick's Cafe Americain, which examines spreadsheets with metadata and calculates how to either create a new model from scratch or make updates to a model to match the data in the spreadsheets.
->>>>>>> origin/master
 
 Cloning the repository provides you access to add meta model JSON descriptions and update the `player-piano` to create novel model elements.
 
 **Ingrid:**
 
-<<<<<<< HEAD
 - Clone `Rapid Modeling Tools`
 - Create a Python environment from the `environment.yml`
 - Run `setup.py`
@@ -47,7 +42,6 @@ Owing to the difficulty of automatic testing with the MagicDraw software the exa
 - Expand coverage of the UML Metamodel in both JSON subgraph definition and Player Piano capability
 
 This tool is intended for MBSE professionals and advanced technical users. Users of this tool set do so at their own risk.
-=======
 Each of these projects has their own sub README with more details. Please contact ingrid-nerdman@gtri.gatech.edu with questions.
 
 ## Design
@@ -85,6 +79,3 @@ The items flowing across the components are depicted below.  There are four majo
 ![ComponentHierarchyInContext](diagrams/Rapid%20Modeling%20Tool%20-%20Internal%20Flows.png)
 
 ![ComponentHierarchyInContext](diagrams/Rapid%20Modeling%20Tool%20Context%20-%20Internal%20Flows.png)
-
-
->>>>>>> origin/master
