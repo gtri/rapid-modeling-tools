@@ -1,27 +1,3 @@
-# Quick Start Guide and FALQ (Frequently Asked Leading Questions)
-
-## Why Was This Tool Made?
-
-Ingrid Nerdman capitalizes on the wealth of system model information described in a small number of common modeling patterns, from a modeling structure perspective. After identifying a common modeling patter, the systems engineering task becomes that of a data entry problem resulting in many systems engineering products capturing data in spreadsheets. Spreadsheets alone lack the structure to mark differences in the kids of information captured (components vs. functions), readily apparent to computers or even non-subject matter experts. Meanwhile, subject matter experts endow the data with semantic annotations without understanding how to express those annotations through the data structures. Thus, Ingrid seeks to address these issues by combining the data collection, semantic annotation and model creation into one workflow. Inspired by the approach taken by the Maple MBSE tool and the Excel Import in Cameo Systems Modeler, Ingrid Nerdman collects data from subject matter experts and non-subject matter experts in the form of an Excel spreadsheet and creates a wholly formed Cameo Model.
-
-Commonly on MBSE projects, modeling professionals find themselves overwhelmed by the volume of information to capture, spending inordinate amounts of time transcribing those data. Ultimately, hurting the productivity of the team and preventing them from taking full advantage of their models; preparing queries and reports to support the larger engineering team. Automating the most straightforward and voluminous parts of the data wrangling effort, collecting and structuring the data according to common modeling patterns, allows the modeling experts to focus on best uses of those dat.
-
-### If Inspired by Commercial Tools, Why Make a New One?
-
-Primarily because it involves filling in gaps left behind by existing tools.
-
-For one - Maple MBSE does not do comparisons between baseline models and updates on its own. It relies upon the facilities of the Teamwork Cloud or other modeling tools. Having Ingrid perform the change calculations makes it independent of the modeling tool used. It should be compatible with Cameo, Integrity Modeler, Rhapsody, Papyrus, or any other modeling tool. This also allows for engineers that do not have access to any of these tools to act as configuration managers to check that the collected and updated data are ready to go into the model.
-
-For another - Cameo importers work well with string or value fields but do not handle importing the connections between modeling elements gracefully. Thus to making complete model updates requires additional effort. Here we can point out that the existence of the Excel and CSV imports lead the Ingrid team to de-emphasize bulk loading of these values and focus on the development of importing model elements and their links to each other.
-
-## How Do I Get the Tool?
-
-You have already succeeded in step one, which is to make it to this site. The tool is set up to be installed within a controlled conda environment after it is cloned from this Git repository.
-
-See [the ingrid README.md](../ingrid/README.md) for step-by-step install instructions for the Ingrid component.
-
-See [the player-piano Readme.md](../player-piano/Readme.md) for step-by-step installation instructions for the Player Piano component.
-
 # Quick Start
 
 ## The Example Model
@@ -88,10 +64,6 @@ Once again, execute the Player Piano macro on the created JSON change file and y
 Ingrid supports computing model changes and renames simultaneously. This serves as a rudimentary example of the functionality.
 
 Whenever computing changes, Ingrid generates a human readable Excel file, with the same name as the "graph_diff_changes..." JSON file, intended to alert the user to the changes the JSON file will make in the model and any instances where Ingrid could not determine the user's intention.
-
-<!-- ### Modifying Interface Type Using "Compare" Mode
-
-Blah -->
 
 ### Possible Issues
 
