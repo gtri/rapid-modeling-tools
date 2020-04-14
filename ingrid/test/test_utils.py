@@ -296,7 +296,7 @@ class TestUtils(unittest.TestCase):
                 (DATA_DIRECTORY / "Composition_Diff_JSON_Baseline.xlsx"),
                 (DATA_DIRECTORY / "Composition_Diff_JSON_Changed.xlsx"),
             ],
-            json_path=(PATTERNS / "Composition.json"),
+            json_path=[(PATTERNS / "Composition.json")],
         )
         tr = manager.translator
 
