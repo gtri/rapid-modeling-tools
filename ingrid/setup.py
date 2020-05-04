@@ -18,20 +18,19 @@ SRC = HERE / "src" / NAME
 VERSION_RE = r""".*__version__ = (['"])(\d+\.\d+\.\d+.*)\1.*"""
 
 setup(
-    # TODO: non-cute name
     name=NAME,
     version=re.findall(VERSION_RE, (SRC / "_version.py").read_text())[0][1],
-    # TODO: better description
+    # TODO: better description - MAKE PR TASK
     description="Sample package for Python-Guide.org",
     long_description=(HERE / "README.md").read_text(),
     long_description_content_type="text/markdown",
     author="Georgia Tech Research Corporation",
     author_email="ingrid-nerdman@gtri.gatech.edu",
-    # TODO: better url
+    # TODO: better url - MAKE PR TASK
     url="https://github.com/kennethreitz/samplemod",
     license="BSD-3-Clause",
     package_dir={"": "src"},
-    packages=setuptools.find_packages("src"),
+    packages=find_packages("src"),
     entry_points={
         "console_scripts": ["model-processing = model_processing.cli:main"]
     },
