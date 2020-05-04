@@ -16,3 +16,5 @@ data
 junit.xml
 htmlcov
 coverage.xml
+ingrid/build*
+ingrid/dist*
