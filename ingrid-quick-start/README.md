@@ -14,7 +14,7 @@ The first tab in the example model serves as a README to guide you through the u
 
 Directly export black-colored tabs for processing with Ingrid. To export the black-colored tabs, use Excel's built-in copy capability to create a new workbook containing only the desired sheet. This leaves the links inherent to the cells active. Removing this dependency, involves bulk selecting (such as holding Ctrl-Shift and using the arrow keys) the data followed by copy-paste special (values) to make cells containing the values.
 
-**It is imperative that you name the sheet containing this data after the modeling pattern you choose to use. Be sure that this pattern has an accompanying JSON file in the patterns directory.** In effect if you wish to create a composition model then the sheet containing the data mentioned above should be named "Composition" to mirror the `composition.json` file in the [patterns](../ingrid/src/model_processing/patterns) directory. See the guide to creating a JSON pattern template to learn how to define your own modeling pattern.
+**It is imperative that you name the sheet containing this data after the modeling pattern you choose to use. Be sure that this pattern has an accompanying JSON file in the [patterns directory](../ingrid/src/model_processing/patterns).** In effect if you wish to create a composition model then the sheet containing the data mentioned above should be named "Composition" to mirror the `composition.json` file in the [patterns](../ingrid/src/model_processing/patterns) directory. See the guide to creating a JSON pattern template to learn how to define your own modeling pattern.
 
 ![](excel_copy_screen.png)
 

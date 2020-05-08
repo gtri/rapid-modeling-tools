@@ -41,7 +41,7 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 - Detailed instructions found in the [README.md](ingrid/README.md) in the `ingrid` directory for usage with anaconda-project and without anaconda-project
 
 **Player Piano**
-- In MagicDraw Tools > Macros > Organice Macros
+- In MagicDraw Tools > Macros > Organize Macros
 - Provide the name Player Piano, the language as Groovy and browse the file explorer to the location of this project `.../player-piano/player-piano-script.groovy` and click okay
 - Detailed instructions with images found in the [Readme.md](player-piano/Readme.md) in the `player-piano` directory
 
