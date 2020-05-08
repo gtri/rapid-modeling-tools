@@ -32,16 +32,10 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 **Ingrid:**
 
 - Install [miniconda](https://docs.conda.io/en/latest/miniconda.html).
-- Create a Python environment from the `environment.yml`
+- Install the Ingrid application
   ```bash
   cd ingrid
-  conda env install -f environment.yml
-  conda activate model-processing-dev
-  ```
-- Run `setup.py`
-
-  ```bash
-  python setup.py install
+  bash install.sh
   ```
 
 - Detailed instructions found in the [README.md](ingrid/README.md) in the `ingrid` directory for usage with anaconda-project and without anaconda-project
