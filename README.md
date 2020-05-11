@@ -25,25 +25,41 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 
 ## Installation
 
-1. Clone `Rapid Modeling Tools`
+- Clone `Rapid Modeling Tools`
+  ```bash
+  git clone https://github.com/gtri/rapid-modeling-tools.git
+  ```
+    > Cloning the repository provides you access to add meta model JSON descriptions and update the `player-piano` to create novel model elements.
 
-> Cloning the repository provides you access to add meta model JSON descriptions and update the `player-piano` to create novel model elements.
-
-**Ingrid:**
-
+### Ingrid
+#### Windows
+- Install [miniconda](https://docs.conda.io/en/latest/miniconda.html).
+- Install the Ingrid application
+  ```bash
+  cd ingrid
+  bash install.bat
+  ```
+#### Linux / Mac
 - Install [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 - Install the Ingrid application
   ```bash
   cd ingrid
   bash install.sh
   ```
+#### Additional Details
 
-- Detailed instructions found in the [README.md](ingrid/README.md) in the `ingrid` directory for usage with anaconda-project and without anaconda-project
+- Detailed instructions can be found in the [README.md](ingrid/README.md) in the `ingrid` directory for usage with anaconda-project and without anaconda-project
 
-**Player Piano**
-- In MagicDraw Tools > Macros > Organize Macros
-- Provide the name Player Piano, the language as Groovy and browse the file explorer to the location of this project `.../player-piano/player-piano-script.groovy` and click okay
-- Detailed instructions with images found in the [Readme.md](player-piano/Readme.md) in the `player-piano` directory
+### Player Piano
+
+- With MagicDraw open locate the **Tools** menu
+- Select `Tools > Macros > Organize Macros`
+- In the `Macro Information` dialog box, enter the following information:
+  - `Name`: Player Piano
+  - `Macro Language`: Groovy
+  - `File`: browse the file explorer (opened by clicking on the three dots button) to the `.../Rapid Modeling Tools/player-piano/player-piano-script.groovy` groovy script.
+
+- Detailed instructions with images can be found in the [README.md](player-piano/README.md) in the `player-piano` directory
 
 ## Getting Started
 
@@ -51,7 +67,7 @@ The [ingrid-quick-start](ingrid-quick-start/README.md) provides a basic starting
 
 Each of these projects has their own sub README with more details. Please contact `ingrid-nerdman@gtri.gatech.edu` with questions.
 
-### Goals to Bring Rapid Modeling Tools to a 1.0 Release:
+## Goals to Bring Rapid Modeling Tools to a 1.0 Release:
 
 Owing to the difficulty of automatic testing with the MagicDraw software the exact MagicDraw versions supported remains unknown. However, we have seen success with Cameo 19.0 and Python 3.6+.
 
