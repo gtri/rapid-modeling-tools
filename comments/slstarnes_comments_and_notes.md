@@ -1,10 +1,9 @@
 # Luke's Comments and Notes
 
-* In `ingrid/environment.yml` the name of the conda env is "model-processing-dev". But, this is what you have user install to get started. IOW, this isn't really a dev repo. Long story short -- this is why I removed the "-dev". 
-  * I mention somewhere else that perhaps the installation is handled fully through the `setup.py` and if this is the case then the `environment.yml` may be superfluous. 
+* I am viewing the `README.md` file in the root as the README for the standard user (i.e. not a developer) and the `ingrid/README.md` file is intended for "advanced users" / devers. This is why I made the changes to the base README to include the install usage information.    
 * Excel file (`/ingrid_quick_start/Example Data.xlsx`) comments
   * In general I think you some more explanation on this spreadsheet. I don't see anything really. I do not think you expect for your users to all intuit the purpose of every tab / column.
-    * I would not think it was unreasonable to have a markdown file where you list each tab and column....
+    * I do not think it is unreasonable to have a markdown file where you list each tab and column and provide a brief description....
        * Part Type Split
          * Component - the component of the automobile 
          * Role - the role of the component in the automobile
@@ -18,8 +17,23 @@
   * Tab `Delegation Counters`, Column O - There is a note that doesn't seem to belong - "One more thing to know - is this last delegation for the row?"'
   * Tab `Delegation Counters`, Columns A-F - `#REF!` errors occur because you are pointing to rows on `Connections` that are empty.
   * Tab `Delegation Counters`, Columns K-N - `#N/A` errors occur because the vectors selected in the formulas are of different lengths. 
-       
-   
+* Quick Start Readme (`ingrid-quick-start/README.md`)
+  * This file tells the user to use `anaconda-project`, but this should not be a requirement to run the app.
+  * There is quite a few questions I have from the _Creating the Input Files_.   
+    * Is the the user to export all of the black-colored tabs? This seems to be implied, but is not clear. I reworded things assuming this was the case, but I am not sure.
+    * What is meant by the sentence that begins "Removing this dependency..." Are you telling the user why the did the copy or is this (the bulk selecting) a task they are supposed to execute?
+    * There should be a better introduction to the concept of "you need a modeling pattern" than the statement about file naming. It sounds like I need to pick a modeling pattern. Is it safe to assume your users know what this will mean? If not, then you should provide a bit more info, but even if they do then it should be broached before talking about file naming.One option is to link to the `../ingrid/src/model_processing/patterns/README.md` file.
+    * This sentence is confusing -- `In effect if you wish to create a composition model...`.  First, what data is mentioned above?
+    * Looking at the code in `commands.py`, it looks like you cycle through the sheets in the workbook. This is confusing with this quick start writeup which sounds like I am to make 1 workbook for each black tab. 
+* Ingrid Readme (`ingrid/README.md`)
+  * When I run `anaconda-project run make-html` I get a make error --- `make: *** No rule to make target html.  Stop.`. Note I am on a Mac.   
+    * The issue is that the make (or make.bat) are not present. I am pretty sure the `sphinx-quickstart` script is what creates the Makefile and a make.bat. Since I haven't run that I don't have the make file. 
+    * I did also try `sphinx-build -b html src/model_processing doc` but got an error saying `config directory doesn't contain a conf.py file`. 
+* Patterns (`../ingrid/src/model_processing/patterns/README.md`)
+  * Looking at these JSON files they seem specific to your spreadsheet. If I am doing a new project would I need to create new json files? I have not seen any discussion about updating / creating pattern files. The quick start makes it sound like if I want to make new patterns I can rather than -- unless you are using this dummy show-and-tell spreadsheet you have to create your own patterns. 
+    * If the user does create patterns then they should go somewhere other than deep in this `src` folder like maybe `~/patterns` or `./patterns`.
+  * These files do not come over as part of the install which means that the `PATTERNS` variable is pointing to a non-existent path. This means that the `json_patterns` variable under commands.create_md_model is always an empty list (`[]`).  When I say it doesn't come over, what I mean is that when i go look in the install directory (~/miniconda3/envs/model_processing/lib/python3.6/site-packages/model_processing-0.1.0-py3.6.egg/model_processing/) there is not a patterns folder.  
   
+      
 
      
