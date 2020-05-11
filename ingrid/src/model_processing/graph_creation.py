@@ -153,10 +153,10 @@ class Manager:
         a dictionary with original edge objects as keys securing a value
         list of all change edges of the same type. Run a version of the
         stable marriage algorithm over this dictionary by scoring each
-        value edge on its likely ness to be the updated key. Any key
+        value edge on its likeliness to be the updated key. Any key
         that makes it through the matching algorithm with more than one
         potential match becomes an unstable pair (borrowed language
-        from the unstable marriage algorith). With all of the edges
+        from the unstable marriage algorithm). With all of the edges
         analyzed, the function sends the edges to JSON and Excel creation.
 
         See Also
@@ -493,7 +493,7 @@ class Manager:
             else:  # All other keys are <DiEdge>: [<DiEdge>]
                 source_val, target_val = value[0].source, value[0].target
                 # Using filter as mathematical ~selective~ or.
-                # TODO: rewrite this to be more explciit, google style does
+                # TODO: rewrite this to be more explicit, google style does
                 # not approve of this approach.
                 eligible = list(
                     filter(
@@ -634,7 +634,7 @@ class Evaluator:
         Returns an edge set of the edges represented as a string.
 
     edge_set : set of DiEdge objects
-        Returns an edge set contaning `DiEdge` objects.
+        Returns an edge set containing `DiEdge` objects.
     """
 
     # TODO: Consider moving function calls into init since they should be run
@@ -801,7 +801,7 @@ class Evaluator:
                     # TODO: Break this function down and test edge cases.
                     self.df = excel_sheets[sheet]
                     self.df.dropna(how="all", inplace=True)
-            # Hopefully you explcitly named the Rename sheet
+            # Hopefully you explicitly named the Rename sheet
             elif any(renm_str in sheet.lower() for renm_str in renames):
                 self.df_renames = excel_sheets[sheet]
                 self.df_renames.dropna(how="all", inplace=True)
@@ -1028,7 +1028,7 @@ class Evaluator:
         node_atters = [[{"name": node} for node in list(pdg)]]
 
         # various functions required to get different vertex attrs
-        # partialy instantiate each function so that each fn only needs node
+        # partially instantiate each function so that each fn only needs node
         associate_funs = [
             partial(associate_node_id, tr),
             partial(associate_successors, pdg),
