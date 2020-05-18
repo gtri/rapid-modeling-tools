@@ -185,7 +185,7 @@ def associate_renames(df_renames, tr, node):
         row_index = list(
             filter(lambda x: x.lower() in node, df_renames.index)
         )
-        old_name = df_renames.loc[row_index].get_values()
+        old_name = df_renames.loc[row_index].to_numpy()
         row_index = [x.lower() for x in row_index]
         old_name = [x.lower() for x in chain(*old_name)]
         new_old_tup = zip(row_index, old_name)
@@ -196,7 +196,7 @@ def associate_renames(df_renames, tr, node):
         )
         if node == original_name:
             row_index = list(filter(lambda x: x in node, df_renames.index))
-            old_name = df_renames.loc[row_index].get_values()
+            old_name = df_renames.loc[row_index].to_numpy()
             new_old_tup = zip(row_index, chain(*old_name))
             original_name = reduce(
                 lambda new, kv: new.replace(*kv), new_old_tup, node
