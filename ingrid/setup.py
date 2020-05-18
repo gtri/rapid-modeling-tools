@@ -31,7 +31,7 @@ setup(
     url="https://github.com/kennethreitz/samplemod",
     license="BSD-3-Clause",
     package_dir={"": "src"},
-    packages=setuptools.find_packages("src"),
+    packages=find_packages("src"),
     entry_points={
         "console_scripts": ["model-processing = model_processing.cli:main"]
     },
