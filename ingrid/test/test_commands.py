@@ -149,7 +149,7 @@ class TestCommands(unittest.TestCase):
                 create_md_model(wkbk_path, out_tmp_dir)
                 new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(1, len(new_json))
-                cr_data_path = (out_tmp_dir / "Composition Example 2.json")
+                cr_data_path = out_tmp_dir / "Composition Example 2.json"
                 cr_data = json.loads(cr_data_path.read_text())
                 # TODO: This is a hardcoded validation to check the number
                 # of objs created meets a known working count
