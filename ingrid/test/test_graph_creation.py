@@ -33,7 +33,7 @@ class TestManager(unittest.TestCase):
                 ),
                 (DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx"),
             ],
-            json_path=(PATTERNS / "Composition.json"),
+            json_path=[(PATTERNS / "Composition.json")],
         )
         eval_base = manager.evaluators[0]
         eval_change = manager.evaluators[1]
@@ -74,7 +74,7 @@ class TestManager(unittest.TestCase):
             excel_path=[
                 DATA_DIRECTORY / "Composition Example.xlsx" for i in range(2)
             ],
-            json_path=PATTERNS / "Composition.json",
+            json_path=[PATTERNS / "Composition.json"],
         )
         expected_keys = [
             "Columns to Navigation Map",
@@ -85,14 +85,14 @@ class TestManager(unittest.TestCase):
             "Vertex Stereotypes",
         ]
 
-        assert expected_keys == list(manager.json_data.keys())
+        assert expected_keys == list(manager.json_data[0].keys())
 
     def test_create_evaluators(self):
         manager = Manager(
             excel_path=[
                 DATA_DIRECTORY / "Composition Example.xlsx" for i in range(2)
             ],
-            json_path=PATTERNS / "Composition.json",
+            json_path=[PATTERNS / "Composition.json"],
         )
         # weak test: create_evaluators() run during init
         self.assertEqual(2, len(manager.evaluators))
@@ -104,7 +104,7 @@ class TestManager(unittest.TestCase):
             excel_path=[
                 DATA_DIRECTORY / "Composition Example.xlsx" for i in range(2)
             ],
-            json_path=PATTERNS / "Composition.json",
+            json_path=[PATTERNS / "Composition.json"],
         )
         # Have to create the actual graph object because get_pattern_graph_diff
         # employs the graph object properties
@@ -230,7 +230,7 @@ class TestManager(unittest.TestCase):
             excel_path=[
                 DATA_DIRECTORY / "Composition Example.xlsx" for i in range(1)
             ],
-            json_path=PATTERNS / "Composition.json",
+            json_path=[PATTERNS / "Composition.json"],
         )
         og_edge = DiEdge(
             source=Vertex(name="green"),
@@ -322,9 +322,9 @@ class TestManager(unittest.TestCase):
             excel_path=[
                 DATA_DIRECTORY / "Composition Example.xlsx" for i in range(2)
             ],
-            json_path=PATTERNS / "Composition.json",
+            json_path=[PATTERNS / "Composition.json"],
         )
-        tr = manager.translator
+        tr = manager.translator[0]
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
             orig_edge = DiEdge(

@@ -244,7 +244,7 @@ def compare_md_model(inputs, output_path=""):
 
     if pattern_sheet:
         manager = Manager(
-            excel_path=wkbk_paths, json_path=json_patterns[pattern_sheet]
+            excel_path=wkbk_paths, json_path=[json_patterns[pattern_sheet]]
         )
         for evaluator in manager.evaluators:
             evaluator.rename_df_columns()
