@@ -1,0 +1,6 @@
+-r requirements.txt
+-e .
+pytest
+pytest-cov
+pytest-flake8
+pytest-black

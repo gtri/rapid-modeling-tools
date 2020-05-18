@@ -41,6 +41,8 @@ env_specs:
     - jupyterlab
     - pytest
     - pytest-cov
+    - pytest-flake8
+    - pytest-black
     - python >=3.6,<3.7
     - sphinx
   model-processing-dev:
