@@ -5,6 +5,7 @@ the BSD 3-Clause license. See the LICENSE file for details.
 """
 
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -129,6 +130,60 @@ class TestCommands(unittest.TestCase):
             dir_xl = list(tempdir.glob("Model Diff*.xlsx"))
             self.assertEqual(2, len(dir_json))
             self.assertEqual(2, len(dir_xl))
+
+    def test_validate_create_json(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            excel_files = [
+                (DATA_DIRECTORY / "Composition Example 2.xlsx"),
+            ]
+            for xl_file in excel_files:
+                copy2(DATA_DIRECTORY / xl_file, tmpdir)
+
+            wkbk_path = [
+                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx",
+            ]
+
+            with tempfile.TemporaryDirectory() as out_tmp_dir:
+                out_tmp_dir = Path(out_tmp_dir)
+                create_md_model(wkbk_path, out_tmp_dir)
+                new_json = list(out_tmp_dir.glob("*.json"))
+                self.assertEqual(1, len(new_json))
+                cr_data_path = (out_tmp_dir / "Composition Example 2.json")
+                cr_data = json.loads(cr_data_path.read_text())
+                # TODO: This is a hardcoded validation to check the number
+                # of objs created meets a known working count
+                # it would be possible but difficult to compute this internally
+                assert 458 == len(cr_data["modification targets"])
+
+    def test_validate_compare_json(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            excel_files = [
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
+            ]
+            for xl in excel_files:
+                copy2(DATA_DIRECTORY / xl, tmpdir)
+
+            original = tmpdir / "Composition Example 2 Model Baseline.xlsx"
+            updated = [
+                tmpdir / "Composition Example 2 Model Changed.xlsx",
+            ]
+
+            inputs = [original]
+            inputs.extend(updated)
+
+            with tempfile.TemporaryDirectory() as tmpdir2:
+                outdir = Path(tmpdir2)
+                compare_md_model(inputs, outdir)
+                # expect 3 json and 3 more excel files
+                cmp_json = list(outdir.glob("*.json"))
+                compare_data = json.loads(cmp_json[0].read_text())
+                # TODO: This is hardcoded validation as it checks at a known
+                # point when the library works. This test passing does not
+                # garuntee that it should always work.
+                assert 21 == len(compare_data["modification targets"])
 
     def tearDown(self):
         pass
