@@ -135,14 +135,12 @@ class TestCommands(unittest.TestCase):
     def test_validate_create_json(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            excel_files = [
-                (DATA_DIRECTORY / "Composition Example 2.xlsx"),
-            ]
+            excel_files = [(DATA_DIRECTORY / "Composition Example 2.xlsx")]
             for xl_file in excel_files:
                 copy2(DATA_DIRECTORY / xl_file, tmpdir)
 
             wkbk_path = [
-                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx",
+                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx"
             ]
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
@@ -168,9 +166,7 @@ class TestCommands(unittest.TestCase):
                 copy2(DATA_DIRECTORY / xl, tmpdir)
 
             original = tmpdir / "Composition Example 2 Model Baseline.xlsx"
-            updated = [
-                tmpdir / "Composition Example 2 Model Changed.xlsx",
-            ]
+            updated = [tmpdir / "Composition Example 2 Model Changed.xlsx"]
 
             inputs = [original]
             inputs.extend(updated)
