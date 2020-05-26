@@ -13,7 +13,7 @@ from shutil import copy2
 
 from model_processing.commands import compare_md_model, create_md_model
 
-from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS, ROOT
+from . import DATA_DIRECTORY, ROOT
 
 
 class TestCommands(unittest.TestCase):
@@ -151,7 +151,7 @@ class TestCommands(unittest.TestCase):
                 cr_data = json.loads(cr_data_path.read_text())
                 # TODO: This is a hardcoded validation to check the number
                 # of objs created meets a known working count
-                # it would be possible but difficult to compute this internally
+                # it would be possible but difficult to compute internally
                 assert 458 == len(cr_data["modification targets"])
 
     def test_validate_compare_json(self):

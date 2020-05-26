@@ -9,7 +9,6 @@ import json
 import tempfile
 import unittest
 import uuid
-import warnings
 from pathlib import Path
 
 import pandas as pd
@@ -41,22 +40,11 @@ class TestManager(unittest.TestCase):
         eval_base.rename_df_columns()
         eval_base.add_missing_columns()
         eval_base.to_property_di_graph()
-        base_prop_graph = eval_base.prop_di_graph
-
-        base_vert_set = base_prop_graph.vertex_set
 
         eval_change.rename_df_columns()
         eval_change.add_missing_columns()
         eval_change.to_property_di_graph()
-        change_prop_graph = eval_change.prop_di_graph
 
-        change_vert_set = change_prop_graph.vertex_set
-
-        # I want to see if the nodes in the graph have the right ids
-        diff_nodes = set(change_prop_graph).difference(set(base_prop_graph))
-        diff_dict = {
-            key: eval_change.translator.uml_id[key] for key in diff_nodes
-        }
         self.assertTrue(
             set(eval_base.translator.uml_id.keys()).issubset(
                 set(eval_change.translator.uml_id.keys())
@@ -64,9 +52,9 @@ class TestManager(unittest.TestCase):
         )
         for key in eval_base.translator.uml_id.keys():
             if key is not "count":
-                self.assertEqual(
-                    eval_base.translator.uml_id[key],
-                    eval_change.translator.uml_id[key],
+                assert (
+                    eval_base.translator.uml_id[key]
+                    == eval_change.translator.uml_id[key]
                 )
 
     def test_get_json_data(self):
@@ -106,7 +94,7 @@ class TestManager(unittest.TestCase):
             ],
             json_path=[PATTERNS / "Composition.json"],
         )
-        # Have to create the actual graph object because get_pattern_graph_diff
+        # Create the actual graph object because get_pattern_graph_diff
         # employs the graph object properties
         # with 2 different original edges of the same type I can induce a
         # match based on rename and an unstable pair.
@@ -267,8 +255,6 @@ class TestManager(unittest.TestCase):
             target=Vertex(name="fruit"),
             edge_attribute="fruit",
         )
-        new_name = Vertex(name="new name")
-        old_name = Vertex(name="old name")
 
         fake_datas = {
             "0-1": {
@@ -723,9 +709,6 @@ class TestEvaluator(unittest.TestCase):
         tr = MDTranslator(json_data=json_data)
         file = DATA_DIRECTORY / "Composition Example 2 Model partial_map.xlsx"
         evaluator = Evaluator(excel_file=file, translator=tr)
-        df = evaluator.df
-        df_ids = evaluator.df_ids
-        df_renames = evaluator.df_renames
         evaluator.rename_df_columns()
         evaluator.add_missing_columns()
         evaluator.to_property_di_graph()
