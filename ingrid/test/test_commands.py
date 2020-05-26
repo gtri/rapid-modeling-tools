@@ -127,7 +127,6 @@ class TestCommands(unittest.TestCase):
 
             compare_md_model([original, tempdir])
             dir_json = list(tempdir.glob("*.json"))
-            print(dir_json)
             dir_xl = list(tempdir.glob("Model Diff*.xlsx"))
             self.assertEqual(2, len(dir_json))
             self.assertEqual(2, len(dir_xl))
