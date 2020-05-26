@@ -284,9 +284,11 @@ class TestVertex(unittest.TestCase):
             ],
             attributes=[{"Notes": "Test Note"}],
         )
-        vertex_car_uml, car_decs, edge_car_uml = vertex_car.create_node_to_uml(
-            translator=translator
-        )
+        (
+            vertex_car_uml,
+            car_decs,
+            edge_car_uml,
+        ) = vertex_car.create_node_to_uml(translator=translator)
 
         engine_id = translator.get_uml_id(name="engine")
         vertex_engine = Vertex(
