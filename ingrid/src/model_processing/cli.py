@@ -27,7 +27,7 @@ def main():
         "-c",
         "--create",
         nargs="?",
-        help="Create a JSON file for the Player Piano to make in a MD Diagram",
+        help="Create a JSON file for Player Piano to use to create a MagicDraw Diagram",
         const=True,
     )
 

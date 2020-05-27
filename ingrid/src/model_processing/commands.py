@@ -165,8 +165,10 @@ def compare_md_model(inputs, output_path=""):
     output_excel : Excel file
         Generates an Excel file that lists the confident changes (ones
         made by the JSON) and the unstable pairs so the user can make the
-        determiniation on those changes on their own.
+        determination on those changes on their own.
     """
+    # TODO: make it clear in the doc string what files are are pointing to. Is this 2 Excel files? 1 Excel and 1 JSON?
+    # TODO: If Excel, is this a single sheet EXCEL file?
     provided_paths = inputs
     wkbk_paths = []
     here = Path(os.getcwd())
