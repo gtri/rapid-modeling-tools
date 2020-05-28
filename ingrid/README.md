@@ -36,10 +36,7 @@ As discussed above, the typical user will not need to follow this README, but fo
     cd ingrid
     anaconda-project prepare
     anaconda-project run setup
-    ```   
-    
-- TODO: When i run `anaconda-project run setup` I get --- /bin/sh: 1: python: Exec format error. When i run the pip command directly it works (although installs into conda "base")
-    
+    ```    
   - You can now import `model_processing` as a package and access all the methods
 - Using Ingrid through Anaconda Project     
     - The available commands are listed in [`anaconda-project.yml`](anaconda-project.yml) are accessible via `anaconda-project run <command name (and flags if applicable)>`
