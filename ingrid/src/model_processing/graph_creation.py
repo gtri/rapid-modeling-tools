@@ -189,7 +189,7 @@ class Manager:
 
         for pair in combinations(self.evaluators, 2):
             # Checking if Evaluator has a rename dataframe
-            if pair[0].has_rename and pair[1].has_rename:  # comparing changes
+            if evaluator_dict[pair[0]] != 0 and evaluator_dict[pair[1]] != 0:
                 continue  # skip because this is comparing diff to diff
 
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict
