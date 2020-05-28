@@ -17,6 +17,9 @@ commands:
     windows: model-processing
     unix: model-processing
 
+  tester:
+    unix: which sphinx-apidoc
+
   build-sphinx:
     windows: sphinx-apidoc -f -o doc src/model_processing
     unix: sphinx-apidoc -f -o doc src/model_processing
@@ -53,3 +56,4 @@ env_specs:
     - pandas
     - scipy
     - xlrd >=0.9.0
+    - pip

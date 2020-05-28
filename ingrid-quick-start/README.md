@@ -12,9 +12,11 @@ The first tab in the example model serves as a README to guide you through the u
 
 ### Creating the Input Files
 
-Directly export black-colored tabs for processing with Ingrid. To export the black-colored tabs, use Excel's built-in copy capability to create a new workbook containing only the desired sheet. This leaves the links inherent to the cells active. Removing this dependency, involves bulk selecting (such as holding Ctrl-Shift and using the arrow keys) the data followed by copy-paste special (values) to make cells containing the values.
+Directly export each of the black-colored tabs to their own workbook for processing with Ingrid. To export the black-colored tabs, use Excel's built-in copy capability to create a new workbook containing only the desired sheet. This leaves the links inherent to the cells active. If desired, to remove this dependency, involves bulk selecting (such as holding Ctrl-Shift and using the arrow keys) the data followed by copy-paste special (values) to make cells containing the values.
 
-**It is imperative that you name the sheet containing this data after the modeling pattern you choose to use. Be sure that this pattern has an accompanying JSON file in the [patterns directory](../ingrid/src/model_processing/patterns).** In effect if you wish to create a composition model then the sheet containing the data mentioned above should be named "Composition" to mirror the `composition.json` file in the [patterns](../ingrid/src/model_processing/patterns) directory. See the guide to creating a JSON pattern template to learn how to define your own modeling pattern.
+**It is imperative that you name the workbook containing the copied worksheet after the modeling pattern you choose to use. Be sure that this pattern has an accompanying JSON file in the patterns directory.** For example, if you are using the `Composition` model (based on the [composition.json](../ingrid/src/model_processing/patterns/compositon.json) file in the patterns directory), then the workbook name should begin with "Composition". 
+
+Note: See this [guide](../ingrid/src/model_processing/patterns/README.md) for creating a JSON pattern template to learn how to define your own modeling pattern.
 
 ![](excel_copy_screen.png)
 
@@ -24,7 +26,10 @@ Name the first sheet you export with the following convention "_PatternName_ Sta
 
 Once exported, run the "System Parts Starter.xlsx" file through the Ingrid component in create mode by issuing the following command (assuming the files located in a directory parallel to the `ingrid` directory). This command will generate a new JSON file.
 
-`anaconda-project run cli --create --input "..\Ingrid Quick Start\System Parts Starter.xlsx"`
+```bash
+cd ../ingrid-quick-start
+model-processing --create --input "System Parts Starter.xlsx"
+```
 
 In Cameo, open the "Import Example Base.mdzip" file. Then use the Tools > Macros > Player Piano menu item to launch the player piano script. Select a Package to be your default landing package ("Core Model"):
 
@@ -43,7 +48,7 @@ The Player Piano generates this `*.csv` file to inform you of the newly created 
 
 To add more information to the model, use the "System Spatial Parts Update.xlsx" as the update file. Open the file (it should contain the singular SystemSpatialParts tab) and add a "Renames" tab. Name Cell A1 "new name" and cell B1 "old name." Now make a "SystemSpatialParts IDs" tab. Populate this sheet by copying all the data and the headers from the newly-created `*.csv` file and paste it into the new IDs tab. Save this file. Similarly, include the IDs in the "System Spatial Parts Baseline.xlsx" and re-save this file. Now issue the command:
 
-`anaconda-project run cli --compare --original "..\Ingrid Quick Start\System Spatial Parts Baseline.xlsx" --update "..\Ingrid Quick Start\System Spatial Parts Update.xlsx"`
+`model-processing --compare --original "..\Ingrid Quick Start\System Spatial Parts Baseline.xlsx" --update "..\Ingrid Quick Start\System Spatial Parts Update.xlsx"`
 
 This generates a new "graph_diff_changes 0-1(date-time).json" output file with new instructions. Rename this to "System Spatial Parts Update.json."
 
@@ -57,7 +62,7 @@ You can continue to do the same with the "Interface Connection" tab and the "Int
 
 Part of Ingrid's change computations includes renames. To preform a simple rename, suppose you have an excel file titled "Composition Baseline.xlsx" which contains an entry "Car". Further suppose that you wish to rename all references to "Car" to "Tesla". For such an action, create a copy of the "Composition Baseline.xlsx", rename all instances of "Car" to "Tesla" in the pattern sheet, in the renames sheet under the "new name" column populate a cell with "Tesla" and the corresponding "old name" cell with "Car", and ensure that the IDs sheet contains the IDs for the model and save this changed sheet as "Composition Update.xlsx." Now issue the compare command as before:
 
-`anaconda-project run cli --compare --original "..\Composition Baseline.xlsx" --update "..\Composition Update.xlsx"`
+`model-processing --compare --original "..\Composition Baseline.xlsx" --update "..\Composition Update.xlsx"`
 
 Once again, execute the Player Piano macro on the created JSON change file and you have now updated all instance of Car in your model to Tesla.
 
