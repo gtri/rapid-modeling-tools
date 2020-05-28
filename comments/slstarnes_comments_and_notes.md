@@ -1,23 +1,24 @@
 # Luke's Comments and Notes
 
-* I am viewing the `README.md` file in the root as the README for the standard user (i.e. not a developer) and the `ingrid/README.md` file is intended for "advanced users" / devers. This is why I made the changes to the base README to include the install usage information.    
-* Excel file (`/ingrid_quick_start/Example Data.xlsx`) comments
-  * In general I think you some more explanation on this spreadsheet. I don't see anything really. I do not think you expect for your users to all intuit the purpose of every tab / column.
+* _[NO ACTION RQD]_ I am viewing the `README.md` file in the root as the README for the standard user (i.e. not a developer) and the `ingrid/README.md` file is intended for "advanced users" / devers. This is why I made the changes to the base README to include the install usage information.    
+* _[HEADING]_ Excel file (`/ingrid_quick_start/Example Data.xlsx`) comments
+  * _[IN PROGRESS]_ Shane and I discussed -- the spreadsheet has some issues and seems to have always had issues. Shane is going to talk to others in SER to see if the issues can be fixed or if we should change Quick Start to use a simpler spreadsheet. 
+  * _[WAITING]_ In general I think you need some more explanation on this spreadsheet. I don't see anything really. I do not think you expect for your users to all intuit the purpose of every tab / column.
     * I do not think it is unreasonable to have a markdown file where you list each tab and column and provide a brief description....
        * Part Type Split
          * Component - the component of the automobile 
          * Role - the role of the component in the automobile
     * I know it seems a bit pedantic, but i think it would be of value            
-  * on the README tab you list 4 colors. However, you have 2 tones of blue and 2 tones of green in addition to light orange and black. 
-  * Tab `Component Report`, Column F - has `#REF!` errors. 
-  * Tab `Component Report`, Column G - This is a direct pointer to column D on the `Component Tracking` tab. But, that column is empty. I would populate the source column. 
-  * Tab `Component Report`, Columns C,D,E,G - These are all direct pointers (pointing to a specific cell). Why not a VLOOKUP or INDEX/MATCH? Doing something like that would allow the rows to be in different orders. If they are the same then why have the data on 3 separate sheets?
-  * Tab `Part-Assembly Locators`, Columns B,C - What does the black column name mean? Does it mean "don't touch this"? If so, i didn't see that documented. Secondly, if this is what it means then why isn't column B black since it is also a formula? There needs to be clarity as to what the user modifies.  
-  * Tab `Part Type Split`, Column F - I would use this formula `=COUNTIF($D$2:D2,"Basic")`. When you drag it down it will count occurrences of Basic between start and current row. You can do the same for Index and Spatial. 
-  * Tab `Delegation Counters`, Column O - There is a note that doesn't seem to belong - "One more thing to know - is this last delegation for the row?"'
-  * Tab `Delegation Counters`, Columns A-F - `#REF!` errors occur because you are pointing to rows on `Connections` that are empty.
-  * Tab `Delegation Counters`, Columns K-N - `#N/A` errors occur because the vectors selected in the formulas are of different lengths. 
-* Quick Start Readme (`ingrid-quick-start/README.md`)
+  * _[WAITING]_ on the README tab you list 4 colors. However, you have 2 tones of blue and 2 tones of green in addition to light orange and black. 
+  * _[WAITING]_ Tab `Component Report`, Column F - has `#REF!` errors. 
+  * _[WAITING]_ Tab `Component Report`, Column G - This is a direct pointer to column D on the `Component Tracking` tab. But, that column is empty. I would populate the source column. 
+  * _[WAITING]_ Tab `Component Report`, Columns C,D,E,G - These are all direct pointers (pointing to a specific cell). Why not a VLOOKUP or INDEX/MATCH? Doing something like that would allow the rows to be in different orders. If they are the same then why have the data on 3 separate sheets?
+  * _[WAITING]_ Tab `Part-Assembly Locators`, Columns B,C - What does the black column name mean? Does it mean "don't touch this"? If so, i didn't see that documented. Secondly, if this is what it means then why isn't column B black since it is also a formula? There needs to be clarity as to what the user modifies.  
+  * _[WAITING]_ Tab `Part Type Split`, Column F - I would use this formula `=COUNTIF($D$2:D2,"Basic")`. When you drag it down it will count occurrences of Basic between start and current row. You can do the same for Index and Spatial. 
+  * _[WAITING]_ Tab `Delegation Counters`, Column O - There is a note that doesn't seem to belong - "One more thing to know - is this last delegation for the row?"'
+  * _[WAITING]_ Tab `Delegation Counters`, Columns A-F - `#REF!` errors occur because you are pointing to rows on `Connections` that are empty.
+  * _[WAITING]_ Tab `Delegation Counters`, Columns K-N - `#N/A` errors occur because the vectors selected in the formulas are of different lengths. 
+* _[HEADING]_ Quick Start Readme (`ingrid-quick-start/README.md`)
   * This file tells the user to use `anaconda-project`, but this should not be a requirement to run the app.
   * There is quite a few questions I have from the _Creating the Input Files_.   
     * Is the the user to export all of the black-colored tabs? This seems to be implied, but is not clear. I reworded things assuming this was the case, but I am not sure.
