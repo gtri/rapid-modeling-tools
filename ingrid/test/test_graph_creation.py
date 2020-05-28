@@ -51,7 +51,7 @@ class TestManager(unittest.TestCase):
             )
         )
         for key in eval_base.translator.uml_id.keys():
-            if key is not "count":
+            if key != "count":
                 assert (
                     eval_base.translator.uml_id[key]
                     == eval_change.translator.uml_id[key]
