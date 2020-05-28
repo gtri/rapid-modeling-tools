@@ -14,13 +14,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: [12]
+        node-version: [12.x]
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Set up Groovy Lint ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
 
