@@ -1,5 +1,14 @@
 # Luke's Comments and Notes
 
+Note: Each finding has a status flag (or will soon) at the start of the finding. These flags are defined below:
+* **[NO ACTION RQD]** - information only, no action required
+* **[HEADING]** - heading bullet, information only, no action required
+* **[IN PROGRESS]** - Shane is working to address finding
+* **[WAITING]** - this finding may be OBE, but we are waiting on something to know for sure. No action for now.
+* **[IN PR]** - this finding is reflected in the changes within the PR, so does not need to be thought of as separate finding.
+* **[OPEN]** - finding needs to be assessed by Shane
+* **[CLOSED]** - finding has been addressed 
+---
     * I do not think it is unreasonable to have a markdown file where you list each tab and column and provide a brief description....
        * Part Type Split
          * Component - the component of the automobile 
