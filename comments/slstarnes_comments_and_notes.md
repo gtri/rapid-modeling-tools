@@ -1,9 +1,5 @@
 # Luke's Comments and Notes
 
-* _[NO ACTION RQD]_ I am viewing the `README.md` file in the root as the README for the standard user (i.e. not a developer) and the `ingrid/README.md` file is intended for "advanced users" / devers. This is why I made the changes to the base README to include the install usage information.    
-* _[HEADING]_ Excel file (`/ingrid_quick_start/Example Data.xlsx`) comments
-  * _[IN PROGRESS]_ Shane and I discussed -- the spreadsheet has some issues and seems to have always had issues. Shane is going to talk to others in SER to see if the issues can be fixed or if we should change Quick Start to use a simpler spreadsheet. 
-  * _[WAITING]_ In general I think you need some more explanation on this spreadsheet. I don't see anything really. I do not think you expect for your users to all intuit the purpose of every tab / column.
     * I do not think it is unreasonable to have a markdown file where you list each tab and column and provide a brief description....
        * Part Type Split
          * Component - the component of the automobile 
