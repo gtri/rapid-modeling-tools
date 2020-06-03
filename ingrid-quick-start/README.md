@@ -12,9 +12,9 @@ The first tab in the example model serves as a README to guide you through the u
 
 ### Creating the Input Files
 
-Directly export each of the black-colored tabs to their own workbook for processing with Ingrid. To export the black-colored tabs, use Excel's built-in copy capability to create a new workbook containing only the desired sheet. This leaves the links inherent to the cells active. If desired, to remove this dependency, involves bulk selecting (such as holding Ctrl-Shift and using the arrow keys) the data followed by copy-paste special (values) to make cells containing the values.
+Directly export any of the black-colored tabs that you would like to import into Cameo. Each tab will need to be in its own workbook for processing with Ingrid. To export the black-colored tabs, use Excel's built-in copy capability to create a new workbook containing only the desired sheet. This leaves the links inherent to the cells active. If desired you can remove this dependency by bulk selecting the tab's content (Ctrl+A / Cmd+A), copying it (Ctrl+C / Cmd+C), and then using paste-special to paste only the values (and not the underlying formulas).
 
-**It is imperative that you name the workbook containing the copied worksheet after the modeling pattern you choose to use. Be sure that this pattern has an accompanying JSON file in the patterns directory.** For example, if you are using the `Composition` model (based on the [composition.json](../ingrid/src/model_processing/patterns/compositon.json) file in the patterns directory), then the workbook name should begin with "Composition". 
+The workbook name does not matter, but **it is imperative that you name the worksheet containing this data after the modeling pattern you choose to use**. Be sure that this pattern has an accompanying JSON file in the patterns directory.** For example, if you are using the `Composition` model (based on the [composition.json](../ingrid/src/model_processing/patterns/compositon.json) file in the patterns directory), then the worksheet name should begin with "Composition". 
 
 Note: See this [guide](../ingrid/src/model_processing/patterns/README.md) for creating a JSON pattern template to learn how to define your own modeling pattern.
 
