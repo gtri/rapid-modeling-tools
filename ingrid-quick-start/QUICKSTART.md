@@ -1,0 +1,113 @@
+# Quick Start
+
+## The Example Model
+
+Ingrid serves as a productivity tool allowing Model Based Systems Engineers to canvas data from stakeholders and incorporate that data into their Cameo Systems Model. Ingrid fulfills these duties by analyzing an Excel file according to the specified modeling pattern to create a `JSON` representation of the model. Next, the Player Piano interprets the JSON created by Ingrid through a series of API calls to MagicDraw actualizing the completed MBSE artefact.
+
+For Ingrid, a modeling pattern refers to a `JSON` file located in the [patterns](../ingrid/src/model_processing/patterns) directory that describes a particular UML Metamodel. At this moment, Ingrid supports Composition, System Parts, Function Elaboration, Interface Data Flow, and others found  [HERE](../ingrid/src/model_processing/patterns). As mentioned, Ingrid uses these UML metamodel `JSON` files to transform the data from the human readable Excel file into a meaningful model representation. When creating an Excel file, it is important to know which UML metamodel the data adheres to and to name the columns of the data according to the `keys` in the `Columns to Navigation Map` variable of each pattern `JSON`. Ingrid looks for those column names, which serve as a human readable version of the UML metamodel meaning, and maps the UML metamodel interpretation onto those headers to understand the data present in the Excel file and the remaining columns it must create to fill out the subgraph. A subgraph provides the minimal representation required to model a feature in the model and corresponds to a row in the Excel file.
+
+The Player Piano uses the UML metadata for each model element to call MagicDraw's API translating the graph representation of the model created by Ingrid into a fully functional Cameo model.
+
+
+Outline the steps with images for the create procedure.
+* Briefly describe creating the Excel file, what is it?
+* Go through the file naming, sheet naming and optional sheet additions
+* show the anaconda and cli steps to execute the create command.
+
+## Create the Model
+
+Ingrid's create command ingests an Excel file(s) and generates a `JSON` file with instructions for MagicDraw's API to create the diagram specified by the Excel adhering to the specified modeling pattern. This example chooses to use the [Composition](../ingrid/src/model_processing/patterns/Composition.json) modeling pattern to create a composition example model.
+
+First open an Excel file and for the purposes of this example, save the file as `Composition Example Baseline.xlsx` into this [quickstart](../ingrid-quick-start) directory, the same location as this README.md. Now consult with the [Composition](../ingrid/src/model_processing/patterns/Composition.json) pattern's key `Columns to Navigation Map` and identify each inner key as the columns of the Excel sheet, "Component", "Part", "Position".
+
+![](images/composition-baseline-columns.png)
+
+**You must name this sheet with the PATTERN you intend to use!**
+
+![](images/example-sheet-name.png)
+
+Next, populate the rows of the Composition sheet in the excel file with the following data and save the file:
+
+| Spacecraft                    | Pyramid Slot B IMU | Inertial Measurement Unit     |
+|-------------------------------|--------------------|-------------------------------|
+| Spacecraft                    | PIA                | Propellant Isolation Assembly |
+| Spacecraft                    | PCA                | Pressurant Control Assembly   |
+| Spacecraft                    | TCA                | Thruster Cluster Assembly     |
+| Spacecraft                    | ME                 | Main Engine                   |
+| Propellant Isolation Assembly | LV-1               | Latch Valve                   |
+| Propellant Isolation Assembly | LV-2               | Latch Valve                   |
+| Propellant Isolation Assembly | SV-3               | Solenoid Valve                |
+| Propellant Isolation Assembly | SV-4               | Solenoid Valve                |
+| Pressurant Control Assembly   | LV-5               | Latch Valve                   |
+| Thruster Cluster Assembly     | Thruster-1         | Small Thruster                |
+| Thruster Cluster Assembly     | Thruster-2         | Small Thruster                |
+| Spacecraft                    | ST-1               | Star Tracker                  |
+
+![](images/baseline-data.png)
+
+Ingrid uses the data entered, the sheet named after the desired pattern ("Composition") and the columns names based on desired pattern ("Component", "Position", and "Part") to process the create request and generate the create model `JSON`. With the input data prepared for model creation, navigate to [../rapid-modeling-tools/ingrid](../ingrid/) and activate the environment created by the installation procedure. If using anaconda-project then use the command
+```bash
+anaconda-project run cli --create --input "../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../rapid-modeling-tools/ingrid-quickstart/"
+```
+and if not anaconda-project then on the command line with the Python environment active type
+```bash
+model_processing --create --input "../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../rapid-modeling-tools/ingrid-quickstart/"
+```
+[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+
+The create command invoked above creates a `JSON` file named "Composition Example Baseline.json" in either the specified output directory (as given here) or the same directory location as the input file when not provided an output directory. This `JSON` file contains the instructions required by the Player Piano to build the Cameo model expressed by the Excel data. To load the model into Cameo, open up Cameo Systems Modeler. In Cameo, open the "Import Example Base.mdzip" file. Then use the Tools > Macros > Player Piano menu item to launch the player piano script. Select a Package to be the default landing package ("Core Model"):
+
+![](select_package_screen.png)
+
+Then select the `Composition Example Baseline.json` file to be the source of update instructions. If no output directory was specified then `ingrid` placed the output JSON in the same directory as the input file.
+
+After the script runs, new modeling elements populate the Package:
+
+![](images/imported-baseline.png)
+
+In addition to the model update, there will be a new `Composition Example Baseline.csv` file with the same name as your `Composition Example Baseline.json` file.
+The Player Piano generates this `Composition Example Baseline.csv` file to provide access to the MagicDraw IDs of the newly created model elements. Ingrid expects the MagicDraw ID for any existing model element referenced in Excel files and IDs enhance Ingrid's ability to detect changes while reducing duplicate elements.
+
+To complete the baseline Excel file, navigate to the directory containing the `Composition Example Baseline.json` and locate the `Composition Example Baseline.csv` opening it with Excel. This file contains two columns "Element Name" and "ID". With the Excel file "Composition Example Baseline.xlsx" open in the background, copy all the data including the column headers "Element Name" and "ID" to the end. Return to "Composition Example Baseline.xlsx" and create a new tab called "Composition IDs" (in general name the IDs sheet "<pattern name> IDs") and paste the data, save the file.
+
+![](images/baseline-all-sheets.png)
+
+## Update the Model with Compare
+
+The need to rapidly create and maintain models through a deluge of relevant model data prompted the development of Rapid Modeling Tools. The first part of this quickstart demonstrated how to create a model with data canvassed from Subject Matter Experts, SMEs. The next sections demonstrates model maintenance and pattern layering. Ingrid accomplishes these tasks with the `--compare` command. The `--compare` flag creates a set of `JSON` instructions to update the model represented by the `original` Excel file to agree with the model described by the `changed` file. Ingrid prints unambiguous changes to `JSON`. Furthermore, Ingird prints all detected differences to an Excel file. The Excel file enumerates the complete list of changes Ingrid will make with the `JSON` and any changes that Ingrid was unsure of and left to the user. The two files have the same name and appear in the same output location. Always include an `IDs` sheet when working with `--compare` to ensure optimal change detection.
+
+### Compare Changes Between Model Versions
+
+Ingrid understands Cameo models through their Excel representation and the accompanying modeling pattern. As long as an updated Excel file reflects the current model state, in Cameo, Ingrid will detect the differences between the original, termed baseline, and a new file. Now create a duplicate of the `Composition Example Original.xlsx` and name it `Composition Example Updated.xlsx`. At this point, the duplicate Excel file represents a file sent to SMEs or the customer to canvas new data as the project matures. Open `Composition Example Updated.xlsx` and create a new tab named `Renames`.
+
+![](images/updated-all-sheets.png)
+
+Suppose the SME interacting with this spreadsheet decided that `Spacecraft` would be more aptly named `Space Ship`. They would switch to the Renames tab and populate the `New Names` columns with `Space Ship` and the `Old Names` column with `Spacecraft`.
+
+| New Names | Old Names |
+|-|-|
+| Space Ship | Spacecraft |
+| SV-0 | SV-3|
+
+![](images/updated-renames.png)
+
+Afterwards, they switch back to the pattern tab, `Composition`, and change all occurrences of `Spacecraft` to `Space Ship` (highlighted in yellow) and create a new instance of the pattern graph with the `Escape Pod` component (highlighted in blue).
+
+| Component | Position | Part |
+|-|-|-|
+| Space Ship | Pyramid Slot B IMU | Inertial Measurement Unit |
+| Space Ship | PIA | Propellant Isolation Assembly |
+| Space Ship | PCA | Pressurant Control Assembly |
+| Space Ship | TCA | Thruster Cluster Assembly |
+| Space Ship | ME | Main Engine |
+| Propellant Isolation Assembly | LV-1 | Latch Valve |
+| Propellant Isolation Assembly | LV-2 | Latch Valve |
+| Propellant Isolation Assembly | SV-0 | Solenoid Valve |
+| Propellant Isolation Assembly | SV-4 | Solenoid Valve |
+| Pressurant Control Assembly | LV-5 | Latch Valve |
+| Thruster Cluster Assembly | Thruster-1 | Small Thruster |
+| Thruster Cluster Assembly | Thruster-2 | Small Thruster |
+| Space Ship | ST-1 | Star Tracker |
+| Escape Pod | Space Ship | space ship |
+
+![](images/updated-data.png)
