@@ -43,7 +43,7 @@ As discussed above, the typical user will not need to follow this README, but fo
     - Example commands:
         - `anaconda-project run test` - this will run all of the tests using `pytest`
         - `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"` - this will run `model_processing` to create the json file.
-        - `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"` - this will run `model_processing` to compare.... [[[[[TODO: expand on this....]]]]]
+        - `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"` - this will run `model_processing` to compare...
           - **Note:** `anaconda-project run cli` does **not** require the user to specify an `--output` directory (the default is to use the same directory as the input files).
         * **Help Messages**
             * `anaconda-project list-commands` prints all `anaconda-project run <command>` options
@@ -77,7 +77,7 @@ model_processing --create --input <file_path>
 
 > --compare, -C
     
-The `compare` command compares a baseline Excel File with a collection of Change Files.
+The `compare` command compares a baseline Excel File with a collection of updated Excel Files.
 
 Required additional flags: 
 - `--original`
@@ -92,21 +92,21 @@ model_processing --create --input <file_path> --updated <file_path>
     
 #### Option Flags
 
+Note: If a path has spaces, then it should be placed in quotes.
+
 ##### Input
 
 > --input, -i
 
-The `input` flag is used to provide the relative or absolute path to the Excel Workbook(s). If the path has spaces, then it should be placed in quotes.
+The `input` flag is used to provide the relative or absolute path to the Excel Workbook(s). This can be provided as a path to a single Excel file or as a path to a directory of Excel files. Ingrid will iterate over each worksheet in each workbook provided and find any worksheets that match a defined pattern.
 
-This flag should only be used with the `create` command.
-
-* TODO: workbooks plural? Not sure this is main clear in other parts of doc.  
+This flag should only be used with the `create` command.  
 
 ##### Original
 
 > --original, -O
 
-The `original` flag is used to provide the relative or absolute path for the baseline file used in the comparison. If the path has spaces, then it should be placed in quotes. 
+The `original` flag is used to provide the relative or absolute path for the baseline Excel file used in the comparison. A single file should be provided.
 
 This flag should only be used with the `compare` command. 
 
@@ -114,37 +114,30 @@ This flag should only be used with the `compare` command.
 
 > --updated, -u
 
-The `updated` flag is used to provide the relative or absolute path to the Change Files. If the path has spaces, then it should be placed in quotes.
+The `updated` flag is used to provide the relative or absolute path to the updated Excel files used in the comparison. This can be provided as a path to a single Excel file or as a path to a directory of Excel files. If multiple files are provided they are each compared against the baseline file.  
 
 This flag should only be used with the `compare` command.
-
-- TODO: What does this mean?
-  - TODO --- Ingrid handles more than one compare by computing the differences of each update file relative to the original file. Ingrid does not check for difference between any two files given in the update list since user intention may not be confidently interpreted.
-
-- TODO: what are "change files"? Are these excel files? 
-
 
 ##### Output
 
 > --output, -o
 
-The `output` flag is used to provide the directory path for the JSON output file(s). If the path has spaces, then it should be placed in quotes.
+The `output` flag is used to provide the directory path for the JSON output file(s). 
 
 This flag can be used with both the `create` and the `compare` commands. 
 
 This is an optional flag. The default behavior will place the JSON in the input location.
-
 
 ### Generating Documentation
 
 * To generate the Documentation that lives in the `./doc` directory you will
 need to run two commands.
     * First make sure you have a `doc/` directory at the same level as the
-    `anaconda-project.yml` file.
+    `anaconda-project.yml` file
     * `anaconda-project run build-sphinx`
     * `anaconda-project run make-html`
-    * Documentation should be in `./doc/_build/html` and open
-    `index.html` using your browser.
+    * Documentation should be in `./doc/_build/html`
+    * Open `index.html` using your browser
 
 ### Testing
 
