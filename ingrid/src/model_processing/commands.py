@@ -73,8 +73,8 @@ def create_md_model(input_paths, output_path=""):
                 not_found += 1
                 if not_found == len(xl.sheet_names):
                     warn_msg = (
-                        'The Excel File "{0}" requires an '
-                        + "unsupported pattern type."
+                        'The Excel File "{0}" cannot be processed as none of the worksheets match a '
+                        + "supported pattern type."
                     ).format(wkbk.parts[-1])
                     patterns_msg = (
                         "The currently supported "
@@ -82,7 +82,7 @@ def create_md_model(input_paths, output_path=""):
                     )
                     patts = (
                         "New patterns may be added in the"
-                        + " model_processing/patterns directory"
+                        + " ingrid/src/model_processing/patterns directory"
                     )
                     warnings.warn(
                         "\n" + warn_msg + "\n" + patterns_msg + "\n" + patts
@@ -150,7 +150,9 @@ def compare_md_model(inputs, output_path=""):
     Parameters
     ----------
     inputs : list of strs
-        List of file paths parsed from the command line.
+        List of one or more file paths parsed from the command line.
+        This can be a path to one or more Excel files or a path to a
+        directory of Excel files.
 
     output_path : str
         String of the desired location for the output. This is optional
@@ -161,14 +163,13 @@ def compare_md_model(inputs, output_path=""):
     -------
     output_json : JSON file
         Generates a JSON file as output that the Player Piano digests to
+        Generates a JSON file as output that the Player Piano digests to
         update the original Model.
     output_excel : Excel file
         Generates an Excel file that lists the confident changes (ones
         made by the JSON) and the unstable pairs so the user can make the
         determination on those changes on their own.
     """
-    # TODO: make it clear in the doc string what files are are pointing to. Is this 2 Excel files? 1 Excel and 1 JSON?
-    # TODO: If Excel, is this a single sheet EXCEL file?
     provided_paths = inputs
     wkbk_paths = []
     here = Path(os.getcwd())
@@ -223,8 +224,8 @@ def compare_md_model(inputs, output_path=""):
             not_found += 1
             if not_found == len(xl.sheet_names):
                 warn_msg = (
-                    'The Excel File "{0}" requires an '
-                    + "unsupported pattern type."
+                    'The Excel File "{0}" cannot be processed as none of the worksheets match a '
+                    + "supported pattern type."
                 ).format(wkbk.parts[-1])
                 patterns_msg = (
                     "The currently supported "
@@ -232,7 +233,7 @@ def compare_md_model(inputs, output_path=""):
                 )
                 patts = (
                     "New patterns may be added in the"
-                    + " model_processing/patterns directory"
+                    + " ingrid/src/model_processing/patterns directory"
                 )
                 warnings.warn(
                     "\n" + warn_msg + "\n" + patterns_msg + "\n" + patts
