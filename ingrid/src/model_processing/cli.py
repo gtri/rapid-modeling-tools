@@ -36,7 +36,7 @@ def main():
         "--compare",
         nargs="?",
         help=(
-            "Compare a baseline Excel File with a collection of Change Files"
+            "Compare a baseline Excel File with a collection of modified Excel Files."
             + " Must supply the original file first and then the changes"
         ),
         const=True,
@@ -50,7 +50,7 @@ def main():
         "-o",
         "--output",
         help=(
-            "Path/Directory where the JSON file(s) should be placed"
+            "Path/Directory where the JSON file(s) should be placed."
             + " Default behavior will place the JSON in the input location"
         ),
         type=str,
@@ -67,7 +67,7 @@ def main():
         "-U",
         "--updated",
         nargs="*",
-        help="Change files to be compared to the Original.",
+        help="Modified Excel files to be compared to the Original.",
         type=str,
     )
 
