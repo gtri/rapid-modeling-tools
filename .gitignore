@@ -18,3 +18,5 @@ htmlcov
 coverage.xml
 ingrid/build*
 ingrid/dist*
+.idea/
+*.json
