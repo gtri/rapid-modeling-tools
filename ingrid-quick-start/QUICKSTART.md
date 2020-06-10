@@ -47,11 +47,11 @@ Next, populate the rows of the Composition sheet in the excel file with the foll
 
 Ingrid uses the data entered, the sheet named after the desired pattern ("Composition") and the columns names based on desired pattern ("Component", "Position", and "Part") to process the create request and generate the create model `JSON`. With the input data prepared for model creation, navigate to [../rapid-modeling-tools/ingrid](../ingrid/) and activate the environment created by the installation procedure. If using anaconda-project then use the command
 ```bash
-anaconda-project run cli --create --input "../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../rapid-modeling-tools/ingrid-quickstart/"
+anaconda-project run cli --create --input "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../../rapid-modeling-tools/ingrid-quickstart/"
 ```
 and if not anaconda-project then on the command line with the Python environment active type
 ```bash
-model_processing --create --input "../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../rapid-modeling-tools/ingrid-quickstart/"
+model_processing --create --input "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../../rapid-modeling-tools/ingrid-quickstart/"
 ```
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
 
@@ -111,3 +111,29 @@ Afterwards, they switch back to the pattern tab, `Composition`, and change all o
 | Escape Pod | Space Ship | space ship |
 
 ![](images/updated-data.png)
+
+Having created the two data files, Ingrid's `--compare` command will compute the differences providing a `JSON` file that the Player Piano can use to update the model. If using anaconda-project then run the command:
+
+```bash
+anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Update.xlsx"
+```
+
+**This command assumes you are attempting to run Ingrid on the command line at the same location as the `anaconda-project.yaml`**
+
+Without `anaconda-project`:
+
+```bash
+model-processing --compare --original "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Update.xlsx"
+```
+
+**This command assumes yuo have the model-processing package installed and an environment with the required packages and that you invoke Ingrid on the command line from the location of the `anaconda-project.yaml`**
+
+[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+
+Successful execution will create two files, one titled "graph_diff_changes_<date-time>.JSON" and an Excel file named "Model Diffs <date time>.xlsx"
+
+Inspecting the Model Diffs Excel file shows the results of the change detection. The file contains four columns: Edit 1, Edit 2, Unstable Matches Original, and Unstable Matches Change. Edit 1 and Edit 2 contain confidently identified edge changes with Edit 1 containing edges from document passed as the "original" and Edit 2 displays edges from the "update" file. Unstable Matches Original and Change show changes that Ingrid could not determine, with edges from each file in their respective column. Ingrid included all the changes from Edit 1 to Edit 2 in the "graph_diff_changes" JSON but excluded the Unstable Changes. Ingrid assumes the user will resolve the ambiguous changes or provide additional context to the `--update` file (typically including renames) and reprocessing.
+
+In this case, Ingrid identified 36 change operations and failed to recognize zero changes. Meaning the Player Piano will update the model to reflect the changes in the `Composition Example Update.xlsx`.
+
+**Check on Renames Updating in MagicDraw.**

@@ -470,6 +470,7 @@ class Manager:
         node_dec = []
 
         # initially populates with translator ids that are not uuid objs.
+        # TODO: This ignores renames
         seen_ids = set()
         for k, v in translator.uml_id.items():
             if isinstance(v, str):
@@ -517,14 +518,18 @@ class Manager:
                     )
                 )
                 # List consisting of at most 2 items s.t. has_rename returns T
-                has_rename = list(filter(lambda x: x.has_rename, eligible))
+                has_rename = list(
+                    filter(lambda x: x.has_rename, [source_val, target_val])
+                )
                 # List consisting of at most 2 items s.t. id is type uuid
                 is_new = list(
                     filter(
                         lambda x: isinstance(x.id, type(uuid.uuid4())),
-                        eligible,
+                        [source_val, target_val],
                     )
                 )
+                # print(source_val, target_val)
+                print(eligible, has_rename, is_new)
                 if has_rename:
                     for node in has_rename:
                         seen_ids.add(node.id)
@@ -565,6 +570,8 @@ class Manager:
             change_list.extend(remove_duplicates(create_node, create=True))
             change_list.extend(remove_duplicates(node_dec))
         change_list.extend(remove_duplicates(edge_del))
+        print()
+        print(node_renames)
         change_list.extend(remove_duplicates(node_renames, create=True))
         change_list.extend(remove_duplicates(edge_add))
 
