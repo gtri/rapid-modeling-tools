@@ -108,7 +108,10 @@ Afterwards, they switch back to the pattern tab, `Composition`, and change all o
 | Thruster Cluster Assembly | Thruster-1 | Small Thruster |
 | Thruster Cluster Assembly | Thruster-2 | Small Thruster |
 | Space Ship | ST-1 | Star Tracker |
-| Escape Pod | Space Ship | space ship |
+| Escape Pod | EP | Emergency Protocol |
+| Escape Pod | BT-1 | Backup Thruster 1 |
+| Escape Pod | RH | Rear Hull |
+| Escape Pod | Activation | Main Engine |
 
 ![](images/updated-data.png)
 
@@ -126,14 +129,25 @@ Without `anaconda-project`:
 model-processing --compare --original "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Update.xlsx"
 ```
 
-**This command assumes yuo have the model-processing package installed and an environment with the required packages and that you invoke Ingrid on the command line from the location of the `anaconda-project.yaml`**
+**This command assumes you have the model-processing package installed and an environment with the required packages and that you invoke Ingrid on the command line from the location of the `anaconda-project.yaml`**
 
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
 
 Successful execution will create two files, one titled "graph_diff_changes_<date-time>.JSON" and an Excel file named "Model Diffs <date time>.xlsx"
 
-Inspecting the Model Diffs Excel file shows the results of the change detection. The file contains four columns: Edit 1, Edit 2, Unstable Matches Original, and Unstable Matches Change. Edit 1 and Edit 2 contain confidently identified edge changes with Edit 1 containing edges from document passed as the "original" and Edit 2 displays edges from the "update" file. Unstable Matches Original and Change show changes that Ingrid could not determine, with edges from each file in their respective column. Ingrid included all the changes from Edit 1 to Edit 2 in the "graph_diff_changes" JSON but excluded the Unstable Changes. Ingrid assumes the user will resolve the ambiguous changes or provide additional context to the `--update` file (typically including renames) and reprocessing.
+Inspecting the Model Diffs Excel file shows the results of the change detection. The file contains four columns: Edit 1, Edit 2, Unstable Matches Original, and Unstable Matches Change, columns for Added and Deleted edges included when detected. Edit 1 and Edit 2 contain confidently identified edge changes with Edit 1 containing edges from document passed as the "original" and Edit 2 displays edges from the "update" file. Unstable Matches Original and Change show changes that Ingrid could not determine, with edges from each file in their respective column. Ingrid included all the changes from Edit 1 to Edit 2 in the "graph_diff_changes" JSON but excluded the Unstable Changes. Ingrid assumes the user will resolve the ambiguous changes or provide additional context to the `--update` file (typically including renames) and reprocessing.
 
-In this case, Ingrid identified 36 change operations and failed to recognize zero changes. Meaning the Player Piano will update the model to reflect the changes in the `Composition Example Update.xlsx`.
+The "graph_diff_changes_ <date-time>.JSON" updates the model to reflect the renames and element additions. Once again, open the associated Cameo model and click on the **Tools** tab. Choose **Macros > Player Piano** and select the package to update, it will be the same as the model created at the beginning, navigate to the "graph_diff_changes_ <date-time>.JSON" select and execute the macro. Successful execution of the macro changes element names and adds new elements to the containment tree.
 
-**Check on Renames Updating in MagicDraw.**
+![](images/updated-model.png)
+
+
+### Pattern Layering
+
+Complex models in MBSE rely on multiple SysML metamodels and patterns; pattern layering with RMT allows modelers to automatically build complex models through a series of `--compare` calls. As an example, the quick start will now layer a SystemParts pattern onto the model developed in the previous sections.
+
+
+| Component | Part | Context | Role | Assoc |
+|-|-|-|-|-|
+| new comp | new part | new context | new role | new assoc |
+| second comp | second part | second context | second role | second assoc |
