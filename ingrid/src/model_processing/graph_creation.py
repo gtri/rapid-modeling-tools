@@ -249,10 +249,18 @@ class Manager:
 
             eval_one_unmatch_pref["Added"] = []
             eval_one_unmatch_pref["Deleted"] = []
+            # TODO: Find new edges if the edge type is new but also
+            # if the edge is composed of new model elements.
             for edge_type in ance_keys_not_in_base:
                 eval_one_unmatch_pref["Added"].extend(
                     eval_two_unmatch_map[edge_type]
                 )
+            for edge in edge_set_two:
+                src, trg = edge.source, edge.target
+                if isinstance(src.id, type(uuid.uuid4())):
+                    eval_one_unmatch_pref["Added"].append(edge)
+                elif isinstance(trg.id, type(uuid.uuid4())):
+                    eval_one_unmatch_pref["Added"].append(edge)
 
             # builds main dict used for matching and determines add/del edges
             for edge in eval_one_unmatched:
