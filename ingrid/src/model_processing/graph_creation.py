@@ -245,7 +245,7 @@ class Manager:
 
             ance_keys_not_in_base = set(
                 eval_two_unmatch_map.keys()
-            ).difference(set(eval_one_unmatch_map))
+            ).difference(set(eval_one_unmatch_map.keys()))
 
             eval_one_unmatch_pref["Added"] = []
             eval_one_unmatch_pref["Deleted"] = []
@@ -528,8 +528,7 @@ class Manager:
                         [source_val, target_val],
                     )
                 )
-                # print(source_val, target_val)
-                print(eligible, has_rename, is_new)
+
                 if has_rename:
                     for node in has_rename:
                         seen_ids.add(node.id)
@@ -570,8 +569,6 @@ class Manager:
             change_list.extend(remove_duplicates(create_node, create=True))
             change_list.extend(remove_duplicates(node_dec))
         change_list.extend(remove_duplicates(edge_del))
-        print()
-        print(node_renames)
         change_list.extend(remove_duplicates(node_renames, create=True))
         change_list.extend(remove_duplicates(edge_add))
 
