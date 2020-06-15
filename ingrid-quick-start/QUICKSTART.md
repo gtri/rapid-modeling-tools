@@ -144,10 +144,37 @@ The "graph_diff_changes_ <date-time>.JSON" updates the model to reflect the rena
 
 ### Pattern Layering
 
-Complex models in MBSE rely on multiple SysML metamodels and patterns; pattern layering with RMT allows modelers to automatically build complex models through a series of `--compare` calls. As an example, the quick start will now layer a SystemParts pattern onto the model developed in the previous sections.
+Complex models in MBSE rely on multiple SysML metamodels and patterns; pattern layering with RMT allows modelers to automatically build complex models through a series of `--compare` calls. As an example, the quick start will now layer a [SystemParts](../ingrid/src/model_processing/patterns/SystemParts.json) pattern onto the model developed in the previous sections. Create a new Excel file, saving it to the same directory as the others, and name it `SystemParts Example Baseline.xlsx`. Create a sheet named `SystemParts` and `SystemParts IDs` populated with IDs from the baseline import and the IDs produced by the `--compare` command.
+
+![](images/sys-parts-baseline-data.png)
+
+![](images/sys-parts-baseline-ids.png)
+
+Duplicate and rename `SystemParts Example Baseline.xlsx` to `SystemParts Example Update.xlsx`. Open `SystemParts Example Update.xlsx`, switch to the sheet labeled `SysetmParts` and paste the data shown in the table here.
 
 
 | Component | Part | Context | Role | Assoc |
 |-|-|-|-|-|
 | new comp | new part | new context | new role | new assoc |
 | second comp | second part | second context | second role | second assoc |
+
+![](images/sys-parts-update-data.png)
+
+
+On the command line, execute
+```bash
+anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Update.xlsx"
+```
+or,
+
+```bash
+model-processing --compare --original "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Update.xlsx"
+```
+
+The comparison, between the empty baseline and populated update file, produces add commands for the player piano to create new elements to the model adhering to the new pattern.
+
+![](images/sys-parts-diff.png)
+
+Import the changes to MagicDraw using the Player Piano macro to realize the model updates.
+
+![](images/layered-model.png)
