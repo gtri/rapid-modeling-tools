@@ -31,7 +31,7 @@ setup(
     url="https://github.com/kennethreitz/samplemod",
     license="BSD-3-Clause",
     package_dir={"": "src"},
-    packages=setuptools.find_packages("src"),
+    packages=find_packages("src"),
     entry_points={
         "console_scripts": ["model-processing = model_processing.cli:main"]
     },
@@ -43,6 +43,11 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     install_requires=["pandas", "scipy", "networkx >=2.3", "xlrd >=0.9.0"],
-    tests_require=["pytest-cov"],
+    tests_require=[
+        "pytest-cov",
+        "pytest-flake8",
+        "pytest-isort",
+        "pytest-black",
+    ],
     zip_safe=False,
 )

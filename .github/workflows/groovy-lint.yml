@@ -1,0 +1,33 @@
+name: Lint Groovy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Groovy Lint ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      run: |
+        npm install -g npm-groovy-lint
+    - name: Lint the Groovy
+      # TODO: needs to `cd player-piano`?
+      run: |
+        npm-groovy-lint --path "./player-piano" --files "*.groovy" --config ".groovylintrc.json"

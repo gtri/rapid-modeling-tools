@@ -13,7 +13,7 @@ from shutil import copy2
 
 from model_processing.commands import compare_md_model, create_md_model
 
-from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS, ROOT
+from . import DATA_DIRECTORY, ROOT
 
 
 class TestCommands(unittest.TestCase):
@@ -134,14 +134,12 @@ class TestCommands(unittest.TestCase):
     def test_validate_create_json(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            excel_files = [
-                (DATA_DIRECTORY / "Composition Example 2.xlsx"),
-            ]
+            excel_files = [(DATA_DIRECTORY / "Composition Example 2.xlsx")]
             for xl_file in excel_files:
                 copy2(DATA_DIRECTORY / xl_file, tmpdir)
 
             wkbk_path = [
-                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx",
+                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx"
             ]
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
@@ -149,11 +147,11 @@ class TestCommands(unittest.TestCase):
                 create_md_model(wkbk_path, out_tmp_dir)
                 new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(1, len(new_json))
-                cr_data_path = (out_tmp_dir / "Composition Example 2.json")
+                cr_data_path = out_tmp_dir / "Composition Example 2.json"
                 cr_data = json.loads(cr_data_path.read_text())
                 # TODO: This is a hardcoded validation to check the number
                 # of objs created meets a known working count
-                # it would be possible but difficult to compute this internally
+                # it would be possible but difficult to compute internally
                 assert 458 == len(cr_data["modification targets"])
 
     def test_validate_compare_json(self):
@@ -167,9 +165,7 @@ class TestCommands(unittest.TestCase):
                 copy2(DATA_DIRECTORY / xl, tmpdir)
 
             original = tmpdir / "Composition Example 2 Model Baseline.xlsx"
-            updated = [
-                tmpdir / "Composition Example 2 Model Changed.xlsx",
-            ]
+            updated = [tmpdir / "Composition Example 2 Model Changed.xlsx"]
 
             inputs = [original]
             inputs.extend(updated)

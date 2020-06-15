@@ -7,15 +7,13 @@ the BSD 3-Clause license. See the LICENSE file for details.
 
 import json
 import unittest
-from pathlib import Path
 
-import networkx as nx
 import pandas as pd
 
 from model_processing.graph_creation import Evaluator, MDTranslator
 from model_processing.graph_objects import DiEdge, PropertyDiGraph, Vertex
 
-from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
+from . import DATA_DIRECTORY, PATTERNS
 
 
 class TestPropertyDiGraph(unittest.TestCase):
@@ -65,7 +63,7 @@ class TestPropertyDiGraph(unittest.TestCase):
         self.assertSetEqual(expect_vert_set, self.Graph.named_vertex_set)
 
     def test_vertex_set(self):
-        # idea is to check that the vertex_set contains the vert objects expect
+        # idea: check that the vertex_set contains the vert objects expect
         # check that each element in the vertex_set is a vertex object and
         # then check their names.
         expect_vert_set = {
@@ -93,16 +91,10 @@ class TestPropertyDiGraph(unittest.TestCase):
             self.assertIn(vertex.name, expect_vert_set)
 
     def test_edge_set(self):
-        # check each element of edge_set is infact a DiEdge then that it should
-        # be an edge at all.
+        # check each element of edge_set is infact a DiEdge
+        # then that it should be an edge at all.
         # TODO: Find a way to use the self.Graph.edges tuples with the
         # edge attr because these show up as source, targ.
-        translator = self.translator
-        data_dict = {
-            "Composite Thing": ["Car", "Car", "Wheel", "Engine"],
-            "component": ["engine", "rear driver", "hub", "drive output"],
-            "Atomic Thing": ["Engine", "Wheel", "Hub", "Drive Output"],
-        }
         expected_edge_set = {
             ("car qua engine context", "Car", "type"),
             ("car qua rear driver context", "Car", "type"),
@@ -186,12 +178,6 @@ class TestVertex(unittest.TestCase):
         self.translator = MDTranslator(json_data=data)
 
     def test_connections(self):
-        data_dict = {
-            "component": ["Car", "engine"],
-            "Atomic Thing": ["engine", "Car"],
-            "edge type": ["owner", "type"],
-        }
-        test_graph_df = pd.DataFrame(data=data_dict)
         Test_Graph = PropertyDiGraph()
         vertex_1_connections = [
             {"source": "Car", "target": "engine", "edge_attribute": "owner"},
@@ -284,9 +270,11 @@ class TestVertex(unittest.TestCase):
             ],
             attributes=[{"Notes": "Test Note"}],
         )
-        vertex_car_uml, car_decs, edge_car_uml = vertex_car.create_node_to_uml(
-            translator=translator
-        )
+        (
+            vertex_car_uml,
+            car_decs,
+            edge_car_uml,
+        ) = vertex_car.create_node_to_uml(translator=translator)
 
         engine_id = translator.get_uml_id(name="engine")
         vertex_engine = Vertex(
@@ -510,7 +498,6 @@ class TestVertex(unittest.TestCase):
         for edge_name in edge_names:
             edge_id_names.append(translator.get_uml_id(name=edge_name))
 
-        expected_uml_edge_names = ["new_2", "new_3", "new_2"]
         assert edge_id_names[0] == edge_id_names[2]
         assert edge_id_names[0] != edge_id_names[1]
 
