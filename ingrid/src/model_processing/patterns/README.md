@@ -1,12 +1,12 @@
 # Pattern Specification
 
-System modeling patterns specify which kinds of modeling elements to use and in what combination to express  common engineering concepts in a repeatable and consistent form. These pattern specifications, and really any Unified Modeling Language (UML)-based model, is an instance of a number of UML metaclasses arranged together to convey specific ideas. The UML metamodel, in general, can readily be expressed as a graph since much of the definition of a UML metaclass described within the metamodel is characterized as a relationship (edge) to some other UML metaclass (node). 
+System modeling patterns specify which kinds of modeling elements to use and in what combination to express  common engineering concepts in a repeatable and consistent form. These pattern specifications, and really any Unified Modeling Language (UML)-based model, is an instance of a number of UML metaclasses arranged together to convey specific ideas. The UML metamodel, in general, can readily be expressed as a graph since much of the definition of a UML metaclass described within the metamodel is characterized as a relationship (edge) to some other UML metaclass (node).
 
-For example, The Composition Pattern shown below depicts a commonly recurring modeling pattern wherein an item, in this case, "Composite Thing" owns a part called "component" which is a type of "Atomic Thing". 
+For example, The Composition Pattern shown below depicts a commonly recurring modeling pattern wherein an item, in this case, "Composite Thing" owns a part called "component" which is a type of "Atomic Thing".
 
 ![Composition Pattern Specification](images/Composition_Pattern_Specification.png)
 
-This pattern has five instances of UML metaclasses: "Composite Thing", "Atomic Thing", "composite owner", "component", and "A\_composite owner\_component". "Composite Thing" and "Atomic Thing" are instances of a UML Class, "composite owner" and "component" are instances of a UML Property, and "A\_composite owner\_component" is an instance of a UML Association. Each of the elements in the pattern have a number of metaproperty relationships to other elements in the pattern. For example, "component" is owned by "CompositeThing." 
+This pattern has five instances of UML metaclasses: "Composite Thing", "Atomic Thing", "composite owner", "component", and "A\_composite owner\_component". "Composite Thing" and "Atomic Thing" are instances of a UML Class, "composite owner" and "component" are instances of a UML Property, and "A\_composite owner\_component" is an instance of a UML Association. Each of the elements in the pattern have a number of metaproperty relationships to other elements in the pattern. For example, "component" is owned by "CompositeThing."
 
 As previously established, this pattern can be characterized as a graph shown below.
 
@@ -18,7 +18,10 @@ Each of the pattern elements, e.g. "Composite Thing", are depicted as nodes of t
 | ---------------------------------- | ---------- | ------------------------------------------------------------ | ------------------------------------------------------ | ------------------------------ |
 | /component/ owner/ Composite Thing | /component | /component/ association/ A\_composite owner\_component/ memberEnd/ composite | /component/ association/ A\_composite owner\_component | /component/ type/ Atomic Thing |
 
-The headers show the column names which are to be used. These headers can be project-specific and are intended to be easily understood to stakeholders that are not invested in or familiar with the model. The values in the row show how entries in these columns can be found from a given node. The path here is a pattern of root node-edge-node-edge-node, where "nodes" are elements from the pattern specification (by the names given in the example above) and "edges" are UML metaproperties. The Hidden columns are those that can optionally not be shown in the spreadsheet and be computed using background information that is exported from the model. In practice, each unique row in the spreadsheet is an instance of this pattern specification. 
+The headers show the column names which are to be used. These headers can be project-specific and are intended to be easily understood to stakeholders that are not invested in or familiar with the model. The values in the row show how entries in these columns can be found from a given node. The path here is a pattern of root node-edge-node-edge-node, where "nodes" are elements from the pattern specification (by the names given in the example above) and "edges" are UML metaproperties. The Hidden columns are those that can optionally not be shown in the spreadsheet and be computed using background information that is exported from the model. In practice, each unique row in the spreadsheet is an instance of this pattern specification.
+
+#### Aside on Optional Columns and Column Labeling
+Every pattern 
 
 Since both the UML-based modeling pattern and the spreadsheet template share the same underlying graph representation it is possible to canonicalize the graph to a JSON used by the [`ingrid`](../../ingrid/README.md) tool. The basic form of the JSON is as follows:
 
