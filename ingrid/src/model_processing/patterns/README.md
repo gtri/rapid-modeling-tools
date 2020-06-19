@@ -21,7 +21,26 @@ Each of the pattern elements, e.g. "Composite Thing", are depicted as nodes of t
 The headers show the column names which are to be used. These headers can be project-specific and are intended to be easily understood to stakeholders that are not invested in or familiar with the model. The values in the row show how entries in these columns can be found from a given node. The path here is a pattern of root node-edge-node-edge-node, where "nodes" are elements from the pattern specification (by the names given in the example above) and "edges" are UML metaproperties. The Hidden columns are those that can optionally not be shown in the spreadsheet and be computed using background information that is exported from the model. In practice, each unique row in the spreadsheet is an instance of this pattern specification.
 
 #### Aside on Optional Columns and Column Labeling
-Every pattern 
+Every pattern contains a root node. The root node must appear as one of the columns in the Excel sheet. In a sense, the root node "anchors" the pattern for the Ingrid tool since the root node informs derived node names and acts as a quick reference to a particular subgraph(s). Despite appearing in the Excel, the root node does not necessarily have to represent a concept that translates to a "block" in the model. In fact, the Composition pattern exemplified here utilizes the `Position` (component) as the root node yet nodes in this column translate to the target side of the edge between the `Component` (Composite Thing) column and `Part` (Atomic Thing).
+
+As alluded to above, Ingrid does not require the specification of the entire pattern graph explicitly in Excel columns. When Ingrid needs to create nodes to fill out the subgraph, Ingrid applies naming conventions utilizing the entry in the accompanying root node column. Examples will most succinctly describe the means Ingrid uses to derive node names:
+- Node names with underscores
+    - Suppose the pattern graph required a column titled `A_Cmoposite Thing_composite owner`
+        - Ingrid decomposes this column name into three parts by splitting on the underscore `_`: the prefix `A`, the first column to pull nodes from `Composite Thing`, and the second column to pull nodes from `composite owner`
+        - Ingrid then concatenates this information together creating a new node for each row in the Excel file with the name `A_(Composite Thing node i)_(composite owner node i)`
+        - If the column name contains a hyphenated suffix `-suffix` then that suffix appears at the end of the derived name `A_(Composite Thing node i)_(composite owner node i)-suffix`
+- Node names with spaces
+    - Suppose the pattern graph required a column titled `composite owner`
+        - Ingrid splits the column name on the string so `composite owner` becomes `composite` and `owner`
+        - Ingrid will check if the word before the space, `composite`, exists in the spreadsheet (either created by an earlier derived node or as part of the input data), using the column if found.
+            - When Ingrid finds the column in the spreadsheet data, it creates a new node for each row in the excel following the convention `(node i from column found) qua (last item from string split on space) context`.
+                - If `composite` represented a column in the Excel with a node named `composite_node`, Ingrid would create a new node `composite_node qua owner context`
+        - When the word before the space does not map to a column, Ingrid creates new nodes using the first column in the Excel and the root column
+            - A new node following this convention, for a first node named `first_node` and an accompanying first root named `first_root`, would have the name `first_node qua first_root context`
+- Node names with anything else
+    - Suppose the pattern graph required a column named `connection`
+        - Ingrid grabs the data in the first column of Excel and creates new nodes starting with the node specified in each row and appending the name of the column Ingrid needs to complete the pattern.
+            - Again, consider a node in the first column `first_node` and the column to be created `connection`. Ingrid creates new nodes, spanning the length of the input data, with names `(node i in the first column) (column to create)`. With the specific example node created `first_node connection`.
 
 Since both the UML-based modeling pattern and the spreadsheet template share the same underlying graph representation it is possible to canonicalize the graph to a JSON used by the [`ingrid`](../../ingrid/README.md) tool. The basic form of the JSON is as follows:
 
