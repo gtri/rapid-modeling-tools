@@ -118,7 +118,7 @@ Afterwards, they switch back to the pattern tab, `Composition`, and change all o
 
 ![](images/updated-data.png)
 
-Having created the two data files, Ingrid's `--compare` command will compute the differences providing a `JSON` file that the Player Piano can use to update the model. If using anaconda-project then run the command:
+Having created the two data files, Ingrid's `--compare` command will compute the differences and provide a `JSON` file that the Player Piano can use to update the model. To perform the comparison, run the following command. 
 
 ```bash
 anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Update.xlsx"
