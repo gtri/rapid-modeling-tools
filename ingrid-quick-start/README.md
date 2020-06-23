@@ -129,7 +129,7 @@ anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid
 Without `anaconda-project`:
 
 ```bash
-model-processing --compare --original "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Update.xlsx"
+model-processing --compare --original "Composition Example Baseline.xlsx" --update "Composition Example Updated.xlsx"
 ```
 
 **This command assumes you have the model-processing package installed and an environment with the required packages and that you invoke Ingrid on the command line from the location of the `anaconda-project.yaml`**
