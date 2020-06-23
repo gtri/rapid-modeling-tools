@@ -6,12 +6,9 @@ the BSD 3-Clause license. See the LICENSE file for details.
 
 
 import json
-import tempfile
 import unittest
 from copy import copy
 from functools import partial
-from pathlib import Path
-from shutil import copy2
 
 import networkx as nx
 import pandas as pd
@@ -30,7 +27,6 @@ from model_processing.utils import (
     create_column_values_under,
     get_node_types_attrs,
     get_setting_node_name_from_df,
-    make_object,
     make_string,
     match,
     match_changes,
@@ -53,8 +49,6 @@ class TestUtils(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
         tr = MDTranslator(json_data=data)
-        node = "test node"
-        id = tr.get_uml_id(name=node)
         id_dict = associate_node_id(tr, node="test node")
         node_id = tr.uml_id["test node"]
 
@@ -296,9 +290,8 @@ class TestUtils(unittest.TestCase):
                 (DATA_DIRECTORY / "Composition_Diff_JSON_Baseline.xlsx"),
                 (DATA_DIRECTORY / "Composition_Diff_JSON_Changed.xlsx"),
             ],
-            json_path=(PATTERNS / "Composition.json"),
+            json_path=[(PATTERNS / "Composition.json")],
         )
-        tr = manager.translator
 
         orig_data = {
             "Component": [

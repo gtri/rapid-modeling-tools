@@ -79,40 +79,55 @@ class Manager:
         self.excel_path = excel_path
         self.json_path = json_path
         self.json_data = None
+        self.translator = None
         self.get_json_data()
-        self.translator = MDTranslator(json_data=self.json_data)
         self.evaluators = []
         self.create_evaluators()
 
     def get_json_data(self):
         """ Load the json data using the json_path"""
-        json_path = Path(self.json_path)
-        data = (json_path).read_text()
-        data = json.loads(data)
-        self.json_data = data
+        self.json_data = []
+        self.translator = []
+        if len(self.json_path) >= 1:
+            for data_file in self.json_path:
+                data = json.loads(Path(data_file).read_text())
+                self.json_data.append(data)
+                self.translator.append(MDTranslator(json_data=data))
 
     def create_evaluators(self):
         """
         Create an Evaluator object for each excel file in the excel_path
         """
-        # TODO: Include a flag from the commands to the manager to pass to
-        # this method that indicates create vs compare
-        # TODO: Give baseline translator to change files but also to create
-        # files if multiple create files in a create command. Issue?
-        path_name = [excel_file.name for excel_file in self.excel_path]
-
-        # For compare each changed excel file gets a copy of the original
-        # translator.
-        for count, excel_file in enumerate(self.excel_path):
-            if count != 0:  # TODO: include flag to indicate create or compare
-                translator = self.evaluators[0].translator
-            else:
-                translator = self.translator
-            self.evaluators.append(
-                Evaluator(
-                    excel_file=excel_file, translator=deepcopy(translator)
+        if len(self.translator) > 1 and len(self.excel_path) == 1:
+            for tr in self.translator:
+                self.evaluators.append(
+                    Evaluator(excel_file=self.excel_path[0], translator=tr)
                 )
+        elif len(self.translator) == 1 and len(self.excel_path) >= 1:
+            # TODO: Include a flag from the commands to the manager to pass to
+            # this method that indicates create vs compare
+            # TODO: Give baseline translator to change files but also to create
+            # files if multiple create files in a create command. Issue?
+            path_name = [excel_file.name for excel_file in self.excel_path]
+
+            # For compare each changed excel file gets a copy of the original
+            # translator.
+            for count, excel_file in enumerate(self.excel_path):
+                if count != 0:  # TODO: flag to indicate create or compare
+                    translator = self.evaluators[0].translator
+                else:
+                    translator = self.translator[0]
+                self.evaluators.append(
+                    Evaluator(
+                        excel_file=excel_file, translator=deepcopy(translator)
+                    )
+                )
+        else:
+            msg = (
+                "unsupported input: Multiple Excel Files and Multiple "
+                + "Patterns Requested"
             )
+            raise RuntimeError(msg)
 
     def get_pattern_graph_diff(self, out_directory=""):
         """
@@ -174,7 +189,7 @@ class Manager:
 
         for pair in combinations(self.evaluators, 2):
             # Checking if Evaluator has a rename dataframe
-            if pair[0].has_rename and pair[1].has_rename:  # comparing changes
+            if evaluator_dict[pair[0]] != 0 and evaluator_dict[pair[1]] != 0:
                 continue  # skip because this is comparing diff to diff
 
             eval_1_e_dict = pair[0].prop_di_graph.edge_dict

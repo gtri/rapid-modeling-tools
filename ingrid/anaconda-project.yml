@@ -26,8 +26,8 @@ commands:
     unix: cd doc && make html
 
   black:
-    windows: black -l 78 setup.py src test
-    unix: black -l 78 setup.py src test
+    windows: black setup.py src test
+    unix: black setup.py src test
 
 env_specs:
   default:
@@ -41,6 +41,8 @@ env_specs:
     - jupyterlab
     - pytest
     - pytest-cov
+    - pytest-flake8
+    - pytest-black
     - python >=3.6,<3.7
     - sphinx
   model-processing-dev:
