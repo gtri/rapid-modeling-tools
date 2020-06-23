@@ -55,6 +55,7 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 
 - With MagicDraw open locate the **Tools** menu
 - Select `Tools > Macros > Organize Macros`
+- Select the `New` button to create a new macro. This will open the `Macro Information` dialog box.
 - In the `Macro Information` dialog box, enter the following information:
   - `Name`: Player Piano
   - `Macro Language`: Groovy
