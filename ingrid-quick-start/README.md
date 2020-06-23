@@ -172,7 +172,6 @@ To compare the SystemParts files, run the following command.
 ```bash
 anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Update.xlsx"
 ```
-
 ```bash
 model-processing --compare --original "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Update.xlsx"
 ```
