@@ -49,7 +49,8 @@ anaconda-project run cli --create --input "../../rapid-modeling-tools/ingrid-qui
 ```
 and if not anaconda-project, then on the command line with the Python environment active type
 ```bash
-model_processing --create --input "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../../rapid-modeling-tools/ingrid-quickstart/"
+cd ../ingrid-quick-start
+model-processing --create --input "Composition Example Baseline.xlsx"
 ```
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
 
