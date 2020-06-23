@@ -54,7 +54,9 @@ model-processing --create --input "Composition Example Baseline.xlsx"
 ```
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
 
-The create command invoked above creates a `JSON` file named "Composition Example Baseline.json" in either the specified output directory (as given here) or the same directory location as the input file when not provided an output directory. This `JSON` file contains the instructions required by the Player Piano to build the Cameo model expressed by the Excel data. To load the model into Cameo, open up Cameo Systems Modeler. In Cameo, open the "Import Example Base.mdzip" file. Then use the **Tools > Macros > Player Piano** menu item to launch the player piano script. Select a Package to be the default landing package ("Core Model"):
+The create command invoked above creates a `JSON` file named "Composition Example Baseline.json" in the working directory. This `JSON` file contains the instructions required by the Player Piano to build the Cameo model expressed by the Excel data. 
+
+To load the model into Cameo, open up Cameo Systems Modeler. Before employing Piano Player, you will need to load the example model into Cameo. In Cameo, select **File > Open Project...** and select `Import Example Base.mdzip` file. Once the model is open, select the **Tools > Macros > Player Piano** menu item to launch the player piano script. Select `00 Core Model` and press `Ok`. This sets the Core Model as the default landing package.
 
 ![](select_package_screen.png)
 
