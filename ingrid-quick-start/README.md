@@ -153,6 +153,8 @@ Create a new Excel file, saving it to the same directory as the others, and name
 
 ![](images/sys-parts-baseline-data.png)
 
+Create a tab titled `SystemParts IDs` and populate with the IDs from the baseline import (located in the `Composition Example Baseline.csv` file produced by Cameo during the initial import) and the IDs produced by the `--compare` command (located in the `graph_diff_changes_0-1(<timestamp>).csv` file produced by Cameo during the model update).
+
 ![](images/sys-parts-baseline-ids.png)
 
 Duplicate and rename `SystemParts Example Baseline.xlsx` to `SystemParts Example Update.xlsx`. Open `SystemParts Example Update.xlsx`, switch to the sheet labeled `SysetmParts` and paste the data shown in the table here.
