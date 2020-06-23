@@ -69,7 +69,7 @@ After the script runs, new modeling elements populate the Package:
 There will be a new `Composition Example Baseline.csv` file with the same name as your `Composition Example Baseline.json` file.
 The Player Piano generates the `Composition Example Baseline.csv` file to provide access to the MagicDraw IDs of the newly created model elements. Ingrid expects the MagicDraw ID for any existing model element referenced in Excel files. Moreover, IDs enhance Ingrid's ability to detect changes while reducing duplicate elements.
 
-To complete the baseline Excel file, navigate to the directory containing the `Composition Example Baseline.json` and locate the `Composition Example Baseline.csv` opening it with Excel. This file contains two columns "Element Name" and "ID". With the Excel file "Composition Example Baseline.xlsx" open in the background, copy all the data including the column headers "Element Name" and "ID" to the end. Return to "Composition Example Baseline.xlsx" and create a new tab called "Composition IDs" (in general name the IDs sheet "*pattern name* IDs") and paste the data, save the file.
+To complete the baseline Excel file, navigate to the directory containing the `Composition Example Baseline.json` and locate the `Composition Example Baseline.csv`. Open `Composition Example Baseline.csv` with Excel. This file contains two columns "Element Name" and "ID". Also open the `Composition Example Baseline.xlsx` Excel file. Copy the contents of the  `Composition Example Baseline.csv` to a new tab in the `Composition Example Baseline.xlsx`  file. Rename this tab to "Composition IDs" (in general name the IDs sheet "*pattern name* IDs") and save the file.
 
 ![](images/baseline-all-sheets.png)
 
