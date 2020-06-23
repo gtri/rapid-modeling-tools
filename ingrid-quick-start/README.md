@@ -157,7 +157,7 @@ Create a tab titled `SystemParts IDs` and populate with the IDs from the baselin
 
 ![](images/sys-parts-baseline-ids.png)
 
-Duplicate and rename `SystemParts Example Baseline.xlsx` to `SystemParts Example Update.xlsx`. Open `SystemParts Example Update.xlsx`, switch to the sheet labeled `SysetmParts` and paste the data shown in the table here.
+Duplicate and rename `SystemParts Example Baseline.xlsx` to `SystemParts Example Update.xlsx`. Open `SystemParts Example Updated.xlsx`, switch to the sheet labeled `SysetmParts` and paste the data shown in the table here.
 
 
 | Component | Part | Context | Role | Assoc |
