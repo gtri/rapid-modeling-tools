@@ -14,7 +14,7 @@ The Quick Start covers the create and compare commands available and the common 
 
 Ingrid's create command ingests an Excel file(s) and generates a `JSON` file(s) with instructions for MagicDraw's API to create the diagram(s) specified by the Excel, adhering to the specified modeling pattern. This example chooses to use the [Composition](../ingrid/src/model_processing/patterns/Composition.json) modeling pattern to create a composition example model.
 
-First open an Excel file and for the purposes of this example, save the file as `Composition Example Baseline.xlsx` into this [quickstart](../ingrid-quick-start) directory, the same location as this README.md. Now consult with the [Composition](../ingrid/src/model_processing/patterns/Composition.json) pattern's key `Columns to Navigation Map` and identify each inner key as the columns of the Excel sheet, "Component", "Part", "Position".
+First open an Excel file and for the purposes of this example, save the file as `Composition Example Baseline.xlsx` into this [quickstart](../ingrid-quick-start) directory, the same location as this README.md. The [Composition](../ingrid/src/model_processing/patterns/Composition.json) pattern defines 3 columns within `Columns to Navigation Map`; these columns must exist in the Excel worksheet. These columns are "Component", "Part", and "Position".
 
 ![](images/composition-baseline-columns.png)
 
