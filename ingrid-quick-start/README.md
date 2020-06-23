@@ -24,6 +24,8 @@ First open an Excel file and for the purposes of this example, save the file as 
 
 Next, populate the rows of the Composition sheet in the excel file with the following data and save the file:
 
+| Component                     | Position           | Part                          |
+|-------------------------------|--------------------|-------------------------------|
 | Spacecraft                    | Pyramid Slot B IMU | Inertial Measurement Unit     |
 |-------------------------------|--------------------|-------------------------------|
 | Spacecraft                    | PIA                | Propellant Isolation Assembly |
