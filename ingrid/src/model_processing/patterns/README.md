@@ -25,7 +25,7 @@ Every pattern contains a root node. The root node must appear as one of the colu
 
 As alluded to above, Ingrid does not require the specification of the entire pattern graph explicitly in Excel columns. When Ingrid needs to create nodes to fill out the subgraph, Ingrid applies naming conventions utilizing the entry in the accompanying root node column. Examples will most succinctly describe the means Ingrid uses to derive node names:
 - Node names with underscores
-    - Suppose the pattern graph required a column titled `A_Cmoposite Thing_composite owner`
+    - Suppose the pattern graph required a column titled `A_Composite Thing_composite owner`
         - Ingrid decomposes this column name into three parts by splitting on the underscore `_`: the prefix `A`, the first column to pull nodes from `Composite Thing`, and the second column to pull nodes from `composite owner`
         - Ingrid then concatenates this information together creating a new node for each row in the Excel file with the name `A_(Composite Thing node i)_(composite owner node i)`
         - If the column name contains a hyphenated suffix (`-suffix`) then that suffix appears at the end of the derived name `A_(Composite Thing node i)_(composite owner node i)-suffix`
