@@ -32,7 +32,7 @@ As alluded to above, Ingrid does not require the specification of the entire pat
 - Node names with spaces
     - Suppose the pattern graph required a column titled `composite owner`
         - Ingrid splits the column name on the string so `composite owner` becomes `composite` and `owner`
-        - Ingrid will check if the word before the space, `composite`, exists in the spreadsheet (either created by an earlier derived node or as part of the input data), using the column if found.
+        - Ingrid will check if the first word, `composite`, exists in the spreadsheet (either created by an earlier derived node or as part of the input data).
             - When Ingrid finds the column in the spreadsheet data, it creates a new node for each row in the excel following the convention `(node i from column found) qua (last item from string split on space) context`.
                 - If `composite` represented a column in the Excel with a node named `composite_node`, Ingrid would create a new node `composite_node qua owner context`
         - When the word before the space does not map to a column, Ingrid creates new nodes using the first column in the Excel and the root column
