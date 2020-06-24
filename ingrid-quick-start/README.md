@@ -4,9 +4,9 @@
 
 ## The Example Model
 
-Ingrid serves as a productivity tool allowing Model Based Systems Engineers to canvas data from stakeholders and incorporate that data into their Cameo Systems Model. Ingrid fulfills these duties by analyzing an Excel file according to the specified modeling pattern to create a `JSON` representation of the model. Next, the Player Piano interprets the JSON created by Ingrid through a series of API calls to MagicDraw actualizing the completed MBSE artefact.
+Ingrid serves as a productivity tool allowing Model Based Systems Engineers to canvas data from stakeholders and incorporate that data into their Cameo Systems Model. Ingrid fulfills these duties by analyzing an Excel file according to specified modeling patterns to create a `JSON` representation of the model. Next, the Player Piano interprets the JSON created by Ingrid through a series of API calls to MagicDraw actualizing the completed MBSE artifact.
 
-For Ingrid, a modeling pattern refers to a `JSON` file located in the [patterns](../ingrid/src/model_processing/patterns) directory that describes a particular UML Metamodel. At this moment, Ingrid supports Composition, System Parts, Function Elaboration, Interface Data Flow, and others found [HERE](../ingrid/src/model_processing/patterns). As mentioned, Ingrid uses these UML metamodel `JSON` files to transform the data from the human readable Excel file into a meaningful model representation. When creating an Excel file, it is important to know which UML metamodel the data adheres to and to name the columns of the data according to the `keys` in the `Columns to Navigation Map` variable of each pattern `JSON`. Ingrid looks for those column names, which serve as a human readable version of the UML metamodel meaning, and maps the UML metamodel interpretation onto those headers to understand the data present in the Excel file and the remaining columns it must create to fill out the subgraph. A subgraph provides the minimal representation required to model a feature in the model and corresponds to a row in the Excel file.
+For Ingrid, a modeling pattern refers to a `JSON` file located in the [patterns](../ingrid/src/model_processing/patterns) directory that describes a particular UML Metamodel. At this moment, Ingrid has defined patterns for Composition, System Parts, Function Elaboration, Interface Data Flow, and others found [HERE](../ingrid/src/model_processing/patterns). As mentioned, Ingrid uses these UML metamodel `JSON` files to transform the data from the human readable Excel file into a meaningful model representation. When creating an Excel file, it is important to know which UML metamodel the data adheres to and to name the columns of the data according to the `keys` in the `Columns to Navigation Map` variable of each pattern `JSON`. Ingrid looks for those column names, which serve as a human readable version of the UML metamodel meaning, and maps the UML metamodel interpretation onto those headers to understand the data present in the Excel file and the remaining columns it must create to fill out the subgraph. A subgraph provides the minimal representation required to model a feature in the model that corresponds to a row in the Excel file.
 
 The Player Piano uses the UML metadata for each model element to call MagicDraw's API translating the graph representation of the model created by Ingrid into a fully functional Cameo model.
 
@@ -16,7 +16,7 @@ The Quick Start covers the create and compare commands available and the common 
 
 Ingrid's create command ingests an Excel file(s) and generates a `JSON` file(s) with instructions for MagicDraw's API to create the diagram(s) specified by the Excel, adhering to the specified modeling pattern. This example chooses to use the [Composition](../ingrid/src/model_processing/patterns/Composition.json) modeling pattern to create a composition example model.
 
-1. Open an Excel file and, for the purposes of this example, save the file as `Composition Example Baseline.xlsx` into this [quickstart](../ingrid-quick-start) directory, the same location as this README.md. Now consult with the [Composition](../ingrid/src/model_processing/patterns/Composition.json) pattern's key `Columns to Navigation Map` and identify each inner key as the columns of the Excel sheet, "Component", "Part", "Position".
+1. Open an Excel file and for the purposes of this example, save the file as `Composition Example Baseline.xlsx` into this [quickstart](../ingrid-quick-start) directory, the same location as this README.md. The [Composition](../ingrid/src/model_processing/patterns/Composition.json) pattern defines 3 columns within `Columns to Navigation Map`; these columns must exist in the Excel worksheet. These columns are "Component", "Part", and "Position".
 
 ![](images/composition-baseline-columns.png)
 
@@ -26,6 +26,8 @@ Ingrid's create command ingests an Excel file(s) and generates a `JSON` file(s) 
 
 2. Populate the rows of the Composition sheet in the excel file with the following data and save the file:
 
+| Component                     | Position           | Part                          |
+|-------------------------------|--------------------|-------------------------------|
 | Spacecraft                    | Pyramid Slot B IMU | Inertial Measurement Unit     |
 |-------------------------------|--------------------|-------------------------------|
 | Spacecraft                    | PIA                | Propellant Isolation Assembly |
@@ -51,13 +53,14 @@ anaconda-project run cli --create --input "../../rapid-modeling-tools/ingrid-qui
 ```
 and if not anaconda-project, then on the command line with the Python environment active type
 ```bash
-model_processing --create --input "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../../rapid-modeling-tools/ingrid-quickstart/"
+cd ../ingrid-quick-start
+model-processing --create --input "Composition Example Baseline.xlsx"
 ```
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
 
 The create command invoked above creates a `JSON` file named "Composition Example Baseline.json" in either the specified output directory (as given here) or the same directory location as the input file when not provided an output directory. This `JSON` file contains the instructions required by the Player Piano to build the Cameo model expressed by the Excel data.
 
-4. Load the model into Cameo, open up Cameo Systems Modeler. In Cameo, open the "Import Example Base.mdzip" file. Then use the **Tools > Macros > Player Piano** menu item to launch the player piano script. Select a Package to be the default landing package ("Core Model"):
+4. Load the model into Cameo, open up Cameo Systems Modeler. Before employing Piano Player, you will need to load the example model into Cameo. In Cameo, select **File > Open Project...** and select `Import Example Base.mdzip` file. Then use the **Tools > Macros > Player Piano** menu item to launch the player piano script. Select `00 Core Model` and press `Ok`. This sets the Core Model as the default landing package.
 
 ![](images/select_package_screen.png)
 
@@ -70,7 +73,7 @@ After the script runs, new modeling elements populate the Package:
 There will be a new `Composition Example Baseline.csv` file with the same name as your `Composition Example Baseline.json` file.
 The Player Piano generates the `Composition Example Baseline.csv` file to provide access to the MagicDraw IDs of the newly created model elements. Ingrid expects the MagicDraw ID for any existing model element referenced in Excel files. Moreover, IDs enhance Ingrid's ability to detect changes while reducing duplicate elements.
 
-6. To complete the baseline Excel file, navigate to the directory containing the `Composition Example Baseline.json` and locate the `Composition Example Baseline.csv` opening it with Excel. This file contains two columns "Element Name" and "ID". With the Excel file "Composition Example Baseline.xlsx" open in the background, copy all the data including the column headers "Element Name" and "ID" to the end. Return to "Composition Example Baseline.xlsx" and create a new tab called "Composition IDs" (in general name the IDs sheet "*pattern name* IDs") and paste the data, save the file.
+6. To complete the baseline Excel file, navigate to the directory containing the `Composition Example Baseline.json` and locate the `Composition Example Baseline.csv`. Open `Composition Example Baseline.csv` with Excel. This file contains two columns "Element Name" and "ID". Also open the `Composition Example Baseline.xlsx` Excel file. Copy the contents of the  `Composition Example Baseline.csv` to a new tab in the `Composition Example Baseline.xlsx`  file. Rename this tab to "Composition IDs" (in general name the IDs sheet "*pattern name* IDs") and save the file.
 
 ![](images/baseline-all-sheets.png)
 
@@ -84,7 +87,7 @@ Always include an `IDs` sheet when working with `--compare` to ensure optimal ch
 
 Ingrid understands Cameo models through their Excel representation and the accompanying modeling pattern. Ingrid will detect the differences between the original, termed baseline, and a new file, the update.
 
-7. Create a duplicate of the `Composition Example Original.xlsx` and name it `Composition Example Updated.xlsx`. At this point, the duplicate Excel file represents a file sent to SMEs or the customer to canvas new data as the project matures. Open `Composition Example Updated.xlsx` and create a new tab named `Renames`.
+7. Create a duplicate of the `Composition Example Original.xlsx` and name it `Composition Example Updated.xlsx`. At this point, the duplicate Excel file represents a file sent to a SME or the customer to canvas new data as the project matures. Open `Composition Example Updated.xlsx` and create a new tab named `Renames`.
 
 ![](images/updated-all-sheets.png)
 
@@ -123,7 +126,7 @@ Suppose the SME interacting with this spreadsheet decided that `Spacecraft` woul
 
 ![](images/updated-data.png)
 
-Having created the two data files, Ingrid's `--compare` command will compute the differences providing a `JSON` file that the Player Piano can use to update the model.
+Having created the two data files, Ingrid's `--compare` command will compute the differences and provide a `JSON` file that the Player Piano can use to update the model. To perform the comparison, run the following command.
 
 10. If using anaconda-project then run the command:
 ```bash
@@ -131,7 +134,7 @@ anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid
 ```
 Without `anaconda-project`:
 ```bash
-model-processing --compare --original "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Update.xlsx"
+model-processing --compare --original "Composition Example Baseline.xlsx" --update "Composition Example Updated.xlsx"
 ```
 
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
@@ -151,9 +154,11 @@ The "graph_diff_changes_ *date-time*.JSON" updates the model to reflect the rena
 
 Complex models in MBSE rely on multiple SysML metamodels and patterns; pattern layering with RMT allows modelers to automatically build complex models through a series of `--compare` calls. As an example, the quick start will now layer a [SystemParts](../ingrid/src/model_processing/patterns/SystemParts.json) pattern onto the model developed in the previous sections.
 
-12. Create a new Excel file, saving it to the same directory as the others, and name it `SystemParts Example Baseline.xlsx`. Create a sheet named `SystemParts` and `SystemParts IDs` populated with IDs from the baseline import and the IDs produced by the `--compare` command.
+12. Create a new Excel file, saving it to the same directory as the others, and name it `SystemParts Example Baseline.xlsx`. Create a sheet named `SystemParts` and create columns titled `Component`, `Part`, `Context`, `Role`, and `Assoc`. Create a sheet named `SystemParts IDs` populated with IDs from the baseline import and the IDs produced by the `--compare` command.
 
 ![](images/sys-parts-baseline-data.png)
+
+Create a tab titled `SystemParts IDs` and populate with the IDs from the baseline import (located in the `Composition Example Baseline.csv` file produced by Cameo during the initial import) and the IDs produced by the `--compare` command (located in the `graph_diff_changes_0-1(<timestamp>).csv` file produced by Cameo during the model update).
 
 ![](images/sys-parts-baseline-ids.png)
 
@@ -174,7 +179,7 @@ anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid
 ```
 or
 ```bash
-model-processing --compare --original "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Update.xlsx"
+model-processing --compare --original "SystemParts Example Baseline.xlsx" --update "SystemParts Example Updated.xlsx"
 ```
 
 The comparison, between the empty baseline and populated update file, produces add commands for the Player Piano to create new elements to the model adhering to the new pattern.
