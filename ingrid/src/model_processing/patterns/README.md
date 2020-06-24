@@ -28,7 +28,7 @@ As alluded to above, Ingrid does not require the specification of the entire pat
     - Suppose the pattern graph required a column titled `A_Cmoposite Thing_composite owner`
         - Ingrid decomposes this column name into three parts by splitting on the underscore `_`: the prefix `A`, the first column to pull nodes from `Composite Thing`, and the second column to pull nodes from `composite owner`
         - Ingrid then concatenates this information together creating a new node for each row in the Excel file with the name `A_(Composite Thing node i)_(composite owner node i)`
-        - If the column name contains a hyphenated suffix `-suffix` then that suffix appears at the end of the derived name `A_(Composite Thing node i)_(composite owner node i)-suffix`
+        - If the column name contains a hyphenated suffix (`-suffix`) then that suffix appears at the end of the derived name `A_(Composite Thing node i)_(composite owner node i)-suffix`
 - Node names with spaces
     - Suppose the pattern graph required a column titled `composite owner`
         - Ingrid splits the column name on the string so `composite owner` becomes `composite` and `owner`
