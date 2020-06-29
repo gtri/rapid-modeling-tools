@@ -19,30 +19,12 @@ class PropertyDiGraph(nx.DiGraph):
     incoming_graph_data : input graph
         Data to initialize the graph. If None is supplied than an empty
         graph is created. The data can be any format supported by
-        `to_networkx_graph()`
+        `to_networkx_graph`
 
     root_attr_columns : set
         Set of columns from the Excel file that do not appear under the
         'Columns to Navigation Map' and should be applied to the root node
         as additional attributes.
-
-    Properties
-    ----------
-    named_vertex_set : set of strings
-        Returns a vertex set populated by vertex.name
-
-    vertex_set : set of Vertex objects
-        Returns a vertex set containing `Vertex` objects.
-
-    named_edge_set : set of strings
-        Returns an edge set of the edges represented as a string.
-
-    edge_set : set of DiEdge objects
-        Returns an edge set contaning `DiEdge` objects.
-
-    edge_dict : dict
-        Returns a dictionary with string representation keys and a DiEdge
-        as the value.
 
     Attributes
     ----------
@@ -60,9 +42,21 @@ class PropertyDiGraph(nx.DiGraph):
         set comprised of column names from the Excel file that are not found in
         the JSON file, could be empty.
 
-    See Also
-    --------
-    networkx.DiGraph
+    named_vertex_set : set of strings
+        Returns a vertex set populated by vertex.name
+
+    vertex_set : set of Vertex objects
+        Returns a vertex set containing `Vertex` objects.
+
+    named_edge_set : set of strings
+        Returns an edge set of the edges represented as a string.
+
+    edge_set : set of DiEdge objects
+        Returns an edge set contaning `DiEdge` objects.
+
+    edge_dict : dict
+        Returns a dictionary with string representation keys and a DiEdge
+        as the value.
     """
 
     def __init__(
@@ -350,12 +344,6 @@ class Vertex(VertexReporterMixin):
     the PropertyDiGraph and critically provides the method for packaging
     itself for the MagicDraw interface layer.
 
-    Properties
-    ----------
-    connections : list of dicts
-        List of dictionaries with successors first and predecessors after.
-        The dictionaries contain source, target key value pairs.
-
     Parameters
     ----------
     name : str
@@ -389,6 +377,10 @@ class Vertex(VertexReporterMixin):
 
     settings : str
         Vertex settings provided by the node type and the JSON.
+
+    connections : list of dicts
+        List of dictionaries with successors first and predecessors after.
+        The dictionaries contain source, target key value pairs.
 
     Notes
     -----
@@ -599,8 +591,17 @@ class DiEdge(DiEedgeReporterMixin):
     The Directed Edges are returned as triples
     (source, target, edge_attribtue).
 
-    Properties
+    Attributes
     ----------
+    source : Vertex
+        The Vertex at the tail of the directed edge
+
+    target : Vertex
+        The Vertex at the tip fo the directed edge
+
+    edge_attribute : str
+        The string that describes the edge type
+
     has_rename : Bool
         Returns True if either the source or the target vertex.has_rename
         property returns True.
@@ -618,22 +619,6 @@ class DiEdge(DiEedgeReporterMixin):
     edge_triple : tuple
         The triple with the source and target Vertex objects and the
         edge_attribute string.
-
-    Attributes
-    ----------
-    source : Vertex
-        The Vertex at the tail of the directed edge
-
-    target : Vertex
-        The Vertex at the tip fo the directed edge
-
-    edge_attribute : str
-        The string that describes the edge type
-
-    __len__ : Reference
-        This is intended to mean that a DiEdge object only represents a single
-        edge. If there are length issues later relating to a DiEdge then
-        setting the __len__ reference in this was is incorrect.
     """
 
     def __init__(self, source=None, target=None, edge_attribute=None):

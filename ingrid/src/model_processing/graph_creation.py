@@ -298,7 +298,7 @@ class Manager:
 
     def changes_to_excel(self, out_directory=""):
         """
-        Write the changes from the get_pattern_graph_diff() method to an
+        Write the changes from the get_pattern_graph_diff method to an
         Excel file.
 
         The changes displayed in the file are intended to inform the user
@@ -338,10 +338,8 @@ class Manager:
 
         See Also
         --------
-        get_pattern_graph_diff() : for the generation of the match
-            dictionary
-        to_excel_df() : for the process of transforming the
-            dictionary into a Pandas DataFrame.
+        get_pattern_graph_diff
+        to_excel_df
         """
         # TODO: When length of value > 1 put these changes into
         # Unstable Original: [key*len(value)] Unstable Change: [value]
@@ -634,8 +632,6 @@ class Evaluator:
         the expected `Vertices`. The columns collected here will later be
         associated to the corresponding root node as additional attributes.
 
-    Properties
-    ----------
     has_rename : Bool
         True if there was a nonempty renames sheet, false otherwise.
 
