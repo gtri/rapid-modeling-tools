@@ -2,11 +2,19 @@
 
 **The following documentation assumes completion of the installation instructions in the primary [README](../README.md).**
 
+As background context, consider the systems model as a chemical compound. Then the pattern subgraph represents a molecular structure, an identifiable and repeated collection of, model elements, atoms and bonds. When repeated and combined with other patterns, the subgraphs bond to create complex and diverse systems. Model elements such as blocks, connectors, and ports act as the atoms forming each molecule, with UML roles serving as the bonds between the atoms. Thus, building model-compounds requires identifying the desired, molecules, patterns and providing the, atoms, model data. Using the pattern subgraph as the recipe, RMT ingests the Excel data, creating an instance of the specified pattern for each row in the Excel file; creating nodes and edges omitted by the user but required by the pattern (see [PATTERNS](../ingrid/src/model_processing/patterns/README.md) for a detailed discussion on the methods RMT uses to create "derived" nodes). RMT creates a set of instructions translating the model molecules into blocks, connectors and ports within MagicDraw. Chaining patterns creates new model elements and bonds between subgraphs, allowing users to create complex models, compounds.
+
+![](images/excel-repr.png)
+
+![](images/pattern-repr.png)
+
+![](images/sysml-repr.png)
+
 ## The Example Model
 
 Ingrid serves as a productivity tool allowing Model Based Systems Engineers to canvas data from stakeholders and incorporate that data into their Cameo Systems Model. Ingrid fulfills these duties by analyzing an Excel file according to specified modeling patterns to create a `JSON` representation of the model. Next, the Player Piano interprets the JSON created by Ingrid through a series of API calls to MagicDraw actualizing the completed MBSE artifact.
 
-For Ingrid, a modeling pattern refers to a `JSON` file located in the [patterns](../ingrid/src/model_processing/patterns) directory that describes a particular UML Metamodel. At this moment, Ingrid has defined patterns for Composition, System Parts, Function Elaboration, Interface Data Flow, and others found [HERE](../ingrid/src/model_processing/patterns). As mentioned, Ingrid uses these UML metamodel `JSON` files to transform the data from the human readable Excel file into a meaningful model representation. When creating an Excel file, it is important to know which UML metamodel the data adheres to and to name the columns of the data according to the `keys` in the `Columns to Navigation Map` variable of each pattern `JSON`. Ingrid looks for those column names, which serve as a human readable version of the UML metamodel meaning, and maps the UML metamodel interpretation onto those headers to understand the data present in the Excel file and the remaining columns it must create to fill out the subgraph. A subgraph provides the minimal representation required to model a feature in the model that corresponds to a row in the Excel file.
+For Ingrid, a modeling pattern refers to a `JSON` file located in the [patterns](../ingrid/src/model_processing/patterns) directory that describes a particular UML Metamodel. At this moment, Ingrid has defined patterns for Composition, System Parts, Function Elaboration, Interface Data Flow, and others found [HERE](../ingrid/src/model_processing/patterns). As mentioned, Ingrid uses these UML metamodel `JSON` files to transform the data from the human readable Excel file into a meaningful model representation. When creating an Excel file, it is imperative to know which UML metamodel the data adheres to and to name the columns of the data according to the `keys` in the `Columns to Navigation Map` variable of each pattern `JSON`. Ingrid looks for those column names, which serve as a human readable translation of the UML metamodel meaning, and maps the UML metamodel interpretation onto those headers to understand the data present in the Excel file and the remaining columns it must create to fill out the subgraph. A subgraph provides the minimal representation required to model a feature in the model that corresponds to a row in the Excel file.
 
 The Player Piano uses the UML metadata for each model element to call MagicDraw's API translating the graph representation of the model created by Ingrid into a fully functional Cameo model.
 
@@ -29,7 +37,6 @@ Ingrid's create command ingests an Excel file(s) and generates a `JSON` file(s) 
 | Component                     | Position           | Part                          |
 |-------------------------------|--------------------|-------------------------------|
 | Spacecraft                    | Pyramid Slot B IMU | Inertial Measurement Unit     |
-|-------------------------------|--------------------|-------------------------------|
 | Spacecraft                    | PIA                | Propellant Isolation Assembly |
 | Spacecraft                    | PCA                | Pressurant Control Assembly   |
 | Spacecraft                    | TCA                | Thruster Cluster Assembly     |
@@ -79,7 +86,7 @@ The Player Piano generates the `Composition Example Baseline.csv` file to provid
 
 ## Update the Model with Compare
 
-The need to rapidly create and maintain models through a deluge of relevant model data prompted the development of Rapid Modeling Tools. The first part of this quickstart demonstrated how to create a model with data canvassed from Subject Matter Experts, SMEs. The next sections demonstrates model maintenance and pattern layering. Ingrid accomplishes these tasks with the `--compare` command. The `--compare` flag creates a set of `JSON` instructions to update the model represented by the `original` Excel file to agree with the model described by the `changed` file. Ingrid prints unambiguous changes to `JSON`. Ingird prints all detected differences to an Excel file. The Excel file enumerates the complete list of changes Ingrid will make with the `JSON` and any changes that Ingrid was unsure of and left to the user. The two files have the same name and appear in the same output location.
+The need to rapidly create and maintain models through a deluge of relevant model data prompted the development of RMT. The first part of this quickstart demonstrated how to create a model with data canvassed from Subject Matter Experts, SMEs. The next sections demonstrates model maintenance and pattern layering. Ingrid accomplishes these tasks with the `--compare` command. The `--compare` flag creates a set of `JSON` instructions to update the model represented by the `original` Excel file to agree with the model described by the `changed` file. Ingrid prints unambiguous changes to `JSON`. Ingird prints all detected differences to an Excel file. The Excel file enumerates the complete list of changes Ingrid will make with the `JSON` and any changes that Ingrid was unsure of and hence, left to the user. The two files have the same name and appear in the same output location.
 
 Always include an `IDs` sheet when working with `--compare` to ensure optimal change detection.
 
@@ -93,7 +100,7 @@ Ingrid understands Cameo models through their Excel representation and the accom
 
 Suppose the SME interacting with this spreadsheet decided that `Spacecraft` would be more aptly named `Space Ship` and `SV-0` instead of `SV-3`.
 
-8. Switch to the Renames tab and populate the `New Names` columns with `Space Ship` and the `Old Names` column with `Spacecraft`.
+8. Switch to the Renames tab and populate the `New Names` columns with `Space Ship` and the `Old Names` column with `Spacecraft`. Underneath, in the `Old Names` column put `SV-3` and `SV-0` in the `New Names`.
 
 | New Names | Old Names |
 |-|-|
@@ -126,7 +133,7 @@ Suppose the SME interacting with this spreadsheet decided that `Spacecraft` woul
 
 ![](images/updated-data.png)
 
-Having created the two data files, Ingrid's `--compare` command will compute the differences and provide a `JSON` file that the Player Piano can use to update the model. To perform the comparison, run the following command.
+Having created the two data files, Ingrid's `--compare` command computes the differences and provides a `JSON` file for the Player Piano to update the model. To perform the comparison, run the following command.
 
 10. If using anaconda-project then run the command:
 ```bash
@@ -141,7 +148,7 @@ model-processing --compare --original "Composition Example Baseline.xlsx" --upda
 
 Successful execution will create two files, one titled "graph_diff_changes_*date-time*.JSON" and an Excel file named "Model Diffs *date time*.xlsx"
 
-Inspecting the Model Diffs Excel file shows the results of the change detection. The file contains four columns: Edit 1, Edit 2, Unstable Matches Original, and Unstable Matches Change, with columns for Added and Deleted edges included when detected. Edit 1 and Edit 2 contain confidently identified edge changes with Edit 1 containing edges from document passed as the "original" and Edit 2 displays edges from the "update" file. Unstable Matches Original and Change show changes that Ingrid could not determine, with edges from each file in their respective column. Ingrid included all the changes from Edit 1 to Edit 2 in the "graph_diff_changes" JSON but excluded the Unstable Changes. Ingrid assumes the user will resolve the ambiguous changes or provide additional context to the `--update` file (typically including renames) and reprocessing.
+Inspecting the Model Diffs Excel file shows the results of the change detection. The file contains four columns: Edit 1, Edit 2, Unstable Matches Original, and Unstable Matches Change, with columns for Added and Deleted edges included when detected. Edit 1 and Edit 2 contain confidently identified edge changes with Edit 1 containing edges from document passed as the "original" and Edit 2 displays edges from the "update" file. Unstable Matches Original and Change show changes that Ingrid could not determine, with edges from each file in their respective column. Ingrid included all the changes from Edit 1 to Edit 2 in the "graph_diff_changes" JSON but excluded any Unstable Changes. Ingrid assumes the user will resolve the ambiguous changes or provide additional context to the `--update` file (typically including renames) and reprocessing.
 
 The "graph_diff_changes_ *date-time*.JSON" updates the model to reflect the renames and element additions.
 
@@ -158,7 +165,7 @@ Complex models in MBSE rely on multiple SysML metamodels and patterns; pattern l
 
 ![](images/sys-parts-baseline-data.png)
 
-Create a tab titled `SystemParts IDs` and populate with the IDs from the baseline import (located in the `Composition Example Baseline.csv` file produced by Cameo during the initial import) and the IDs produced by the `--compare` command (located in the `graph_diff_changes_0-1(<timestamp>).csv` file produced by Cameo during the model update).
+Create a tab titled `SystemParts IDs` and populate with the IDs from the baseline import (located in the `Composition Example Baseline.csv` file produced by Cameo during the initial import) and the IDs produced by the `--compare` command (located in the "graph_diff_changes_0-1 *date-time*.csv" file produced by Cameo during the model update).
 
 ![](images/sys-parts-baseline-ids.png)
 
