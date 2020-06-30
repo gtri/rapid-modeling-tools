@@ -4,7 +4,6 @@ channels:
 dependencies:
 - networkx >=2.3
 - numpy
-- numpydoc
 - openpyxl
 - pandas
 - scipy
