@@ -18,10 +18,10 @@ commands:
     unix: model-processing
 
   build-sphinx:
-    windows: sphinx-apidoc -F -q -f^ -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
+    windows: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
       --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"^
       -o doc src/model_processing
-    unix: sphinx-apidoc -F -q -f \ -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"
+    unix: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"
       \ --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"
       \ -o doc src/model_processing
 
