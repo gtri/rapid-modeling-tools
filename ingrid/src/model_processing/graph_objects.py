@@ -32,31 +32,9 @@ class PropertyDiGraph(nx.DiGraph):
         dictionary with the keys as the Vertex name and the value as the
         vertex object.
 
-    vertex_set : set
-        set comprised of instances of the Vertex class.
-
-    edge_set : set
-        set comprised of instances of the DiEdge class.
-
     root_attr_columns : set
         set comprised of column names from the Excel file that are not found in
         the JSON file, could be empty.
-
-    named_vertex_set : set of strings
-        Returns a vertex set populated by vertex.name
-
-    vertex_set : set of Vertex objects
-        Returns a vertex set containing `Vertex` objects.
-
-    named_edge_set : set of strings
-        Returns an edge set of the edges represented as a string.
-
-    edge_set : set of DiEdge objects
-        Returns an edge set contaning `DiEdge` objects.
-
-    edge_dict : dict
-        Returns a dictionary with string representation keys and a DiEdge
-        as the value.
     """
 
     def __init__(
@@ -386,7 +364,7 @@ class Vertex(VertexReporterMixin):
     -----
     This class encapsulates the node data from the PropertyDiGraph, providing
     user defined functions for accessing the information of a particular
-    Vertex. Additionally, this class contains the to_uml_json() method which,
+    Vertex. Additionally, this class contains the to_uml_json method which,
     is now deprecated in favor of the VertexReporterMixin which contains all
     of the JSON writing functionality.
     """
@@ -460,8 +438,7 @@ class Vertex(VertexReporterMixin):
 
     def to_uml_json(self, translator=None):
         """
-        For details see the `VertexReporterMixin.create_node_to_uml()`.
-        This functions is left in because of its use in testing.
+        :noindex:
         """
         # TODO: if op == create then metatype should be a key value should not
         # TODO: if op == replace then value should be a key metatype should not
@@ -601,24 +578,6 @@ class DiEdge(DiEedgeReporterMixin):
 
     edge_attribute : str
         The string that describes the edge type
-
-    has_rename : Bool
-        Returns True if either the source or the target vertex.has_rename
-        property returns True.
-
-    named_edge_triple : tuple
-        Triple with the source.name and target.name attributes and the
-        edge_attribute string.
-
-    edge_vert_type_triple : tuple
-        The triple with the source.node_types and target.node_types
-        attributes and the edge_attribute string. Should this property be
-        updated to return multiple triples if there are multiple
-        node_types?
-
-    edge_triple : tuple
-        The triple with the source and target Vertex objects and the
-        edge_attribute string.
     """
 
     def __init__(self, source=None, target=None, edge_attribute=None):
@@ -638,6 +597,7 @@ class DiEdge(DiEedgeReporterMixin):
     @property
     def has_rename(self):
         """
+        :noindex:
         True is either source.has_rename or target.has_rename is True.
         """
         return self.source.has_rename or self.target.has_rename
@@ -645,6 +605,9 @@ class DiEdge(DiEedgeReporterMixin):
     @property
     def named_edge_triple(self):
         """
+        Triple with the source.name and target.name attributes and the
+        edge_attribute string.
+
         Returns as (source.name, target.name, edge_attribute)
         """
         return (self.source.name, self.target.name, self.edge_attribute)
@@ -652,6 +615,11 @@ class DiEdge(DiEedgeReporterMixin):
     @property
     def edge_vert_type_triple(self):
         """
+        The triple with the source.node_types and target.node_types
+        attributes and the edge_attribute string. Should this property be
+        updated to return multiple triples if there are multiple
+        node_types?
+
         Returns a 3-tuple of
         (source.node_type, target.node_type, edge_attribute).
         """
@@ -664,6 +632,9 @@ class DiEdge(DiEedgeReporterMixin):
     @property
     def edge_triple(self):
         """
+        The triple with the source and target Vertex objects and the
+        edge_attribute string.
+
         Returns a 3-tuple with the source and target Vertex objects and
         the edge_attribute string (source, target, edge_attribute).
         """
