@@ -298,7 +298,7 @@ class Manager:
 
     def changes_to_excel(self, out_directory=""):
         """
-        Write the changes from the get_pattern_graph_diff() method to an
+        Write the changes from the get_pattern_graph_diff method to an
         Excel file.
 
         The changes displayed in the file are intended to inform the user
@@ -338,10 +338,8 @@ class Manager:
 
         See Also
         --------
-        get_pattern_graph_diff() : for the generation of the match
-            dictionary
-        to_excel_df() : for the process of transforming the
-            dictionary into a Pandas DataFrame.
+        get_pattern_graph_diff
+        to_excel_df
         """
         # TODO: When length of value > 1 put these changes into
         # Unstable Original: [key*len(value)] Unstable Change: [value]
@@ -633,23 +631,6 @@ class Evaluator:
         do not appear as `Vertices` in the `MDTranslator` definition of
         the expected `Vertices`. The columns collected here will later be
         associated to the corresponding root node as additional attributes.
-
-    Properties
-    ----------
-    has_rename : Bool
-        True if there was a nonempty renames sheet, false otherwise.
-
-    named_vertex_set : set of strings
-        Returns a vertex set populated by vertex.name
-
-    vertex_set : set of Vertex objects
-        Returns a vertex set containing `Vertex` objects.
-
-    named_edge_set : set of strings
-        Returns an edge set of the edges represented as a string.
-
-    edge_set : set of DiEdge objects
-        Returns an edge set contaning `DiEdge` objects.
     """
 
     # TODO: Consider moving function calls into init since they should be run
@@ -669,6 +650,9 @@ class Evaluator:
 
     @property
     def has_rename(self):
+        """
+        :noindex:
+        """
         if not self.df_renames.empty:  # if renames sheet exists and nonempty
             return True
         else:
@@ -676,18 +660,30 @@ class Evaluator:
 
     @property
     def named_vertex_set(self):
+        """
+        :noindex:
+        """
         return self.prop_di_graph.get_vertex_set_named(df=self.df)
 
     @property
     def vertex_set(self):
+        """
+        :noindex:
+        """
         return self.prop_di_graph.vertex_set
 
     @property
     def named_edge_set(self):
+        """
+        :noindex:
+        """
         return self.prop_di_graph.named_edge_set
 
     @property
     def edge_set(self):
+        """
+        :noindex:
+        """
         return self.prop_di_graph.edge_set
 
     def sheets_to_dataframe(self, excel_file=None):
