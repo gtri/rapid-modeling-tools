@@ -41,7 +41,13 @@ setup(
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
     ],
-    install_requires=["pandas", "scipy", "networkx >=2.3", "xlrd >=0.9.0"],
+    install_requires=[
+        "pandas",
+        "scipy",
+        "networkx >=2.3",
+        "xlrd >=0.9.0",
+        "openpyxl"
+    ],
     tests_require=[
         "pytest-cov",
         "pytest-flake8",

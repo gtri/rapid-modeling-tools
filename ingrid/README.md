@@ -2,15 +2,15 @@
 =======
 # Rapid Modeling Tools - Ingrid
 
-Ingrid is a component of the [Rapid Modeling Tools](https://github.com/gtri/rapid-modeling-tools). * Ingrid is a python application which translates spreadsheet data into a set of JSON instructions which are read by the other component of the Rapid Modeling Tools. 
+[Rapid Modeling Tools](https://github.com/gtri/rapid-modeling-tools) consists of two components, the Player Piano and Ingrid. Ingrid uses Python to translate spreadsheet data with an accompanying modeling pattern into a set of JSON instructions that the Player Piano interprets as API calls to Cameo to build and maintain models.
 
 ## General Installation and Usage
 
-For the general user, the installation documented in the [Rapid Modeling Tools README.md](../README.md) should be used. This README uses `anaconda-project` which is not necessary for the standard user, but provides additional capabilities for the advanced user / developer. Similarly, the usage outlined in the [Quick Start README.md](../ingrid-quick-start/README.md) is also sufficient for the standard user. 
+General users, should consult the installation documentation [Rapid Modeling Tools README.md](../README.md). This README focuses on using `anaconda-project`. `anaconda-project` provides capabilities for the advanced user/developer that standard usage of RMT does not require. While geared towards everyone planning to use RMT, the [Quick Start README.md](../ingrid-quick-start/README.md) provides information for the standard user.
 
 ## Advanced Installation and Usage
 
-As discussed above, the typical user will not need to follow this README, but for developers and other advanced users additional information is provided below. 
+Advanced users and developers should follow this README. Typical users do not need to follow this README to interact with RMT.
 
 ### Installation
 
@@ -39,18 +39,18 @@ As discussed above, the typical user will not need to follow this README, but fo
     ```    
   - You can now import `model_processing` as a package and access all the methods
 - Using Ingrid through Anaconda Project     
-    - The available commands are listed in [`anaconda-project.yml`](anaconda-project.yml) are accessible via `anaconda-project run <command name (and flags if applicable)>`
+    - Find the available commands listed in [`anaconda-project.yml`](anaconda-project.yml). `anaconda-project run <command name (and flags if applicable)>` invokes the desired command with specified options in a conda managed environment.
     - Example commands:
-        - `anaconda-project run test` - this will run all of the tests using `pytest`
-        - `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"` - this will run `model_processing` to create the json file.
-        - `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"` - this will run `model_processing` to compare...
+        - `anaconda-project run test` - this will run all the tests using `pytest`
+        - `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"` - this will run `model_processing` to create the JSON file.
+        - `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"` - this will run `model_processing` to compare the each update Excel file to the original and generates JOSN files with MagicDraw commands to update the original to match each file. Also, Ingrid produces an Excel file detailing the changes detected, added and deleted elements and changes that Ingrid could not determine and did not include in the update JSON.
           - **Note:** `anaconda-project run cli` does **not** require the user to specify an `--output` directory (the default is to use the same directory as the input files).
         * **Help Messages**
             * `anaconda-project list-commands` prints all `anaconda-project run <command>` options
             * `anaconda-project run cli -h` prints the help information for the command line integration
             * `anaconda-project run <command> -h` prints the help information for any command, if that command has associated help information.
 
-### `model_processing` API 
+### `model_processing` API
 
 - _Note:_ The `anaconda-project run cli ...` command is equivalent to the `model_processing ...` command.
 - `model_processing` is accessible via the command line interface (CLI)
@@ -63,11 +63,14 @@ As discussed above, the typical user will not need to follow this README, but fo
 
 The `create` command generates a JSON file for Player Piano to use to create a MagicDraw Diagram
 
-Required additional flags: 
+Required additional flags:
 - `--input`
+    - Provide the absolute or relative path to the input Excel file(s).
+        - Ingrid understands: a single path, a list of paths or a path to a directory containing Excel files. If Ingrid receives multiple Excel files then it runs a `--create` command for each of them.
 
 Optional additional flags:
-- `--output` 
+- `--output`
+    - Provide the absolute or relative path to an existing output directory.
 
 ```bash
 model_processing --create --input <file_path>
@@ -76,57 +79,55 @@ model_processing --create --input <file_path>
 ##### Compare
 
 > --compare, -C
-    
+
 The `compare` command compares a baseline Excel File with a collection of updated Excel Files.
 
-Required additional flags: 
+Required additional flags:
 - `--original`
+    - Absolute or relative path to a single Excel file to be considered as the original version of the model. Typically, the file provided here reflects the current state of the model within Cameo.
 - `--updated`
+    - May be any of: a single Excel file, a list of Excel files or a directory containing Excel files considered as changed instances of the model.
+    - Absolute or relative path to input Excel files or directory.
 
 Optional additional flags:
-- `--output` 
+- `--output`
+    - Provide the absolute or relative path to an existing output directory.
+
 
 ```bash
 model_processing --create --input <file_path> --updated <file_path>
 ```
-    
+
 #### Option Flags
 
-Note: If a path has spaces, then it should be placed in quotes.
+Note: For paths containing spaces, escape the spaces or place the entire path within quotes.
 
 ##### Input
 
 > --input, -i
 
-The `input` flag is used to provide the relative or absolute path to the Excel Workbook(s). This can be provided as a path to a single Excel file or as a path to a directory of Excel files. Ingrid will iterate over each worksheet in each workbook provided and find any worksheets that match a defined pattern.
-
-This flag should only be used with the `create` command.  
+The `input` flag provides the relative or absolute path to the Excel Workbook(s). Ingrid accepts both a path to a single Excel file or as a path to a directory of Excel files. Ingrid will iterate over each worksheet in each workbook provided and find any worksheets that match a defined pattern.
+    - Only the `--create` command accepts the `--input` flag.
 
 ##### Original
 
 > --original, -O
 
-The `original` flag is used to provide the relative or absolute path for the baseline Excel file used in the comparison. A single file should be provided.
-
-This flag should only be used with the `compare` command. 
+The `original` flag provides the relative or absolute path to the singular baseline (original) Excel file used in the comparison. Only `--compare` understands this flag.
 
 ##### Updated
 
 > --updated, -u
 
-The `updated` flag is used to provide the relative or absolute path to the updated Excel files used in the comparison. This can be provided as a path to a single Excel file or as a path to a directory of Excel files. If multiple files are provided they are each compared against the baseline file.  
-
-This flag should only be used with the `compare` command.
+The `updated` flag provides the relative or absolute path to the updated Excel files used in the comparison. `--updated` understands a path to a single Excel file or a path to a directory of Excel files. If providing multiple files, Ingrid compares each file to the original but does not compare change files to one another. This flag works with `--compare`.
 
 ##### Output
 
 > --output, -o
 
-The `output` flag is used to provide the directory path for the JSON output file(s). 
+The `output` flag provides the path to the output directory for the JSON output file(s). Both `--create` and `--compare` understand the `--output` flag.
 
-This flag can be used with both the `create` and the `compare` commands. 
-
-This is an optional flag. The default behavior will place the JSON in the input location.
+Ingrid does not require an output flag. If none provided, then Ingrid deposits any generated files into the same directory as the input files.
 
 ### Generating Documentation
 
