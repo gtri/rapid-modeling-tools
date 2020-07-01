@@ -54,11 +54,7 @@ Ingrid's create command ingests an Excel file(s) and generates a `JSON` file(s) 
 
 Ingrid uses the data entered, the sheet named after the desired pattern ("Composition") and the columns names based on desired pattern ("Component", "Position", and "Part") to process the create request and generate the create model `JSON`.
 
-3. Navigate to [../rapid-modeling-tools/ingrid](../ingrid/) and activate the environment created by the installation procedure. If using anaconda-project then use the command
-```bash
-anaconda-project run cli --create --input "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --output "../../rapid-modeling-tools/ingrid-quickstart/"
-```
-and if not anaconda-project, then on the command line with the Python environment active type
+3. Navigate to [../rapid-modeling-tools/ingrid](../ingrid/) and activate the environment created by the installation procedure. On the command line with the Python environment active type
 ```bash
 cd ../ingrid-quick-start
 model-processing --create --input "Composition Example Baseline.xlsx"
@@ -135,11 +131,7 @@ Suppose the SME interacting with this spreadsheet decided that `Spacecraft` woul
 
 Having created the two data files, Ingrid's `--compare` command computes the differences and provides a `JSON` file for the Player Piano to update the model. To perform the comparison, run the following command.
 
-10. If using anaconda-project then run the command:
-```bash
-anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/Composition Example Update.xlsx"
-```
-Without `anaconda-project`:
+10. Run the command:
 ```bash
 model-processing --compare --original "Composition Example Baseline.xlsx" --update "Composition Example Updated.xlsx"
 ```
@@ -181,10 +173,6 @@ Create a tab titled `SystemParts IDs` and populate with the IDs from the baselin
 
 
 14. On the command line, execute
-```bash
-anaconda-project run cli --compare --original "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Baseline.xlsx" --update "../../rapid-modeling-tools/ingrid-quick-start/SystemParts Example Update.xlsx"
-```
-or
 ```bash
 model-processing --compare --original "SystemParts Example Baseline.xlsx" --update "SystemParts Example Updated.xlsx"
 ```
