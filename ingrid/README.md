@@ -6,7 +6,7 @@
 
 ## General Installation and Usage
 
-General users, should consult the installation documentation [Rapid Modeling Tools README.md](../README.md). This README focuses on using `anaconda-project`. `anaconda-project` provides capabilities for the advanced user/developer that standard usage of RMT does not require. While geared towards everyone planning to use RMT, the [Quick Start README.md](../ingrid-quick-start/README.md) provides information for the standard user.
+General users, should consult the Rapid Modeling Tools [installation documentation](../README.md). This Ingrid-specific README focuses on using `anaconda-project`. `anaconda-project` provides capabilities for the advanced user/developer that standard usage of RMT does not require. While geared towards everyone planning to use RMT, the [Quick Start README.md](../ingrid-quick-start/README.md) provides information for the standard user.
 
 ## Advanced Installation and Usage
 
@@ -17,17 +17,17 @@ Advanced users and developers should follow this README. Typical users do not ne
 - Clone `Rapid Modeling Tools`
   ```bash
   git clone https://github.com/gtri/rapid-modeling-tools.git
-  ```
-
+  cd rapid-modeling-tools
+```
+  
 - Install either [Anaconda](https://www.anaconda.com/distribution/ "Anaconda Download Page") or [Miniconda](https://docs.conda.io/en/latest/miniconda.html "Miniconda Download Page").
 - Install `Anaconda Project`
   - Create / activate a conda environment containing the package `anaconda-project` installed
     * This may be the environment titled `base` or an environment you have created and installed `anaconda-project` into
     * Below is a straightforward way to do this.
     ```bash
-    conda create -y -n anaconda-project python=3.6
+    conda create -y -n anaconda-project python=3.6 anaconda-project
     conda activate anaconda-project
-    conda install anaconda-project
     ```
 - Initialize the project
   - Navigate to the root of the Rapid Modeling Tools cloned directory and enter the `ingrid` directory containing `anaconda-project.yml`.
@@ -36,7 +36,7 @@ Advanced users and developers should follow this README. Typical users do not ne
     cd ingrid
     anaconda-project prepare
     anaconda-project run setup
-    ```    
+    ```
   - You can now import `model_processing` as a package and access all the methods
 - Using Ingrid through Anaconda Project     
     - Find the available commands listed in [`anaconda-project.yml`](anaconda-project.yml). `anaconda-project run <command name (and flags if applicable)>` invokes the desired command with specified options in a conda managed environment.
@@ -134,8 +134,8 @@ Ingrid does not require an output flag. If none provided, then Ingrid deposits a
 * To generate the Documentation that lives in the `./doc` directory you will
 need to run two commands.
     * First make sure you have a `doc/` directory at the same level as the
-    `anaconda-project.yml` file
-    * `anaconda-project run build-sphinx`
+      `anaconda-project.yml` file
+    * `anaconda-project run build-docs`
     * `anaconda-project run make-html`
     * Documentation should be in `./doc/_build/html`
     * Open `index.html` using your browser
