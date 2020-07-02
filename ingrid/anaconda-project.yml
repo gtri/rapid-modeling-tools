@@ -7,8 +7,8 @@ commands:
     description: Run test suite
 
   jupyter:
-    windows: cd notebooks && jupyter
-    unix: cd notebooks && jupyter
+    windows: (if not exist notebooks (mkdir notebooks)) & cd notebooks & jupyter lab
+    unix: mkdir -p notebooks && cd notebooks && jupyter lab
     description: Launch JupyterLab from /notebooks
 
   setup:
