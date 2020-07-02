@@ -245,14 +245,22 @@ class Manager:
 
             ance_keys_not_in_base = set(
                 eval_two_unmatch_map.keys()
-            ).difference(set(eval_one_unmatch_map))
+            ).difference(set(eval_one_unmatch_map.keys()))
 
             eval_one_unmatch_pref["Added"] = []
             eval_one_unmatch_pref["Deleted"] = []
+            # TODO: Find new edges if the edge type is new but also
+            # if the edge is composed of new model elements.
             for edge_type in ance_keys_not_in_base:
                 eval_one_unmatch_pref["Added"].extend(
                     eval_two_unmatch_map[edge_type]
                 )
+            for edge in edge_set_two:
+                src, trg = edge.source, edge.target
+                if isinstance(src.id, type(uuid.uuid4())):
+                    eval_one_unmatch_pref["Added"].append(edge)
+                elif isinstance(trg.id, type(uuid.uuid4())):
+                    eval_one_unmatch_pref["Added"].append(edge)
 
             # builds main dict used for matching and determines add/del edges
             for edge in eval_one_unmatched:
@@ -298,7 +306,7 @@ class Manager:
 
     def changes_to_excel(self, out_directory=""):
         """
-        Write the changes from the get_pattern_graph_diff() method to an
+        Write the changes from the get_pattern_graph_diff method to an
         Excel file.
 
         The changes displayed in the file are intended to inform the user
@@ -338,10 +346,8 @@ class Manager:
 
         See Also
         --------
-        get_pattern_graph_diff() : for the generation of the match
-            dictionary
-        to_excel_df() : for the process of transforming the
-            dictionary into a Pandas DataFrame.
+        get_pattern_graph_diff
+        to_excel_df
         """
         # TODO: When length of value > 1 put these changes into
         # Unstable Original: [key*len(value)] Unstable Change: [value]
@@ -470,6 +476,7 @@ class Manager:
         node_dec = []
 
         # initially populates with translator ids that are not uuid objs.
+        # TODO: This ignores renames
         seen_ids = set()
         for k, v in translator.uml_id.items():
             if isinstance(v, str):
@@ -517,14 +524,17 @@ class Manager:
                     )
                 )
                 # List consisting of at most 2 items s.t. has_rename returns T
-                has_rename = list(filter(lambda x: x.has_rename, eligible))
+                has_rename = list(
+                    filter(lambda x: x.has_rename, [source_val, target_val])
+                )
                 # List consisting of at most 2 items s.t. id is type uuid
                 is_new = list(
                     filter(
                         lambda x: isinstance(x.id, type(uuid.uuid4())),
-                        eligible,
+                        [source_val, target_val],
                     )
                 )
+
                 if has_rename:
                     for node in has_rename:
                         seen_ids.add(node.id)
@@ -669,6 +679,9 @@ class Evaluator:
 
     @property
     def has_rename(self):
+        """
+        :noindex:
+        """
         if not self.df_renames.empty:  # if renames sheet exists and nonempty
             return True
         else:
@@ -676,18 +689,30 @@ class Evaluator:
 
     @property
     def named_vertex_set(self):
+        """
+        :noindex:
+        """
         return self.prop_di_graph.get_vertex_set_named(df=self.df)
 
     @property
     def vertex_set(self):
+        """
+        :noindex:
+        """
         return self.prop_di_graph.vertex_set
 
     @property
     def named_edge_set(self):
+        """
+        :noindex:
+        """
         return self.prop_di_graph.named_edge_set
 
     @property
     def edge_set(self):
+        """
+        :noindex:
+        """
         return self.prop_di_graph.edge_set
 
     def sheets_to_dataframe(self, excel_file=None):

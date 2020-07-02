@@ -214,9 +214,9 @@ def associate_renames(df_renames, tr, node):
 def build_dict(arg):
     """
     Helper function to the Evaluator.to_property_di_graph() method that
-    packages the dictionaries returned by the "associate_" family of
+    packages the dictionaries returned by the "associate" family of
     functions and then supplies the master dict (one_dict) to the Vertex
-    obj as **kwargs.
+    obj as kwargs.
     """
     # helper function to the Evaluator.to_property_di_graph() method that
     # packages the dictionaries returned by the "associate_" family of
@@ -230,7 +230,7 @@ def build_dict(arg):
 
 def make_object(obj, kwargs):
     """
-    Applies the kwargs to the object, returns obj(**kwargs)
+    Applies the kwargs to the object, returns obj(kwargs)
     """
     return obj(**kwargs)
 
