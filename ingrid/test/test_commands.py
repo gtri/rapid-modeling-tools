@@ -179,7 +179,7 @@ class TestCommands(unittest.TestCase):
                 # TODO: This is hardcoded validation as it checks at a known
                 # point when the library works. This test passing does not
                 # garuntee that it should always work.
-                assert 21 == len(compare_data["modification targets"])
+                assert 28 == len(compare_data["modification targets"])
 
     def tearDown(self):
         pass

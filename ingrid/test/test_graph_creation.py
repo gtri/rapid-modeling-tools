@@ -207,7 +207,9 @@ class TestManager(unittest.TestCase):
             change = changes[orig_edge]
 
             assert change[0] == renm_source
-            assert add == [added_edge]
+            # TODO: Find new edges if type is not found in original and if
+            # the edge is composed of at least one new model element.
+            assert add == [added_edge, added_edge]
             assert deld == [del_edge]
             assert unstab == {
                 orig_edge2: {unstab_edge1, renm_source, unstab_edge2}

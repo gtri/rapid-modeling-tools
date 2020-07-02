@@ -245,14 +245,22 @@ class Manager:
 
             ance_keys_not_in_base = set(
                 eval_two_unmatch_map.keys()
-            ).difference(set(eval_one_unmatch_map))
+            ).difference(set(eval_one_unmatch_map.keys()))
 
             eval_one_unmatch_pref["Added"] = []
             eval_one_unmatch_pref["Deleted"] = []
+            # TODO: Find new edges if the edge type is new but also
+            # if the edge is composed of new model elements.
             for edge_type in ance_keys_not_in_base:
                 eval_one_unmatch_pref["Added"].extend(
                     eval_two_unmatch_map[edge_type]
                 )
+            for edge in edge_set_two:
+                src, trg = edge.source, edge.target
+                if isinstance(src.id, type(uuid.uuid4())):
+                    eval_one_unmatch_pref["Added"].append(edge)
+                elif isinstance(trg.id, type(uuid.uuid4())):
+                    eval_one_unmatch_pref["Added"].append(edge)
 
             # builds main dict used for matching and determines add/del edges
             for edge in eval_one_unmatched:
@@ -468,6 +476,7 @@ class Manager:
         node_dec = []
 
         # initially populates with translator ids that are not uuid objs.
+        # TODO: This ignores renames
         seen_ids = set()
         for k, v in translator.uml_id.items():
             if isinstance(v, str):
@@ -515,14 +524,17 @@ class Manager:
                     )
                 )
                 # List consisting of at most 2 items s.t. has_rename returns T
-                has_rename = list(filter(lambda x: x.has_rename, eligible))
+                has_rename = list(
+                    filter(lambda x: x.has_rename, [source_val, target_val])
+                )
                 # List consisting of at most 2 items s.t. id is type uuid
                 is_new = list(
                     filter(
                         lambda x: isinstance(x.id, type(uuid.uuid4())),
-                        eligible,
+                        [source_val, target_val],
                     )
                 )
+
                 if has_rename:
                     for node in has_rename:
                         seen_ids.add(node.id)
