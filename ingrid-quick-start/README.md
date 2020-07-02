@@ -54,7 +54,7 @@ Ingrid's create command ingests an Excel file(s) and generates a `JSON` file(s) 
 
 Ingrid uses the data entered, the sheet named after the desired pattern ("Composition") and the columns names based on desired pattern ("Component", "Position", and "Part") to process the create request and generate the create model `JSON`.
 
-3. Navigate to [../rapid-modeling-tools/ingrid](../ingrid) and activate the environment created by the [installation procedure](../README.md). On the command line, enter
+3. Navigate to [../ingrid](../ingrid) and activate the environment created by the [installation procedure](../README.md). On the command line, enter
 ```bash
 cd ../ingrid-quick-start
 model-processing --create --input "Composition Example Baseline.xlsx"
