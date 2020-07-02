@@ -4,18 +4,22 @@ commands:
   test:
     windows: pytest
     unix: pytest
+    description: Run test suite
 
   jupyter:
     windows: cd notebooks && jupyter
     unix: cd notebooks && jupyter
+    description: Launch JupyterLab from /notebooks
 
   setup:
     windows: python -m pip install -e . --no-deps --ignore-installed
     unix: python -m pip install -e . --no-deps --ignore-installed
+    description: Install model-processing
 
   cli:
     windows: model-processing
     unix: model-processing
+    description: Call model-processing
 
   build-docs:
     windows: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
@@ -24,10 +28,12 @@ commands:
     unix: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"
       \ --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"
       \ -o docs src/model_processing && cd docs && make html
+    description: Build model-processing documents
 
   black:
     windows: black setup.py src test
     unix: black setup.py src test
+    description: Format files per Black
 
 env_specs:
   default:
