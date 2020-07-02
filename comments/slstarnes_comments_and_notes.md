@@ -12,29 +12,29 @@ Note: Each finding has a status flag (or will soon) at the start of the finding.
 ---
 * **[INFO]** I am viewing the `README.md` file in the root as the README for the standard user (i.e. not a developer) and the `ingrid/README.md` file is intended for "advanced users" / devers. This is why I made the changes to the base README to include the install usage information.    
 * **[HEADING]** Excel file (`/ingrid_quick_start/Example Data.xlsx`) comments
-  * **[IN PROGRESS]** Shane and I discussed -- the spreadsheet has some issues and seems to have always had issues. Shane is going to talk to others in SER to see if the issues can be fixed or if we should change Quick Start to use a simpler spreadsheet. 
-  * **[WAITING]** In general I think you need some more explanation on this spreadsheet. I don't see anything really. I do not think you expect for your users to all intuit the purpose of every tab / column.
+  * **[CLOSED]** Shane and I discussed -- the spreadsheet has some issues and seems to have always had issues. Shane is going to talk to others in SER to see if the issues can be fixed or if we should change Quick Start to use a simpler spreadsheet. 
+  * **[IGNORE]** In general I think you need some more explanation on this spreadsheet. I don't see anything really. I do not think you expect for your users to all intuit the purpose of every tab / column.
     * I do not think it is unreasonable (I know it seems a bit pedantic, but i think it would be of value) to have a markdown file where you list each tab and column and provide a brief description....
        * Part Type Split
          * Component - the component of the automobile 
          * Role - the role of the component in the automobile          
-  * **[WAITING]** on the README tab you list 4 colors. However, you have 2 tones of blue and 2 tones of green in addition to light orange and black. 
-  * **[WAITING]** Tab `Component Report`, Column F - has `#REF!` errors. 
-  * **[WAITING]** Tab `Component Report`, Column G - This is a direct pointer to column D on the `Component Tracking` tab. But, that column is empty. I would populate the source column. 
-  * **[WAITING]** Tab `Component Report`, Columns C,D,E,G - These are all direct pointers (pointing to a specific cell). Why not a VLOOKUP or INDEX/MATCH? Doing something like that would allow the rows to be in different orders. If they are the same then why have the data on 3 separate sheets?
-  * **[WAITING]** Tab `Part-Assembly Locators`, Columns B,C - What does the black column name mean? Does it mean "don't touch this"? If so, i didn't see that documented. Secondly, if this is what it means then why isn't column B black since it is also a formula? There needs to be clarity as to what the user modifies.  
-  * **[WAITING]** Tab `Part Type Split`, Column F - I would use this formula `=COUNTIF($D$2:D2,"Basic")`. When you drag it down it will count occurrences of Basic between start and current row. You can do the same for Index and Spatial. 
-  * **[WAITING]** Tab `Delegation Counters`, Column O - There is a note that doesn't seem to belong - "One more thing to know - is this last delegation for the row?"'
-  * **[WAITING]** Tab `Delegation Counters`, Columns A-F - `#REF!` errors occur because you are pointing to rows on `Connections` that are empty.
-  * **[WAITING]** Tab `Delegation Counters`, Columns K-N - `#N/A` errors occur because the vectors selected in the formulas are of different lengths. 
+  * **[IGNORE]** on the README tab you list 4 colors. However, you have 2 tones of blue and 2 tones of green in addition to light orange and black. 
+  * **[IGNORE]** Tab `Component Report`, Column F - has `#REF!` errors. 
+  * **[IGNORE]** Tab `Component Report`, Column G - This is a direct pointer to column D on the `Component Tracking` tab. But, that column is empty. I would populate the source column. 
+  * **[IGNORE]** Tab `Component Report`, Columns C,D,E,G - These are all direct pointers (pointing to a specific cell). Why not a VLOOKUP or INDEX/MATCH? Doing something like that would allow the rows to be in different orders. If they are the same then why have the data on 3 separate sheets?
+  * **[IGNORE]** Tab `Part-Assembly Locators`, Columns B,C - What does the black column name mean? Does it mean "don't touch this"? If so, i didn't see that documented. Secondly, if this is what it means then why isn't column B black since it is also a formula? There needs to be clarity as to what the user modifies.  
+  * **[IGNORE]** Tab `Part Type Split`, Column F - I would use this formula `=COUNTIF($D$2:D2,"Basic")`. When you drag it down it will count occurrences of Basic between start and current row. You can do the same for Index and Spatial. 
+  * **[IGNORE]** Tab `Delegation Counters`, Column O - There is a note that doesn't seem to belong - "One more thing to know - is this last delegation for the row?"'
+  * **[IGNORE]** Tab `Delegation Counters`, Columns A-F - `#REF!` errors occur because you are pointing to rows on `Connections` that are empty.
+  * **[IGNORE]** Tab `Delegation Counters`, Columns K-N - `#N/A` errors occur because the vectors selected in the formulas are of different lengths. 
 * **[HEADING]** Quick Start Readme (`ingrid-quick-start/README.md`)
-  * **[IN PR]** This file tells the user to use `anaconda-project`, but this should not be a requirement to run the app.
+  * **[CLOSED]** This file tells the user to use `anaconda-project`, but this should not be a requirement to run the app.
   * **[HEADING]** There is quite a few questions I have from the _Creating the Input Files_.   
-    * **[IN PR]** Is the user to export all of the black-colored tabs? This seems to be implied, but is not clear. I reworded things assuming this was the case, but I am not sure.
-    * **[IN PR]** What is meant by the sentence that begins "Removing this dependency..." Are you telling the user why the did the copy or is this (the bulk selecting) a task they are supposed to execute?
-    * **[OPEN]** There should be a better introduction to the concept of "you need a modeling pattern" than the statement about file naming. It sounds like I need to pick a modeling pattern. Is it safe to assume your users know what this will mean? If not, then you should provide a bit more info, but even if they do then it should be broached before talking about file naming.One option is to link to the `../ingrid/src/model_processing/patterns/README.md` file.
-    * **[OPEN]** This sentence is confusing -- `In effect if you wish to create a composition model...`.  First, what data is mentioned above?
-    * **[IN PR]** Looking at the code in `commands.py`, it looks like you cycle through the sheets in the workbook. This is confusing with this quick start writeup which sounds like I am to make 1 workbook for each black tab. NOTE: as part of the PR I changed the quickstart to say "...export any of the black-colored tabs that you would like to import...". I think this makes it clearer.   
+    * **[IGNORE]** Is the user to export all of the black-colored tabs? This seems to be implied, but is not clear. I reworded things assuming this was the case, but I am not sure.
+    * **[IGNORE]** What is meant by the sentence that begins "Removing this dependency..." Are you telling the user why the did the copy or is this (the bulk selecting) a task they are supposed to execute?
+    * **[CLOSED]** There should be a better introduction to the concept of "you need a modeling pattern" than the statement about file naming. It sounds like I need to pick a modeling pattern. Is it safe to assume your users know what this will mean? If not, then you should provide a bit more info, but even if they do then it should be broached before talking about file naming.One option is to link to the `../ingrid/src/model_processing/patterns/README.md` file.
+    * **[IGNORE]** This sentence is confusing -- `In effect if you wish to create a composition model...`.  First, what data is mentioned above?
+    * **[IGNORE]** Looking at the code in `commands.py`, it looks like you cycle through the sheets in the workbook. This is confusing with this quick start writeup which sounds like I am to make 1 workbook for each black tab. NOTE: as part of the PR I changed the quickstart to say "...export any of the black-colored tabs that you would like to import...". I think this makes it clearer.   
 * **[HEADING]** Ingrid Readme (`ingrid/README.md`)
   * **[INFO]** I ran the setup as documented in this PR's Ingrid/readme.md. I create a basic python 3.6 env and install anaconda-project. I then run prepare and run setup. All of that is successful. this is the setup for the following findings.
   * **[OPEN]** When I run `anaconda-project run make-html` I get a make error --- `make: *** No rule to make target html.  Stop.`. Note I am on a Mac.   
@@ -50,10 +50,3 @@ Note: Each finding has a status flag (or will soon) at the start of the finding.
 * **[HEADING]** General model_processing comments
   * **[OPEN]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `Sheet2`. I got this error -- `RuntimeError: Unrecognized sheet names for: SystemSpatialParts.xlsx`.  Does this mean that there can only be one sheet in the workbook? If so this should provide a more helpful error / graceful exit. 
   * **[OPEN]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `interfacedelegation`. I got this error -- `IndexError: single positional indexer is out-of-bounds`.  This is caused by graph_creation.py line 982 in add_missing_columns: `first_node_data = self.df.iloc[:, 0]`
-
-
-Luke's Remaining Taskers:
-* Finish going through quick start. I am at the point to import into Cameo. (I finally got a Cameo VM.)
-
-
-     
