@@ -1065,11 +1065,14 @@ try {
 				}
 
 				else if (op_type == 'rename') {
+
 					if (item_to_edit.split('_')[0] == 'new') {
 						ele_to_mod = temp_elements[item_to_edit];
+						item_to_edit_reported = op_to_execute['name'];
 					}
 					else {
 						ele_to_mod = live_project.getElementByID(item_to_edit);
+						item_to_edit_reported = ele_to_mod.getHumanName();
 					}
 
 					rename_log.add('Renaming ' + item_to_edit_reported + ' to ' + op_to_execute['name']);
@@ -1146,11 +1149,12 @@ try {
 }
 catch(Exception e) {
 	execution_status_log.add('Failed outermost try.');
-    execution_status_log.add(e.getMessage());
+	execution_status_log.add(e.getMessage());
 }
 finally {
 
 	execution_status_log.add("Writing ID's to " + read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
+
 	csv_file = new File(read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
 
 	file_writer = new FileWriter(csv_file);
@@ -1175,27 +1179,27 @@ finally {
 	// uncomment below to expose detailed logs
 	live_log.log('Execution steps:');
 	for (entry in execution_status_log) {
-		//live_log.log(entry);
+		// live_log.log(entry);
 	}
 	live_log.log('Elements processed:');
 	for (entry in command_processing_log) {
-		//live_log.log(entry);
+		// live_log.log(entry);
 	}
 	live_log.log('Element creation commands:');
 	for (entry in create_log) {
-		//live_log.log(entry);
+		// live_log.log(entry);
 	}
 	live_log.log('Relationship replace commands:');
 	for (entry in replace_log) {
-		live_log.log(entry);
+		// live_log.log(entry);
 	}
 	live_log.log('Element rename commands:');
 	for (entry in rename_log) {
-		//live_log.log(entry);
+		// live_log.log(entry);
 	}
 	live_log.log('Verification Details:');
 	for (entry in verification_log) {
-		//live_log.log(entry);
+		live_log.log(entry);
 	}
 
 	// render created names and id's into a file for slotting into other files
