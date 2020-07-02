@@ -25,9 +25,10 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 
 ## Installation
 
-- Clone `Rapid Modeling Tools`
+- Clone `Rapid Modeling Tools` 
   ```bash
   git clone https://github.com/gtri/rapid-modeling-tools.git
+  cd rapid-modeling-tools
   ```
     > Cloning the repository provides you access to add meta model JSON descriptions and update the `player-piano` to create novel model elements.
 
@@ -35,9 +36,9 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 #### Windows
 - Install [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 - Install the Ingrid application
-  ```bash
+  ```shell
   cd ingrid
-  bash install.bat
+  install.bat
   ```
 #### Linux / Mac
 - Install [miniconda](https://docs.conda.io/en/latest/miniconda.html).
@@ -67,7 +68,7 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 
 The [ingrid-quick-start](ingrid-quick-start/README.md) provides a basic starting spreadsheet with an example (model included) to show how to calculate model modification commands, both create and compare.
 
-Each of these projects has their own sub README with more details. Please contact `ingrid-nerdman@gtri.gatech.edu` with questions.
+Each of these projects has their own sub README with more details. Please contact ingrid-nerdman@gtri.gatech.edu with questions.
 
 ## Goals to Bring Rapid Modeling Tools to a 1.0 Release:
 
