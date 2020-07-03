@@ -46,7 +46,7 @@ setup(
         "scipy",
         "networkx >=2.3",
         "xlrd >=0.9.0",
-        "openpyxl"
+        "openpyxl",
     ],
     tests_require=[
         "pytest-cov",
