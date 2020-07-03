@@ -4,14 +4,8 @@ This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
 
-
-import json
-import os
-from copy import copy
 from functools import reduce
-from itertools import chain, count
-from pathlib import Path
-from random import shuffle
+from itertools import chain
 
 
 # TODO: to selectively import one of the utils is the function that needs to do
@@ -138,7 +132,11 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=""):
         else:
             settings = []
 
-    type_setting_dict = {"settings": settings, "node_types": list(node_types), "attributes": node_attr_dict}
+    type_setting_dict = {
+        "settings": settings,
+        "node_types": list(node_types),
+        "attributes": node_attr_dict,
+    }
     return type_setting_dict
 
 
