@@ -46,7 +46,7 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
   ```bash
   cd ingrid
   bash install.sh
-  conda activate model_processing
+  conda activate model-processing
   ```
 #### Additional Details
 
