@@ -25,9 +25,10 @@ commands:
     windows: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
       --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"^
       -o docs src/model_processing && cd docs && make.bat html
-    unix: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"
-      \ --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"
-      \ -o docs src/model_processing && cd docs && make html
+    unix: >-
+      sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"
+      --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"
+      -o docs src/model_processing && cd docs && make html
     description: Build model-processing documents
 
   black:
