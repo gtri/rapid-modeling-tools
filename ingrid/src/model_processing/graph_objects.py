@@ -186,8 +186,10 @@ class VertexReporterMixin:
 
         Parameters
         ----------
+        # TODO: populate old_name
+        old_name:
         translator : MDTranslator Object
-            A MDTranslator object that prvoides access to the
+            A MDTranslator object that provides access to the
             JSON data file that translates the information from the Python
             meanigns here to MagicDraw terminology.
 

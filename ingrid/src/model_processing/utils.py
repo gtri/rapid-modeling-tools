@@ -133,8 +133,7 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=""):
         else:
             settings = []
 
-    type_setting_dict = {"settings": settings, "node_types": list(node_types)}
-    type_setting_dict["attributes"] = node_attr_dict
+    type_setting_dict = {"settings": settings, "node_types": list(node_types), "attributes": node_attr_dict}
     return type_setting_dict
 
 
@@ -542,7 +541,8 @@ def match_changes(change_dict=None):
             str_dict[suitor] = change_dict[suitor]
             if not change_dict[suitor] and suitor not in add_del:
                 # TODO: I think this will cause issues in the json output.
-                deleted_set = set(str_dict["Deleted"]).add(set(suitor))
+                deleted_set = set(str_dict["Deleted"])
+                deleted_set.add(set(suitor))
                 update_dict = {"Deleted": list(deleted_set)}
                 str_dict.update(update_dict)
             continue
