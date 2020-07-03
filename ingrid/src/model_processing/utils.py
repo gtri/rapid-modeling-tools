@@ -5,13 +5,8 @@ the BSD 3-Clause license. See the LICENSE file for details.
 """
 
 
-import json
-import os
-from copy import copy
 from functools import reduce
-from itertools import chain, count
-from pathlib import Path
-from random import shuffle
+from itertools import chain
 
 
 # TODO: to selectively import one of the utils is the function that needs to do
