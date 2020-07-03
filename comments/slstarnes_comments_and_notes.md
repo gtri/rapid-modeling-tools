@@ -52,3 +52,6 @@ Note: Each finding has a status flag (or will soon) at the start of the finding.
   * **[OPEN]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `interfacedelegation`. I got this error -- `IndexError: single positional indexer is out-of-bounds`.  This is caused by graph_creation.py line 982 in add_missing_columns: `first_node_data = self.df.iloc[:, 0]`
 * **[HEADING]** CONTRIBUTING.md
   * **[OPEN]** This file needs to be updated. It includes references to things lik `build:sdist`, `build:conda`, `robotpandas`
+* **[HEADING]** Github Workflows
+  * **[OPEN]** Why do you only run CI on master? I would expect you want want CI to run on your dev branches as well (quick feedback to developer)
+  * **[OPEN]** Consider archiving test artifacts as part of CI run. Right now everything is deleted when the CI run completes. 
