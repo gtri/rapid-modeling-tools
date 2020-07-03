@@ -50,3 +50,5 @@ Note: Each finding has a status flag (or will soon) at the start of the finding.
 * **[HEADING]** General model_processing comments
   * **[OPEN]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `Sheet2`. I got this error -- `RuntimeError: Unrecognized sheet names for: SystemSpatialParts.xlsx`.  Does this mean that there can only be one sheet in the workbook? If so this should provide a more helpful error / graceful exit. 
   * **[OPEN]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `interfacedelegation`. I got this error -- `IndexError: single positional indexer is out-of-bounds`.  This is caused by graph_creation.py line 982 in add_missing_columns: `first_node_data = self.df.iloc[:, 0]`
+* **[HEADING]** CONTRIBUTING.md
+  * **[OPEN]** This file needs to be updated. It includes references to things lik `build:sdist`, `build:conda`, `robotpandas`
