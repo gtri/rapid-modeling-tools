@@ -1,6 +1,6 @@
 *.pyc
 __pycache__
-doc
+docs
 .pytest_cache
 envs
 *.egg-info
