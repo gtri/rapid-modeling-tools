@@ -136,7 +136,6 @@ need to run two commands.
     * First make sure you have a `doc/` directory at the same level as the
       `anaconda-project.yml` file
     * `anaconda-project run build-docs`
-    * `anaconda-project run make-html`
     * Documentation should be in `./doc/_build/html`
     * Open `index.html` using your browser
 
