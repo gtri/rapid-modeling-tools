@@ -178,7 +178,7 @@ class TestCommands(unittest.TestCase):
                 compare_data = json.loads(cmp_json[0].read_text())
                 # TODO: This is hardcoded validation as it checks at a known
                 # point when the library works. This test passing does not
-                # garuntee that it should always work.
+                # guarantee that it should always work.
                 assert 28 == len(compare_data["modification targets"])
 
     def tearDown(self):

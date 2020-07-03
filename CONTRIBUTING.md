@@ -10,7 +10,7 @@
 
 ## Code Quality
 
-Keep the style consistant
+Keep the style consistent
 
 ```
 anaconda-project run black

@@ -156,7 +156,7 @@ class Manager:
         evaluator_change_dict : dict of dict
             Outer key for the identified changes and the unstable changes.
             Inner keys for the identified changes include an Added key,
-            Deleted and the remaning represent an Original
+            Deleted and the remaining represent an Original
             DiEdge paired with its Change DiEdge.
 
         Notes
@@ -277,7 +277,7 @@ class Manager:
                     )
 
             # Run the matching algorithm
-            # Always expect the input dict to be Original: Chagnes.
+            # Always expect the input dict to be Original: Changes.
             # Functions down the line hold this expectation.
             eval_one_matches = match_changes(
                 change_dict=eval_one_unmatch_pref
@@ -407,7 +407,7 @@ class Manager:
         just provide instructions to create the new edges, otherwise
         create the source and target nodes then link them with an edge. For
         all Deleted edges, each edge in the list receives a delete operation
-        intentionally leaving the source and target nodes in the model incase
+        intentionally leaving the source and target nodes in the model in case
         they fulfill other roles. Changed edges have two main categories with
         three subcategories. First, a change edge can either involve a renamed
         source or target node or a newly created source or target node. Once
@@ -436,7 +436,7 @@ class Manager:
 
         evaluators : str
             Number of the two evaluators under consideration. The original
-            evaulator always receives the numebr 0 while each change evaluator
+            evaluator always receives the number 0 while each change evaluator
             has a number 1-n with n being the nth evaluator.
 
         out_directory : str
@@ -603,7 +603,7 @@ class Evaluator:
 
     `Evaluator` produces a `Pandas DataFrame` from the Excel path provided
     by the `Manager`. The `Evaluator` then updates the DataFrame with
-    column headers compliant with MagidDraw and infers required columns
+    column headers compliant with MagicDraw and infers required columns
     from the data stored in the `MDTranslator`. With the filled out
     DataFrame the `Evaluator` produces the `PropertyDiGraph`.
 
@@ -1174,7 +1174,7 @@ class MDTranslator:
 
     def get_cols_to_nav_map(self):
         """
-        Returns the columns to nagivation map value.
+        Returns the columns to navigation map value.
         """
         return self.data["Columns to Navigation Map"]
 
@@ -1193,7 +1193,7 @@ class MDTranslator:
         return self.data["Pattern Graph Edges"]
 
     def get_edge_type(self, index=None):
-        # TODO: I think this function is depricated.
+        # TODO: I think this function is deprecated.
         for count, edge in enumerate(self.data["Pattern Graph Edges"]):
             if index == count:
                 return edge[-1]

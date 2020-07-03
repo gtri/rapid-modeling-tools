@@ -23,7 +23,7 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_ids_assinged_in_change(self):
+    def test_ids_assigned_in_change(self):
         manager = Manager(
             excel_path=[
                 (
@@ -414,7 +414,7 @@ class TestManager(unittest.TestCase):
                     }
                 ]
             }
-            new_sub.successrs = sub_cons
+            new_sub.successors = sub_cons
             new_both = DiEdge(
                 source=Vertex(
                     name="Subaru",
@@ -610,7 +610,7 @@ class TestEvaluator(unittest.TestCase):
 
     def test_rename_df_columns(self):
         # just need to test that the columns are as expected.
-        # utils tests the two auxillary functions that rename df entries.
+        # utils tests the two auxiliary functions that rename df entries.
         expected_cols = ["Composite Thing", "component", "Atomic Thing"]
         self.evaluator.rename_df_columns()
         self.assertListEqual(expected_cols, list(self.evaluator.df.columns))
