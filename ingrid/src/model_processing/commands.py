@@ -7,10 +7,11 @@ the BSD 3-Clause license. See the LICENSE file for details.
 
 import os
 import warnings
+from pathlib import Path
 
 from model_processing.graph_creation import *
 
-from . import PATTERNS
+from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
 
 
 def create_md_model(input_paths, output_path=""):
