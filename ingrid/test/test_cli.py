@@ -29,15 +29,14 @@ class TestCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
             excel_files = [
-                "Composition Example 2 Model Baseline.xlsx",
-                "Composition Example 2 Model Changed 2.xlsx",
-                "Composition Example 2 Model Changed.xlsx",
-                "Composition Example 2.xlsx",
-                "Composition Example With Props.xlsx",
-                "Invalid Pattern.xlsx",
-                "Sample Equations.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed 2.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
+                DATA_DIRECTORY / "Composition Example 2.xlsx",
+                DATA_DIRECTORY / "Composition Example With Props.xlsx",
+                DATA_DIRECTORY / "Invalid Pattern.xlsx",
+                DATA_DIRECTORY / "Sample Equations.xlsx",
             ]
-            excel_files = [DATA_DIRECTORY / f for f in excel_files]
             for xl_file in excel_files:
                 copy2(xl_file, tmpdir)
 
@@ -77,7 +76,7 @@ class TestCommands(unittest.TestCase):
                 command = (
                     ["model-processing", "--create", "--input"]
                     + [str(f) for f in tmpdir.iterdir()]
-                    + ["--output", out_tmp_dir]
+                    + ["--output", str(out_tmp_dir)]
                 )
                 subprocess.run(command)
                 new_json = list(out_tmp_dir.glob("*.json"))
