@@ -25,23 +25,3 @@ anaconda-project run test
 ## For Questions
 
 - Email: <ingrid-nerdman@gtri.gatech.edu>
-
-<!-- ## Building -->
-
-<!-- Build the sdist
-
-```
-anaconda-project run build:sdist
-```
-
-Build conda package
-
-```
-anaconda-project run build:conda -->
-<!-- ```
-
-Install with changes
-
-```
-conda install dist/conda/noarch/robotpandas-0.1.0-py_0.tar.bz2
-``` -->
