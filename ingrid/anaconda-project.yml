@@ -4,21 +4,25 @@ commands:
   test:
     windows: pytest
     unix: pytest
+    env_spec: model-processing-dev
     description: Run test suite
 
   jupyter:
     windows: (if not exist notebooks (mkdir notebooks)) & cd notebooks & jupyter lab
     unix: mkdir -p notebooks && cd notebooks && jupyter lab
+    env_spec: model-processing-dev
     description: Launch JupyterLab from /notebooks
 
   setup:
     windows: python -m pip install -e . --no-deps --ignore-installed
     unix: python -m pip install -e . --no-deps --ignore-installed
+    env_spec: model-processing-dev
     description: Install model-processing
 
   cli:
     windows: model-processing
     unix: model-processing
+    env_spec: default
     description: Call model-processing
 
   build-docs:
@@ -29,11 +33,13 @@ commands:
       sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"
       --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"
       -o docs src/model_processing && cd docs && make html
+    env_spec: model-processing-dev
     description: Build model-processing documents
 
   black:
     windows: black setup.py src test
     unix: black setup.py src test
+    env_spec: model-processing-dev
     description: Format files per Black
 
 env_specs:
@@ -45,9 +51,21 @@ env_specs:
     channels:
     - defaults
     - conda-forge
-    inherit_from:
-    - model-processing-dev
     packages:
+    - networkx >=2.3
+    - openpyxl
+    - pandas
+    - xlrd >=0.9.0
+    - pip
+  model-processing-dev:
+    platforms:
+    - linux-64
+    - win-64
+    - osx-64
+    inherit_from:
+    - default
+    packages:
+    - scipy
     - black
     - jupyterlab
     - pytest
@@ -56,18 +74,6 @@ env_specs:
     - pytest-black
     - python >=3.6,<3.7
     - sphinx
-  model-processing-dev:
-    platforms:
-      - linux-64
-      - win-64
-      - osx-64
-    packages:
-    - networkx >=2.3
-    - numpy
-    - openpyxl
-    - pandas
-    - scipy
-    - xlrd >=0.9.0
-    - pip
     channels:
     - defaults
+    - conda-forge
