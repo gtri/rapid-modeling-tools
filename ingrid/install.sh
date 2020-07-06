@@ -20,4 +20,5 @@ if [ "$?" != 0 ]; then
     echo "Successfully activated model-processing environment"
   fi
 fi
-python -m pip install -e . --ignore-installed
+python -m pip install --upgrade pip
+pip install -r requirements-dev.txt

@@ -1,5 +1,5 @@
 -r requirements.txt
--e .
+-e . --install-option="--no-deps"
 pytest
 pytest-cov
 pytest-flake8
