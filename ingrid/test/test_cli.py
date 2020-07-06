@@ -4,7 +4,7 @@ This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
 
-
+import json
 import subprocess
 import tempfile
 import unittest
@@ -104,15 +104,12 @@ class TestCommands(unittest.TestCase):
             orig = tmpdir / "Composition Example Model Baseline.xlsx"
             update = tmpdir / "Composition Example Model Changed.xlsx"
 
-            # inputs = [original]
-            # inputs.extend(updated)
-
             command = [
                 "model-processing",
                 "--compare",
                 "--original",
                 str(original),
-                "--update",
+                "--updated",
                 *[str(u) for u in updated],
                 "--output",
                 str(tmpdir),
@@ -124,7 +121,7 @@ class TestCommands(unittest.TestCase):
                 "--compare",
                 "--original",
                 str(orig),
-                "--update",
+                "--updated",
                 str(update),
                 "--output",
                 str(tmpdir),
@@ -145,7 +142,7 @@ class TestCommands(unittest.TestCase):
                     "--compare",
                     "--original",
                     str(original),
-                    "--update",
+                    "--updated",
                     *[str(u) for u in updated],
                     "--output",
                     str(outdir),
@@ -156,7 +153,7 @@ class TestCommands(unittest.TestCase):
                     "--compare",
                     "--original",
                     str(orig),
-                    "--update",
+                    "--updated",
                     str(update),
                     "--output",
                     str(outdir),
@@ -168,24 +165,28 @@ class TestCommands(unittest.TestCase):
                 diff_files = list(tmpdir.glob("Model Diffs*.xlsx"))
                 self.assertEqual(3, len(diff_files))
 
-
     def test_compare_md_model_dir(self):
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir = Path(tempdir)
             excel_files = [
-                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx"
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
                 DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
-                DATA_DIRECTORY / "Composition Example 2 Model Changed 2.xlsx
+                DATA_DIRECTORY / "Composition Example 2 Model Changed 2.xlsx",
             ]
             for xl in excel_files:
                 copy2(DATA_DIRECTORY / xl, tempdir)
 
             original = tempdir / "Composition Example 2 Model Baseline.xlsx"
 
-            subprocess.check_call(
-                f"model-processing --compare --original {original} "
-                f"--update {tempdir}",
-            )
+            command = [
+                "model-processing",
+                "--compare",
+                "--original",
+                str(original),
+                "--updated",
+                str(tempdir),
+            ]
+            subprocess.run(command, check=True)
             dir_json = list(tempdir.glob("*.json"))
             dir_xl = list(tempdir.glob("Model Diff*.xlsx"))
             self.assertEqual(2, len(dir_json))
@@ -196,18 +197,21 @@ class TestCommands(unittest.TestCase):
             tmpdir = Path(tmpdir)
             excel_files = [(DATA_DIRECTORY / "Composition Example 2.xlsx")]
             for xl_file in excel_files:
-                copy2(DATA_DIRECTORY / xl_file, tmpdir)
+                copy2(xl_file, tmpdir)
 
-            wkbk_path = [
-                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx"
-            ]
+            wkbk_path = tmpdir / "Composition Example 2.xlsx"
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
                 out_tmp_dir = Path(out_tmp_dir)
-                subprocess.check_call(
-                    f"model-processing --create --input {wkbk_path} "
-                    f"--output {out_tmp_dir}",
-                )
+                command = [
+                    "model-processing",
+                    "--create",
+                    "--input",
+                    str(wkbk_path),
+                    "--output",
+                    str(out_tmp_dir),
+                ]
+                subprocess.run(command, check=True)
                 new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(1, len(new_json))
                 cr_data_path = out_tmp_dir / "Composition Example 2.json"
@@ -221,7 +225,7 @@ class TestCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
             excel_files = [
-                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx"
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
                 DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
             ]
             for xl in excel_files:
@@ -232,10 +236,17 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                subprocess.check_call(
-                    f"model-processing --compare --original {original} "
-                    f"--update {updated} --output {outdir}",
-                )
+                command = [
+                    "model-processing",
+                    "--compare",
+                    "--original",
+                    str(original),
+                    "--updated",
+                    str(updated[0]),
+                    "--output",
+                    str(outdir),
+                ]
+                subprocess.run(command, check=True)
                 # expect 3 json and 3 more excel files
                 cmp_json = list(outdir.glob("*.json"))
                 compare_data = json.loads(cmp_json[0].read_text())
