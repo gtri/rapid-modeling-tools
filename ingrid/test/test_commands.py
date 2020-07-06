@@ -44,15 +44,17 @@ class TestCommands(unittest.TestCase):
                 (DATA_DIRECTORY / "Sample Equations.xlsx"),
             ]
             for xl_file in excel_files:
-                copy2(DATA_DIRECTORY / xl_file, tmpdir)
+                copy2(xl_file, tmpdir)
 
+            # Include JSON file just to confirm it is ignored.
             wkbk_path = [
                 ROOT / "model_processing" / "patterns" / "Composition.json",
-                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx",
+                tmpdir / "Composition Example 2.xlsx",
                 tmpdir,
-            ]
+            ]  # test ability to ignore non-Excel, handle a file
+            # and a directory of Excel files.
             create_md_model(wkbk_path)
-            # expect 4
+            # expect 5
             cr_json = list(tmpdir.glob("*.json"))
             self.assertEqual(5, len(cr_json))
             self.assertTrue(

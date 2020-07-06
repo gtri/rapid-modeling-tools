@@ -66,7 +66,7 @@ def main():
     parser.add_argument(
         "-U",
         "--updated",
-        nargs="*",
+        nargs="+",
         help="Modified Excel files to be compared to the Original.",
         type=str,
     )
