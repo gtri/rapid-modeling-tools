@@ -14,7 +14,7 @@ from pathlib import Path
 from random import shuffle
 
 
-# TODO: to selectively import one of the utils is the funtion that needs to do
+# TODO: to selectively import one of the utils is the function that needs to do
 # the importing.
 
 

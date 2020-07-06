@@ -39,6 +39,6 @@ The player piano takes the basic commands created by the ingrid code (e.g., crea
 
 ![](../ingrid-quick-start/macro_config_screen.png)
 
-Once the macro is loaded, it there will now be a `Tools > Macros > Player Piano` menu item. Use this to launch the macro.
+Once the macro is loaded, there will be a `Tools > Macros > Player Piano` menu item. Use this to launch the macro.
 
-The script is written in Groovy, and can be activiated in MagicDraw through the Macro Engine. See [MagicDraw Online Documentation](https://docs.nomagic.com/display/MD190/Adding+a+Macro+and+editing+Macro+information) for instructions on how to do this.
+The script is written in Groovy, and can be activated in MagicDraw through the Macro Engine. See [MagicDraw Online Documentation](https://docs.nomagic.com/display/MD190/Adding+a+Macro+and+editing+Macro+information) for instructions on how to do this.

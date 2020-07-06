@@ -1,96 +1,144 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 =======
-# **Using Ingrid Nerdman**
-Here we present two methods to install and work with Ingrid, either using [Anaconda](https://www.anaconda.com/distribution/ "Anaconda Download Page")/[Miniconda](https://docs.conda.io/en/latest/miniconda.html "Miniconda Download Page") and [anaconda-project](https://anaconda-project.readthedocs.io/en/latest/ "Anaconda Project Homepage") or without anaconda-project by running the commands described in `anaconda-project.yml` at the command line instead of through the `anaconda-project` interface. Although, we strongly encourage using miniconda and anaconda-project.
+# Rapid Modeling Tools - Ingrid
 
-# **Installation**
+[Rapid Modeling Tools](https://github.com/gtri/rapid-modeling-tools) consists of two components, the Player Piano and Ingrid. Ingrid uses Python to translate spreadsheet data with an accompanying modeling pattern into a set of JSON instructions that the Player Piano interprets as API calls to Cameo to build and maintain models.
 
-### Cloning the Repo
-* Ensure that your github or bitbucket account has an associated SSH key
-* From gitbash or another shell issue the `git clone <ssh or https address>` command followed by the https or ssh address of the project, acquired by clicking the clone button on the project repository.
+## General Installation and Usage
 
-### With Anaconda/Miniconda and Anaconda Project
+General users, should consult the installation documentation [Rapid Modeling Tools README.md](../README.md). This README focuses on using `anaconda-project`. `anaconda-project` provides capabilities for the advanced user/developer that standard usage of RMT does not require. While geared towards everyone planning to use RMT, the [Quick Start README.md](../ingrid-quick-start/README.md) provides information for the standard user.
 
-* On windows open **Anaconda Prompt** or **WSL** (unix open **terminal**)
-* Navigate to Rapid Modeling Tools cloned directory and enter the `ingrid` directory containing `anaconda-project.yml`
-* Boot a conda environment containing the package `anaconda-project
+## Advanced Installation and Usage
+
+Advanced users and developers should follow this README. Typical users do not need to follow this README to interact with RMT.
+
+### Installation
+
+- Clone `Rapid Modeling Tools`
+  ```bash
+  git clone https://github.com/gtri/rapid-modeling-tools.git
+  ```
+
+- Install either [Anaconda](https://www.anaconda.com/distribution/ "Anaconda Download Page") or [Miniconda](https://docs.conda.io/en/latest/miniconda.html "Miniconda Download Page").
+- Install `Anaconda Project`
+  - Create / activate a conda environment containing the package `anaconda-project` installed
     * This may be the environment titled `base` or an environment you have created and installed `anaconda-project` into
-    * Some network configurations disallow users other than `admin` from changing the base environment; while allowing those other users to create custom environments
-* `anaconda-project prepare`
-* `anaconda-project run setup`
-* Restart your command window
-* You can now interact with the `ingrid` directory and import `model_processing` as a package and access all the methods
-* **Ingrid Interactions Through Anaconda Project**
-    * Open the terminal program used to install Ingrid
-    * Issue commands listed in `anaconda-project.yml` by typing `anaconda-project run <command name (and flags if applicable)>`
-        * `anaconda-project run test`
-        * `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"`
-        * `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
-        * **Note:** `anaconda-project run cli` does **not** require the user to specify an `--output` directory.
-            * If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
+    * Below is a straightforward way to do this.
+    ```bash
+    conda create -y -n anaconda-project python=3.6
+    conda activate anaconda-project
+    conda install anaconda-project
+    ```
+- Initialize the project
+  - Navigate to the root of the Rapid Modeling Tools cloned directory and enter the `ingrid` directory containing `anaconda-project.yml`.
+  - Run `prepare` and `run setup`
+    ```bash
+    cd ingrid
+    anaconda-project prepare
+    anaconda-project run setup
+    ```    
+  - You can now import `model_processing` as a package and access all the methods
+- Using Ingrid through Anaconda Project     
+    - Find the available commands listed in [`anaconda-project.yml`](anaconda-project.yml). `anaconda-project run <command name (and flags if applicable)>` invokes the desired command with specified options in a conda managed environment.
+    - Example commands:
+        - `anaconda-project run test` - this will run all the tests using `pytest`
+        - `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"` - this will run `model_processing` to create the JSON file.
+        - `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"` - this will run `model_processing` to compare the each update Excel file to the original and generates JOSN files with MagicDraw commands to update the original to match each file. Also, Ingrid produces an Excel file detailing the changes detected, added and deleted elements and changes that Ingrid could not determine and did not include in the update JSON.
+          - **Note:** `anaconda-project run cli` does **not** require the user to specify an `--output` directory (the default is to use the same directory as the input files).
         * **Help Messages**
             * `anaconda-project list-commands` prints all `anaconda-project run <command>` options
             * `anaconda-project run cli -h` prints the help information for the command line integration
             * `anaconda-project run <command> -h` prints the help information for any command, if that command has associated help information.
 
-### Without using Anaconda Project
+### `model_processing` API
 
-* On windows open **Command Prompt** or **WSL** (unix open **terminal**)
-* Navigate to the Rapid Modeling Tools cloned repository and enter the `ingrid` directory containing the `environment.yml` file
-* Create a Python virtual environment using the `environment.yml` file
-    * The `environment.yml` file contains all the project dependencies required for a virtual environment to run the Ingrid tool
-* Run `setup.py` by issuing
-    * `python -m pip install -e . --no-deps --ignore-installed`
-* Restart your command window
-* Booting the environment created by the `environment.yml` file gives that virtual environment access to the model_processing library
-* You may interact with the Ingrid tool for model creation, comparison, document generation, and code testing from the command line while within the environment containing the project
-    * View these commands in the `anaconda-project.yml` file through a text editor
-* **Ingrid Interactions Without Anaconda Project**
-    * Open the terminal program used to install Ingrid
-    * Issue commands on the command line from the appropriate directory, see `anaconda-project.yml`
-        * In the `ingrid` directory run `pytest` to run all the tests
-        * `model_processing --create --input "<path/to/file/filename>" --output "<path\to\output\directory>"`
-        * `model_processing --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
-        * **Note:** `model_processing` does **not** require the user to specify a `--output` directory.
-            * If the user neglects to specify an output directory then `ingrid` places all generated files in the same directory as the input files.
-        * **Help Messages**
-            * `model_processing -h` prints the help messages for the command line integration
+- _Note:_ The `anaconda-project run cli ...` command is equivalent to the `model_processing ...` command.
+- `model_processing` is accessible via the command line interface (CLI)
 
-### Structure of Command Line Integration (cli) Commands
+#### Command Flags
 
-**Dissecting a "compare" operation:**
+##### Create
 
-* **Without Anaconda Project**
-    * `model-processing --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
-        * `model-processing` alerts the command line integration script that we wish to execute the `ingrid` functionality with the following arguments.
-        * At a high level, that means that the `model_processing` program understands the flags `--compare`, `--original`, `--update`, and `--output`.
-            * In reality, `model_processing` understands `--compare` and `--compare` expects inputs of `--original` and `--update` with an optional `--output`.
-            * `--original` should be followed by a relative or absolute file path to the original Excel file.
-                * Placing the file path in quotations `" "` allows for spaces, which would otherwise be interpreted as separate arguments.
-            * `--update` should be a relative or absolute file path to the update Excel file(s).
-                * Ingrid handles more than one compare by computing the differences of each update file relative to the original file. Ingrid does not check for difference between any two files given in the update list since user intention may not be confidently interpreted.
-            * `--output` should be a path to a directory where the user wishes for Ingrid to place the results of the `--compare` command.
-                * `--output` is optional and if not specified then Ingrid places all outputs in the same directory as the input file.
-    * These explanations generalize to the `--create` command.
+> --create, -C
+
+The `create` command generates a JSON file for Player Piano to use to create a MagicDraw Diagram
+
+Required additional flags:
+- `--input`
+    - Provide the absolute or relative path to the input Excel file(s).
+        - Ingrid understands: a single path, a list of paths or a path to a directory containing Excel files. If Ingrid receives multiple Excel files then it runs a `--create` command for each of them.
+
+Optional additional flags:
+- `--output`
+    - Provide the absolute or relative path to an existing output directory.
+
+```bash
+model_processing --create --input <file_path>
+```
+
+##### Compare
+
+> --compare, -C
+
+The `compare` command compares a baseline Excel File with a collection of updated Excel Files.
+
+Required additional flags:
+- `--original`
+    - Absolute or relative path to a single Excel file to be considered as the original version of the model. Typically, the file provided here reflects the current state of the model within Cameo.
+- `--updated`
+    - May be any of: a single Excel file, a list of Excel files or a directory containing Excel files considered as changed instances of the model.
+    - Absolute or relative path to input Excel files or directory.
+
+Optional additional flags:
+- `--output`
+    - Provide the absolute or relative path to an existing output directory.
 
 
-* **With Anaconda Project**
-    * `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"`
-        * `anaconda-project run cli`: tells the terminal to open the `anaconda-project` script. Then scan for the command titled `cli` and execute that command. This translates to the invocation of the `model_processing` program.
-        * Now that we have invoked the `model_processing` program we supply it the rest of the arguments.
-        * At this point, `anaconda-project` passes the rest of the arguments to the `model_processing` program.
-            * Read above for a description of the `model_processing` program and how it parses commands.
+```bash
+model_processing --create --input <file_path> --updated <file_path>
+```
+
+#### Option Flags
+
+Note: For paths containing spaces, escape the spaces or place the entire path within quotes.
+
+##### Input
+
+> --input, -i
+
+The `input` flag provides the relative or absolute path to the Excel Workbook(s). Ingrid accepts both a path to a single Excel file or as a path to a directory of Excel files. Ingrid will iterate over each worksheet in each workbook provided and find any worksheets that match a defined pattern.
+    - Only the `--create` command accepts the `--input` flag.
+
+##### Original
+
+> --original, -O
+
+The `original` flag provides the relative or absolute path to the singular baseline (original) Excel file used in the comparison. Only `--compare` understands this flag.
+
+##### Updated
+
+> --updated, -u
+
+The `updated` flag provides the relative or absolute path to the updated Excel files used in the comparison. `--updated` understands a path to a single Excel file or a path to a directory of Excel files. If providing multiple files, Ingrid compares each file to the original but does not compare change files to one another. This flag works with `--compare`.
+
+##### Output
+
+> --output, -o
+
+The `output` flag provides the path to the output directory for the JSON output file(s). Both `--create` and `--compare` understand the `--output` flag.
+
+Ingrid does not require an output flag. If none provided, then Ingrid deposits any generated files into the same directory as the input files.
 
 ### Generating Documentation
 
 * To generate the Documentation that lives in the `./doc` directory you will
 need to run two commands.
     * First make sure you have a `doc/` directory at the same level as the
-    `anaconda-project.yml` file.
+    `anaconda-project.yml` file
     * `anaconda-project run build-sphinx`
-    * `anaconda-project run make html`
-    * Documentation should be in `./doc/_build/html` and open
-    `index.html` using your browser.
+    * `anaconda-project run make-html`
+    * Documentation should be in `./doc/_build/html`
+    * Open `index.html` using your browser
 
 ### Testing
 
