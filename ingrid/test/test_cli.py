@@ -5,7 +5,6 @@ the BSD 3-Clause license. See the LICENSE file for details.
 """
 
 
-import json
 import subprocess
 import tempfile
 import unittest
@@ -107,21 +106,30 @@ class TestCommands(unittest.TestCase):
 
             # inputs = [original]
             # inputs.extend(updated)
-            try:
-                subprocess.check_call(
-                    f"model-processing --compare --original {original} "
-                    f"--update {updated} --output {DATA_DIRECTORY}",
-                )
-            except RuntimeError:
-                self.assertTrue(True)
-            subprocess.check_call(
-                f"model-processing --compare --original {original} "
-                f"--update {updated}",
-            )
-            subprocess.check_call(
-                f"model-processing --compare --original {orig} "
-                f"--update {update}",
-            )
+
+            command = [
+                "model-processing",
+                "--compare",
+                "--original",
+                str(original),
+                "--update",
+                *[str(u) for u in updated],
+                "--output",
+                str(tmpdir),
+            ]
+            subprocess.run(command, check=True)
+
+            command = [
+                "model-processing",
+                "--compare",
+                "--original",
+                str(orig),
+                "--update",
+                str(update),
+                "--output",
+                str(tmpdir),
+            ]
+            subprocess.run(command, check=True)
 
             # expect 3 json and 3 more excel files
             cr_json = list(tmpdir.glob("*.json"))
@@ -132,27 +140,42 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                subprocess.check_call(
-                    f"model-processing --compare --original {original} "
-                    f"--update {updated} --output {outdir}",
-                )
-                subprocess.check_call(
-                    f"model-processing --compare --original {orig} "
-                    f"--update {update} --output {outdir}",
-                )
+                command = [
+                    "model-processing",
+                    "--compare",
+                    "--original",
+                    str(original),
+                    "--update",
+                    *[str(u) for u in updated],
+                    "--output",
+                    str(outdir),
+                ]
+                subprocess.run(command, check=True)
+                command = [
+                    "model-processing",
+                    "--compare",
+                    "--original",
+                    str(orig),
+                    "--update",
+                    str(update),
+                    "--output",
+                    str(outdir),
+                ]
+                subprocess.run(command, check=True)
                 # expect 3 json and 3 more excel files
                 cr_json = list(outdir.glob("*.json"))
                 self.assertEqual(3, len(cr_json))
                 diff_files = list(tmpdir.glob("Model Diffs*.xlsx"))
                 self.assertEqual(3, len(diff_files))
 
+
     def test_compare_md_model_dir(self):
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir = Path(tempdir)
             excel_files = [
-                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx"
                 DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
-                DATA_DIRECTORY / "Composition Example 2 Model Changed 2.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed 2.xlsx
             ]
             for xl in excel_files:
                 copy2(DATA_DIRECTORY / xl, tempdir)
@@ -198,7 +221,7 @@ class TestCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
             excel_files = [
-                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx"
                 DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
             ]
             for xl in excel_files:
