@@ -1,10 +1,6 @@
 name: Test Python
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -31,6 +27,5 @@ jobs:
         pip install -r requirements-dev.txt
 
     - name: Test with pytest
-      # TODO: needs to `cd ingrid`?
       run: |
         pytest

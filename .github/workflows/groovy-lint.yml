@@ -28,6 +28,5 @@ jobs:
       run: |
         npm install -g npm-groovy-lint
     - name: Lint the Groovy
-      # TODO: needs to `cd player-piano`?
       run: |
         npm-groovy-lint --path "./player-piano" --files "*.groovy" --config ".groovylintrc.json"
