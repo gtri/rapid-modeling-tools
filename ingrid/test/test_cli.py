@@ -29,38 +29,37 @@ class TestCommands(unittest.TestCase):
         # expected files.
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            excel_files = ["Composition Example 2 Model Changed 2.xlsx",
-                           "Composition Example 2 Model Baseline.xlsx",
-                           "Composition Example 2 Model Changed.xlsx",
-                           "Composition Example 2.xlsx",
-                           "Composition Example With Props.xlsx",
-                           "Invalid Pattern.xlsx",
-                           "Sample Equations.xlsx"]
+            excel_files = [
+                "Composition Example 2 Model Changed 2.xlsx",
+                "Composition Example 2 Model Baseline.xlsx",
+                "Composition Example 2 Model Changed.xlsx",
+                "Composition Example 2.xlsx",
+                "Composition Example With Props.xlsx",
+                "Invalid Pattern.xlsx",
+                "Sample Equations.xlsx",
+            ]
             excel_files = [DATA_DIRECTORY / f for f in excel_files]
             for xl_file in excel_files:
                 copy2(xl_file, tmpdir)
 
-            # wkbk_path = [
-            #     ROOT / "model_processing" / "patterns" / "Composition.json",
-            #     # TODO: I am not sure why the json file is part of the input list (wkbk_path)....
-            #     DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx",
-            #     # TODO: the above line has the same effect as `tmpdir / "Composition Example 2.xlsx"`
-            #     tmpdir,
-            #     # TODO: I am not sure why wkbk_path has "Composition Example 2.xlsx" which is also in tmpdir
-            # ]
             command = ["model-processing", "--create", "--input"] + [
                 str(f) for f in tmpdir.iterdir()
             ]
-            subprocess.run(command,
-                           stdin=subprocess.PIPE,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
+            subprocess.run(command)
 
-            good_excel_files = [f for f in excel_files if f.name not in
-                                ["Invalid Pattern.xlsx",
-                                 "Composition Example With Props.xlsx"]]
-            expected_json_files = [tmpdir / f.name.replace('.xlsx', '.json') for
-                                   f in good_excel_files]
+            good_excel_files = [
+                f
+                for f in excel_files
+                if f.name
+                not in [
+                    "Invalid Pattern.xlsx",
+                    "Composition Example With Props.xlsx",
+                ]
+            ]
+            expected_json_files = [
+                tmpdir / f.name.replace(".xlsx", ".json")
+                for f in good_excel_files
+            ]
 
             # expect 5
             cr_json = list(tmpdir.glob("*.json"))
@@ -70,13 +69,12 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
                 out_tmp_dir = Path(out_tmp_dir)
-                command = ["model-processing", "--create", "--input"] + [
-                    str(f) for f in tmpdir.iterdir()
-                ] + ['--output', out_tmp_dir]
-                subprocess.run(command,
-                               stdin=subprocess.PIPE,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+                command = (
+                    ["model-processing", "--create", "--input"]
+                    + [str(f) for f in tmpdir.iterdir()]
+                    + ["--output", out_tmp_dir]
+                )
+                subprocess.run(command)
                 new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(len(good_excel_files), len(new_json))
 
