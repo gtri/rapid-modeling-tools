@@ -21,8 +21,8 @@ commands:
     windows: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
       --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"^
       -o docs src/model_processing && cd docs && make.bat html
-    unix: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"
-      \ --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"
+    unix: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0" \
+      --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"
       \ -o docs src/model_processing && cd docs && make html
 
   black:
@@ -31,20 +31,13 @@ commands:
 
 env_specs:
   default:
-    channels:
-    - defaults
-    - conda-forge
-    inherit_from:
-    - model-processing-dev
     packages:
-    - black
-    - jupyterlab
-    - pytest
-    - pytest-cov
-    - pytest-flake8
-    - pytest-black
-    - python >=3.6,<3.7
-    - sphinx
+    - pip:
+      - networkx >=2.3
+      - openpyxl
+      - pandas
+      - xlrd >=0.9.0
+    channels: []
   model-processing-dev:
     packages:
     - networkx >=2.3
