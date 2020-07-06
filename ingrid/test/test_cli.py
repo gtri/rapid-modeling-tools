@@ -29,50 +29,56 @@ class TestCommands(unittest.TestCase):
         # expected files.
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            composition_changed = "Composition Example 2 Model Changed 2.xlsx"
-            excel_files = [
-                (
-                    DATA_DIRECTORY
-                    / "Composition Example 2 Model Baseline.xlsx"
-                ),
-                (DATA_DIRECTORY / composition_changed),
-                (DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx"),
-                (DATA_DIRECTORY / "Composition Example 2.xlsx"),
-                (DATA_DIRECTORY / "Composition Example With Props.xlsx"),
-                (DATA_DIRECTORY / "Invalid Pattern.xlsx"),
-                (DATA_DIRECTORY / "Sample Equations.xlsx"),
-            ]
+            excel_files = ["Composition Example 2 Model Changed 2.xlsx",
+                           "Composition Example 2 Model Baseline.xlsx",
+                           "Composition Example 2 Model Changed.xlsx",
+                           "Composition Example 2.xlsx",
+                           "Composition Example With Props.xlsx",
+                           "Invalid Pattern.xlsx",
+                           "Sample Equations.xlsx"]
+            excel_files = [DATA_DIRECTORY / f for f in excel_files]
             for xl_file in excel_files:
-                copy2(DATA_DIRECTORY / xl_file, tmpdir)
+                copy2(xl_file, tmpdir)
 
-            wkbk_path = [
-                ROOT / "model_processing" / "patterns" / "Composition.json",
-                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx",
-                tmpdir,
-            ]
-            # TODO: I am not sure why the json file is part of the input list (wkbk_path)....
-            # TODO: I am not sure why wkbk_path has Composition Example 2.xlsx" which is also in tmpdir
+            # wkbk_path = [
+            #     ROOT / "model_processing" / "patterns" / "Composition.json",
+            #     # TODO: I am not sure why the json file is part of the input list (wkbk_path)....
+            #     DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx",
+            #     # TODO: the above line has the same effect as `tmpdir / "Composition Example 2.xlsx"`
+            #     tmpdir,
+            #     # TODO: I am not sure why wkbk_path has "Composition Example 2.xlsx" which is also in tmpdir
+            # ]
             command = ["model-processing", "--create", "--input"] + [
                 str(f) for f in tmpdir.iterdir()
             ]
-            subprocess.check_call(
-                f"model-processing --create --input {command}"
-            )
-            # expect 4
+            subprocess.run(command,
+                           stdin=subprocess.PIPE,
+                           stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE)
+
+            good_excel_files = [f for f in excel_files if f.name not in
+                                ["Invalid Pattern.xlsx",
+                                 "Composition Example With Props.xlsx"]]
+            expected_json_files = [tmpdir / f.name.replace('.xlsx', '.json') for
+                                   f in good_excel_files]
+
+            # expect 5
             cr_json = list(tmpdir.glob("*.json"))
-            self.assertEqual(5, len(cr_json))
-            self.assertTrue(
-                (DATA_DIRECTORY / "Composition Example 2.json").is_file()
-            )
+            self.assertEqual(len(good_excel_files), len(cr_json))
+            for json_file in expected_json_files:
+                self.assertTrue(json_file.is_file())
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
                 out_tmp_dir = Path(out_tmp_dir)
-                subprocess.check_call(
-                    f"model-processing --create --input {wkbk_path} "
-                    f"--output {out_tmp_dir}",
-                )
+                command = ["model-processing", "--create", "--input"] + [
+                    str(f) for f in tmpdir.iterdir()
+                ] + ['--output', out_tmp_dir]
+                subprocess.run(command,
+                               stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
                 new_json = list(out_tmp_dir.glob("*.json"))
-                self.assertEqual(5, len(new_json))
+                self.assertEqual(len(good_excel_files), len(new_json))
 
     def test_compare_md_model(self):
         with tempfile.TemporaryDirectory() as tmpdir:
