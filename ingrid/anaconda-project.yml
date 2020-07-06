@@ -44,24 +44,14 @@ commands:
 
 env_specs:
   default:
-    platforms:
-    - linux-64
-    - win-64
-    - osx-64
-    channels:
-    - defaults
-    - conda-forge
     packages:
-    - networkx >=2.3
-    - openpyxl
-    - pandas
-    - xlrd >=0.9.0
-    - pip
+    - pip:
+      - networkx >=2.3
+      - openpyxl
+      - pandas
+      - xlrd >=0.9.0
+    channels: []
   model-processing-dev:
-    platforms:
-    - linux-64
-    - win-64
-    - osx-64
     inherit_from:
     - default
     packages:
