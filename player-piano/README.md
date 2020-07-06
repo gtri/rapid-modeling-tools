@@ -35,9 +35,9 @@ The player piano takes the basic commands created by the ingrid code (e.g., crea
 - For the `Name`, `Macro Language`, and `File` fields input "Player Piano", select "Groovy", and browse the file explorer (opened by clicking on the three dots button) to the `.../Rapid Modeling Tools/player-piano/player-piano-script.groovy` groovy script.
 - Images included below
 
-![](../ingrid-quick-start/macros_organize_screen.png)
+![](../ingrid-quick-start/images/macros_organize_screen.png)
 
-![](../ingrid-quick-start/macro_config_screen.png)
+![](../ingrid-quick-start/images/macro_config_screen.png)
 
 Once the macro is loaded, there will be a `Tools > Macros > Player Piano` menu item. Use this to launch the macro.
 
