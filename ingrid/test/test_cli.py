@@ -30,8 +30,8 @@ class TestCommands(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
             excel_files = [
-                "Composition Example 2 Model Changed 2.xlsx",
                 "Composition Example 2 Model Baseline.xlsx",
+                "Composition Example 2 Model Changed 2.xlsx",
                 "Composition Example 2 Model Changed.xlsx",
                 "Composition Example 2.xlsx",
                 "Composition Example With Props.xlsx",
@@ -42,8 +42,14 @@ class TestCommands(unittest.TestCase):
             for xl_file in excel_files:
                 copy2(xl_file, tmpdir)
 
+            wkbk_path = [
+                ROOT / "model_processing" / "patterns" / "Composition.json",
+                tmpdir / "Composition Example 2.xlsx",
+                tmpdir,
+            ]
+
             command = ["model-processing", "--create", "--input"] + [
-                str(f) for f in tmpdir.iterdir()
+                str(f) for f in wkbk_path
             ]
             subprocess.run(command)
 
