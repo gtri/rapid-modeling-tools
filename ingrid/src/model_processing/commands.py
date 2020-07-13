@@ -58,7 +58,7 @@ def create_md_model(input_paths, pattern="", output_path=""):
 
     for wkbk in wkbk_paths:
         # TODO: Can this support Heterogeneous excel input files?
-        # YES when the user does NOT provide an input path
+        # YES when the user does NOT provide an input pattern
         if wkbk.parts[-1].split(".")[-1] != "xlsx":
             msg = (
                 "\n"
