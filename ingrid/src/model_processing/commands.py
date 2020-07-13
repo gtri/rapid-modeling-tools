@@ -17,7 +17,7 @@ from model_processing.graph_creation import Evaluator, Manager, MDTranslator
 from . import PATTERNS
 
 
-def create_md_model(input_paths, output_path=""):
+def create_md_model(input_paths, pattern="", output_path=""):
     """
     For each Excel file in input_paths create a JSON file that creates
     the desired model in MagicDraw, as long as it corresponds to a valid
@@ -27,6 +27,9 @@ def create_md_model(input_paths, output_path=""):
     ----------
     input_paths : list of str
         List of strings parsed from the command line.
+
+    pattern : str
+        Path to pattern file provided by the user.
 
     output_path : str
         String of the desired location for the output. This is optional
@@ -39,11 +42,6 @@ def create_md_model(input_paths, output_path=""):
         Generates a JSON file as output that the Player Piano digests to
         generate a new MagicDraw model.
     """
-    json_patterns = {
-        pattern_path.parts[-1].split(".")[0].lower(): pattern_path
-        for pattern_path in PATTERNS.glob("*.json")
-    }
-
     wkbk_paths = []
     here = Path(os.getcwd())
 
@@ -60,6 +58,7 @@ def create_md_model(input_paths, output_path=""):
 
     for wkbk in wkbk_paths:
         # TODO: Can this support Heterogeneous excel input files?
+        # YES when the user does NOT provide an input path
         if wkbk.parts[-1].split(".")[-1] != "xlsx":
             msg = (
                 "\n"
@@ -71,81 +70,92 @@ def create_md_model(input_paths, output_path=""):
         xl = pd.ExcelFile(wkbk)
         not_found = 0
         pattern_sheet = ""
-        for sheet in xl.sheet_names:
-            if sheet.lower() not in json_patterns.keys():
-                not_found += 1
-                if not_found == len(xl.sheet_names):
-                    warn_msg = (
-                        'The Excel File "{0}" cannot be processed as none of the worksheets match a '
-                        + "supported pattern type."
-                    ).format(wkbk.parts[-1])
-                    patterns_msg = (
-                        "The currently supported "
-                        + "patterns are: {0}".format([*json_patterns])
-                    )
-                    patts = (
-                        "New patterns may be added in the"
-                        + " ingrid/src/model_processing/patterns directory"
-                    )
-                    warnings.warn(
-                        "\n" + warn_msg + "\n" + patterns_msg + "\n" + patts
-                    )
-                    break
+        if not pattern:  # If path to pattern provided ALL input MUST use it
+            json_patterns = {
+                pattern_path.parts[-1].split(".")[0].lower(): pattern_path
+                for pattern_path in PATTERNS.glob("*.json")
+            }
+            for sheet in xl.sheet_names:
+                if sheet.lower() not in json_patterns.keys():
+                    not_found += 1
+                    if not_found == len(xl.sheet_names):
+                        warn_msg = (
+                            'The Excel File "{0}" cannot be processed as none of the worksheets match a '
+                            + "supported pattern type."
+                        ).format(wkbk.parts[-1])
+                        patterns_msg = (
+                            "The currently supported "
+                            + "patterns are: {0}".format([*json_patterns])
+                        )
+                        patts = (
+                            "New patterns may be added in the"
+                            + " ingrid/src/model_processing/patterns directory"
+                        )
+                        warnings.warn(
+                            "\n"
+                            + warn_msg
+                            + "\n"
+                            + patterns_msg
+                            + "\n"
+                            + patts
+                        )
+                        break
+                    else:
+                        continue
                 else:
-                    continue
-            else:
-                pattern_sheet = sheet.lower()
-                break
+                    pattern_sheet = sheet.lower()
+                    break
 
-        if pattern_sheet:
+        if pattern:
+            pattern = Path(pattern)
+            data = json.loads(pattern.read_text())
+        elif pattern_sheet:
             data = (json_patterns[pattern_sheet]).read_text()
             data = json.loads(data)
-            translator = MDTranslator(json_data=data)
-            evaluator = Evaluator(excel_file=wkbk, translator=translator)
-            evaluator.rename_df_columns()
-            evaluator.add_missing_columns()
-            evaluator.to_property_di_graph()
-            property_di_graph = evaluator.prop_di_graph
-            vert_set = property_di_graph.vertex_set
-            json_out = {"modification targets": []}
-            decs_json = []
-            edge_json = []
-            for vertex in vert_set:
-                vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
-                    translator=translator
-                )
-                json_out["modification targets"].extend(vert_uml)
-                decs_json.extend(decs_uml)
-                edge_json.extend(edge_uml)
+        else:
+            continue
+        translator = MDTranslator(json_data=data)
+        evaluator = Evaluator(excel_file=wkbk, translator=translator)
+        evaluator.rename_df_columns()
+        evaluator.add_missing_columns()
+        evaluator.to_property_di_graph()
+        property_di_graph = evaluator.prop_di_graph
+        vert_set = property_di_graph.vertex_set
+        json_out = {"modification targets": []}
+        decs_json = []
+        edge_json = []
+        for vertex in vert_set:
+            vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
+                translator=translator
+            )
+            json_out["modification targets"].extend(vert_uml)
+            decs_json.extend(decs_uml)
+            edge_json.extend(edge_uml)
 
-            json_out["modification targets"].extend(decs_json)
-            json_out["modification targets"].extend(edge_json)
+        json_out["modification targets"].extend(decs_json)
+        json_out["modification targets"].extend(edge_json)
 
-            if not output_path:
-                outfile = wkbk.parent.joinpath(wkbk.parts[-1]).with_suffix(
-                    ".json"
-                )
-            else:
-                outpath = Path(output_path)
-                if not outpath.is_absolute():
-                    if outpath.parts[-1] == here.parts[-1]:
-                        outpath = here
-                    else:
-                        outpath = here / outpath
-                outfile = (
-                    Path(outpath)
-                    .joinpath(wkbk.parts[-1])
-                    .with_suffix(".json")
-                )
-
-            (outfile).write_text(
-                json.dumps(json_out, indent=4, sort_keys=True)
+        if not output_path:
+            outfile = wkbk.parent.joinpath(wkbk.parts[-1]).with_suffix(
+                ".json"
+            )
+        else:
+            outpath = Path(output_path)
+            if not outpath.is_absolute():
+                if outpath.parts[-1] == here.parts[-1]:
+                    outpath = here
+                else:
+                    outpath = here / outpath
+            outfile = (
+                Path(outpath).joinpath(wkbk.parts[-1]).with_suffix(".json")
             )
 
-            print("Creation Complete")
+        (outfile).write_text(json.dumps(json_out, indent=4, sort_keys=True))
+
+        print("Creation Complete")
 
 
-def compare_md_model(inputs, output_path=""):
+def compare_md_model(inputs, pattern="", output_path=""):
     """
     Produces difference files (JSON and Excel) for the original file to
     each change file provided.
@@ -156,6 +166,9 @@ def compare_md_model(inputs, output_path=""):
         List of one or more file paths parsed from the command line.
         This can be a path to one or more Excel files or a path to a
         directory of Excel files.
+
+    pattern : str
+        Path to pattern file provided by the user.
 
     output_path : str
         String of the desired location for the output. This is optional
@@ -222,47 +235,54 @@ def compare_md_model(inputs, output_path=""):
     xl = pd.ExcelFile(wkbk_paths[0])
     not_found = 0
     pattern_sheet = ""
-    for sheet in xl.sheet_names:
-        if sheet.lower() not in json_patterns.keys():
-            not_found += 1
-            if not_found == len(xl.sheet_names):
-                warn_msg = (
-                    'The Excel File "{0}" cannot be processed as none of the worksheets match a '
-                    + "supported pattern type."
-                ).format(wkbk.parts[-1])
-                patterns_msg = (
-                    "The currently supported "
-                    + "patterns are: {0}".format([*json_patterns])
-                )
-                patts = (
-                    "New patterns may be added in the"
-                    + " ingrid/src/model_processing/patterns directory"
-                )
-                warnings.warn(
-                    "\n" + warn_msg + "\n" + patterns_msg + "\n" + patts
-                )
-                break
+    if not pattern:
+        json_patterns = {
+            pattern_path.parts[-1].split(".")[0].lower(): pattern_path
+            for pattern_path in PATTERNS.glob("*.json")
+        }
+        for sheet in xl.sheet_names:
+            if sheet.lower() not in json_patterns.keys():
+                not_found += 1
+                if not_found == len(xl.sheet_names):
+                    warn_msg = (
+                        'The Excel File "{0}" cannot be processed as none of the worksheets match a '
+                        + "supported pattern type."
+                    ).format(wkbk.parts[-1])
+                    patterns_msg = (
+                        "The currently supported "
+                        + "patterns are: {0}".format([*json_patterns])
+                    )
+                    patts = (
+                        "New patterns may be added in the"
+                        + " ingrid/src/model_processing/patterns directory"
+                    )
+                    warnings.warn(
+                        "\n" + warn_msg + "\n" + patterns_msg + "\n" + patts
+                    )
+                    break
+                else:
+                    continue
             else:
-                continue
-        else:
-            pattern_sheet = sheet.lower()
-            break
-
-    if pattern_sheet:
-        manager = Manager(
-            excel_path=wkbk_paths, json_path=[json_patterns[pattern_sheet]]
-        )
-        for evaluator in manager.evaluators:
-            evaluator.rename_df_columns()
-            evaluator.add_missing_columns()
-            evaluator.to_property_di_graph()
-
-        manager.get_pattern_graph_diff(out_directory=outpath)
-        manager.changes_to_excel(out_directory=outpath)
-
-        print("Comparison Complete")
-    else:
+                pattern_sheet = sheet.lower()
+                break
+    if not pattern and not pattern_sheet:
         raise RuntimeError(
-            "No matching pattern sheet was found."
+            "No matching pattern found nor provided."
             + " Check the sheet names and try again."
         )
+
+    if pattern:
+        pattern = Path(pattern)
+    else:
+        pattern = json_patterns[pattern_sheet]
+
+    manager = Manager(excel_path=wkbk_paths, json_path=[pattern])
+    for evaluator in manager.evaluators:
+        evaluator.rename_df_columns()
+        evaluator.add_missing_columns()
+        evaluator.to_property_di_graph()
+
+    manager.get_pattern_graph_diff(out_directory=outpath)
+    manager.changes_to_excel(out_directory=outpath)
+
+    print("Comparison Complete")

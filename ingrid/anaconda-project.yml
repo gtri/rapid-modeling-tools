@@ -22,7 +22,7 @@ commands:
   cli:
     windows: model-processing
     unix: model-processing
-    env_spec: default
+    env_spec: model-processing-dev
     description: Call model-processing
 
   build-docs:
