@@ -42,7 +42,7 @@ class TestCommands(unittest.TestCase):
 
             wkbk_path = [
                 ROOT / "model_processing" / "patterns" / "Composition.json",
-                # tmpdir / "Composition Example 2.xlsx",
+                tmpdir / "Composition Example 2.xlsx",
                 tmpdir,
             ]
 
