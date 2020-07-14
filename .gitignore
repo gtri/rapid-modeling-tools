@@ -20,3 +20,4 @@ ingrid/build*
 ingrid/dist*
 .idea/
 *.json
+!ingrid/src/model_processing/patterns/*.json
