@@ -21,4 +21,4 @@ if [ "$?" != 0 ]; then
   fi
 fi
 python -m pip install --upgrade pip
-pip install -r requirements-dev.txt
+pip install -r requirements-install.txt
