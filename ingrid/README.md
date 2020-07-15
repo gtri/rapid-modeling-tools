@@ -19,7 +19,7 @@ Advanced users and developers should follow this README. Typical users do not ne
   git clone https://github.com/gtri/rapid-modeling-tools.git
   cd rapid-modeling-tools
 ```
-  
+
 - Install either [Anaconda](https://www.anaconda.com/distribution/ "Anaconda Download Page") or [Miniconda](https://docs.conda.io/en/latest/miniconda.html "Miniconda Download Page").
 - Install `Anaconda Project`
   - Create / activate a conda environment containing the package `anaconda-project` installed
@@ -42,8 +42,8 @@ Advanced users and developers should follow this README. Typical users do not ne
     - Find the available commands listed in [`anaconda-project.yml`](anaconda-project.yml). `anaconda-project run <command name (and flags if applicable)>` invokes the desired command with specified options in a conda managed environment.
     - Example commands:
         - `anaconda-project run test` - this will run all the tests using `pytest`
-        - `anaconda-project run cli --create --input "<path\to\file\filename>" --output "<path\to\output\directory>"` - this will run `model_processing` to create the JSON file.
-        - `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --output "<path\to\output\directory>"` - this will run `model_processing` to compare the each update Excel file to the original and generates JOSN files with MagicDraw commands to update the original to match each file. Also, Ingrid produces an Excel file detailing the changes detected, added and deleted elements and changes that Ingrid could not determine and did not include in the update JSON.
+        - `anaconda-project run cli --create --input "<path\to\file\filename>" --pattern "<path\to\user\defined\pattern(file or directory)>" --output "<path\to\output\directory>"` - this will run `model_processing` to create the JSON file.
+        - `anaconda-project run cli --compare --original "<path\to\original\file\filename>" --update "<path\to\update\directory>" --pattern "<path\to\user\defined\pattern(file or directory)>" --output "<path\to\output\directory>"` - this will run `model_processing` to compare the each update Excel file to the original and generates JOSN files with MagicDraw commands to update the original to match each file. Also, Ingrid produces an Excel file detailing the changes detected, added and deleted elements and changes that Ingrid could not determine and did not include in the update JSON.
           - **Note:** `anaconda-project run cli` does **not** require the user to specify an `--output` directory (the default is to use the same directory as the input files).
         * **Help Messages**
             * `anaconda-project list-commands` prints all `anaconda-project run <command>` options
@@ -69,6 +69,9 @@ Required additional flags:
         - Ingrid understands: a single path, a list of paths or a path to a directory containing Excel files. If Ingrid receives multiple Excel files then it runs a `--create` command for each of them.
 
 Optional additional flags:
+- `--pattern`
+    - Provide the absolute or relative path to a user-defined pattern file or directory of files
+        - Ingrid combines any pattern file(s) provided through this argument with the existing patterns when scanning input Excel sheets for their accompanying pattern.
 - `--output`
     - Provide the absolute or relative path to an existing output directory.
 
@@ -90,6 +93,9 @@ Required additional flags:
     - Absolute or relative path to input Excel files or directory.
 
 Optional additional flags:
+- `--pattern`
+    - Provide the absolute or relative path to a user-defined pattern file or directory of files
+        - Ingrid combines any pattern file(s) provided through this argument with the existing patterns when scanning input Excel sheets for their accompanying pattern.
 - `--output`
     - Provide the absolute or relative path to an existing output directory.
 

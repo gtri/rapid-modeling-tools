@@ -57,15 +57,18 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
         wkbk_paths.extend(p)
 
     json_patterns = {
-        pattern_path.parts[-1].split(".")[0].lower(): pattern_path
+        pattern_path.name.split(".")[0].lower(): pattern_path
         for pattern_path in PATTERNS.glob("*.json")
     }
     if input_patterns:
         for in_pat in map(Path, input_patterns):
             if in_pat.is_dir():
-                new_pats = {inp.name: inp for inp in in_pat.glob("*.json")}
+                new_pats = {
+                    inp.name.split(".")[0].lower(): inp
+                    for inp in in_pat.glob("*.json")
+                }
             else:
-                new_pats = {in_pat.name: in_pat}
+                new_pats = {str(in_pat.name).lower(): in_pat}
             json_patterns.update(new_pats)
 
     for wkbk in wkbk_paths:
@@ -225,15 +228,18 @@ def compare_md_model(inputs, input_patterns="", output_path=""):
             continue
 
     json_patterns = {
-        pattern_path.parts[-1].split(".")[0].lower(): pattern_path
+        pattern_path.name.split(".")[0].lower(): pattern_path
         for pattern_path in PATTERNS.glob("*.json")
     }
     if input_patterns:
         for in_pat in map(Path, input_patterns):
             if in_pat.is_dir():
-                new_pats = {inp.name: inp for inp in in_pat.glob("*.json")}
+                new_pats = {
+                    inp.name.split(".")[0].lower(): inp
+                    for inp in in_pat.glob("*.json")
+                }
             else:
-                new_pats = {in_pat.name: in_pat}
+                new_pats = {str(in_pat.name).lower(): in_pat}
             json_patterns.update(new_pats)
 
     xl = pd.ExcelFile(wkbk_paths[0])
