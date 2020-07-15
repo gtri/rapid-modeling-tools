@@ -75,6 +75,7 @@ def main():
     parser.add_argument(
         "-p",
         "--pattern",
+        nargs="*",
         help="Provide the path to the accompanying pattern JSON.",
         type=str,
     )

@@ -59,15 +59,17 @@ class TestCommands(unittest.TestCase):
             # and a directory of Excel files.
             create_md_model(
                 [tmpdir / "Composition Example 2.xlsx"],
-                pattern=str(
-                    (
-                        ROOT
-                        / "src"
-                        / "model_processing"
-                        / "patterns"
-                        / "Composition.json"
+                input_patterns=[
+                    str(
+                        (
+                            ROOT
+                            / "src"
+                            / "model_processing"
+                            / "patterns"
+                            / "Composition.json"
+                        )
                     )
-                ),
+                ],
             )
             create_md_model(wkbk_path)
             # expect 5
@@ -190,17 +192,19 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                pattern_path = str(
-                    (
-                        ROOT
-                        / "src"
-                        / "model_processing"
-                        / "patterns"
-                        / "Composition.json"
+                pattern_path = [
+                    str(
+                        (
+                            ROOT
+                            / "src"
+                            / "model_processing"
+                            / "patterns"
+                            / "Composition.json"
+                        )
                     )
-                )
+                ]
                 compare_md_model(
-                    inputs, pattern=pattern_path, output_path=outdir
+                    inputs, input_patterns=pattern_path, output_path=outdir
                 )
                 # expect 3 json and 3 more excel files
                 cmp_json = list(outdir.glob("*.json"))
