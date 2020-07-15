@@ -68,7 +68,7 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
                     for inp in in_pat.glob("*.json")
                 }
             else:
-                new_pats = {str(in_pat.name).lower(): in_pat}
+                new_pats = {in_pat.name.split(".")[0].lower(): in_pat}
             json_patterns.update(new_pats)
 
     for wkbk in wkbk_paths:
@@ -239,7 +239,7 @@ def compare_md_model(inputs, input_patterns="", output_path=""):
                     for inp in in_pat.glob("*.json")
                 }
             else:
-                new_pats = {str(in_pat.name).lower(): in_pat}
+                new_pats = {in_pat.name.split(".")[0].lower(): in_pat}
             json_patterns.update(new_pats)
 
     xl = pd.ExcelFile(wkbk_paths[0])
