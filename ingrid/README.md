@@ -17,8 +17,7 @@ Advanced users and developers should follow this README. Typical users do not ne
 - Clone `Rapid Modeling Tools`
   ```bash
   git clone https://github.com/gtri/rapid-modeling-tools.git
-  cd rapid-modeling-tools
-```
+  cd rapid-modeling-tools```
   
 - Install either [Anaconda](https://www.anaconda.com/distribution/ "Anaconda Download Page") or [Miniconda](https://docs.conda.io/en/latest/miniconda.html "Miniconda Download Page").
 - Install `Anaconda Project`
