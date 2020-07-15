@@ -114,7 +114,9 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
             data = json.loads(data)
         else:
             continue
-        translator = MDTranslator(json_data=data)
+        translator = MDTranslator(
+            json_path=json_patterns[pattern_sheet], json_data=data
+        )
         evaluator = Evaluator(excel_file=wkbk, translator=translator)
         evaluator.rename_df_columns()
         evaluator.add_missing_columns()
