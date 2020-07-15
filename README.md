@@ -1,5 +1,6 @@
 ![](https://github.com/shaneconnelly23/rmt/workflows/Test%20Python/badge.svg)
 ![](https://github.com/shaneconnelly23/rmt/workflows/Lint%20Groovy/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/shaneconnelly23/rmt/badge.svg?branch=master)](https://coveralls.io/github/shaneconnelly23/rmt?branch=master)
 
 # Rapid Modeling Tools
 
