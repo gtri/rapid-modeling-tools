@@ -1,4 +1,4 @@
-![](https://github.com/shaneconnelly23/rmt/workflows/test-python/badge.svg)
+![](https://github.com/shaneconnelly23/rmt/workflows/Test%20Python/badge.svg)
 # Rapid Modeling Tools
 
 ## Why Was This Tool Made?
