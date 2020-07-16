@@ -47,6 +47,6 @@ setup(
         "xlrd >=0.9.0",
         "openpyxl",
     ],
-    tests_require=["pytest-cov", "pytest-flake8", "pytest", "pytest-black",],
+    tests_require=["pytest", "pytest-cov", "pytest-flake8", "pytest-black"],
     zip_safe=False,
 )
