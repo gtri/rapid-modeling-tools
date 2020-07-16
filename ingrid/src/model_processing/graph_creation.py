@@ -56,7 +56,7 @@ class Manager:
     excel_path : list
         list of paths to Excel Files, parsed from the command line.
 
-    json_path : str
+    json_path : list
         string indicating which JSON file to load from the patterns
         directory.
 
@@ -90,7 +90,9 @@ class Manager:
             for data_file in self.json_path:
                 data = json.loads(Path(data_file).read_text())
                 self.json_data.append(data)
-                self.translator.append(MDTranslator(json_data=data))
+                self.translator.append(
+                    MDTranslator(json_path=Path(data_file), json_data=data)
+                )
 
     def create_evaluators(self):
         """
@@ -721,10 +723,7 @@ class Evaluator:
             Unrecognized sheet name.
         """
         # TODO: Generalize/Standardize this function
-        patterns = [
-            pattern.name.split(".")[0].lower()
-            for pattern in PATTERNS.glob("*.json")
-        ]
+        pattern = self.translator.pattern_name
         ids = [
             "id",
             "ids",
@@ -759,7 +758,7 @@ class Evaluator:
         # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(excel_sheets):  # Alphabetical sort
             # Find the Pattern Sheet
-            if any(pattern in sheet.lower() for pattern in patterns):
+            if pattern in sheet.lower():
                 # Maybe you named the ids sheet Pattern IDs I will find it
                 if any(id_str in sheet.lower() for id_str in ids):
                     self.df_ids = excel_sheets[sheet]
@@ -876,8 +875,8 @@ class Evaluator:
                             {row[0]: self.translator.uml_id[row[1]]}
                         )
                         continue
-            elif any(id_str in sheet.lower() for id_str in ids) and not any(
-                pattern in sheet.lower() for pattern in patterns
+            elif any(id_str in sheet.lower() for id_str in ids) and not (
+                pattern in sheet.lower()
             ):
                 self.df_ids = excel_sheets[sheet]
                 self.df_ids.set_index(self.df_ids.columns[0], inplace=True)
@@ -1116,13 +1115,30 @@ class MDTranslator:
 
     Parameters
     ----------
+    json_path : Path
+        The path object to the JSON pattern file
     data : dict
         The JSON data saved off when the Manager accessed the JSON file.
     """
 
-    def __init__(self, json_data=None):
+    def __init__(self, json_path=None, json_data=None):
+        self.json_path = json_path
         self.data = json_data
         self.uml_id = {}
+
+    @property
+    def pattern_path(self):
+        """
+        Returns the path to the pattern file
+        """
+        return self.json_path
+
+    @property
+    def pattern_name(self):
+        """
+        Returns the name of the pattern file
+        """
+        return self.json_path.name.split(".")[0].lower()
 
     def get_uml_id(self, name=None):
         """

@@ -48,11 +48,29 @@ class TestCommands(unittest.TestCase):
 
             # Include JSON file just to confirm it is ignored.
             wkbk_path = [
-                ROOT / "model_processing" / "patterns" / "Composition.json",
+                ROOT
+                / "src"
+                / "model_processing"
+                / "patterns"
+                / "Composition.json",
                 tmpdir / "Composition Example 2.xlsx",
                 tmpdir,
-            ]  # test ability to ignore non-Excel, handle a file
+            ]  # test ability to ignore non-Excel, handle single file
             # and a directory of Excel files.
+            create_md_model(
+                [tmpdir / "Composition Example 2.xlsx"],
+                input_patterns=[
+                    str(
+                        (
+                            ROOT
+                            / "src"
+                            / "model_processing"
+                            / "patterns"
+                            / "Composition.json"
+                        )
+                    )
+                ],
+            )
             create_md_model(wkbk_path)
             # expect 5
             cr_json = list(tmpdir.glob("*.json"))
@@ -63,7 +81,7 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
                 out_tmp_dir = Path(out_tmp_dir)
-                create_md_model(wkbk_path, out_tmp_dir)
+                create_md_model(wkbk_path, output_path=out_tmp_dir)
                 new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(5, len(new_json))
 
@@ -106,8 +124,8 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                compare_md_model(inputs, outdir)
-                compare_md_model(ins, outdir)
+                compare_md_model(inputs, output_path=outdir)
+                compare_md_model(ins, output_path=outdir)
                 # expect 3 json and 3 more excel files
                 cr_json = list(outdir.glob("*.json"))
                 self.assertEqual(3, len(cr_json))
@@ -146,7 +164,7 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
                 out_tmp_dir = Path(out_tmp_dir)
-                create_md_model(wkbk_path, out_tmp_dir)
+                create_md_model(wkbk_path, output_path=out_tmp_dir)
                 new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(1, len(new_json))
                 cr_data_path = out_tmp_dir / "Composition Example 2.json"
@@ -174,7 +192,20 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                compare_md_model(inputs, outdir)
+                pattern_path = [
+                    str(
+                        (
+                            ROOT
+                            / "src"
+                            / "model_processing"
+                            / "patterns"
+                            / "Composition.json"
+                        )
+                    )
+                ]
+                compare_md_model(
+                    inputs, input_patterns=pattern_path, output_path=outdir
+                )
                 # expect 3 json and 3 more excel files
                 cmp_json = list(outdir.glob("*.json"))
                 compare_data = json.loads(cmp_json[0].read_text())

@@ -7,6 +7,7 @@ the BSD 3-Clause license. See the LICENSE file for details.
 import argparse
 
 from .commands import compare_md_model, create_md_model
+from ._version import __version__
 
 
 def main():
@@ -72,19 +73,26 @@ def main():
     )
 
     parser.add_argument(
+        "-p",
+        "--pattern",
+        nargs="*",
+        help="Provide the path to the accompanying pattern JSON.",
+        type=str,
+    )
+
+    parser.add_argument(
         "-v", "--version", help="version information", action="store_true"
     )
 
     args = parser.parse_args()
     if args.version:
-        # TODO: get __version__ form init.py and setup.py
-        return "0.1.0"
+        return __version__
     elif args.create:
-        return create_md_model(args.input, args.output)
+        return create_md_model(args.input, args.pattern, args.output)
     elif args.compare:
         inputs = [args.original]
         inputs.extend(args.updated)
-        return compare_md_model(inputs, args.output)
+        return compare_md_model(inputs, args.pattern, args.output)
     else:
         return "Not a valid input argument. Choose from create or compare"
 

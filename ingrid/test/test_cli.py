@@ -46,6 +46,19 @@ class TestCommands(unittest.TestCase):
                 tmpdir,
             ]
 
+            pattern_path = (
+                ROOT
+                / "src"
+                / "model_processing"
+                / "patterns"
+                / "Composition.json"
+            )
+            pattern_command = (
+                ["model-processing", "--create", "--input"]
+                + [str(tmpdir / "Composition Example 2.xlsx")]
+                + ["--pattern", str(pattern_path)]
+            )
+            subprocess.run(pattern_command)
             command = ["model-processing", "--create", "--input"] + [
                 str(f) for f in wkbk_path
             ]
@@ -235,6 +248,13 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
+                pattern_path = (
+                    ROOT
+                    / "src"
+                    / "model_processing"
+                    / "patterns"
+                    / "Composition.json"
+                )
                 command = [
                     "model-processing",
                     "--compare",
@@ -242,6 +262,8 @@ class TestCommands(unittest.TestCase):
                     str(original),
                     "--updated",
                     str(updated[0]),
+                    "--pattern",
+                    str(pattern_path),
                     "--output",
                     str(outdir),
                 ]

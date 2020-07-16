@@ -60,6 +60,8 @@ cd ../ingrid-quick-start
 model-processing --create --input "Composition Example Baseline.xlsx"
 ```
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+	- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
+		- The link above elaborates on this flag.
 
 The create command invoked above creates a `JSON` file named "Composition Example Baseline.json" in either the specified output directory (as given here) or the same directory location as the input file when not provided an output directory. This `JSON` file contains the instructions required by the Player Piano to build the Cameo model expressed by the Excel data.
 
@@ -135,8 +137,9 @@ Having created the two data files, Ingrid's `--compare` command computes the dif
 ```bash
 model-processing --compare --original "Composition Example Baseline.xlsx" --update "Composition Example Updated.xlsx"
 ```
-
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
+	- The link above elaborates on this flag.
 
 Successful execution will create two files, one titled "graph_diff_changes_*date-time*.JSON" and an Excel file named "Model Diffs *date time*.xlsx"
 
@@ -176,6 +179,9 @@ Create a tab titled `SystemParts IDs` and populate with the IDs from the baselin
 ```bash
 model-processing --compare --original "SystemParts Example Baseline.xlsx" --update "SystemParts Example Updated.xlsx"
 ```
+[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
+	- The link above elaborates on this flag.
 
 The comparison, between the empty baseline and populated update file, produces add commands for the Player Piano to create new elements to the model adhering to the new pattern.
 
