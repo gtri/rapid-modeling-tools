@@ -37,21 +37,21 @@ Note: Each finding has a status flag (or will soon) at the start of the finding.
     * **[IGNORE]** Looking at the code in `commands.py`, it looks like you cycle through the sheets in the workbook. This is confusing with this quick start writeup which sounds like I am to make 1 workbook for each black tab. NOTE: as part of the PR I changed the quickstart to say "...export any of the black-colored tabs that you would like to import...". I think this makes it clearer.   
 * **[HEADING]** Ingrid Readme (`ingrid/README.md`)
   * **[INFO]** I ran the setup as documented in this PR's Ingrid/readme.md. I create a basic python 3.6 env and install anaconda-project. I then run prepare and run setup. All of that is successful. this is the setup for the following findings.
-  * **[OPEN]** When I run `anaconda-project run make-html` I get a make error --- `make: *** No rule to make target html.  Stop.`. Note I am on a Mac.   
+  * **[CLOSED]** When I run `anaconda-project run make-html` I get a make error --- `make: *** No rule to make target html.  Stop.`. Note I am on a Mac.   
     * **[INFO]** The issue is that the make (or make.bat) are not present. I am pretty sure the `sphinx-quickstart` script is what creates the Makefile and a make.bat. Since I haven't run that I don't have the make file. 
     * **[INFO]** I did also try `sphinx-build -b html src/model_processing doc` but got an error saying `config directory doesn't contain a conf.py file`. 
-  * **[OPEN]** When I ran `anaconda-project run test` it found 7 failures. 3 of these were in `test_commands.py`, 2 were in `test_graph_creation.py`, 2 were in `test_utils.py`.
+  * **[CLOSED]** When I ran `anaconda-project run test` it found 7 failures. 3 of these were in `test_commands.py`, 2 were in `test_graph_creation.py`, 2 were in `test_utils.py`.
   * **[CLOSED]** Under Example Commands where you show the --compare example, the description needs to be expanded. I added this but didnt know how to complete the sentence. Right now it says `this will run model_processing to compare...`
   * **[IN PR]** The API section needs to be reviewed for accuracy. Specifically the description for the input, original, and updated flags need to be checked.    
 * **[HEADING]** Patterns (`../ingrid/src/model_processing/patterns/README.md`)
   * **[CLOSED]** Looking at these JSON files they seem specific to your spreadsheet. If I am doing a new project would I need to create new json files? I have not seen any discussion about updating / creating pattern files. The quick start makes it sound like if I want to make new patterns I can rather than -- unless you are using this dummy show-and-tell spreadsheet you have to create your own patterns. 
-  * **[OPEN]** If the user creates a new pattern then they should go somewhere other than deep in this `src` folder like maybe `~/patterns` or `./patterns`.
+  * **[CLOSED]** If the user creates a new pattern then they should go somewhere other than deep in this `src` folder like maybe `~/patterns` or `./patterns`.
   * **[IGNORE]** (Once i changed the install method this went away) These files do not come over as part of the install which means that the `PATTERNS` variable is pointing to a non-existent path. This means that the `json_patterns` variable under commands.create_md_model is always an empty list (`[]`).  When I say it doesn't come over, what I mean is that when i go look in the install directory (~/miniconda3/envs/model_processing/lib/python3.6/site-packages/model_processing-0.1.0-py3.6.egg/model_processing/) there is not a patterns folder.  
 * **[HEADING]** General model_processing comments
-  * **[OPEN]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `Sheet2`. I got this error -- `RuntimeError: Unrecognized sheet names for: SystemSpatialParts.xlsx`.  Does this mean that there can only be one sheet in the workbook? If so this should provide a more helpful error / graceful exit. 
-  * **[OPEN]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `interfacedelegation`. I got this error -- `IndexError: single positional indexer is out-of-bounds`.  This is caused by graph_creation.py line 982 in add_missing_columns: `first_node_data = self.df.iloc[:, 0]`
+  * **[CLOSED]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `Sheet2`. I got this error -- `RuntimeError: Unrecognized sheet names for: SystemSpatialParts.xlsx`.  Does this mean that there can only be one sheet in the workbook? If so this should provide a more helpful error / graceful exit. 
+  * **[CLOSED]** I ran a simple create command and pointed to a single Excel file. The file had two sheets named `SystemSpatialParts` and `interfacedelegation`. I got this error -- `IndexError: single positional indexer is out-of-bounds`.  This is caused by graph_creation.py line 982 in add_missing_columns: `first_node_data = self.df.iloc[:, 0]`
 * **[HEADING]** CONTRIBUTING.md
-  * **[OPEN]** This file needs to be updated. It includes references to things lik `build:sdist`, `build:conda`, `robotpandas`
+  * **[CLOSED]** This file needs to be updated. It includes references to things lik `build:sdist`, `build:conda`, `robotpandas`
 * **[HEADING]** Github Workflows
-  * **[OPEN]** Why do you only run CI on master? I would expect you want want CI to run on your dev branches as well (quick feedback to developer)
-  * **[OPEN]** Consider archiving test artifacts as part of CI run. Right now everything is deleted when the CI run completes. 
+  * **[CLOSED]** Why do you only run CI on master? I would expect you want want CI to run on your dev branches as well (quick feedback to developer)
+  * **[CLOSED]** Consider archiving test artifacts as part of CI run. Right now everything is deleted when the CI run completes. 
