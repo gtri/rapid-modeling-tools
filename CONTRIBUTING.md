@@ -1,26 +1,33 @@
-# Contributing
+# How to contribute
 
-## Set up
+## Bug reports or feature requests
 
-- Clone the repo
-- Install [anaconda-project](https://anaconda.org/anaconda/anaconda-project)
+[Open an issue](https://github.com/gtri/rapid-modeling-tools/issues) with your bug report
+or feature request.
 
-    ### Make changes
-    - Create an issue to accompany pull requests to describe changes.
+## Contributing code
 
-## Code Quality
+1. [Create a fork](https://github.com/gtri/rapid-modeling-tools/fork)
 
-Keep the style consistent
+1. Get [Miniconda](https://conda.io/miniconda.html).
 
-```
-anaconda-project run black
-```
+1. Get anaconda-project...
 
-Keep the coverage up by adding unit tests
+        $ conda install -n base anaconda-project 
 
-```
-anaconda-project run test
-```
+1. In the repo, run... 
+
+        $ anaconda-project prepare
+        anaconda-project run setup
+
+1. Keep the style consistent and the quality high by running Black and Pytest...
+
+        $ anaconda-project run black
+        $ anaconda-project run tests
+
+4. Push a commit with a meaningful message to your own fork.
+
+5. Submit a [pull request](https://github.com/gtri/rapid-modeling-tools/compare). The PR should be tied to a GitHub issue. 
 
 ## For Questions
 
