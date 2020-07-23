@@ -30,6 +30,10 @@ jobs:
       run: |
         pytest
 
+    - name: List directory
+      run: |
+        ls -la
+
     # - name: Archive test results
     #   uses: actions/upload-artifact@v1
     #   with:
