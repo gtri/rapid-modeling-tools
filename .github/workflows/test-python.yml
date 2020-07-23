@@ -28,17 +28,16 @@ jobs:
 
     - name: Test with pytest
       run: |
-        cd ingrid
-        pytest
+        pytest -c ingrid/setup.cfg
 
-    # - name: Archive test results
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: test-report
-    #     path: ingrid/junit.xml
-    #
-    # - name: Archive test coverage report
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: test-coverage
-    #     path: ingrid/coverage.xml
+    - name: Archive test results
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-report
+        path: ingrid/junit.xml
+
+    - name: Archive test coverage report
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-coverage
+        path: ingrid/coverage.xml
