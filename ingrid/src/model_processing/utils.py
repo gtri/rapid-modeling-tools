@@ -1,17 +1,11 @@
 """
-Copyright (C) 2019 by the Georgia Tech Research Institute (GTRI)
+Copyright (C) 2020 by the Georgia Tech Research Institute (GTRI)
 This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
 
-
-import json
-import os
-from copy import copy
 from functools import reduce
-from itertools import chain, count
-from pathlib import Path
-from random import shuffle
+from itertools import chain
 
 
 # TODO: to selectively import one of the utils is the function that needs to do
@@ -66,19 +60,19 @@ def associate_predecessors(graph, node=""):
 
 def associate_node_types_settings(df, tr, root_attr_cols, node=""):
     """
-    Packages the settings, node types and attribtues of each node if they
+    Packages the settings, node types and attributes of each node if they
     exist.
 
     Gets the columns where the node shows up and get the attribute
     columns if the node occupies a role as a root node. For each node type
-    that the vertex in question posesses, check the settings section of
+    that the vertex in question possesses, check the settings section of
     the JSON for metadata and associate it to the node if it exists.
     Finally, return the settings, node types and attributes as a
     dictionary to be associated on the vertex object at creation.
 
     Parameters
     ----------
-    df : Panadas DataFrame
+    df : Pandas DataFrame
         The DataFrame that was read in from the spreadsheet and populated by
         the filling of the subgraph according to the JSON.
 
@@ -138,8 +132,11 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=""):
         else:
             settings = []
 
-    type_setting_dict = {"settings": settings, "node_types": list(node_types)}
-    type_setting_dict["attributes"] = node_attr_dict
+    type_setting_dict = {
+        "settings": settings,
+        "node_types": list(node_types),
+        "attributes": node_attr_dict,
+    }
     return type_setting_dict
 
 
@@ -291,7 +288,7 @@ def create_column_values_under(
     suffix : string
         If the inferred column name contained a '-' followed by additional
         characters then those are treated as the suffix. Otherwise, it
-        initalizes the the empty string and does nothing.
+        initializes the the empty string and does nothing.
 
     Returns
     -------
@@ -306,7 +303,7 @@ def create_column_values_under(
     'A_composite owner_component-end1' with prefix=A,
     first_node_data=df['composite owner'],
     second_node_data=df['component'], and suffix='-end1'
-    To produce the dataframe entires of the form:
+    To produce the dataframe entries of the form:
     df['A_composite owner_component'] = A_<composite owner>_<component>
     """
     under = "_"
@@ -499,7 +496,7 @@ def match_changes(change_dict=None):
     part of the for loop skips all keys of type string and allocates the
     added edges to the added pile and the deleted edges to the deleted
     pile. Starting at scores, each original edge that does not show up
-    exactly in the changed edge set is paird up with all change edges
+    exactly in the changed edge set is paired up with all change edges
     corresponding to the same edge type as the original. Then the list of
     potential matches (change edges) is compared to the original and
     scored based on the match() function. Once scored, only keep the
@@ -547,7 +544,8 @@ def match_changes(change_dict=None):
             str_dict[suitor] = change_dict[suitor]
             if not change_dict[suitor] and suitor not in add_del:
                 # TODO: I think this will cause issues in the json output.
-                deleted_set = set(str_dict["Deleted"]).add(set(suitor))
+                deleted_set = set(str_dict["Deleted"])
+                deleted_set.add(set(suitor))
                 update_dict = {"Deleted": list(deleted_set)}
                 str_dict.update(update_dict)
             continue
@@ -663,7 +661,7 @@ def to_excel_df(data_dict=None, column_keys=None):
 
     column_keys : list
         list of column names. The names of the edit columns correspond to the
-        orginal Evaluator (1) and the change Evaluator (>1).
+        original Evaluator (1) and the change Evaluator (>1).
 
     Returns
     -------
@@ -723,7 +721,7 @@ def get_setting_node_name_from_df(df=None, column=None, node=None):
     In other words we want to find all of
     nodes related to ours for a particular node_type. Since we wanted to
     know all of the nodes related to the input node of a particular node
-    type, this was believed to be better than searching the neghiborhood
+    type, this was believed to be better than searching the neighborhood
     and throwing out any nodes that did not have the same typeself.
 
     Parameters
@@ -778,7 +776,7 @@ def make_string(attr_dict, create=False):
     See Also
     --------
     VertexReporterMixin
-    DiEedgeReporterMixin
+    DiEdgeReporterMixin
     """
     # attr_dict follows to to_uml_json_* structure
     if create:
@@ -819,7 +817,7 @@ def remove_duplicates(input, create=False):
     --------
     make_string
     VertexReporterMixin
-    DiEedgeReporterMixin
+    DiEdgeReporterMixin
     """
     # input is a list of dicts
     seen = set()

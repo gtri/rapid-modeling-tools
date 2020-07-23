@@ -44,7 +44,7 @@ As alluded to above, Ingrid does not require the specification of the entire pat
         - Ingrid grabs the data in the first column of Excel and creates new nodes starting with the node specified in each row and appending the name of the column Ingrid needs to complete the pattern.
             - Again, consider a node in the first column `first_node` and the column to be created `connection`. Ingrid creates new nodes, spanning the length of the input data, with names `(node i in the first column) (column to create)`. With the specific example node created `first_node connection`.
 
-Since both the UML-based modeling pattern and the spreadsheet template share the same underlying graph representation it is possible to canonicalize the graph to a JSON used by the [`ingrid`](../../ingrid/README.md) tool. The basic form of the JSON is as follows:
+Since both the UML-based modeling pattern and the spreadsheet template share the same underlying graph representation it is possible to canonicalize the graph to a JSON used by the [`ingrid`](../../../README.md) tool. The basic form of the JSON is as follows:
 
 ```json
 {
@@ -58,9 +58,9 @@ Since both the UML-based modeling pattern and the spreadsheet template share the
         ],
         "Spreadsheet Column N name": [
           "Root Node name",
-          "node-edge pattern"
+          "node-edge pattern",
           "target Graph Node name"
-        ],
+        ]
     },
     "Pattern Graph Edges": [
         [
@@ -81,12 +81,11 @@ Since both the UML-based modeling pattern and the spreadsheet template share the
     },
     "Vertex Settings": {
         "Graph Node 1 name": {
-          	"pattern element UML metaproperty setting 1, e.g. "aggregation : composite"",
-            "pattern element UML metaproperty setting N"
+          	"pattern element UML metaproperty setting 1, e.g. 'aggregation : composite'":  "value",
+            "pattern element UML metaproperty setting N": "value2"
         },
         "Graph Node N name": null //use null type if no settings applied
         },
-    }
   	"Vertex Stereotypes": {
         "Graph Node 1 name": "pattern element applied stereotype name, e.g. Block",
         "Graph Node N name": null //use null type if no applied stereotypes

@@ -1,5 +1,5 @@
 """
-Copyright (C) 2019 by the Georgia Tech Research Institute (GTRI)
+Copyright (C) 2020 by the Georgia Tech Research Institute (GTRI)
 This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
@@ -23,7 +23,7 @@ class TestManager(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_ids_assinged_in_change(self):
+    def test_ids_assigned_in_change(self):
         manager = Manager(
             excel_path=[
                 (
@@ -414,7 +414,7 @@ class TestManager(unittest.TestCase):
                     }
                 ]
             }
-            new_sub.successrs = sub_cons
+            new_sub.successors = sub_cons
             new_both = DiEdge(
                 source=Vertex(
                     name="Subaru",
@@ -503,7 +503,9 @@ class TestEvaluator(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        self.translator = MDTranslator(json_data=data)
+        self.translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
         self.evaluator = Evaluator(
             excel_file=DATA_DIRECTORY / "Composition Example.xlsx",
             translator=self.translator,
@@ -572,7 +574,9 @@ class TestEvaluator(unittest.TestCase):
         data = json.loads(data)
 
         ex_f = DATA_DIRECTORY / "Composition Example Model Baseline.xlsx"
-        translator = MDTranslator(json_data=data)
+        translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
         evaluator = Evaluator(excel_file=ex_f, translator=translator)
         file_name = "Composition Example Model Baseline.xlsx"
         evaluator.sheets_to_dataframe(excel_file=DATA_DIRECTORY / file_name)
@@ -586,7 +590,9 @@ class TestEvaluator(unittest.TestCase):
         data2 = json.loads(data2)
 
         ex_f2 = DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx"
-        tr2 = MDTranslator(json_data=data2)
+        tr2 = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data2
+        )
         eval = Evaluator(excel_file=ex_f2, translator=tr2)
 
         self.assertFalse(eval.df_renames.empty)
@@ -596,7 +602,9 @@ class TestEvaluator(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        translator = MDTranslator(json_data=data)
+        translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
         excel_file = DATA_DIRECTORY / "Composition Example Model Changed.xlsx"
         evaluator = Evaluator(excel_file=excel_file, translator=translator)
         self.assertTrue(evaluator.has_rename)
@@ -610,7 +618,7 @@ class TestEvaluator(unittest.TestCase):
 
     def test_rename_df_columns(self):
         # just need to test that the columns are as expected.
-        # utils tests the two auxillary functions that rename df entries.
+        # utils tests the two auxiliary functions that rename df entries.
         expected_cols = ["Composite Thing", "component", "Atomic Thing"]
         self.evaluator.rename_df_columns()
         self.assertListEqual(expected_cols, list(self.evaluator.df.columns))
@@ -708,7 +716,9 @@ class TestEvaluator(unittest.TestCase):
         # TODO: create tests for the properties on the Evaluator class.
         json_data = (PATTERNS / "Composition.json").read_text()
         json_data = json.loads(json_data)
-        tr = MDTranslator(json_data=json_data)
+        tr = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=json_data
+        )
         file = DATA_DIRECTORY / "Composition Example 2 Model partial_map.xlsx"
         evaluator = Evaluator(excel_file=file, translator=tr)
         evaluator.rename_df_columns()
@@ -738,7 +748,9 @@ class TestMDTranslator(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        self.translator = MDTranslator(json_data=data)
+        self.translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
 
     def test_get_root_node(self):
         root_node = "component"
@@ -753,7 +765,9 @@ class TestMDTranslator(unittest.TestCase):
     def test_MD_get_pattern_graph(self):
         data = (PATTERNS / "InterfaceDataFlow.json").read_text()
         data = json.loads(data)
-        translator = MDTranslator(json_data=data)
+        translator = MDTranslator(
+            json_path=(PATTERNS / "InterfaceDataFlow.json"), json_data=data
+        )
         expect = {
             "A_CompA Context_CompA",
             "Comp A Context",

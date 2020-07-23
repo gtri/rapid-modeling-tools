@@ -1,5 +1,5 @@
 """
-Copyright (C) 2019 by the Georgia Tech Research Institute (GTRI)
+Copyright (C) 2020 by the Georgia Tech Research Institute (GTRI)
 This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
@@ -565,9 +565,9 @@ class TestUtils(unittest.TestCase):
         wheel = Vertex(name="wheel", id="3")
 
         # need a test for when I implement the 'edge type equivalence'
-        # This would address a case: Suppose the edge attribtue 'type'
+        # This would address a case: Suppose the edge attribute 'type'
         # was in the edge set of Original_edge_attributes but 'type'not
-        # in the edge set of Change_edge_attribtues and instead 'new type' was
+        # in the edge set of Change_edge_attributes and instead 'new type' was
         # there. Then I would want a way to say type -> new type.
         og_edge = DiEdge(source=car, target=engine, edge_attribute="owner")
 
@@ -593,7 +593,7 @@ class TestUtils(unittest.TestCase):
         match_val = match(*[short_edge], current=og_edge)
         self.assertEqual(-1, match_val[0])
 
-        # case: original edge type shorter than chagne
+        # case: original edge type shorter than change
         long_edge = DiEdge(
             source=car, target=engine, edge_attribute="memberEnd"
         )

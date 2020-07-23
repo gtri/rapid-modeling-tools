@@ -1,20 +1,23 @@
 """
-Copyright (C) 2019 by the Georgia Tech Research Institute (GTRI)
+Copyright (C) 2020 by the Georgia Tech Research Institute (GTRI)
 This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
 
 
+import json
 import os
 import warnings
 from pathlib import Path
 
-from model_processing.graph_creation import *
+import pandas as pd
 
-from . import DATA_DIRECTORY, OUTPUT_DIRECTORY, PATTERNS
+from model_processing.graph_creation import Evaluator, Manager, MDTranslator
+
+from . import PATTERNS
 
 
-def create_md_model(input_paths, output_path=""):
+def create_md_model(input_paths, input_patterns="", output_path=""):
     """
     For each Excel file in input_paths create a JSON file that creates
     the desired model in MagicDraw, as long as it corresponds to a valid
@@ -24,6 +27,9 @@ def create_md_model(input_paths, output_path=""):
     ----------
     input_paths : list of str
         List of strings parsed from the command line.
+
+    input_patterns : list of str
+        List of paths to pattern file provided by the user.
 
     output_path : str
         String of the desired location for the output. This is optional
@@ -36,11 +42,6 @@ def create_md_model(input_paths, output_path=""):
         Generates a JSON file as output that the Player Piano digests to
         generate a new MagicDraw model.
     """
-    json_patterns = {
-        pattern_path.parts[-1].split(".")[0].lower(): pattern_path
-        for pattern_path in PATTERNS.glob("*.json")
-    }
-
     wkbk_paths = []
     here = Path(os.getcwd())
 
@@ -55,8 +56,22 @@ def create_md_model(input_paths, output_path=""):
 
         wkbk_paths.extend(p)
 
+    json_patterns = {
+        pattern_path.name.split(".")[0].lower(): pattern_path
+        for pattern_path in PATTERNS.glob("*.json")
+    }
+    if input_patterns:
+        for in_pat in map(Path, input_patterns):
+            if in_pat.is_dir():
+                new_pats = {
+                    inp.name.split(".")[0].lower(): inp
+                    for inp in in_pat.glob("*.json")
+                }
+            else:
+                new_pats = {in_pat.name.split(".")[0].lower(): in_pat}
+            json_patterns.update(new_pats)
+
     for wkbk in wkbk_paths:
-        # TODO: Can this support Heterogeneous excel input files?
         if wkbk.parts[-1].split(".")[-1] != "xlsx":
             msg = (
                 "\n"
@@ -97,52 +112,52 @@ def create_md_model(input_paths, output_path=""):
         if pattern_sheet:
             data = (json_patterns[pattern_sheet]).read_text()
             data = json.loads(data)
-            translator = MDTranslator(json_data=data)
-            evaluator = Evaluator(excel_file=wkbk, translator=translator)
-            evaluator.rename_df_columns()
-            evaluator.add_missing_columns()
-            evaluator.to_property_di_graph()
-            property_di_graph = evaluator.prop_di_graph
-            vert_set = property_di_graph.vertex_set
-            json_out = {"modification targets": []}
-            decs_json = []
-            edge_json = []
-            for vertex in vert_set:
-                vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
-                    translator=translator
-                )
-                json_out["modification targets"].extend(vert_uml)
-                decs_json.extend(decs_uml)
-                edge_json.extend(edge_uml)
+        else:
+            continue
+        translator = MDTranslator(
+            json_path=json_patterns[pattern_sheet], json_data=data
+        )
+        evaluator = Evaluator(excel_file=wkbk, translator=translator)
+        evaluator.rename_df_columns()
+        evaluator.add_missing_columns()
+        evaluator.to_property_di_graph()
+        property_di_graph = evaluator.prop_di_graph
+        vert_set = property_di_graph.vertex_set
+        json_out = {"modification targets": []}
+        decs_json = []
+        edge_json = []
+        for vertex in vert_set:
+            vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
+                translator=translator
+            )
+            json_out["modification targets"].extend(vert_uml)
+            decs_json.extend(decs_uml)
+            edge_json.extend(edge_uml)
 
-            json_out["modification targets"].extend(decs_json)
-            json_out["modification targets"].extend(edge_json)
+        json_out["modification targets"].extend(decs_json)
+        json_out["modification targets"].extend(edge_json)
 
-            if not output_path:
-                outfile = wkbk.parent.joinpath(wkbk.parts[-1]).with_suffix(
-                    ".json"
-                )
-            else:
-                outpath = Path(output_path)
-                if not outpath.is_absolute():
-                    if outpath.parts[-1] == here.parts[-1]:
-                        outpath = here
-                    else:
-                        outpath = here / outpath
-                outfile = (
-                    Path(outpath)
-                    .joinpath(wkbk.parts[-1])
-                    .with_suffix(".json")
-                )
-
-            (outfile).write_text(
-                json.dumps(json_out, indent=4, sort_keys=True)
+        if not output_path:
+            outfile = wkbk.parent.joinpath(wkbk.parts[-1]).with_suffix(
+                ".json"
+            )
+        else:
+            outpath = Path(output_path)
+            if not outpath.is_absolute():
+                if outpath.parts[-1] == here.parts[-1]:
+                    outpath = here
+                else:
+                    outpath = here / outpath
+            outfile = (
+                Path(outpath).joinpath(wkbk.parts[-1]).with_suffix(".json")
             )
 
-            print("Creation Complete")
+        (outfile).write_text(json.dumps(json_out, indent=4, sort_keys=True))
+
+        print("Creation Complete")
 
 
-def compare_md_model(inputs, output_path=""):
+def compare_md_model(inputs, input_patterns="", output_path=""):
     """
     Produces difference files (JSON and Excel) for the original file to
     each change file provided.
@@ -153,6 +168,9 @@ def compare_md_model(inputs, output_path=""):
         List of one or more file paths parsed from the command line.
         This can be a path to one or more Excel files or a path to a
         directory of Excel files.
+
+    input_patterns : list of str
+        List of paths to pattern file provided by the user.
 
     output_path : str
         String of the desired location for the output. This is optional
@@ -212,9 +230,19 @@ def compare_md_model(inputs, output_path=""):
             continue
 
     json_patterns = {
-        pattern_path.parts[-1].split(".")[0].lower(): pattern_path
+        pattern_path.name.split(".")[0].lower(): pattern_path
         for pattern_path in PATTERNS.glob("*.json")
     }
+    if input_patterns:
+        for in_pat in map(Path, input_patterns):
+            if in_pat.is_dir():
+                new_pats = {
+                    inp.name.split(".")[0].lower(): inp
+                    for inp in in_pat.glob("*.json")
+                }
+            else:
+                new_pats = {in_pat.name.split(".")[0].lower(): in_pat}
+            json_patterns.update(new_pats)
 
     xl = pd.ExcelFile(wkbk_paths[0])
     not_found = 0
@@ -244,22 +272,21 @@ def compare_md_model(inputs, output_path=""):
         else:
             pattern_sheet = sheet.lower()
             break
-
-    if pattern_sheet:
-        manager = Manager(
-            excel_path=wkbk_paths, json_path=[json_patterns[pattern_sheet]]
-        )
-        for evaluator in manager.evaluators:
-            evaluator.rename_df_columns()
-            evaluator.add_missing_columns()
-            evaluator.to_property_di_graph()
-
-        manager.get_pattern_graph_diff(out_directory=outpath)
-        manager.changes_to_excel(out_directory=outpath)
-
-        print("Comparison Complete")
-    else:
+    if not pattern_sheet:
         raise RuntimeError(
-            "No matching pattern sheet was found."
+            "No matching pattern found nor provided."
             + " Check the sheet names and try again."
         )
+
+    pattern = json_patterns[pattern_sheet]
+
+    manager = Manager(excel_path=wkbk_paths, json_path=[pattern])
+    for evaluator in manager.evaluators:
+        evaluator.rename_df_columns()
+        evaluator.add_missing_columns()
+        evaluator.to_property_di_graph()
+
+    manager.get_pattern_graph_diff(out_directory=outpath)
+    manager.changes_to_excel(out_directory=outpath)
+
+    print("Comparison Complete")

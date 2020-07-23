@@ -1,10 +1,6 @@
 name: Test Python
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -31,6 +27,17 @@ jobs:
         pip install -r requirements-dev.txt
 
     - name: Test with pytest
-      # TODO: needs to `cd ingrid`?
       run: |
         pytest
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-report
+        path: ingrid/junit.xml
+
+    - name: Archive test coverage report
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-coverage
+        path: ingrid/coverage.xml
