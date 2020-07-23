@@ -34,14 +34,23 @@ jobs:
       run: |
         ls -laR
 
-    # - name: Archive test results
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: test-report
-    #     path: ingrid/junit.xml
-    #
-    # - name: Archive test coverage report
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: test-coverage
-    #     path: ingrid/coverage.xml
+    - name: Touch result files
+      run: |
+        touch ingrid/junit.xml
+        touch ingrid/coverage.xml
+
+    - name: List directory 2
+      run: |
+        ls -laR        
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-report ${{ matrix.node-version }}
+        path: ingrid/junit.xml
+    
+    - name: Archive test coverage report
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-coverage ${{ matrix.node-version }}
+        path: ingrid/coverage.xml
