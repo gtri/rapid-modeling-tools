@@ -32,7 +32,7 @@ jobs:
 
     - name: List directory
       run: |
-        ls -la
+        ls -laR
 
     # - name: Archive test results
     #   uses: actions/upload-artifact@v1
