@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (C) 2018 by the Georgia Tech Research Institute (GTRI)
+Copyright (C) 2020 by the Georgia Tech Research Institute (GTRI)
 This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
@@ -21,13 +21,13 @@ setup(
     name=NAME,
     version=re.findall(VERSION_RE, (SRC / "_version.py").read_text())[0][1],
     # TODO: better description - MAKE PR TASK
-    description="Sample package for Python-Guide.org",
+    description="Rapid Data Ingestion for Model Based Systems Engineers",
     long_description=(HERE / "README.md").read_text(),
     long_description_content_type="text/markdown",
     author="Georgia Tech Research Corporation",
     author_email="ingrid-nerdman@gtri.gatech.edu",
     # TODO: better url - MAKE PR TASK
-    url="https://github.com/kennethreitz/samplemod",
+    url="https://github.com/gtri/rapid-modeling-tools",
     license="BSD-3-Clause",
     package_dir={"": "src"},
     packages=find_packages("src"),
@@ -43,16 +43,10 @@ setup(
     ],
     install_requires=[
         "pandas",
-        "scipy",
         "networkx >=2.3",
         "xlrd >=0.9.0",
         "openpyxl",
     ],
-    tests_require=[
-        "pytest-cov",
-        "pytest-flake8",
-        "pytest-isort",
-        "pytest-black",
-    ],
+    tests_require=["pytest", "pytest-cov", "pytest-flake8", "pytest-black"],
     zip_safe=False,
 )

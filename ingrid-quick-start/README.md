@@ -54,12 +54,14 @@ Ingrid's create command ingests an Excel file(s) and generates a `JSON` file(s) 
 
 Ingrid uses the data entered, the sheet named after the desired pattern ("Composition") and the columns names based on desired pattern ("Component", "Position", and "Part") to process the create request and generate the create model `JSON`.
 
-3. Navigate to [../rapid-modeling-tools/ingrid](../ingrid/) and activate the environment created by the installation procedure. On the command line with the Python environment active type
+3. Navigate to [../ingrid](../ingrid) and activate the environment created by the [installation procedure](../README.md). On the command line, enter
 ```bash
 cd ../ingrid-quick-start
 model-processing --create --input "Composition Example Baseline.xlsx"
 ```
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+	- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
+		- The link above elaborates on this flag.
 
 The create command invoked above creates a `JSON` file named "Composition Example Baseline.json" in either the specified output directory (as given here) or the same directory location as the input file when not provided an output directory. This `JSON` file contains the instructions required by the Player Piano to build the Cameo model expressed by the Excel data.
 
@@ -82,7 +84,7 @@ The Player Piano generates the `Composition Example Baseline.csv` file to provid
 
 ## Update the Model with Compare
 
-The need to rapidly create and maintain models through a deluge of relevant model data prompted the development of RMT. The first part of this quickstart demonstrated how to create a model with data canvassed from Subject Matter Experts, SMEs. The next sections demonstrates model maintenance and pattern layering. Ingrid accomplishes these tasks with the `--compare` command. The `--compare` flag creates a set of `JSON` instructions to update the model represented by the `original` Excel file to agree with the model described by the `changed` file. Ingrid prints unambiguous changes to `JSON`. Ingird prints all detected differences to an Excel file. The Excel file enumerates the complete list of changes Ingrid will make with the `JSON` and any changes that Ingrid was unsure of and hence, left to the user. The two files have the same name and appear in the same output location.
+The need to rapidly create and maintain models through a deluge of relevant model data prompted the development of RMT. The first part of this quickstart demonstrated how to create a model with data canvassed from Subject Matter Experts, SMEs. The next sections demonstrates model maintenance and pattern layering. Ingrid accomplishes these tasks with the `--compare` command. The `--compare` flag creates a set of `JSON` instructions to update the model represented by the `original` Excel file to agree with the model described by the `changed` file. Ingrid prints unambiguous changes to `JSON`. Ingrid prints all detected differences to an Excel file. The Excel file enumerates the complete list of changes Ingrid will make with the `JSON` and any changes that Ingrid was unsure of and hence, left to the user. The two files have the same name and appear in the same output location.
 
 Always include an `IDs` sheet when working with `--compare` to ensure optimal change detection.
 
@@ -135,8 +137,9 @@ Having created the two data files, Ingrid's `--compare` command computes the dif
 ```bash
 model-processing --compare --original "Composition Example Baseline.xlsx" --update "Composition Example Updated.xlsx"
 ```
-
 [../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
+	- The link above elaborates on this flag.
 
 Successful execution will create two files, one titled "graph_diff_changes_*date-time*.JSON" and an Excel file named "Model Diffs *date time*.xlsx"
 
@@ -176,6 +179,9 @@ Create a tab titled `SystemParts IDs` and populate with the IDs from the baselin
 ```bash
 model-processing --compare --original "SystemParts Example Baseline.xlsx" --update "SystemParts Example Updated.xlsx"
 ```
+[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
+	- The link above elaborates on this flag.
 
 The comparison, between the empty baseline and populated update file, produces add commands for the Player Piano to create new elements to the model adhering to the new pattern.
 

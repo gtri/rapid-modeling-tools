@@ -1,5 +1,5 @@
 """
-Copyright (C) 2019 by the Georgia Tech Research Institute (GTRI)
+Copyright (C) 2020 by the Georgia Tech Research Institute (GTRI)
 This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
@@ -70,7 +70,7 @@ class PropertyDiGraph(nx.DiGraph):
     @property
     def edge_dict(self):
         """
-        Returns a dictionary with a tuple contaning the strings
+        Returns a dictionary with a tuple containing the strings
         corresponding to the value.source, value.target
         value.edge_attribute, the value is a DiEdge object.
         """
@@ -100,7 +100,7 @@ class VertexReporterMixin:
         Package the Vertex information into a dictionary to be written out
         to JSON change instructions for the Player Piano.
 
-        Returns a function call with the node attributes as a dictioanry
+        Returns a function call with the node attributes as a dictionary
         keyword argument that builds a change dict for the passed node.
 
         Parameters
@@ -143,7 +143,7 @@ class VertexReporterMixin:
         Packages the Vertex information into a dictionary to be written to
         JSON for consumption by the Player Piano into MagicDraw.
 
-        Returns a function call with the node attributes as a dictioanry
+        Returns a function call with the node attributes as a dictionary
         keyword argument that builds a change dict for the passed node.
 
         Parameters
@@ -186,10 +186,12 @@ class VertexReporterMixin:
 
         Parameters
         ----------
+        # TODO: populate old_name
+        old_name:
         translator : MDTranslator Object
-            A MDTranslator object that prvoides access to the
+            A MDTranslator object that provides access to the
             JSON data file that translates the information from the Python
-            meanigns here to MagicDraw terminology.
+            meanings here to MagicDraw terminology.
 
         Returns
         -------
@@ -201,7 +203,7 @@ class VertexReporterMixin:
             to associate additional "decorations" to the created nodes.
             Decorations here refers to the patterns settings key.
         edge_uml_list : list of dicts
-            List of dictionaries that list all of the edges eminating or
+            List of dictionaries that list all of the edges emanating or
             coming into the node this operation runs on.
 
         Notes
@@ -213,7 +215,7 @@ class VertexReporterMixin:
         information. While iterating the node_type information, the
         function checks for nodes with settings values under the vertex
         settings key in the JSON. If a node has a settings value then the
-        ID of the associated settings node is retreived and associated to
+        ID of the associated settings node is retrieved and associated to
         the node_decorations list. Next, the edge_uml_list is built using
         the connections property. From there, a source and target id are
         identified from the connections information and the get_uml_id
@@ -326,7 +328,7 @@ class Vertex(VertexReporterMixin):
     ----------
     name : str
         Name attribute of the vertex object that is the same as the name
-        in the Evaluator.df entires.
+        in the Evaluator.df entries.
 
     original_name : str
         Corresponding original name from the Evaluator.df_renames.
@@ -349,7 +351,7 @@ class Vertex(VertexReporterMixin):
     predecessors : set
         Set of predecessors saved off from the PropertyDiGraph
 
-    attribtues : dictionary
+    attributes : dictionary
         Dictionary holding the data encapsulated in the
         root_node_attr_columns.
 
@@ -511,7 +513,7 @@ class Vertex(VertexReporterMixin):
         return node_uml_list, node_decorations, edge_uml_list
 
 
-class DiEedgeReporterMixin:
+class DiEdgeReporterMixin:
     """
     Mixin that supplies the functions for a Directed Edge to package
     itself to JSON for consumption by MagicDraw. It contains a write
@@ -559,14 +561,14 @@ class DiEedgeReporterMixin:
         return to_uml_json_edge(**edge_dict)
 
 
-class DiEdge(DiEedgeReporterMixin):
+class DiEdge(DiEdgeReporterMixin):
     """
     A Directed Edge object stores the source and target vertex objects
     along with the edge attribute connecting the two.
 
     This Class was created to facilitate the graph difference exploration
     The Directed Edges are returned as triples
-    (source, target, edge_attribtue).
+    (source, target, edge_attribute).
 
     Attributes
     ----------

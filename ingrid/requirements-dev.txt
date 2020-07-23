@@ -1,6 +1,8 @@
--r requirements.txt
--e .
+-r requirements-install.txt
+black
+flake8
 pytest
 pytest-cov
 pytest-flake8
 pytest-black
+

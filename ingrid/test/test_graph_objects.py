@@ -1,5 +1,5 @@
 """
-Copyright (C) 2019 by the Georgia Tech Research Institute (GTRI)
+Copyright (C) 2020 by the Georgia Tech Research Institute (GTRI)
 This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
@@ -21,7 +21,9 @@ class TestPropertyDiGraph(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        self.translator = MDTranslator(json_data=data)
+        self.translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
 
         # Create Baby dataset to deal with manual checking
         data_dict = {
@@ -175,7 +177,9 @@ class TestVertex(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        self.translator = MDTranslator(json_data=data)
+        self.translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
 
     def test_connections(self):
         Test_Graph = PropertyDiGraph()
@@ -248,7 +252,9 @@ class TestVertex(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        translator = MDTranslator(json_data=data)
+        translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
         car_id = translator.get_uml_id(name="Car")
         vertex_car = Vertex(
             name="Car",
@@ -414,7 +420,9 @@ class TestVertex(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        translator = MDTranslator(json_data=data)
+        translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
         car_id = translator.get_uml_id(name="Car")
         vertex_car = Vertex(
             name="Car",
@@ -449,7 +457,9 @@ class TestVertex(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        translator = MDTranslator(json_data=data)
+        translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
         car_id = translator.get_uml_id(name="Car")
         vertex_car = Vertex(
             name="Car",
@@ -484,7 +494,9 @@ class TestVertex(unittest.TestCase):
         data = (PATTERNS / "Composition.json").read_text()
         data = json.loads(data)
 
-        translator = MDTranslator(json_data=data)
+        translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
         node_names = ["Car", "engine", "Car"]
         uml_id_names = []
         for node_name in node_names:

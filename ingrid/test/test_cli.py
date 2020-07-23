@@ -4,14 +4,12 @@ This software may be modified and distributed under the terms of
 the BSD 3-Clause license. See the LICENSE file for details.
 """
 
-
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
 from shutil import copy2
-
-from model_processing.commands import compare_md_model, create_md_model
 
 from . import DATA_DIRECTORY, ROOT
 
@@ -30,60 +28,72 @@ class TestCommands(unittest.TestCase):
         # expected files.
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            composition_changed = "Composition Example 2 Model Changed 2.xlsx"
             excel_files = [
-                (
-                    DATA_DIRECTORY
-                    / "Composition Example 2 Model Baseline.xlsx"
-                ),
-                (DATA_DIRECTORY / composition_changed),
-                (DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx"),
-                (DATA_DIRECTORY / "Composition Example 2.xlsx"),
-                (DATA_DIRECTORY / "Composition Example With Props.xlsx"),
-                (DATA_DIRECTORY / "Invalid Pattern.xlsx"),
-                (DATA_DIRECTORY / "Sample Equations.xlsx"),
+                DATA_DIRECTORY / "Composition Example 2 Model Baseline.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed 2.xlsx",
+                DATA_DIRECTORY / "Composition Example 2 Model Changed.xlsx",
+                DATA_DIRECTORY / "Composition Example 2.xlsx",
+                DATA_DIRECTORY / "Composition Example With Props.xlsx",
+                DATA_DIRECTORY / "Invalid Pattern.xlsx",
+                DATA_DIRECTORY / "Sample Equations.xlsx",
             ]
             for xl_file in excel_files:
                 copy2(xl_file, tmpdir)
 
-            # Include JSON file just to confirm it is ignored.
             wkbk_path = [
+                ROOT / "model_processing" / "patterns" / "Composition.json",
+                tmpdir / "Composition Example 2.xlsx",
+                tmpdir,
+            ]
+
+            pattern_path = (
                 ROOT
                 / "src"
                 / "model_processing"
                 / "patterns"
-                / "Composition.json",
-                tmpdir / "Composition Example 2.xlsx",
-                tmpdir,
-            ]  # test ability to ignore non-Excel, handle single file
-            # and a directory of Excel files.
-            create_md_model(
-                [tmpdir / "Composition Example 2.xlsx"],
-                input_patterns=[
-                    str(
-                        (
-                            ROOT
-                            / "src"
-                            / "model_processing"
-                            / "patterns"
-                            / "Composition.json"
-                        )
-                    )
-                ],
+                / "Composition.json"
             )
-            create_md_model(wkbk_path)
+            pattern_command = (
+                ["model-processing", "--create", "--input"]
+                + [str(tmpdir / "Composition Example 2.xlsx")]
+                + ["--pattern", str(pattern_path)]
+            )
+            subprocess.run(pattern_command)
+            command = ["model-processing", "--create", "--input"] + [
+                str(f) for f in wkbk_path
+            ]
+            subprocess.run(command)
+
+            good_excel_files = [
+                f
+                for f in excel_files
+                if f.name
+                not in [
+                    "Invalid Pattern.xlsx",
+                    "Composition Example With Props.xlsx",
+                ]
+            ]
+            expected_json_files = [
+                tmpdir / f.name.replace(".xlsx", ".json")
+                for f in good_excel_files
+            ]
+
             # expect 5
             cr_json = list(tmpdir.glob("*.json"))
-            self.assertEqual(5, len(cr_json))
-            self.assertTrue(
-                (DATA_DIRECTORY / "Composition Example 2.json").is_file()
-            )
+            self.assertEqual(len(good_excel_files), len(cr_json))
+            for json_file in expected_json_files:
+                self.assertTrue(json_file.is_file())
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
                 out_tmp_dir = Path(out_tmp_dir)
-                create_md_model(wkbk_path, output_path=out_tmp_dir)
+                command = (
+                    ["model-processing", "--create", "--input"]
+                    + [str(f) for f in tmpdir.iterdir()]
+                    + ["--output", str(out_tmp_dir)]
+                )
+                subprocess.run(command)
                 new_json = list(out_tmp_dir.glob("*.json"))
-                self.assertEqual(5, len(new_json))
+                self.assertEqual(len(good_excel_files), len(new_json))
 
     def test_compare_md_model(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -106,15 +116,30 @@ class TestCommands(unittest.TestCase):
             orig = tmpdir / "Composition Example Model Baseline.xlsx"
             update = tmpdir / "Composition Example Model Changed.xlsx"
 
-            inputs = [original]
-            inputs.extend(updated)
-            try:
-                compare_md_model(inputs, output_path=inputs[0])
-            except RuntimeError:
-                self.assertTrue(True)
-            compare_md_model(inputs)
-            ins = [orig, update]
-            compare_md_model(ins)
+            command = [
+                "model-processing",
+                "--compare",
+                "--original",
+                str(original),
+                "--updated",
+                *[str(u) for u in updated],
+                "--output",
+                str(tmpdir),
+            ]
+            subprocess.run(command, check=True)
+
+            command = [
+                "model-processing",
+                "--compare",
+                "--original",
+                str(orig),
+                "--updated",
+                str(update),
+                "--output",
+                str(tmpdir),
+            ]
+            subprocess.run(command, check=True)
+
             # expect 3 json and 3 more excel files
             cr_json = list(tmpdir.glob("*.json"))
             self.assertEqual(3, len(cr_json))
@@ -124,8 +149,28 @@ class TestCommands(unittest.TestCase):
 
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                compare_md_model(inputs, output_path=outdir)
-                compare_md_model(ins, output_path=outdir)
+                command = [
+                    "model-processing",
+                    "--compare",
+                    "--original",
+                    str(original),
+                    "--updated",
+                    *[str(u) for u in updated],
+                    "--output",
+                    str(outdir),
+                ]
+                subprocess.run(command, check=True)
+                command = [
+                    "model-processing",
+                    "--compare",
+                    "--original",
+                    str(orig),
+                    "--updated",
+                    str(update),
+                    "--output",
+                    str(outdir),
+                ]
+                subprocess.run(command, check=True)
                 # expect 3 json and 3 more excel files
                 cr_json = list(outdir.glob("*.json"))
                 self.assertEqual(3, len(cr_json))
@@ -145,7 +190,15 @@ class TestCommands(unittest.TestCase):
 
             original = tempdir / "Composition Example 2 Model Baseline.xlsx"
 
-            compare_md_model([original, tempdir])
+            command = [
+                "model-processing",
+                "--compare",
+                "--original",
+                str(original),
+                "--updated",
+                str(tempdir),
+            ]
+            subprocess.run(command, check=True)
             dir_json = list(tempdir.glob("*.json"))
             dir_xl = list(tempdir.glob("Model Diff*.xlsx"))
             self.assertEqual(2, len(dir_json))
@@ -156,15 +209,21 @@ class TestCommands(unittest.TestCase):
             tmpdir = Path(tmpdir)
             excel_files = [(DATA_DIRECTORY / "Composition Example 2.xlsx")]
             for xl_file in excel_files:
-                copy2(DATA_DIRECTORY / xl_file, tmpdir)
+                copy2(xl_file, tmpdir)
 
-            wkbk_path = [
-                DATA_DIRECTORY / tmpdir / "Composition Example 2.xlsx"
-            ]
+            wkbk_path = tmpdir / "Composition Example 2.xlsx"
 
             with tempfile.TemporaryDirectory() as out_tmp_dir:
                 out_tmp_dir = Path(out_tmp_dir)
-                create_md_model(wkbk_path, output_path=out_tmp_dir)
+                command = [
+                    "model-processing",
+                    "--create",
+                    "--input",
+                    str(wkbk_path),
+                    "--output",
+                    str(out_tmp_dir),
+                ]
+                subprocess.run(command, check=True)
                 new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(1, len(new_json))
                 cr_data_path = out_tmp_dir / "Composition Example 2.json"
@@ -187,25 +246,28 @@ class TestCommands(unittest.TestCase):
             original = tmpdir / "Composition Example 2 Model Baseline.xlsx"
             updated = [tmpdir / "Composition Example 2 Model Changed.xlsx"]
 
-            inputs = [original]
-            inputs.extend(updated)
-
             with tempfile.TemporaryDirectory() as tmpdir2:
                 outdir = Path(tmpdir2)
-                pattern_path = [
-                    str(
-                        (
-                            ROOT
-                            / "src"
-                            / "model_processing"
-                            / "patterns"
-                            / "Composition.json"
-                        )
-                    )
-                ]
-                compare_md_model(
-                    inputs, input_patterns=pattern_path, output_path=outdir
+                pattern_path = (
+                    ROOT
+                    / "src"
+                    / "model_processing"
+                    / "patterns"
+                    / "Composition.json"
                 )
+                command = [
+                    "model-processing",
+                    "--compare",
+                    "--original",
+                    str(original),
+                    "--updated",
+                    str(updated[0]),
+                    "--pattern",
+                    str(pattern_path),
+                    "--output",
+                    str(outdir),
+                ]
+                subprocess.run(command, check=True)
                 # expect 3 json and 3 more excel files
                 cmp_json = list(outdir.glob("*.json"))
                 compare_data = json.loads(cmp_json[0].read_text())
