@@ -28,20 +28,11 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest
+        pytest --junitxml=junit.xml --cov-report xml:coverage.xml
 
     - name: List directory
       run: |
-        ls -laR
-
-    - name: Touch result files
-      run: |
-        touch ingrid/junit.xml
-        touch ingrid/coverage.xml
-
-    - name: List directory 2
-      run: |
-        ls -laR        
+        ls -la
 
     - name: Archive test results
       uses: actions/upload-artifact@v1
