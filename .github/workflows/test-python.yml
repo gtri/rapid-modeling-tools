@@ -28,7 +28,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest --junitxml=junit.xml --cov-report xml:coverage.xml
+        pytest -c ingrid/setup.cfg
 
     - name: List directory
       run: |
