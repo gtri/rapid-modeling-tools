@@ -1,6 +1,6 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
-=======
+
 # Rapid Modeling Tools - Ingrid
 
 [Rapid Modeling Tools](https://github.com/gtri/rapid-modeling-tools) consists of two components, the Player Piano and Ingrid. Ingrid uses Python to translate spreadsheet data with an accompanying modeling pattern into a set of JSON instructions that the Player Piano interprets as API calls to Cameo to build and maintain models.
