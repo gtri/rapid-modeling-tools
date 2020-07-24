@@ -38,10 +38,10 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: test-report ${{ matrix.node-version }}
-        path: ingrid/junit.xml
-    
+        path: junit.xml
+
     - name: Archive test coverage report
       uses: actions/upload-artifact@v1
       with:
         name: test-coverage ${{ matrix.node-version }}
-        path: ingrid/coverage.xml
+        path: coverage.xml
