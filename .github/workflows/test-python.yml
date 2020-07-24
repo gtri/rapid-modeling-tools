@@ -30,14 +30,18 @@ jobs:
       run: |
         pytest -c ingrid/setup.cfg
 
+    - name: List directory
+      run: |
+        ls -la
+
     - name: Archive test results
       uses: actions/upload-artifact@v1
       with:
-        name: test-report
-        path: ingrid/junit.xml
+        name: test-report ${{ matrix.node-version }}
+        path: junit.xml
 
     - name: Archive test coverage report
       uses: actions/upload-artifact@v1
       with:
-        name: test-coverage
-        path: ingrid/coverage.xml
+        name: test-coverage ${{ matrix.node-version }}
+        path: coverage.xml
