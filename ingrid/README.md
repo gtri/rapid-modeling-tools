@@ -1,6 +1,6 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
-=======
+
 # Rapid Modeling Tools - Ingrid
 
 [Rapid Modeling Tools](https://github.com/gtri/rapid-modeling-tools) consists of two components, the Player Piano and Ingrid. Ingrid uses Python to translate spreadsheet data with an accompanying modeling pattern into a set of JSON instructions that the Player Piano interprets as API calls to Cameo to build and maintain models.
@@ -19,7 +19,8 @@ Advanced users and developers should follow this README. Typical users do not ne
   ```bash
   git clone https://github.com/gtri/rapid-modeling-tools.git
   cd rapid-modeling-tools
-```
+  ```
+
 
 - Install either [Anaconda](https://www.anaconda.com/distribution/ "Anaconda Download Page") or [Miniconda](https://docs.conda.io/en/latest/miniconda.html "Miniconda Download Page").
 - Install `Anaconda Project`
@@ -37,7 +38,7 @@ Advanced users and developers should follow this README. Typical users do not ne
     cd ingrid
     anaconda-project prepare
     anaconda-project run setup
-    ```
+		```
   - You can now import `model_processing` as a package and access all the methods
 - Using Ingrid through Anaconda Project     
     - Find the available commands listed in [`anaconda-project.yml`](anaconda-project.yml). `anaconda-project run <command name (and flags if applicable)>` invokes the desired command with specified options in a conda managed environment.
