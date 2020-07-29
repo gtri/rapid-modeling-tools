@@ -78,9 +78,11 @@ class Manager:
         self.json_path = json_path
         self.json_data = None
         self.translator = None
-        self.get_json_data()
+        if self.json_path:
+            self.get_json_data()
         self.evaluators = []
-        self.create_evaluators()
+        if self.excel_path:
+            self.create_evaluators()
 
     def get_json_data(self):
         """ Load the json data using the json_path"""
@@ -754,6 +756,8 @@ class Evaluator:
             "changenames",
             "changed_names",
         ]
+        if not excel_file and self.excel_file:
+            excel_file = self.excel_file
         excel_sheets = pd.read_excel(excel_file, sheet_name=None)
         # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(excel_sheets):  # Alphabetical sort
@@ -1125,6 +1129,11 @@ class MDTranslator:
         self.json_path = json_path
         self.data = json_data
         self.uml_id = {}
+
+    def __repr__(self):
+        return "MDTranslator Obj(Pattern Name: {0})".format(
+            self.json_path.name
+        )
 
     @property
     def pattern_path(self):
