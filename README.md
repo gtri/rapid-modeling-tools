@@ -56,6 +56,8 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 
 - Detailed instructions can be found in the [README.md](ingrid/README.md) in the `ingrid` directory for usage with anaconda-project and without anaconda-project
 
+- [CONTRIBUTING.md](CONTRIBUTING.md) outlines the expectations for those looking to contribute to Rapid Modeling Tools. 
+
 ### Player Piano
 
 - With MagicDraw open locate the **Tools** menu
