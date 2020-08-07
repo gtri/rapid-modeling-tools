@@ -974,10 +974,20 @@ class Evaluator:
                             second_node_data=second_node_data,
                             suffix=suff,
                         )
-                    else:
+                    elif len(col.split(sep=under)) > 2:
                         col_data_vals = col.split(sep=under)
                         first_node_data = self.df.loc[:, col_data_vals[1]]
                         second_node_data = self.df.loc[:, col_data_vals[2]]
+                        self.df[col] = create_column_values_under(
+                            prefix=col_data_vals[0],
+                            first_node_data=first_node_data,
+                            second_node_data=second_node_data,
+                            suffix="",
+                        )
+                    else:
+                        col_data_vals = col.split(sep=under)
+                        first_node_data = self.df.loc[:, col_data_vals[1]]
+                        second_node_data = self.df.loc[:, col_data_vals[1]]
                         self.df[col] = create_column_values_under(
                             prefix=col_data_vals[0],
                             first_node_data=first_node_data,
