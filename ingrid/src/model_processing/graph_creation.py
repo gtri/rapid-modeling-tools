@@ -604,9 +604,9 @@ class Manager:
             node_renames, create=True
         )
         model_commands["edge add"] = remove_duplicates(edge_add)
-        reporter_file = Path(str(outfile.stem) + "-reporter")
+        reporter_file = Path(outfile.stem + "-reporter.xlsx")
         json_reporter_to_excel(
-            model_commands, (outdir / reporter_file.with_suffix(".xlsx"))
+            model_commands, (outdir / reporter_file)
         )
 
         return change_list

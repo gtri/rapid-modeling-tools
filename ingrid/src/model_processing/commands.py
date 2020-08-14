@@ -166,10 +166,9 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
             )
 
         (outfile).write_text(json.dumps(json_out, indent=4, sort_keys=True))
-        reporter_path = outfile.stem + "-reporter"
-        reporter_path.with_suffix(".xlsx")
+        reporter_path = Path(outfile.stem + "-reporter.xlsx")
         json_reporter_to_excel(
-        model_commands, (outfile.parent / reporter_path)
+            model_commands, (outfile.parent / reporter_path)
         )
 
         print("Creation Complete")
