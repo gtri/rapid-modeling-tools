@@ -7,6 +7,8 @@ the BSD 3-Clause license. See the LICENSE file for details.
 from functools import reduce
 from itertools import chain
 
+import pandas as pd
+
 
 # TODO: to selectively import one of the utils is the function that needs to do
 # the importing.
@@ -900,3 +902,34 @@ def truncate_microsec(curr_time=None):
     """
     time_str = curr_time.strftime("%H %M %S %f")
     return time_str[0:-3]
+
+
+def json_reporter_to_excel(json_data, fn):
+    """
+    Write the results of the model json to a human readable Excel file.
+
+    Parameters
+    ----------
+    json_data: dict
+        Keys become the sheet name and reflect the different actions in the
+        JSON output. Each key contains a list of dictionaries, the JSON
+        data for every model action specified by Ingrid.
+
+    fn: str or Path
+        File name for the created Excel file.
+    """
+    with pd.ExcelWriter(fn) as writer:
+        for sheet_name, df_values in json_data.items():
+            if not df_values:
+                continue
+            df_data = {}
+            df_data.update({"id": []})
+            df_data.update({key: [] for key in df_values[0]["ops"][0].keys()})
+            for item in df_values:
+                df_data["id"].append(item["id"])
+                for op_key, op_value in item["ops"][0].items():
+                    df_data[op_key].append(op_value)
+            df = pd.DataFrame.from_dict(data=df_data, orient="columns",)
+            df.dropna(how="all", inplace=True)
+            df.to_excel(writer, sheet_name=sheet_name)
+        writer.save()

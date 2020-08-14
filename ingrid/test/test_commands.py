@@ -208,7 +208,9 @@ class TestCommands(unittest.TestCase):
                 )
                 # expect 3 json and 3 more excel files
                 cmp_json = list(outdir.glob("*.json"))
-                compare_data = json.loads(cmp_json[0].read_text())
+                compare_data = json.loads(
+                    cmp_json[0].read_text()
+                )
                 # TODO: This is hardcoded validation as it checks at a known
                 # point when the library works. This test passing does not
                 # guarantee that it should always work.

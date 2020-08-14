@@ -28,6 +28,7 @@ from .utils import (
     create_column_values_singleton,
     create_column_values_space,
     create_column_values_under,
+    json_reporter_to_excel,
     make_object,
     match_changes,
     remove_duplicates,
@@ -461,6 +462,7 @@ class Manager:
         See Also
         --------
         get_pattern_graph_diff
+        json_reporter_to_excel
         """
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
@@ -571,6 +573,7 @@ class Manager:
                     )
 
         # remove_duplicates only has local knowledge
+        model_commands = {}
         if create_node:
             change_list.extend(remove_duplicates(create_node, create=True))
             change_list.extend(remove_duplicates(node_dec))
@@ -593,6 +596,17 @@ class Manager:
 
         (outdir / outfile).write_text(
             json.dumps(json_out, indent=4, sort_keys=True)
+        )
+        model_commands["create"] = remove_duplicates(create_node, create=True)
+        model_commands["decorations"] = remove_duplicates(node_dec)
+        model_commands["edge delete"] = remove_duplicates(edge_del)
+        model_commands["node renames"] = remove_duplicates(
+            node_renames, create=True
+        )
+        model_commands["edge add"] = remove_duplicates(edge_add)
+        reporter_file = Path(str(outfile.stem) + "-reporter")
+        json_reporter_to_excel(
+            model_commands, (outdir / reporter_file.with_suffix(".xlsx"))
         )
 
         return change_list
