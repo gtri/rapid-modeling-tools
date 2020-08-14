@@ -917,6 +917,13 @@ def json_reporter_to_excel(json_data, fn):
 
     fn: str or Path
         File name for the created Excel file.
+
+    Returns
+    -------
+    None
+
+    Creates excel file with sheets named after the keys and dataframe data
+    gleaned from the values.
     """
     with pd.ExcelWriter(fn) as writer:
         for sheet_name, df_values in json_data.items():
