@@ -32,7 +32,10 @@ setup(
     package_dir={"": "src"},
     packages=find_packages("src"),
     entry_points={
-        "console_scripts": ["model-processing = model_processing.cli:main"]
+        "console_scripts": [
+            "model-processing = model_processing.cli:main",
+            "model-processing-gui = model_processing.gui:main"
+        ]
     },
     classifiers=[
         "Intended Audience :: Developers",

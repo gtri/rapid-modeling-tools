@@ -1,5 +1,7 @@
 name: Ingrid_Nerdman
 
+# TODO: Clean up and utilize env_specs 
+
 commands:
   test:
     windows: pytest
@@ -22,6 +24,11 @@ commands:
     windows: model-processing
     unix: model-processing
     description: Call model-processing
+
+  gui:
+    windows: model-processing-gui
+    unix: model-processing-gui
+    description: Call model-processing-gui built with Gooey
 
   build-docs:
     windows: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
@@ -46,7 +53,6 @@ env_specs:
     - pandas
     - xlrd >=0.9.0
     - jupyterlab >=2.1.0,<3.0.0a0
-    # - jupyterlab-graphviz-labextension ==2.0.0.alpha0
     - ipywidgets
     - matplotlib
     - nodejs >=13,<14.0.0a0
@@ -59,6 +65,8 @@ env_specs:
     - python >=3.6,<3.7
     - sphinx
     - pip
+    - pip:
+      - gooey
     channels:
     - defaults
     - conda-forge
