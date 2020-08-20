@@ -123,7 +123,10 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
         evaluator.to_property_di_graph()
         property_di_graph = evaluator.prop_di_graph
         vert_set = property_di_graph.vertex_set
-        json_out = {"modification targets": []}
+        json_out = {
+            "modification targets": [],
+            "filepath": str(wkbk.resolve()),
+        }
         decs_json = []
         edge_json = []
         for vertex in vert_set:
