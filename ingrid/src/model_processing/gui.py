@@ -19,6 +19,8 @@ from gooey import Gooey, GooeyParser
     tabbed_groups=True,
     navigation="TABBED",
     program_description="GUI for Ingrid interactions",
+    use_cmd_args=True,
+    optional_cols=2,
 )
 def main():
     """
@@ -41,23 +43,22 @@ def main():
         metavar="Custom Pattern(s)",
         widget="MultiFileChooser",
         default="",
-        required=False,
-        gooey_options = {
+        gooey_options={
             "wildcard": "JSON (*.json)|*.json",
             "message": "Select your JSON pattern file(s)",
             "default_file": "",
-        }
+        },
     )
     pattern_up_group.add_argument(
         "custom_pattern_dir",
         help="Upload an entire directory of custom JSON pattern file(s)",
         metavar="Custom Pattern(s) Directory",
         widget="DirChooser",
-        gooey_options = {
+        gooey_options={
             "wildcard": "JSON (*.json)|*.json",
             "message": "Select a directory containing JSON pattern file(s)",
             "default_dir": "",
-        }
+        },
     )
     # parser.set_defaults(custom_pattern="", custom_pattern_dir="")
 
@@ -71,7 +72,7 @@ def main():
         help="Choose File(s) to Create Model JSON From",
         widget="MultiFileChooser",
         metavar="Create File(s)",
-        gooey_options = {
+        gooey_options={
             "wildcard": "Xlsx (*.xlsx)|*.xlsx",
             "message": "Pick Excel File(s)",
             "default_file": "",
@@ -82,7 +83,7 @@ def main():
         help="Pick a directory of create files. Dir only contains RMT Excels",
         metavar="Directory of Create Excel File(s)",
         widget="DirChooser",
-        gooey_options = {
+        gooey_options={
             "wildcard": "Xlsx (*.xlsx)|*.xlsx",
             "message": "Pick a directory contining input Excel file(s)",
             "default_dir": "",
@@ -94,7 +95,7 @@ def main():
         help="Pick the output directory",
         metavar="Output Directory",
         widget="DirChooser",
-        gooey_options = {
+        gooey_options={
             "message": "Identify the desired output directory",
             "default_dir": "",
         },
@@ -106,7 +107,7 @@ def main():
         "og_file",
         help="Upload the original Excel file",
         widget="FileChooser",
-        gooey_options = {
+        gooey_options={
             "wildcard": "Xlsx (*.xlsx)|*.xlsx",
             "message": "Pick Excel File",
             "default_file": "",
@@ -118,11 +119,8 @@ def main():
         widget="MultiFileChooser",
     )
     compare_group.add_argument(
-        "cmp_out_dir",
-        help="Pick the output directory",
-        widget="DirChooser",
+        "cmp_out_dir", help="Pick the output directory", widget="DirChooser",
     )
-
 
     layering_group = parser.add_argument_group("Pattern Layering")
     layering_group.add_argument(
@@ -141,7 +139,7 @@ def main():
     # return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = main()
     print(args)
     assert False

@@ -1,6 +1,6 @@
 name: Ingrid_Nerdman
 
-# TODO: Clean up and utilize env_specs 
+# TODO: Clean up and utilize env_specs
 
 commands:
   test:
@@ -12,7 +12,7 @@ commands:
     windows: (if not exist notebooks (mkdir notebooks))
              && jupyter labextension install @jupyter-widgets/jupyterlab-manager
              && jupyter lab --notebook-dir=./notebooks
-    unix: mkdir -p notebooks && cd notebooks && jupyter lab
+    unix: mkdir -p notebooks && jupyter labextension install @jupyter-widgets/jupyterlab-manager && jupyter lab --notebook-dir=./notebooks
     description: Launch JupyterLab from /notebooks
 
   setup:
@@ -29,6 +29,9 @@ commands:
     windows: model-processing-gui
     unix: model-processing-gui
     description: Call model-processing-gui built with Gooey
+
+  demo:
+    windows: model-processing-demo
 
   build-docs:
     windows: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
