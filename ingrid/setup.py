@@ -35,8 +35,7 @@ setup(
         "console_scripts": [
             "model-processing = model_processing.cli:main",
             "model-processing-gui = model_processing.gui:main",
-            "model-processing-demo = model_processing.subparser_demo:main",
-        ]
+        ],
     },
     classifiers=[
         "Intended Audience :: Developers",

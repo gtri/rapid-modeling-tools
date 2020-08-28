@@ -26,12 +26,9 @@ commands:
     description: Call model-processing
 
   gui:
-    windows: model-processing-gui
+    windows: python src/model_processing/gui.py
     unix: model-processing-gui
     description: Call model-processing-gui built with Gooey
-
-  demo:
-    windows: model-processing-demo
 
   build-docs:
     windows: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
