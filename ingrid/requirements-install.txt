@@ -1,5 +1,7 @@
+gooey
 networkx >=2.3
 openpyxl
 pandas
+pyinstaller
 xlrd >=0.9.0
 -e . --install-option="--no-deps"
