@@ -23,9 +23,7 @@ def main():
     """
 
     print("Welcome to the GUI for Rapid Modeling Tools: Ingrid")
-    settings_msg = (
-        "Welcome to the GUI for Rapid Modeling Tools: Ingrid"
-    )
+    settings_msg = "Welcome to the GUI for Rapid Modeling Tools: Ingrid"
 
     parser = GooeyParser(description=settings_msg)
 
@@ -70,8 +68,7 @@ def main():
     )
 
     compare_parser = subs.add_parser(
-        "compare",
-        help="Compare two Excel Model versions"
+        "compare", help="Compare two Excel Model versions"
     )
     compare_parser.add_argument(
         "Original",
