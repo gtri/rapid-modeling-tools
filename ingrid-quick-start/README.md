@@ -54,12 +54,22 @@ Ingrid's create command ingests an Excel file(s) and generates a `JSON` file(s) 
 
 Ingrid uses the data entered, the sheet named after the desired pattern ("Composition") and the columns names based on desired pattern ("Component", "Position", and "Part") to process the create request and generate the create model `JSON`.
 
-3. Navigate to [../ingrid](../ingrid) and activate the environment created by the [installation procedure](../README.md). On the command line, enter
-```bash
-cd ../ingrid-quick-start
-model-processing --create --input "Composition Example Baseline.xlsx"
-```
-[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+3. - Open the Rapid Modeling Tools application and browse for the Excel file.
+		- **Note:** Users may upload a custom pattern and an output directory
+		by browsing for them under the Optional Arguments section.
+
+	![](images/create_app_screen.png)
+   - Click **Start** to begin modeling the model and produce the model JSON
+    ![](images/create_completed_app_screen.png)
+
+	**Alternatively** using terminal/command prompt:
+
+   - Navigate to [../ingrid](../ingrid) and activate the environment created by the [installation procedure](../README.md). On the command line, enter
+	```bash
+	cd ../ingrid-quick-start
+	model-processing --create --input "Composition Example Baseline.xlsx"
+	```
+	[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
 	- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
 		- The link above elaborates on this flag.
 
@@ -133,13 +143,25 @@ Suppose the SME interacting with this spreadsheet decided that `Spacecraft` woul
 
 Having created the two data files, Ingrid's `--compare` command computes the differences and provides a `JSON` file for the Player Piano to update the model. To perform the comparison, run the following command.
 
-10. Run the command:
-```bash
-model-processing --compare --original "Composition Example Baseline.xlsx" --update "Composition Example Updated.xlsx"
-```
-[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
-- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
-	- The link above elaborates on this flag.
+10. - Open the Rapid Modeling Tools application, switch to the compare
+action, and browse for the original excel file and the changed excel file.
+		- **Note:** Users may upload a custom pattern and an output directory
+		by browsing for them under the Optional Arguments section.
+
+	![](images/compare_app_screen.png)
+    - Click **Start** to begin the model comparison and produce the change JSON
+
+	![](images/compare_completed_app_screen.png)
+
+	**Alternatively** using terminal/command prompt:
+
+	- Run the command:
+	```bash
+	model-processing --compare --original "Composition Example Baseline.xlsx" --update "Composition Example Updated.xlsx"
+	```
+	[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+		- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
+		- The link above elaborates on this flag.
 
 Successful execution will create two files, one titled "graph_diff_changes_*date-time*.JSON" and an Excel file named "Model Diffs *date time*.xlsx"
 
@@ -175,13 +197,25 @@ Create a tab titled `SystemParts IDs` and populate with the IDs from the baselin
 ![](images/sys-parts-update-data.png)
 
 
-14. On the command line, execute
-```bash
-model-processing --compare --original "SystemParts Example Baseline.xlsx" --update "SystemParts Example Updated.xlsx"
-```
-[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
-- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
-	- The link above elaborates on this flag.
+14. - Open the Rapid Modeling Tools application, switch to the compare
+action, and browse for the original excel file and the changed excel file.
+		- **Note:** Users may upload a custom pattern and an output directory
+		by browsing for them under the Optional Arguments section.
+
+	![](images/compare_app_screen_sysparts.png)
+    - Click **Start** to begin the model comparison and produce the change JSON
+
+	![](images/compare_completed_app_screen_sysparts.png)
+
+	**Alternatively** using terminal/command prompt:
+
+	- On the command line, execute
+	```bash
+	model-processing --compare --original "SystemParts Example Baseline.xlsx" --update "SystemParts Example Updated.xlsx"
+	```
+	[../ingrid/README.md](../ingrid/README.md) contains a detailed explanation of the commands given above, what the flags means and more.
+		- **Note:** users may specify `--pattern` as an addtional command line argument during both create and compare to provide Ingrid with access to user-defined pattern files.
+			- The link above elaborates on this flag.
 
 The comparison, between the empty baseline and populated update file, produces add commands for the Player Piano to create new elements to the model adhering to the new pattern.
 
