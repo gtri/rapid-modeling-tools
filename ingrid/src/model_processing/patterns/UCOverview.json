@@ -1,0 +1,74 @@
+{
+    "Columns to Navigation Map": {
+        "Context": [
+            "context"
+        ],
+        "UseCase": [
+            "usecase"
+        ],
+        "Actor": [
+            "actor"
+        ],
+        "UCPos": [
+            "ucend"
+        ],
+        "ActPos": [
+            "actorend"
+        ],
+        "Assoc": [
+            "relation"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "usecase",
+            "context",
+            "subject"
+        ],
+        [
+            "actorend",
+            "actor",
+            "type"
+        ],
+        [
+            "ucend",
+            "usecase",
+            "type"
+        ],
+        [
+            "actorend",
+            "relation",
+            "owner"
+        ],
+        [
+            "ucend",
+            "relation",
+            "owner"
+        ]
+    ],
+    "Root Node": "usecase",
+    "Vertex MetaTypes": {
+        "context": "Class",
+        "usecase": "UseCase",
+        "actor": "Actor",
+        "relation": "Association",
+        "actorend": "Property",
+        "ucend": "Property"
+    },
+    "Vertex Settings": {
+        "context": null,
+        "usecase": null,
+        "actor": null,
+        "relation": null,
+        "actorend": null,
+        "ucend": null
+    },
+    "Vertex Stereotypes": {
+        "context": "Block",
+        "usecase": "requirementUseCase",
+        "actor": null,
+        "relation": null,
+        "actorend": null,
+        "ucend": null
+    }
+}

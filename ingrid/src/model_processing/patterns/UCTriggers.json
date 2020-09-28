@@ -1,0 +1,41 @@
+{
+    "Columns to Navigation Map": {
+        "UseCase": [
+            "usecase"
+        ],
+        "Activity": [
+            "activity"
+        ],
+        "Trigger": [
+            "trigger"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "activity",
+            "usecase",
+            "owner"
+        ],
+        [
+            "trigger",
+            "activity",
+            "owner"
+        ]
+    ],
+    "Root Node": "activity",
+    "Vertex MetaTypes": {
+        "usecase": "UseCase",
+        "activity": "Activity",
+        "trigger": "Trigger"
+    },
+    "Vertex Settings": {
+        "usecase": null,
+        "activity": null,
+        "trigger": null
+    },
+    "Vertex Stereotypes": {
+        "usecase": "requirementUseCase",
+        "activity": null,
+        "trigger": null
+    }
+}

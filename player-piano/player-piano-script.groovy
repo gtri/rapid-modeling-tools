@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2020 by the Georgia Tech Research Institute (GTRI)
+* Copyright (C) 2019 by the Georgia Tech Research Institute (GTRI)
 * This software may be modified and distributed under the terms of
 * the BSD 3-Clause license. See the LICENSE file for details.
 **/
@@ -283,10 +283,10 @@ try {
 							// Add a switch case to cover a new meta-attribute
 
 							switch(attribute_to_hit) {
-								case 'Documentation':
+								case 'documentation':
 									replace_log.add('(' + attribute_to_hit + ') Element ' + item_to_edit_reported + ' has documentation ' +
 										CoreHelper.getComment(ele_to_mod) + ' to become ' + op_to_execute['value']);
-									CoreHelper.setComment(ele_to_mod, op_to_execute['value']);
+									CoreHelper.setCommentElement(ele_to_mod, ele_to_mod.getOwnedComment()[0]);
 									break;
 								case 'association':
 									end_element = null;
@@ -669,6 +669,78 @@ try {
 
 									ele_to_mod.setRole(role_element);
 									break;
+								case 'opposite':
+									opposite_element = null;
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										opposite_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										opposite_element = live_project.getElementByID(op_to_execute['value']);
+									}
+
+									item_edited_value_reported = opposite_element.getID() + '(' + opposite_element.getHumanName() + ')';
+
+									replace_log.add('(' + attribute_to_hit + ') Setting opposite on ' + item_to_edit_reported + ' to ' +
+										item_edited_value_reported);
+
+									ele_to_mod.setRole(opposite_element);
+									break;
+								case 'subject':
+									subject_element = null;
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										subject_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										subject_element = live_project.getElementByID(op_to_execute['value']);
+									}
+
+									item_edited_value_reported = subject_element.getID() + '(' +
+										subject_element.getHumanName() + ')';
+
+									replace_log.add('(' + attribute_to_hit + ') Setting method on ' + item_to_edit_reported + ' to ' +
+										item_edited_value_reported);
+
+									// This is how to set properties that are collections in Groovy
+
+									ele_to_mod.getSubject().add(subject_element);
+
+									break;
+								case 'client':
+									element = null;
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										element = live_project.getElementByID(op_to_execute['value']);
+									}
+
+									item_edited_value_reported = element.getID() + '(' +
+										element.getHumanName() + ')';
+
+									replace_log.add('(' + attribute_to_hit + ') Setting method on ' + item_to_edit_reported + ' to ' +
+										item_edited_value_reported);
+
+									CoreHelper.setClientElement(ele_to_mod, element);
+
+									break;
+								case 'supplier':
+									element = null;
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										element = live_project.getElementByID(op_to_execute['value']);
+									}
+
+									item_edited_value_reported = element.getID() + '(' +
+										element.getHumanName() + ')';
+
+									replace_log.add('(' + attribute_to_hit + ') Setting method on ' + item_to_edit_reported + ' to ' +
+										item_edited_value_reported);
+
+									CoreHelper.setSupplierElement(ele_to_mod, element);
+
+									break;
 								case 'type':
 									typing_element = null;
 									if (op_to_execute['value'].split('_')[0] == 'new') {
@@ -890,11 +962,74 @@ try {
 									new_element.setName(new_name);
 									homeless_elements.add(new_element);
 									break;
+								case 'Abstraction':
+									new_element = ele_factory.createAbstractionInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
 								case 'Activity':
 									new_element = ele_factory.createActivityInstance();
 									temp_ids[item_to_edit] = new_element.getID();
 									temp_elements[item_to_edit] = new_element;
 									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Trigger':
+									new_element = ele_factory.createSendSignalActionInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Action':
+									new_element = ele_factory.createCallBehaviorActionInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'InputPin':
+									new_element = ele_factory.createInputPinInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'OutputPin':
+									new_element = ele_factory.createOutputPinInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Actor':
+									new_element = ele_factory.createActorInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Requirement':
+									new_element = ele_factory.createRequirementInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'UseCase':
+									new_element = ele_factory.createUseCaseInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Comment':
+									new_element = ele_factory.createCommentInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setBody(new_name);
 									homeless_elements.add(new_element);
 									break;
 								case 'Property':
@@ -1179,23 +1314,23 @@ finally {
 	// uncomment below to expose detailed logs
 	live_log.log('Execution steps:');
 	for (entry in execution_status_log) {
-		// live_log.log(entry);
+		live_log.log(entry);
 	}
 	live_log.log('Elements processed:');
 	for (entry in command_processing_log) {
-		// live_log.log(entry);
+		live_log.log(entry);
 	}
 	live_log.log('Element creation commands:');
 	for (entry in create_log) {
-		// live_log.log(entry);
+		live_log.log(entry);
 	}
 	live_log.log('Relationship replace commands:');
 	for (entry in replace_log) {
-		// live_log.log(entry);
+		live_log.log(entry);
 	}
 	live_log.log('Element rename commands:');
 	for (entry in rename_log) {
-		// live_log.log(entry);
+		live_log.log(entry);
 	}
 	live_log.log('Verification Details:');
 	for (entry in verification_log) {

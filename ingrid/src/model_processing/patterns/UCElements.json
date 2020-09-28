@@ -1,0 +1,95 @@
+{
+    "Columns to Navigation Map": {
+        "Context": [
+            "component",
+            "owner",
+            "Composite Thing"
+        ],
+        "UseCase": [
+            "component",
+            "type",
+            "Atomic Thing"
+        ],
+        "Position": [
+            "component"
+        ],
+        "Activity": [
+            "activity"
+        ],
+        "Element": [
+            "element"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "composite owner",
+            "Composite Thing",
+            "type"
+        ],
+        [
+            "component",
+            "Atomic Thing",
+            "type"
+        ],
+        [
+            "A_composite owner_component",
+            "composite owner",
+            "memberEnd"
+        ],
+        [
+            "A_composite owner_component",
+            "component",
+            "memberEnd"
+        ],
+        [
+            "component",
+            "Composite Thing",
+            "owner"
+        ],
+        [
+            "composite owner",
+            "A_composite owner_component",
+            "owner"
+        ],
+        [
+            "element",
+            "Atomic Thing",
+            "subject"
+        ],
+        [
+            "activity",
+            "element",
+            "owner"
+        ]
+    ],
+    "Root Node": "component",
+    "Vertex MetaTypes": {
+        "A_composite owner_component": "Association",
+        "Atomic Thing": "Class",
+        "Composite Thing": "Class",
+        "component": "Property",
+        "composite owner": "Property",
+        "element": "UseCase",
+        "activity": "Activity"
+    },
+    "Vertex Settings": {
+        "A_composite owner_component": null,
+        "Atomic Thing": null,
+        "Composite Thing": null,
+        "component": {
+            "aggregation": "composite"
+        },
+        "composite owner": null,
+        "element": null,
+        "activity": null
+    },
+    "Vertex Stereotypes": {
+        "A_composite owner_component": null,
+        "Atomic Thing": "Block",
+        "Composite Thing": "Block",
+        "component": "PartProperty",
+        "composite owner": null,
+        "element": "requirementUseCase",
+        "activity": null
+    }
+}
