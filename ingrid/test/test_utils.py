@@ -6,9 +6,11 @@ the BSD 3-Clause license. See the LICENSE file for details.
 
 
 import json
+import tempfile
 import unittest
 from copy import copy
 from functools import partial
+from pathlib import Path
 
 import networkx as nx
 import pandas as pd
@@ -27,6 +29,7 @@ from model_processing.utils import (
     create_column_values_under,
     get_node_types_attrs,
     get_setting_node_name_from_df,
+    json_reporter_to_excel,
     make_string,
     match,
     match_changes,
@@ -795,6 +798,83 @@ class TestUtils(unittest.TestCase):
             ],
         }
         self.assertDictEqual(expect, to_uml_json_edge(**edge_info))
+
+    def test_json_reporter_to_excel(self):
+        test_data = {
+            "create": [
+                {
+                    "id": "0",
+                    "ops": [
+                        {
+                            "op": "create",
+                            "name": "test name",
+                            "path": None,
+                            "metatype": "meta meta",
+                            "stereotype": "stereo",
+                            "attributes": None,
+                        }
+                    ],
+                },
+                {
+                    "id": "1",
+                    "ops": [
+                        {
+                            "op": "create",
+                            "name": "test2",
+                            "path": None,
+                            "metatype": "class",
+                            "stereotype": "block",
+                            "attributes": {},
+                        }
+                    ],
+                },
+            ],
+            "edge": [
+                {
+                    "id": "0",
+                    "ops": [
+                        {
+                            "op": "replace",
+                            "path": "/m2/memberEnd",
+                            "value": "1",
+                        },
+                    ],
+                },
+                {
+                    "id": "1",
+                    "ops": [
+                        {"op": "replace", "path": "/m2/type", "value": "0"},
+                    ],
+                },
+            ],
+            "decorations": [
+                {
+                    "id": "new 0",
+                    "ops": [
+                        {
+                            "op": "decoration",
+                            "path": "/m2/home",
+                            "value": "volume",
+                        },
+                    ],
+                },
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            fh = tmpdir / "Model Reporter 0.xlsx"
+            json_reporter_to_excel(test_data, fh)
+            cr_df = pd.read_excel(fh, sheet_name=None)
+            assert all(
+                key in ["create", "edge", "decorations"]
+                for key in cr_df.keys()
+            )
+            for data_key, df_key in zip(test_data.keys(), cr_df.keys()):
+                assert len(test_data[data_key]) == cr_df[df_key].shape[0]
+                expect_columns = ["id"] + list(
+                    test_data[data_key][0]["ops"][0].keys()
+                )
+                assert all(col in cr_df[df_key] for col in expect_columns)
 
     def tearDown(self):
         pass

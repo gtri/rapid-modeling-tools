@@ -36,7 +36,12 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
   ```
     > Cloning the repository provides you access to add meta model JSON descriptions and update the `player-piano` to create novel model elements.
 
+
 ### Ingrid
+- Installation simultaneously builds the Application
+    - Locate the Application at `rapid-modeling-tools/ingrid/dist`
+    - The Application build process creates the `../dist` directory
+
 #### Windows
 - Install [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 - Install the Ingrid application
@@ -56,7 +61,7 @@ RMT affords the engineer SME the ability to quickly add, update, or delete desig
 
 - Detailed instructions can be found in the [README.md](ingrid/README.md) in the `ingrid` directory for usage with anaconda-project and without anaconda-project
 
-- [CONTRIBUTING.md](CONTRIBUTING.md) outlines the expectations for those looking to contribute to Rapid Modeling Tools. 
+- [CONTRIBUTING.md](CONTRIBUTING.md) outlines the expectations for those looking to contribute to Rapid Modeling Tools.
 
 ### Player Piano
 

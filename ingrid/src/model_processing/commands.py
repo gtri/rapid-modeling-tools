@@ -13,6 +13,7 @@ from pathlib import Path
 import pandas as pd
 
 from model_processing.graph_creation import Evaluator, Manager, MDTranslator
+from model_processing.utils import json_reporter_to_excel, remove_duplicates
 
 from . import PATTERNS
 
@@ -41,6 +42,14 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
     output : JSON file
         Generates a JSON file as output that the Player Piano digests to
         generate a new MagicDraw model.
+
+    reporter: Excel file
+        Generates an Excel file as an additional output to inform the user
+        of the node creations, edge creations and node decorations.
+
+    See Also
+    --------
+    json_reporter_to_excel
     """
     wkbk_paths = []
     here = Path(os.getcwd())
@@ -129,6 +138,7 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
         }
         decs_json = []
         edge_json = []
+        model_commands = {"create": [], "edges": [], "decorations": []}
         for vertex in vert_set:
             vert_uml, decs_uml, edge_uml = vertex.create_node_to_uml(
                 translator=translator
@@ -136,6 +146,9 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
             json_out["modification targets"].extend(vert_uml)
             decs_json.extend(decs_uml)
             edge_json.extend(edge_uml)
+            model_commands["create"].extend(vert_uml)
+            model_commands["edges"].extend(edge_uml)
+            model_commands["decorations"].extend(decs_uml)
 
         json_out["modification targets"].extend(decs_json)
         json_out["modification targets"].extend(edge_json)
@@ -156,6 +169,10 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
             )
 
         (outfile).write_text(json.dumps(json_out, indent=4, sort_keys=True))
+        reporter_path = Path(outfile.stem + "-reporter.xlsx")
+        json_reporter_to_excel(
+            model_commands, (outfile.parent / reporter_path)
+        )
 
         print("Creation Complete")
 
@@ -163,7 +180,8 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
 def compare_md_model(inputs, input_patterns="", output_path=""):
     """
     Produces difference files (JSON and Excel) for the original file to
-    each change file provided.
+    each change file provided and write model changes for created and
+    renamed nodes, created and renamed edges, and node decorations.
 
     Parameters
     ----------
@@ -190,6 +208,12 @@ def compare_md_model(inputs, input_patterns="", output_path=""):
         Generates an Excel file that lists the confident changes (ones
         made by the JSON) and the unstable pairs so the user can make the
         determination on those changes on their own.
+
+    See Also
+    --------
+    get_pattern_graph_diff
+    json_reporter_to_excel
+    changes_to_excel
     """
     provided_paths = inputs
     wkbk_paths = []

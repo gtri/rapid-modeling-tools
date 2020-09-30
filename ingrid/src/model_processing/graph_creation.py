@@ -28,6 +28,7 @@ from .utils import (
     create_column_values_singleton,
     create_column_values_space,
     create_column_values_under,
+    json_reporter_to_excel,
     make_object,
     match_changes,
     remove_duplicates,
@@ -78,9 +79,11 @@ class Manager:
         self.json_path = json_path
         self.json_data = None
         self.translator = None
-        self.get_json_data()
+        if self.json_path:
+            self.get_json_data()
         self.evaluators = []
-        self.create_evaluators()
+        if self.excel_path:
+            self.create_evaluators()
 
     def get_json_data(self):
         """ Load the json data using the json_path"""
@@ -461,6 +464,7 @@ class Manager:
         See Also
         --------
         get_pattern_graph_diff
+        json_reporter_to_excel
         """
         # need to strip off the keys that are strings and use them to
         # determine what kinds of ops I need to preform.
@@ -571,6 +575,7 @@ class Manager:
                     )
 
         # remove_duplicates only has local knowledge
+        model_commands = {}
         if create_node:
             change_list.extend(remove_duplicates(create_node, create=True))
             change_list.extend(remove_duplicates(node_dec))
@@ -594,6 +599,15 @@ class Manager:
         (outdir / outfile).write_text(
             json.dumps(json_out, indent=4, sort_keys=True)
         )
+        model_commands["create"] = remove_duplicates(create_node, create=True)
+        model_commands["decorations"] = remove_duplicates(node_dec)
+        model_commands["edge delete"] = remove_duplicates(edge_del)
+        model_commands["node renames"] = remove_duplicates(
+            node_renames, create=True
+        )
+        model_commands["edge add"] = remove_duplicates(edge_add)
+        reporter_file = Path(outfile.stem + "-reporter.xlsx")
+        json_reporter_to_excel(model_commands, (outdir / reporter_file))
 
         return change_list
 
@@ -754,6 +768,8 @@ class Evaluator:
             "changenames",
             "changed_names",
         ]
+        if not excel_file and self.excel_file:
+            excel_file = self.excel_file
         excel_sheets = pd.read_excel(excel_file, sheet_name=None)
         # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(excel_sheets):  # Alphabetical sort
@@ -970,10 +986,20 @@ class Evaluator:
                             second_node_data=second_node_data,
                             suffix=suff,
                         )
-                    else:
+                    elif len(col.split(sep=under)) > 2:
                         col_data_vals = col.split(sep=under)
                         first_node_data = self.df.loc[:, col_data_vals[1]]
                         second_node_data = self.df.loc[:, col_data_vals[2]]
+                        self.df[col] = create_column_values_under(
+                            prefix=col_data_vals[0],
+                            first_node_data=first_node_data,
+                            second_node_data=second_node_data,
+                            suffix="",
+                        )
+                    else:
+                        col_data_vals = col.split(sep=under)
+                        first_node_data = self.df.loc[:, col_data_vals[1]]
+                        second_node_data = self.df.loc[:, col_data_vals[1]]
                         self.df[col] = create_column_values_under(
                             prefix=col_data_vals[0],
                             first_node_data=first_node_data,
@@ -1125,6 +1151,11 @@ class MDTranslator:
         self.json_path = json_path
         self.data = json_data
         self.uml_id = {}
+
+    def __repr__(self):
+        return "MDTranslator Obj(Pattern Name: {0})".format(
+            self.json_path.name
+        )
 
     @property
     def pattern_path(self):
