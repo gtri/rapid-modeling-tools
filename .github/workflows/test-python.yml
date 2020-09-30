@@ -45,3 +45,9 @@ jobs:
       with:
         name: test-coverage ${{ matrix.node-version }}
         path: coverage.xml
+
+    - name: Build Application
+      run: |
+        cd ingrid
+        python -m pip install -e . --no-deps --ignore-installed
+        pyinstaller build.spec

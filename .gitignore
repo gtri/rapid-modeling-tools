@@ -17,6 +17,7 @@ junit.xml
 htmlcov
 coverage.xml
 ingrid/build*
+!ingrid/build.spec
 ingrid/dist*
 .idea/
 *.json
