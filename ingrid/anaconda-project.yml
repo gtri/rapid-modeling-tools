@@ -5,21 +5,42 @@ commands:
     windows: pytest
     unix: pytest
     description: Run test suite
+    env_spec: model-processing
 
   jupyter:
-    windows: (if not exist notebooks (mkdir notebooks)) & cd notebooks & jupyter lab
-    unix: mkdir -p notebooks && cd notebooks && jupyter lab
+    windows: >-
+        python -m pip install -e . --no-deps --ignore-installed &&
+        (if not exist notebooks (mkdir notebooks)) &&
+        jupyter labextension install @jupyter-widgets/jupyterlab-manager &&
+        jupyter lab --notebook-dir=./notebooks
+    unix: >
+        mkdir -p notebooks &&
+        jupyter labextension install @jupyter-widgets/jupyterlab-manager &&
+        jupyter lab --notebook-dir=./notebooks
     description: Launch JupyterLab from /notebooks
+    env_spec: jupyter
 
   setup:
     windows: python -m pip install -e . --no-deps --ignore-installed
     unix: python -m pip install -e . --no-deps --ignore-installed
     description: Install model-processing
+    env_spec: model-processing
 
   cli:
     windows: model-processing
     unix: model-processing
     description: Call model-processing
+    env_spec: model-processing
+
+  gui:
+    windows: >-
+        python -m pip install -e . --no-deps --ignore-installed &&
+        python src/model_processing/gui.py
+    unix: >
+        python -m pip install -e . --no-deps --ignore-installed &&
+        python src/model_processing/gui.py
+    description: Call model-processing-gui built with Gooey
+    env_spec: gui
 
   build-docs:
     windows: sphinx-apidoc -F -q -f -H "Rapid Modeling Tools" -A "GTRI" -V "0.1.0"^
@@ -30,11 +51,26 @@ commands:
       --extensions="sphinx.ext.autosummary,sphinx.ext.intersphinx,sphinx.ext.napoleon"
       -o docs src/model_processing && cd docs && make html
     description: Build model-processing documents
+    env_spec: docs
 
   black:
     windows: black setup.py src test
     unix: black setup.py src test
     description: Format files per Black
+    env_spec: model-processing
+
+  build:
+    windows: >-
+        python -m pip install -e . --no-deps --ignore-installed &&
+        pyinstaller build.spec
+    unix: >-
+        python -m pip install -e . --no-deps --ignore-installed &&
+        pyinstaller build.spec
+    env_spec: build
+
+channels:
+  - https://conda.anaconda.org/anaconda
+  - https://conda.anaconda.org/conda-forge
 
 env_specs:
   model-processing:
@@ -45,14 +81,32 @@ env_specs:
     - xlrd >=0.9.0
     - scipy
     - black
-    - jupyterlab
+    - pip
     - pytest
     - pytest-cov
     - pytest-flake8
     - pytest-black
     - python >=3.6,<3.7
+  gui:
+    inherit_from:
+    - model-processing
+    packages:
+    - pip:
+      - gooey
+  docs:
+    packages:
     - sphinx
-    - pip
-    channels:
-    - defaults
-    - conda-forge
+  jupyter:
+    inherit_from:
+    - model-processing
+    packages:
+    - jupyterlab >=2.1.0,<3.0.0a0
+    - ipywidgets
+    - matplotlib
+    - nodejs >=13,<14.0.0a0
+  build:
+    inherit_from:
+    - model-processing
+    - gui
+    packages:
+    - pyinstaller

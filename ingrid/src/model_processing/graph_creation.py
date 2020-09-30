@@ -79,9 +79,11 @@ class Manager:
         self.json_path = json_path
         self.json_data = None
         self.translator = None
-        self.get_json_data()
+        if self.json_path:
+            self.get_json_data()
         self.evaluators = []
-        self.create_evaluators()
+        if self.excel_path:
+            self.create_evaluators()
 
     def get_json_data(self):
         """ Load the json data using the json_path"""
@@ -605,9 +607,7 @@ class Manager:
         )
         model_commands["edge add"] = remove_duplicates(edge_add)
         reporter_file = Path(outfile.stem + "-reporter.xlsx")
-        json_reporter_to_excel(
-            model_commands, (outdir / reporter_file)
-        )
+        json_reporter_to_excel(model_commands, (outdir / reporter_file))
 
         return change_list
 
@@ -768,6 +768,8 @@ class Evaluator:
             "changenames",
             "changed_names",
         ]
+        if not excel_file and self.excel_file:
+            excel_file = self.excel_file
         excel_sheets = pd.read_excel(excel_file, sheet_name=None)
         # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(excel_sheets):  # Alphabetical sort
@@ -984,10 +986,20 @@ class Evaluator:
                             second_node_data=second_node_data,
                             suffix=suff,
                         )
-                    else:
+                    elif len(col.split(sep=under)) > 2:
                         col_data_vals = col.split(sep=under)
                         first_node_data = self.df.loc[:, col_data_vals[1]]
                         second_node_data = self.df.loc[:, col_data_vals[2]]
+                        self.df[col] = create_column_values_under(
+                            prefix=col_data_vals[0],
+                            first_node_data=first_node_data,
+                            second_node_data=second_node_data,
+                            suffix="",
+                        )
+                    else:
+                        col_data_vals = col.split(sep=under)
+                        first_node_data = self.df.loc[:, col_data_vals[1]]
+                        second_node_data = self.df.loc[:, col_data_vals[1]]
                         self.df[col] = create_column_values_under(
                             prefix=col_data_vals[0],
                             first_node_data=first_node_data,
@@ -1139,6 +1151,11 @@ class MDTranslator:
         self.json_path = json_path
         self.data = json_data
         self.uml_id = {}
+
+    def __repr__(self):
+        return "MDTranslator Obj(Pattern Name: {0})".format(
+            self.json_path.name
+        )
 
     @property
     def pattern_path(self):
