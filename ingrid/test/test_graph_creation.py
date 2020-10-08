@@ -847,17 +847,11 @@ class TestMDTranslator(unittest.TestCase):
         self.assertEqual(None, stereotype_2)
 
     def test_get_uml_settings(self):
-        path, setting = self.translator.get_uml_settings(
-            node_key="Composite Thing"
-        )
-        self.assertTupleEqual(("Composite Thing", None), (path, setting))
+        setting = self.translator.get_uml_settings(node_key="Composite Thing")
+        assert setting is None
 
-        path_comp, setting_comp = self.translator.get_uml_settings(
-            node_key="component"
-        )
-        self.assertEqual(
-            ("aggregation", "composite"), (path_comp, setting_comp)
-        )
+        setting = self.translator.get_uml_settings(node_key="component")
+        self.assertEqual({"aggregation": "composite"}, setting)
 
     def tearDown(self):
         pass

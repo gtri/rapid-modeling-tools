@@ -466,27 +466,22 @@ class Vertex(VertexReporterMixin):
                         }
                     ],
                 }
-            path_val, settings_val = translator.get_uml_settings(
-                node_key=node_type
-            )
-            if settings_val:
-                if self.settings:
-                    settings_val = list(
-                        set(get_uml_id(name=node) for node in self.settings)
-                    )
-                decorations_dict = {
-                    "id": get_uml_id(name=self.name),
-                    "ops": [
-                        {
-                            "op": "replace",
-                            "path": "/" + path_val,
-                            "value": settings_val,
-                        }
-                    ],
-                }
-                node_decorations.append(decorations_dict)
-            else:
-                continue
+
+        if self.settings:
+            for set in self.settings:
+                path, value = set.items()
+                node_decorations.append(
+                    {
+                        "id": get_uml_id(name=self.name),
+                        "ops": [
+                            {
+                                "op": "replace",
+                                "path": "/" + path,
+                                "value": value,
+                            },
+                        ],
+                    },
+                )
 
         node_uml_list.append(node_uml_dict)
 
