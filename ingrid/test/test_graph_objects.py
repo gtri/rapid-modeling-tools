@@ -513,6 +513,34 @@ class TestVertex(unittest.TestCase):
         assert edge_id_names[0] == edge_id_names[2]
         assert edge_id_names[0] != edge_id_names[1]
 
+    def test_multiple_settings(self):
+        data = (PATTERNS / "Composition.json").read_text()
+        data = json.loads(data)
+        data["Vertex Settings"]["component"].update({"new_key": "new_value"})
+
+        translator = MDTranslator(
+            json_path=(PATTERNS / "Composition.json"), json_data=data
+        )
+
+        assert {"aggregation": "composite", "new_key": "new_value"} == data[
+            "Vertex Settings"
+        ]["component"]
+
+        excel_path = DATA_DIRECTORY / "Composition Example 2.xlsx"
+        translator.uml_id = {}
+        eval = Evaluator(excel_file=excel_path, translator=translator)
+        eval.df.drop(list(range(1, eval.df.shape[0])), inplace=True)
+        eval.rename_df_columns()
+        eval.add_missing_columns()
+        eval.to_property_di_graph()
+        pdg = eval.prop_di_graph
+        settings_more_than_one = 0
+        for v in pdg.vertex_set:
+            v_uml, v_dec, e_uml = v.create_node_to_uml(translator=translator)
+            if len(v_dec) > 1:
+                settings_more_than_one += 1
+        assert settings_more_than_one == 1
+
     def tearDown(self):
         pass
 

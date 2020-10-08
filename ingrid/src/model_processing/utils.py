@@ -106,33 +106,9 @@ def associate_node_types_settings(df, tr, root_attr_cols, node=""):
     settings = []
 
     for node_type in node_type_cols:
-        path_val, settings_val = tr.get_uml_settings(node_key=node_type)
-        if settings_val:
-            if "id" in settings_val:
-                settings_value = get_setting_node_name_from_df(
-                    df=df, column=settings_val.split("-")[-1], node=node
-                )
-                settings.extend(
-                    [{path_val: value} for value in settings_value]
-                )
-            elif isinstance(settings_val, list) and any(
-                "id" in item for item in settings_val
-            ):  # TODO: Test This
-                id_calls = [
-                    id.split("-")[-1]
-                    for id in filter(lambda x: "id" in x, settings_val)
-                ]
-                for col in id_calls:
-                    settings_value = get_setting_node_name_from_df(
-                        df=df, column=col, node=node
-                    )
-                    settings.extend(
-                        [{path_val: [value]} for value in settings_value]
-                    )
-            else:
-                settings.append({path_val: settings_val})
-        else:
-            settings = []
+        settings_value = tr.get_uml_settings(node_key=node_type)
+        if settings_value:
+            settings.extend({k: v} for k, v in settings_value.items())
 
     type_setting_dict = {
         "settings": settings,

@@ -1250,15 +1250,7 @@ class MDTranslator:
 
     def get_uml_settings(self, node_key=None):
         """
-        Returns the settings key and settings value from the vertex
-        settings for the node_key (str).
+        Returns the settings value for the node type requested.
         """
-        uml_phrase = self.data["Vertex Settings"][node_key]
-
-        try:
-            uml_phrase.keys()
-        except AttributeError:
-            return node_key, uml_phrase
-
-        key = next(iter(uml_phrase))
-        return key, uml_phrase[key]
+        if node_key:
+            return self.data["Vertex Settings"][node_key]
