@@ -1,16 +1,16 @@
 {
     "Columns to Navigation Map": {
+        "General Property": [
+            "redefinedProp"
+        ],
         "General Type": [
             "General"
         ],
-		"Specific Type": [
-            "Specific"
-        ],
-		"General Property": [
-            "redefinedProp"
-        ],
-		"Specific Property": [
+        "Specific Property": [
             "redefiningProp"
+        ],
+        "Specific Type": [
+            "Specific"
         ]
     },
     "Pattern Graph Edges": [
@@ -19,7 +19,7 @@
             "General",
             "general"
         ],
-		[
+        [
             "redefiningProp",
             "redefinedProp",
             "redefines"
@@ -39,8 +39,18 @@
         "redefiningProp": null
     },
     "Vertex Stereotypes": {
-        "General": "Block",
-        "Specific": "Block",
+        "General": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "Specific": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
         "redefinedProp": null,
         "redefiningProp": null
     }

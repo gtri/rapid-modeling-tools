@@ -314,7 +314,9 @@ class TestVertex(unittest.TestCase):
                         "name": "Car",
                         "path": None,
                         "metatype": "Class",
-                        "stereotype": "Block",
+                        "stereotype": [
+                            {"stereotype": "Block", "profile": "SysML",},
+                        ],
                         "attributes": [{"Notes": "Test Note"}],
                     }
                 ],
@@ -357,7 +359,12 @@ class TestVertex(unittest.TestCase):
                         "name": "engine",
                         "path": None,
                         "metatype": "Property",
-                        "stereotype": "PartProperty",
+                        "stereotype": [
+                            {
+                                "stereotype": "PartProperty",
+                                "profile": "SysML",
+                            },
+                        ],
                         "attributes": None,
                     }
                 ],
@@ -442,7 +449,9 @@ class TestVertex(unittest.TestCase):
                         "name": "Car",
                         "path": None,
                         "metatype": "Class",
-                        "stereotype": "Block",
+                        "stereotype": [
+                            {"stereotype": "Block", "profile": "SysML",},
+                        ],
                         "attributes": [{"Notes": "Test Note"}],
                     }
                 ],
@@ -479,7 +488,9 @@ class TestVertex(unittest.TestCase):
                         "name": "Car",
                         "path": None,
                         "metatype": "Class",
-                        "stereotype": "Block",
+                        "stereotype": [
+                            {"stereotype": "Block", "profile": "SysML",},
+                        ],
                         "attributes": [{"Notes": "Test Note"}],
                     }
                 ],

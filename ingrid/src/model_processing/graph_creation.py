@@ -1246,7 +1246,8 @@ class MDTranslator:
         """
         Returns the vertex stereotype for the given node_key (str).
         """
-        return self.data["Vertex Stereotypes"][node_key]
+        if node_key:
+            return self.data["Vertex Stereotypes"][node_key]
 
     def get_uml_settings(self, node_key=None):
         """

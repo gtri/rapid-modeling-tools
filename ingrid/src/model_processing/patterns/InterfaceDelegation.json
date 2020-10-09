@@ -1,13 +1,16 @@
 {
     "Columns to Navigation Map": {
-        "Comp A C": [
-            "Comp A"
-        ],
         "C_Source Port_Target Port-end1C": [
             "C_Source Port_Target Port-end1"
         ],
-        "SPC": [
-            "Source Port"
+        "C_Source Port_Target Port-end2C": [
+            "C_Source Port_Target Port-end2"
+        ],
+        "C_Source Port_Target PortC": [
+            "C_Source Port_Target Port"
+        ],
+        "Comp A C": [
+            "Comp A"
         ],
         "Delegate": [
             "Component A"
@@ -15,139 +18,183 @@
         "Delegating Assembly": [
             "Context"
         ],
-        "C_Source Port_Target PortC": [
-            "C_Source Port_Target Port"
-        ],
-        "C_Source Port_Target Port-end2C": [
-            "C_Source Port_Target Port-end2"
-        ],
-        "TPC": [
-            "Target Port"
+        "SPC": [
+            "Source Port"
         ],
         "Source Interface": [
             "SourceIF"
+        ],
+        "TPC": [
+            "Target Port"
         ]
     },
     "Pattern Graph Edges": [
-		[
+        [
             "Comp A",
             "Component A",
-			"type"
+            "type"
         ],
         [
             "Comp A",
             "Context",
-			"owner"
+            "owner"
         ],
         [
             "C_Source Port_Target Port-end1",
             "C_Source Port_Target Port",
-			"owner"
+            "owner"
         ],
         [
             "C_Source Port_Target Port-end1",
             "Source Port",
-			"role"
+            "role"
         ],
         [
             "C_Source Port_Target Port",
             "C_Source Port_Target Port-end1",
-			"end"
+            "end"
         ],
         [
             "Source Port",
             "Context",
-			"owner"
+            "owner"
         ],
-		[
+        [
             "Target Port",
             "Component A",
-			"owner"
+            "owner"
         ],
         [
             "Source Port",
             "SourceIF",
-			"type"
+            "type"
         ],
         [
             "C_Source Port_Target Port",
             "Context",
-			"owner"
+            "owner"
         ],
         [
             "C_Source Port_Target Port-end2",
             "C_Source Port_Target Port",
-			"owner"
+            "owner"
         ],
         [
             "C_Source Port_Target Port",
             "C_Source Port_Target Port-end2",
-			"end"
+            "end"
         ],
         [
             "C_Source Port_Target Port-end2",
             "Target Port",
-			"role"
+            "role"
         ],
         [
             "Target Port",
             "SourceIF",
-			"type"
+            "type"
         ]
     ],
     "Root Node": "C_Source Port_Target Port",
     "Vertex MetaTypes": {
-        "SourceIF": "Class",
-		"TargetIF": "Class",
-        "Target Port": "Port",
-        "C_Source Port_Target Port-end2": "ConnectorEnd",
         "C_Source Port_Target Port": "Connector",
-        "Context": "Class",
-        "Component A": "Class",
-        "Source Port": "Port",
         "C_Source Port_Target Port-end1": "ConnectorEnd",
-        "Comp A": "Property"
-    },
-    "Vertex Stereotypes": {
-        "SourceIF": [
-            "InterfaceBlock"
-        ],
-        "Target Port": [
-            "ProxyPort"
-        ],
-        "C_Source Port_Target Port-end2": [
-            "NestedConnectorEnd"
-        ],
-        "C_Source Port_Target Port": [
-			"BindingConnector"
-		],
-        "Context": [
-            "Block"
-        ],
-        "Component A": [
-            "Block"
-        ],
-        "Source Port": [
-            "ProxyPort"
-        ],
-        "C_Source Port_Target Port-end1": [
-            "NestedConnectorEnd"
-        ],
-        "Comp A": [
-            "PartProperty"
-        ]
+        "C_Source Port_Target Port-end2": "ConnectorEnd",
+        "Comp A": "Property",
+        "Component A": "Class",
+        "Context": "Class",
+        "Source Port": "Port",
+        "SourceIF": "Class",
+        "Target Port": "Port",
+        "TargetIF": "Class"
     },
     "Vertex Settings": {
-        "SourceIF": null,
-        "Target Port": null,
-        "C_Source Port_Target Port-end2": {
-			"propertyPath" : ["id-Comp A"]
-		},
         "C_Source Port_Target Port": null,
-        "Context": null,
-        "Component A": null,
-        "Source Port": null,
         "C_Source Port_Target Port-end1": null,
-        "Comp A": null
+        "C_Source Port_Target Port-end2": {
+            "propertyPath": [
+                "id-Comp A"
+            ]
+        },
+        "Comp A": null,
+        "Component A": null,
+        "Context": null,
+        "Source Port": null,
+        "SourceIF": null,
+        "Target Port": null
+    },
+    "Vertex Stereotypes": {
+        "C_Source Port_Target Port": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "BindingConnector"
+                ]
+            }
+        ],
+        "C_Source Port_Target Port-end1": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "NestedConnectorEnd"
+                ]
+            }
+        ],
+        "C_Source Port_Target Port-end2": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "NestedConnectorEnd"
+                ]
+            }
+        ],
+        "Comp A": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "PartProperty"
+                ]
+            }
+        ],
+        "Component A": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "Block"
+                ]
+            }
+        ],
+        "Context": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "Block"
+                ]
+            }
+        ],
+        "Source Port": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "ProxyPort"
+                ]
+            }
+        ],
+        "SourceIF": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "InterfaceBlock"
+                ]
+            }
+        ],
+        "Target Port": [
+            {
+                "profile": "SysML",
+                "stereotype": [
+                    "ProxyPort"
+                ]
+            }
+        ]
     }
 }
