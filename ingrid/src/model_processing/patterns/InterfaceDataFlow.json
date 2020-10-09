@@ -237,99 +237,75 @@
         "C_Outport_Inport-end1": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "NestedConnectorEnd"
-                ]
+                "stereotype": "NestedConnectorEnd"
             }
         ],
         "C_Outport_Inport-end2": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "NestedConnectorEnd"
-                ]
+                "stereotype": "NestedConnectorEnd"
             }
         ],
         "Common IF": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "InterfaceBlock"
-                ]
+                "stereotype": "InterfaceBlock"
             }
         ],
         "Comp A": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "PartProperty"
-                ]
+                "stereotype": "PartProperty"
             }
         ],
         "Comp A Context": null,
         "Comp B": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "PartProperty"
-                ]
+                "stereotype": "PartProperty"
             }
         ],
         "Comp B Context": null,
         "Component A": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "Block"
-                ]
+                "stereotype": "Block"
             }
         ],
         "Component B": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "Block"
-                ]
+                "stereotype": "Block"
             }
         ],
         "Context": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "Block"
-                ]
+                "stereotype": "Block"
             }
         ],
         "Flow": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "FlowProperty"
-                ]
+                "stereotype": "FlowProperty"
             }
         ],
         "FlowType": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "ValueType"
-                ]
+                "stereotype": "ValueType"
             }
         ],
         "Inport": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "ProxyPort"
-                ]
+                "stereotype": "ProxyPort"
             }
         ],
         "Outport": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "ProxyPort"
-                ]
+                "stereotype": "ProxyPort"
             }
         ]
     }

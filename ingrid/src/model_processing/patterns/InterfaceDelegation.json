@@ -127,73 +127,55 @@
         "C_Source Port_Target Port": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "BindingConnector"
-                ]
+                "stereotype": "BindingConnector"
             }
         ],
         "C_Source Port_Target Port-end1": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "NestedConnectorEnd"
-                ]
+                "stereotype": "NestedConnectorEnd"
             }
         ],
         "C_Source Port_Target Port-end2": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "NestedConnectorEnd"
-                ]
+                "stereotype": "NestedConnectorEnd"
             }
         ],
         "Comp A": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "PartProperty"
-                ]
+                "stereotype": "PartProperty"
             }
         ],
         "Component A": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "Block"
-                ]
+                "stereotype": "Block"
             }
         ],
         "Context": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "Block"
-                ]
+                "stereotype": "Block"
             }
         ],
         "Source Port": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "ProxyPort"
-                ]
+                "stereotype": "ProxyPort"
             }
         ],
         "SourceIF": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "InterfaceBlock"
-                ]
+                "stereotype": "InterfaceBlock"
             }
         ],
         "Target Port": [
             {
                 "profile": "SysML",
-                "stereotype": [
-                    "ProxyPort"
-                ]
+                "stereotype": "ProxyPort"
             }
         ]
     }
