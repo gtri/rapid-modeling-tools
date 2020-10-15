@@ -283,6 +283,27 @@ try {
 							// Add a switch case to cover a new meta-attribute
 
 							switch(attribute_to_hit) {
+								case 'aggregation' :
+									replace_log.add('(' + attribute_to_hit + ') Setting aggregation for property ' + item_to_edit_reported + 
+										' to ' + op_to_execute['value'])
+									//the aggregation value in the JSON is a string so need to match it against the correct
+									//aggregation kind enumeration literal
+									AggregationKind aggregation_kind
+
+									switch(op_to_execute['value']) {
+										case 'composite' : 
+											aggregation_kind = AggregationKindEnum.COMPOSITE
+											break
+										case 'shared' :
+											aggregation_kind = AggregationKindEnum.SHARED
+											break
+										default : 
+											aggregation_kind = AggregationKindEnum.NONE
+											break
+									}
+									//set the aggregation of the element to mod (property) equal to the found aggregation enum literal
+									ele_to_mod.setAggregation(aggregation_kind)
+									break
 								case 'Documentation':
 									replace_log.add('(' + attribute_to_hit + ') Element ' + item_to_edit_reported + ' has documentation ' +
 										CoreHelper.getComment(ele_to_mod) + ' to become ' + op_to_execute['value']);
@@ -710,7 +731,7 @@ try {
 									// End of new stereotype definition
 									// =======================================
 								default:
-									execution_status_log.add("Processing attribute " + attribute_to_hit);
+									execution_status_log.add("Processing attribute: " + attribute_to_hit);
 									key_member = null;
 									key_member_found = false;
 									key_slot = null;
@@ -755,6 +776,7 @@ try {
 													}
 												}
 											}
+
 											// Create the slot and value
 											if (!key_slot_found) {
 												new_slot = ele_factory.createSlotInstance();
@@ -859,13 +881,10 @@ try {
 						new_meta = op_to_execute['metatype'];
 						new_stereo = "";
 
-						execution_status_log.add('This is what op_to_execute[stereotype] returns: ' + 
-							op_to_execute['stereotype'])
-
 						if (op_to_execute['stereotype'] != null) {
 							/*
 							This will return a list of dictionaries, e.g. 
-							"stereotype" : [{"stereotype" : "Block", "profile" : "_15_001"}]
+							"stereotype" : [{"stereotype" : "Block", "profile" : "_15_001...."}]
 							*/
 							new_stereo = op_to_execute['stereotype']
 						}
@@ -1018,19 +1037,14 @@ try {
 								class_list = ele_asi.getClassifier();
 
 								//need to iterate over each stereotype dictionary to get stereotype name and profile id
-								execution_status_log.add('There are: ' + new_stereo.size().toString() + 
-									'stereotypes to process for ' + new_name)
+								
 								new_stereo.each { stereo_dict ->
 									//get stereotype
 									stereo_name = stereo_dict['stereotype']
-									execution_status_log.add('This is the name of the stereotype from the JSON: ' + stereo_name)
 									//lookup profile from the given id
 									profile = live_project.getElementByID(stereo_dict['profile'])
-									execution_status_log.add('This is the name of the stereotypes profile from the JSON: ' + 
-										profile.name)
 									//get the stereotype object to apply
 									apply_stereo = StereotypesHelper.getStereotype(live_project, stereo_name, profile)
-									execution_status_log.add('This is the name of the found stereotype: ' + apply_stereo.name)
 									//add the stereotype to the list of classifiers for the applied stereotype instance
 									class_list.add(apply_stereo)
 
@@ -1173,21 +1187,9 @@ catch(Exception e) {
 }
 finally {
 
-	//execution_status_log.add("Writing ID's to " + read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
+	execution_status_log.add("Writing ID's to " + read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
 
-	//csv_file = new File(read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
-
-	String osType = System.getProperty("os.name").toLowerCase()
-
-	if (osType.contains('windows')) {
-		execution_status_log.add("Writing ID's to " + read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
-
-		csv_file = new File(read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
-	} else if (osType.contains('mac') || osType.contains('unix')) {
-		execution_status_log.add("Writing ID's to " + read_path + "/" + read_name.toString().split("\\.")[0] + ".csv");
-
-		csv_file = new File(read_path + "/" + read_name.toString().split("\\.")[0] + ".csv");
-	}
+	csv_file = new File(read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
 
 	file_writer = new FileWriter(csv_file);
 
@@ -1211,27 +1213,27 @@ finally {
 	// uncomment below to expose detailed logs
 	live_log.log('Execution steps:');
 	for (entry in execution_status_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Elements processed:');
 	for (entry in command_processing_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Element creation commands:');
 	for (entry in create_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Relationship replace commands:');
 	for (entry in replace_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Element rename commands:');
 	for (entry in rename_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Verification Details:');
 	for (entry in verification_log) {
-		live_log.log(entry);
+		//live_log.log(entry);
 	}
 
 	// render created names and id's into a file for slotting into other files
