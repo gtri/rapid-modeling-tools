@@ -850,12 +850,13 @@ try {
 					// create new elements using the appropriate calls on the ElementsFactory
 
 					try {
-						new_name = op_to_execute['name'];
-						old_name = new_name;
-						split_name = new_name.split("::");
+						String new_name = op_to_execute['name']
+						old_name = new_name
+						ArrayList<String> split_name = new_name.split("::")
 						if (split_name.size() > 1) {
-							new_name = split_name[1];
+							new_name = split_name.last()
 						}
+
 						new_meta = op_to_execute['metatype'];
 						new_stereo = "";
 
