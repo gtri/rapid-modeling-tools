@@ -211,16 +211,56 @@
         "A_context1_blockValue": null,
         "C_value_blockValue": null,
         "C_value_blockValue-end1": null,
-        "C_value_blockValue-end2": "NestedConnectorEnd",
-        "Constraint Block": "ConstraintBlock",
+        "C_value_blockValue-end2": [
+            {
+                "profile": "SysML",
+                "stereotype": "NestedConnectorEnd"
+            }
+        ],
+        "Constraint Block": [
+            {
+                "profile": "SysML",
+                "stereotype": "ConstraintBlock"
+            }
+        ],
         "Constraint Spec": null,
-        "Parametric Context": "Block",
-        "blockValue": "ValueProperty",
-        "blockValueType": "ValueType",
-        "constUse": "ConstraintProperty",
+        "Parametric Context": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "blockValue": [
+            {
+                "profile": "SysML",
+                "stereotype": "ValueProperty"
+            }
+        ],
+        "blockValueType": [
+            {
+                "profile": "SysML",
+                "stereotype": "ValueType"
+            }
+        ],
+        "constUse": [
+            {
+                "profile": "SysML",
+                "stereotype": "ConstraintProperty"
+            }
+        ],
         "constUse context2": null,
         "context1": null,
-        "value": "ConstraintParameter",
-        "valueType": "ValueType"
+        "value": [
+            {
+                "profile": "SysML",
+                "stereotype": "ConstraintParameter"
+            }
+        ],
+        "valueType": [
+            {
+                "profile": "SysML",
+                "stereotype": "ValueType"
+            }
+        ]
     }
 }

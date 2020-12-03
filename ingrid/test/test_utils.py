@@ -810,7 +810,9 @@ class TestUtils(unittest.TestCase):
                             "name": "test name",
                             "path": None,
                             "metatype": "meta meta",
-                            "stereotype": "stereo",
+                            "stereotype": [
+                                {"stereotype": "stereo", "profile": "SysML",},
+                            ],
                             "attributes": None,
                         }
                     ],
@@ -823,7 +825,9 @@ class TestUtils(unittest.TestCase):
                             "name": "test2",
                             "path": None,
                             "metatype": "class",
-                            "stereotype": "block",
+                            "stereotype": [
+                                {"stereotype": "block", "profile": "SysML",},
+                            ],
                             "attributes": {},
                         }
                     ],

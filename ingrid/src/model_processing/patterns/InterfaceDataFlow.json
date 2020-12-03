@@ -1,40 +1,40 @@
 {
     "Columns to Navigation Map": {
-        "Comp A Context C": [
-            "Comp A Context"
-        ],
         "A_CompA Context_CompA C": [
             "A_CompA Context_CompA"
-        ],
-        "Comp A C": [
-            "Comp A"
-        ],
-        "C_Outport_Inport-end1C": [
-            "C_Outport_Inport-end1"
-        ],
-        "OutportC": [
-            "Outport"
-        ],
-        "Source Component": [
-            "Component A"
-        ],
-        "Common Assy": [
-            "Context"
-        ],
-        "Comp B Context C": [
-            "Comp B Context"
         ],
         "A_CompB Context_CompB C": [
             "A_CompB Context_CompB"
         ],
-        "Comp B C": [
-            "Comp B"
+        "C_Outport_Inport-end1C": [
+            "C_Outport_Inport-end1"
+        ],
+        "C_Outport_Inport-end2C": [
+            "C_Outport_Inport-end2"
         ],
         "C_Outport_InportC": [
             "C_Outport_Inport"
         ],
-        "C_Outport_Inport-end2C": [
-            "C_Outport_Inport-end2"
+        "Common Assy": [
+            "Context"
+        ],
+        "Comp A C": [
+            "Comp A"
+        ],
+        "Comp A Context C": [
+            "Comp A Context"
+        ],
+        "Comp B C": [
+            "Comp B"
+        ],
+        "Comp B Context C": [
+            "Comp B Context"
+        ],
+        "Flow Type": [
+            "FlowType"
+        ],
+        "FlowC": [
+            "Flow"
         ],
         "InportC": [
             "Inport"
@@ -42,231 +42,271 @@
         "Interface": [
             "Common IF"
         ],
+        "OutportC": [
+            "Outport"
+        ],
+        "Source Component": [
+            "Component A"
+        ],
         "Target Component": [
             "Component B"
-        ],
-        "FlowC": [
-            "Flow"
-        ],
-        "Flow Type": [
-            "FlowType"
         ]
     },
     "Pattern Graph Edges": [
         [
             "A_CompA Context_CompA",
             "Comp A Context",
-			"memberEnd"
+            "memberEnd"
         ],
         [
             "Comp A Context",
             "A_CompA Context_CompA",
-			"owner"
+            "owner"
         ],
         [
             "A_CompA Context_CompA",
             "Comp A",
-			"memberEnd"
+            "memberEnd"
         ],
         [
             "Comp A",
             "A_CompA Context_CompA",
-			"association"
+            "association"
         ],
         [
             "Comp A",
             "Component A",
-			"type"
+            "type"
         ],
         [
             "Comp A",
             "Context",
-			"owner"
+            "owner"
         ],
         [
             "C_Outport_Inport-end1",
             "C_Outport_Inport",
-			"owner"
+            "owner"
         ],
         [
             "C_Outport_Inport-end1",
             "Outport",
-			"role"
+            "role"
         ],
         [
             "C_Outport_Inport",
             "C_Outport_Inport-end1",
-			"end"
+            "end"
         ],
         [
             "Outport",
             "Component A",
-			"owner"
+            "owner"
         ],
         [
             "Outport",
             "Common IF",
-			"type"
+            "type"
         ],
         [
             "C_Outport_Inport",
             "Context",
-			"owner"
+            "owner"
         ],
         [
             "Comp B",
             "Context",
-			"owner"
+            "owner"
         ],
         [
             "A_CompB Context_CompB",
             "Comp B Context",
-			"memberEnd"
+            "memberEnd"
         ],
         [
             "Comp B Context",
             "A_CompB Context_CompB",
-			"owner"
+            "owner"
         ],
         [
             "A_CompB Context_CompB",
             "Comp B",
-			"memberEnd"
+            "memberEnd"
         ],
         [
             "Comp B",
             "A_CompB Context_CompB",
-			"association"
+            "association"
         ],
         [
             "Comp B",
             "Component B",
-			"type"
+            "type"
         ],
         [
             "C_Outport_Inport-end2",
             "C_Outport_Inport",
-			"owner"
+            "owner"
         ],
         [
             "C_Outport_Inport",
             "C_Outport_Inport-end2",
-			"end"
+            "end"
         ],
         [
             "C_Outport_Inport-end2",
             "Inport",
-			"role"
+            "role"
         ],
         [
             "Inport",
             "Component B",
-			"owner"
+            "owner"
         ],
         [
             "Inport",
             "Common IF",
-			"type"
+            "type"
         ],
         [
             "Flow",
             "Common IF",
-			"owner"
+            "owner"
         ],
         [
             "Flow",
             "FlowType",
-			"type"
+            "type"
         ]
     ],
     "Root Node": "C_Outport_Inport",
     "Vertex MetaTypes": {
-        "FlowType": "DataType",
-        "Flow": "Property",
-        "Component B": "Class",
-        "Common IF": "Class",
-        "Inport": "Port",
-        "C_Outport_Inport-end2": "ConnectorEnd",
-        "C_Outport_Inport": "Connector",
-        "Comp B": "Property",
-        "A_CompB Context_CompB": "Association",
-        "Comp B Context": "Property",
-        "Context": "Class",
-        "Component A": "Class",
-        "Outport": "Port",
-        "C_Outport_Inport-end1": "ConnectorEnd",
-        "Comp A": "Property",
         "A_CompA Context_CompA": "Association",
-        "Comp A Context": "Property"
-    },
-    "Vertex Stereotypes": {
-        "FlowType": [
-            "ValueType"
-        ],
-        "Flow": [
-            "FlowProperty"
-        ],
-        "Component B": [
-            "Block"
-        ],
-        "Common IF": [
-            "InterfaceBlock"
-        ],
-        "Inport": [
-            "ProxyPort"
-        ],
-        "C_Outport_Inport-end2": [
-            "NestedConnectorEnd"
-        ],
-        "C_Outport_Inport": null,
-        "Comp B": [
-            "PartProperty"
-        ],
-        "A_CompB Context_CompB": null,
-        "Comp B Context": null,
-        "Context": [
-            "Block"
-        ],
-        "Component A": [
-            "Block"
-        ],
-        "Outport": [
-            "ProxyPort"
-        ],
-        "C_Outport_Inport-end1": [
-            "NestedConnectorEnd"
-        ],
-        "Comp A": [
-            "PartProperty"
-        ],
-        "A_CompA Context_CompA": null,
-        "Comp A Context": null
+        "A_CompB Context_CompB": "Association",
+        "C_Outport_Inport": "Connector",
+        "C_Outport_Inport-end1": "ConnectorEnd",
+        "C_Outport_Inport-end2": "ConnectorEnd",
+        "Common IF": "Class",
+        "Comp A": "Property",
+        "Comp A Context": "Property",
+        "Comp B": "Property",
+        "Comp B Context": "Property",
+        "Component A": "Class",
+        "Component B": "Class",
+        "Context": "Class",
+        "Flow": "Property",
+        "FlowType": "DataType",
+        "Inport": "Port",
+        "Outport": "Port"
     },
     "Vertex Settings": {
-        "FlowType": null,
+        "A_CompA Context_CompA": null,
+        "A_CompB Context_CompB": null,
+        "C_Outport_Inport": null,
+        "C_Outport_Inport-end1": {
+            "propertyPath": [
+                "id-Comp A"
+            ]
+        },
+        "C_Outport_Inport-end2": {
+            "propertyPath": [
+                "id-Comp B"
+            ]
+        },
+        "Common IF": null,
+        "Comp A": null,
+        "Comp A Context": null,
+        "Comp B": null,
+        "Comp B Context": null,
+        "Component A": null,
+        "Component B": null,
+        "Context": null,
         "Flow": {
             "direction": "out"
         },
-        "Component B": null,
-        "Common IF": null,
+        "FlowType": null,
         "Inport": {
             "isConjugated": "true"
         },
-        "C_Outport_Inport-end2": {
-			"propertyPath" : ["id-Comp B"]
-		},
-        "C_Outport_Inport": null,
-        "Comp B": null,
-        "A_CompB Context_CompB": null,
-        "Comp B Context": null,
-        "Context": null,
-        "Component A": null,
-        "Outport": null,
-        "C_Outport_Inport-end1": {
-			"propertyPath" : ["id-Comp A"]
-		},
-        "Comp A": null,
+        "Outport": null
+    },
+    "Vertex Stereotypes": {
         "A_CompA Context_CompA": null,
-        "Comp A Context": null
+        "A_CompB Context_CompB": null,
+        "C_Outport_Inport": null,
+        "C_Outport_Inport-end1": [
+            {
+                "profile": "SysML",
+                "stereotype": "NestedConnectorEnd"
+            }
+        ],
+        "C_Outport_Inport-end2": [
+            {
+                "profile": "SysML",
+                "stereotype": "NestedConnectorEnd"
+            }
+        ],
+        "Common IF": [
+            {
+                "profile": "SysML",
+                "stereotype": "InterfaceBlock"
+            }
+        ],
+        "Comp A": [
+            {
+                "profile": "SysML",
+                "stereotype": "PartProperty"
+            }
+        ],
+        "Comp A Context": null,
+        "Comp B": [
+            {
+                "profile": "SysML",
+                "stereotype": "PartProperty"
+            }
+        ],
+        "Comp B Context": null,
+        "Component A": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "Component B": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "Context": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "Flow": [
+            {
+                "profile": "SysML",
+                "stereotype": "FlowProperty"
+            }
+        ],
+        "FlowType": [
+            {
+                "profile": "SysML",
+                "stereotype": "ValueType"
+            }
+        ],
+        "Inport": [
+            {
+                "profile": "SysML",
+                "stereotype": "ProxyPort"
+            }
+        ],
+        "Outport": [
+            {
+                "profile": "SysML",
+                "stereotype": "ProxyPort"
+            }
+        ]
     }
 }
