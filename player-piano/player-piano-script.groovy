@@ -5,6 +5,9 @@
 **/
 
 // Java libs
+import org.apache.commons.lang.SystemUtils
+
+import java.nio.file.Path
 import java.util.ArrayList;
 import javax.swing.*;
 // Groovy libs
@@ -1188,15 +1191,19 @@ catch(Exception e) {
 }
 finally {
 
-	execution_status_log.add("Writing ID's to " + read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
+	String filePathSeparator = System.getProperty('file.separator')
 
-	csv_file = new File(read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
+	String csvPath = read_path + filePathSeparator + read_name.toString().split("\\.")[0] + ".csv"
 
-	file_writer = new FileWriter(csv_file);
+	execution_status_log.add("Writing ID's to " + csvPath)
 
-	file_writer.write("Element Name, ID" + "\n");
+	def csvFile = new File(csvPath)
 
-	for (created in create_list) {
+	def fileWriter = new FileWriter(csvFile)
+
+	fileWriter.write("Element Name, ID" + "\n")
+
+	create_list.each { created ->
 		/*if (created instanceof NamedElement) {
 			file_writer.write(created.getName() + "," + created.getID() + "\n");
 		}
@@ -1206,10 +1213,10 @@ finally {
 		else {
 			file_writer.write(created.getHumanName() + "," + created.getID() + "\n");
 		}*/
-		file_writer.write(created[0] + "," + created[1].getID() + "\n");
+		fileWriter.write(created[0] + "," + created[1].getID() + "\n")
 	}
 
-	file_writer.close();
+	fileWriter.close()
 
 	// uncomment below to expose detailed logs
 	live_log.log('Execution steps:');
