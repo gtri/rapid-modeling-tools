@@ -91,7 +91,7 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
             ).format(wkbk.parts[-1])
             warnings.warn(msg)
             continue
-        xl = pd.ExcelFile(wkbk)
+        xl = pd.ExcelFile(wkbk, engine="openpyxl")
         not_found = 0
         pattern_sheet = ""
         for sheet in xl.sheet_names:
@@ -273,7 +273,7 @@ def compare_md_model(inputs, input_patterns="", output_path=""):
                 new_pats = {in_pat.name.split(".")[0].lower(): in_pat}
             json_patterns.update(new_pats)
 
-    xl = pd.ExcelFile(wkbk_paths[0])
+    xl = pd.ExcelFile(wkbk_paths[0], engine="openpyxl")
     not_found = 0
     pattern_sheet = ""
     for sheet in xl.sheet_names:

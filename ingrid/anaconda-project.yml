@@ -2,8 +2,12 @@ name: Ingrid_Nerdman
 
 commands:
   test:
-    windows: pytest
-    unix: pytest
+    windows: >-
+      python -m pip install -e . --no-deps --ignore-installed &&
+      pytest
+    unix: >
+      python -m pip install -e . --no-deps --ignore-installed &&
+      pytest
     description: Run test suite
     env_spec: model-processing
 
