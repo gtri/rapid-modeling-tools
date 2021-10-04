@@ -839,7 +839,9 @@ class TestMDTranslator(unittest.TestCase):
         stereotype = self.translator.get_uml_stereotype(
             node_key="Composite Thing"
         )
-        self.assertEqual("Block", stereotype)
+        self.assertEqual(
+            [{"stereotype": "Block", "profile": "SysML"}], stereotype
+        )
 
         stereotype_2 = self.translator.get_uml_stereotype(
             node_key="composite owner"

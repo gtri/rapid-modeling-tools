@@ -770,7 +770,7 @@ class Evaluator:
         ]
         if not excel_file and self.excel_file:
             excel_file = self.excel_file
-        excel_sheets = pd.read_excel(excel_file, sheet_name=None)
+        excel_sheets = pd.read_excel(excel_file, sheet_name=None, engine="openpyxl")
         # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(excel_sheets):  # Alphabetical sort
             # Find the Pattern Sheet
@@ -1246,7 +1246,8 @@ class MDTranslator:
         """
         Returns the vertex stereotype for the given node_key (str).
         """
-        return self.data["Vertex Stereotypes"][node_key]
+        if node_key:
+            return self.data["Vertex Stereotypes"][node_key]
 
     def get_uml_settings(self, node_key=None):
         """

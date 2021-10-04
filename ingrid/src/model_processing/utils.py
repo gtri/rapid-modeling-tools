@@ -901,7 +901,7 @@ def json_reporter_to_excel(json_data, fn):
     Creates excel file with sheets named after the keys and dataframe data
     gleaned from the values.
     """
-    with pd.ExcelWriter(fn) as writer:
+    with pd.ExcelWriter(fn, engine="openpyxl") as writer:
         for sheet_name, df_values in json_data.items():
             if not df_values:
                 continue
