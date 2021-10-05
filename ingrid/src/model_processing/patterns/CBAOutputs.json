@@ -1,0 +1,41 @@
+{
+    "Columns to Navigation Map": {
+        "Action": [
+            "act"
+        ],
+        "Output": [
+            "out"
+        ],
+        "Activity": [
+            "activity"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "act",
+            "activity",
+            "owner"
+        ],
+        [
+            "out",
+            "act",
+            "owner"
+        ]
+    ],
+    "Root Node": "act",
+    "Vertex MetaTypes": {
+        "activity": "Activity",
+        "act": "Action",
+        "out": "OutputPin"
+    },
+    "Vertex Settings": {
+        "activity": null,
+        "act": null,
+        "out": null
+    },
+    "Vertex Stereotypes": {
+        "activity": null,
+        "act": null,
+        "out": null
+    }
+}
