@@ -5,6 +5,9 @@
 **/
 
 // Java libs
+import org.apache.commons.lang.SystemUtils
+
+import java.nio.file.Path
 import java.util.ArrayList;
 import javax.swing.*;
 // Groovy libs
@@ -283,6 +286,27 @@ try {
 							// Add a switch case to cover a new meta-attribute
 
 							switch(attribute_to_hit) {
+								case 'aggregation' :
+									replace_log.add('(' + attribute_to_hit + ') Setting aggregation for property ' + item_to_edit_reported + 
+										' to ' + op_to_execute['value'])
+									//the aggregation value in the JSON is a string so need to match it against the correct
+									//aggregation kind enumeration literal
+									AggregationKind aggregation_kind
+
+									switch(op_to_execute['value']) {
+										case 'composite' : 
+											aggregation_kind = AggregationKindEnum.COMPOSITE
+											break
+										case 'shared' :
+											aggregation_kind = AggregationKindEnum.SHARED
+											break
+										default : 
+											aggregation_kind = AggregationKindEnum.NONE
+											break
+									}
+									//set the aggregation of the element to mod (property) equal to the found aggregation enum literal
+									ele_to_mod.setAggregation(aggregation_kind)
+									break
 								case 'documentation':
 									replace_log.add('(' + attribute_to_hit + ') Element ' + item_to_edit_reported + ' has documentation ' +
 										CoreHelper.getComment(ele_to_mod) + ' to become ' + op_to_execute['value']);
@@ -782,7 +806,7 @@ try {
 									// End of new stereotype definition
 									// =======================================
 								default:
-									execution_status_log.add("Processing attribute " + attribute_to_hit);
+									execution_status_log.add("Processing attribute: " + attribute_to_hit);
 									key_member = null;
 									key_member_found = false;
 									key_slot = null;
@@ -827,6 +851,7 @@ try {
 													}
 												}
 											}
+
 											// Create the slot and value
 											if (!key_slot_found) {
 												new_slot = ele_factory.createSlotInstance();
@@ -922,22 +947,22 @@ try {
 					// create new elements using the appropriate calls on the ElementsFactory
 
 					try {
-						new_name = op_to_execute['name'];
-						old_name = new_name;
-						split_name = new_name.split("::");
+						String new_name = op_to_execute['name']
+						old_name = new_name
+						ArrayList<String> split_name = new_name.split("::")
 						if (split_name.size() > 1) {
-							new_name = split_name[1];
+							new_name = split_name.last()
 						}
+
 						new_meta = op_to_execute['metatype'];
 						new_stereo = "";
 
 						if (op_to_execute['stereotype'] != null) {
-							if (op_to_execute['stereotype'] instanceof ArrayList) {
-								new_stereo = op_to_execute['stereotype'].get(0);
-							}
-							else {
-								new_stereo = op_to_execute['stereotype'];
-							}
+							/*
+							This will return a list of dictionaries, e.g. 
+							"stereotype" : [{"stereotype" : "Block", "profile" : "_15_001...."}]
+							*/
+							new_stereo = op_to_execute['stereotype']
 						}
 
 						new_element = null;
@@ -1149,7 +1174,35 @@ try {
 								//	"(" + ele_asi.toString() + ")");
 
 								class_list = ele_asi.getClassifier();
-								apply_stereo = StereotypesHelper.getStereotype(live_project, new_stereo);
+
+								//need to iterate over each stereotype dictionary to get stereotype name and profile id
+								
+								new_stereo.each { stereo_dict ->
+									//get stereotype
+									stereo_name = stereo_dict['stereotype']
+									//lookup profile from the given id
+									profile = live_project.getElementByID(stereo_dict['profile'])
+									//get the stereotype object to apply
+									apply_stereo = StereotypesHelper.getStereotype(live_project, stereo_name, profile)
+									//add the stereotype to the list of classifiers for the applied stereotype instance
+									class_list.add(apply_stereo)
+
+									// if stereotype is a particular SysML stereotype, see if it is generating additional elements
+
+									if (stereo_name.equals("Block") && new_assoc) {
+										execution_status_log.add("Making AssociationBlock");
+										for (attr in new_element.getOwnedAttribute()) {
+											execution_status_log.add("Have an owned attribute called " + attr.getName());
+										}
+										assocs_to_clean.add(new_element);
+									}
+
+									if (stereo_name.equals("ParticipantProperty") && new_prop) {
+										execution_status_log.add("Making ParticipantProperty");
+										pps_to_save.add(new_element);
+									}
+
+								}
 
 								//execution_status_log.add("Got stereotype " + new_stereo +  " from project");
 
@@ -1158,25 +1211,10 @@ try {
 								stereo_path = op_to_execute['path'];
 								stereo_value = op_to_execute['value'];
 
-								class_list.add(apply_stereo);
+								execution_status_log.add('These are the stereotypes to apply: ' + class_list)
 
 								com.nomagic.uml2.ext.jmi.helpers.InstanceSpecificationHelper.setClassifierForInstanceSpecification(
 									class_list, ele_asi, true);
-
-								// if stereotype is a particular SysML stereotype, see if it is generating additional elements
-
-								if (new_stereo.equals("Block") && new_assoc) {
-									execution_status_log.add("Making AssociationBlock");
-									for (attr in new_element.getOwnedAttribute()) {
-										execution_status_log.add("Have an owned attribute called " + attr.getName());
-									}
-									assocs_to_clean.add(new_element);
-								}
-
-								if (new_stereo.equals("ParticipantProperty") && new_prop) {
-									execution_status_log.add("Making ParticipantProperty");
-									pps_to_save.add(new_element);
-								}
 
 								//execution_status_log.add("Instance specification helper done for " + new_stereo);
 							}
@@ -1288,15 +1326,19 @@ catch(Exception e) {
 }
 finally {
 
-	execution_status_log.add("Writing ID's to " + read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
+	String filePathSeparator = System.getProperty('file.separator')
 
-	csv_file = new File(read_path + "\\" + read_name.toString().split("\\.")[0] + ".csv");
+	String csvPath = read_path + filePathSeparator + read_name.toString().split("\\.")[0] + ".csv"
 
-	file_writer = new FileWriter(csv_file);
+	execution_status_log.add("Writing ID's to " + csvPath)
 
-	file_writer.write("Element Name, ID" + "\n");
+	def csvFile = new File(csvPath)
 
-	for (created in create_list) {
+	def fileWriter = new FileWriter(csvFile)
+
+	fileWriter.write("Element Name, ID" + "\n")
+
+	create_list.each { created ->
 		/*if (created instanceof NamedElement) {
 			file_writer.write(created.getName() + "," + created.getID() + "\n");
 		}
@@ -1306,35 +1348,35 @@ finally {
 		else {
 			file_writer.write(created.getHumanName() + "," + created.getID() + "\n");
 		}*/
-		file_writer.write(created[0] + "," + created[1].getID() + "\n");
+		fileWriter.write(created[0] + "," + created[1].getID() + "\n")
 	}
 
-	file_writer.close();
+	fileWriter.close()
 
 	// uncomment below to expose detailed logs
 	live_log.log('Execution steps:');
 	for (entry in execution_status_log) {
-		live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Elements processed:');
 	for (entry in command_processing_log) {
-		live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Element creation commands:');
 	for (entry in create_log) {
-		live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Relationship replace commands:');
 	for (entry in replace_log) {
-		live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Element rename commands:');
 	for (entry in rename_log) {
-		live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Verification Details:');
 	for (entry in verification_log) {
-		live_log.log(entry);
+		//live_log.log(entry);
 	}
 
 	// render created names and id's into a file for slotting into other files

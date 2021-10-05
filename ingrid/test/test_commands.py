@@ -84,6 +84,10 @@ class TestCommands(unittest.TestCase):
                 create_md_model(wkbk_path, output_path=out_tmp_dir)
                 new_json = list(out_tmp_dir.glob("*.json"))
                 self.assertEqual(5, len(new_json))
+                assert all(
+                    bool(json.loads(j_f.read_text())["filepath"])
+                    for j_f in new_json
+                )
 
     def test_compare_md_model(self):
         with tempfile.TemporaryDirectory() as tmpdir:

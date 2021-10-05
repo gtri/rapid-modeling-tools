@@ -69,6 +69,8 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
         pattern_path.name.split(".")[0].lower(): pattern_path
         for pattern_path in PATTERNS.glob("*.json")
     }
+    if not isinstance(input_patterns, list) and input_patterns:
+        input_patterns = [input_patterns]
     if input_patterns:
         for in_pat in map(Path, input_patterns):
             if in_pat.is_dir():
@@ -89,7 +91,7 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
             ).format(wkbk.parts[-1])
             warnings.warn(msg)
             continue
-        xl = pd.ExcelFile(wkbk)
+        xl = pd.ExcelFile(wkbk, engine="openpyxl")
         not_found = 0
         pattern_sheet = ""
         for sheet in xl.sheet_names:
@@ -132,7 +134,10 @@ def create_md_model(input_paths, input_patterns="", output_path=""):
         evaluator.to_property_di_graph()
         property_di_graph = evaluator.prop_di_graph
         vert_set = property_di_graph.vertex_set
-        json_out = {"modification targets": []}
+        json_out = {
+            "modification targets": [],
+            "filepath": str(wkbk.resolve()),
+        }
         decs_json = []
         edge_json = []
         model_commands = {"create": [], "edges": [], "decorations": []}
@@ -257,6 +262,8 @@ def compare_md_model(inputs, input_patterns="", output_path=""):
         pattern_path.name.split(".")[0].lower(): pattern_path
         for pattern_path in PATTERNS.glob("*.json")
     }
+    if not isinstance(input_patterns, list) and input_patterns:
+        input_patterns = [input_patterns]
     if input_patterns:
         for in_pat in map(Path, input_patterns):
             if in_pat.is_dir():
@@ -268,7 +275,7 @@ def compare_md_model(inputs, input_patterns="", output_path=""):
                 new_pats = {in_pat.name.split(".")[0].lower(): in_pat}
             json_patterns.update(new_pats)
 
-    xl = pd.ExcelFile(wkbk_paths[0])
+    xl = pd.ExcelFile(wkbk_paths[0], engine="openpyxl")
     not_found = 0
     pattern_sheet = ""
     for sheet in xl.sheet_names:
