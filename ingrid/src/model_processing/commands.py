@@ -262,6 +262,8 @@ def compare_md_model(inputs, input_patterns="", output_path=""):
         pattern_path.name.split(".")[0].lower(): pattern_path
         for pattern_path in PATTERNS.glob("*.json")
     }
+    if not isinstance(input_patterns, list) and input_patterns:
+        input_patterns = [input_patterns]
     if input_patterns:
         for in_pat in map(Path, input_patterns):
             if in_pat.is_dir():
