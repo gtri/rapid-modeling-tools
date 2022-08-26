@@ -1,0 +1,63 @@
+{
+    "Columns to Navigation Map": {
+        "UseCase": [
+            "usecase"
+        ],
+        "System": [
+            "relsys"
+        ],
+        "UCPos": [
+            "ucend"
+        ],
+        "SysPos": [
+            "relsysend"
+        ],
+        "Assoc": [
+            "relation"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "relsysend",
+            "relsys",
+            "type"
+        ],
+        [
+            "ucend",
+            "usecase",
+            "type"
+        ],
+        [
+            "relsysend",
+            "relation",
+            "owner"
+        ],
+        [
+            "ucend",
+            "relation",
+            "owner"
+        ]
+    ],
+    "Root Node": "usecase",
+    "Vertex MetaTypes": {
+        "usecase": "UseCase",
+        "relsys": "Class",
+        "relation": "Association",
+        "relsysend": "Property",
+        "ucend": "Property"
+    },
+    "Vertex Settings": {
+        "usecase": null,
+        "relsys": null,
+        "relation": null,
+        "relsysend": null,
+        "ucend": null
+    },
+    "Vertex Stereotypes": {
+        "usecase": "requirementUseCase",
+        "relsys": "Block",
+        "relation": null,
+        "relsysend": null,
+        "ucend": null
+    }
+}

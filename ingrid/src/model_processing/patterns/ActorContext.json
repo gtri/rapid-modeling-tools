@@ -1,0 +1,73 @@
+{
+    "Columns to Navigation Map": {
+        "Context": [
+            "component",
+            "owner",
+            "Composite Thing"
+        ],
+        "Actors": [
+            "component",
+            "type",
+            "Atomic Thing"
+        ],
+        "Property": [
+            "component"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "composite owner",
+            "Composite Thing",
+            "type"
+        ],
+        [
+            "component",
+            "Atomic Thing",
+            "type"
+        ],
+        [
+            "A_composite owner_component",
+            "composite owner",
+            "memberEnd"
+        ],
+        [
+            "A_composite owner_component",
+            "component",
+            "memberEnd"
+        ],
+        [
+            "component",
+            "Composite Thing",
+            "owner"
+        ],
+        [
+            "composite owner",
+            "A_composite owner_component",
+            "owner"
+        ]
+    ],
+    "Root Node": "component",
+    "Vertex MetaTypes": {
+        "A_composite owner_component": "Association",
+        "Atomic Thing": "Actor",
+        "Composite Thing": "Class",
+        "component": "Property",
+        "composite owner": "Property"
+    },
+    "Vertex Settings": {
+        "A_composite owner_component": null,
+        "Atomic Thing": null,
+        "Composite Thing": null,
+        "component": {
+            "aggregation": "shared"
+        },
+        "composite owner": null
+    },
+    "Vertex Stereotypes": {
+        "A_composite owner_component": null,
+        "Atomic Thing": null,
+        "Composite Thing": "Block",
+        "component": null,
+        "composite owner": null
+    }
+}

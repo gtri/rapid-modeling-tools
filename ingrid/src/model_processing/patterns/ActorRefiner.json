@@ -1,0 +1,38 @@
+{
+    "Columns to Navigation Map": {
+        "Block": [
+            "block"
+        ],
+        "Actor": [
+            "actor"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "refiner",
+            "actor",
+            "supplier"
+        ],
+        [
+            "refiner",
+            "block",
+            "client"
+        ]
+    ],
+    "Root Node": "refiner",
+    "Vertex MetaTypes": {
+        "block": "Class",
+        "refiner": "Abstraction",
+        "actor": "Actor"
+    },
+    "Vertex Settings": {
+        "block": null,
+        "refiner": null,
+        "actor": null
+    },
+    "Vertex Stereotypes": {
+        "block": "Block",
+        "refiner": "Refine",
+        "actor": null
+    }
+}

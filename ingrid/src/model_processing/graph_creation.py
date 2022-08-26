@@ -770,7 +770,9 @@ class Evaluator:
         ]
         if not excel_file and self.excel_file:
             excel_file = self.excel_file
-        excel_sheets = pd.read_excel(excel_file, sheet_name=None, engine="openpyxl")
+        excel_sheets = pd.read_excel(
+            excel_file, sheet_name=None, engine="openpyxl"
+        )
         # what if the pattern is zzzzzzz, ids, renames
         for sheet in sorted(excel_sheets):  # Alphabetical sort
             # Find the Pattern Sheet

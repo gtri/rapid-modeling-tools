@@ -95,8 +95,7 @@ env_specs:
     inherit_from:
     - model-processing
     packages:
-    - pip:
-      - gooey
+      - gooey <1.0.5
   docs:
     packages:
     - sphinx

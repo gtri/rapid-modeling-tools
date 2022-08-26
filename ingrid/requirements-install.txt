@@ -1,4 +1,4 @@
-gooey
+gooey <1.0.5
 networkx >=2.3
 openpyxl
 pandas
