@@ -54,8 +54,13 @@
         "ucend": null
     },
     "Vertex Stereotypes": {
-        "usecase": "requirementUseCase",
-        "relsys": "Block",
+        "usecase": null,
+        "relsys": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
         "relation": null,
         "relsysend": null,
         "ucend": null

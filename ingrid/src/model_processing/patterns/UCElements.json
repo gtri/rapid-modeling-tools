@@ -85,11 +85,26 @@
     },
     "Vertex Stereotypes": {
         "A_composite owner_component": null,
-        "Atomic Thing": "Block",
-        "Composite Thing": "Block",
-        "component": "PartProperty",
+        "Atomic Thing": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }  
+        ],
+        "Composite Thing": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }  
+        ],
+        "component": [
+            {
+                "profile": "MD Customization for SysML::additional_stereotypes",
+                "stereotype": "PartProperty"
+            }  
+        ],
         "composite owner": null,
-        "element": "requirementUseCase",
+        "element": null,
         "activity": null
     }
 }

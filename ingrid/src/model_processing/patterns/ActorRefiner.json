@@ -31,8 +31,18 @@
         "actor": null
     },
     "Vertex Stereotypes": {
-        "block": "Block",
-        "refiner": "Refine",
+        "block": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "refiner": [
+            {
+                "profile": "SysML",
+                "stereotype": "Refine"
+            }
+        ],
         "actor": null
     }
 }

@@ -215,7 +215,7 @@
         ],
         "func": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "ReferenceProperty"
             }
         ],
@@ -224,7 +224,7 @@
         "performed by": null,
         "performs": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "ReferenceProperty"
             }
         ],

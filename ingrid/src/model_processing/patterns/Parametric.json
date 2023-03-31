@@ -232,7 +232,7 @@
         ],
         "blockValue": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "ValueProperty"
             }
         ],
@@ -244,7 +244,7 @@
         ],
         "constUse": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "ConstraintProperty"
             }
         ],
@@ -252,7 +252,7 @@
         "context1": null,
         "value": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "ConstraintParameter"
             }
         ],
