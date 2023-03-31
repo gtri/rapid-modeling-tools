@@ -1377,27 +1377,27 @@ finally {
 	// uncomment below to expose detailed logs
 	live_log.log('Execution steps:');
 	for (entry in execution_status_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Elements processed:');
 	for (entry in command_processing_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Element creation commands:');
 	for (entry in create_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Relationship replace commands:');
 	for (entry in replace_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Element rename commands:');
 	for (entry in rename_log) {
-		 live_log.log(entry);
+		 //live_log.log(entry);
 	}
 	live_log.log('Verification Details:');
 	for (entry in verification_log) {
-		live_log.log(entry);
+		//live_log.log(entry);
 	}
 
 	// render created names and id's into a file for slotting into other files
