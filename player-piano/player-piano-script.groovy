@@ -802,6 +802,48 @@ try {
 									ele_to_mod.setUpperValue(upper_element);
 
 									break;
+								case 'interaction':
+									interaction_element = null;
+
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										interaction_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										interaction_element = live_project.getElementByID(op_to_execute['value']);
+									}
+
+									// item_edited_value_reported = upper_element.getID() + '(' + upper_element.getHumanName() + ')';
+
+									replace_log.add('(' + attribute_to_hit + ') Element ' + item_edited_value_reported + ' is set to own '
+										+ item_to_edit_reported);
+
+									ele_to_mod.setInteraction(interaction_element);
+
+									if (homeless_elements.contains(ele_to_mod)) {
+										homeless_elements.remove(ele_to_mod);
+									}
+
+									break;
+								case 'context':
+									context_element = null;
+									if (op_to_execute['value'].split('_')[0] == 'new') {
+										context_element = temp_elements[op_to_execute['value']];
+									}
+									else {
+										context_element = live_project.getElementByID(op_to_execute['value']);
+									}
+
+									item_edited_value_reported = context_element.getID() + '(' + context_element.getHumanName() + ')';
+
+									replace_log.add('(' + attribute_to_hit + ') Element ' + item_edited_value_reported + ' is set to context ' +
+										item_to_edit_reported);
+
+									ele_to_mod.setContext(context_element);
+
+									if (homeless_elements.contains(ele_to_mod)) {
+										homeless_elements.remove(ele_to_mod);
+									}
+									break;
 
 									// End of new stereotype definition
 									// =======================================
@@ -987,6 +1029,41 @@ try {
 									new_element.setName(new_name);
 									homeless_elements.add(new_element);
 									break;
+								case 'Interface':
+									new_element = ele_factory.createInterfaceInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Interaction':
+									new_element = ele_factory.createInteractionInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Message':
+									new_element = ele_factory.createMessageInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Diagram':
+									new_element = ele_factory.createDiagramInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
+								case 'Lifeline':
+									new_element = ele_factory.createLifelineInstance();
+									temp_ids[item_to_edit] = new_element.getID();
+									temp_elements[item_to_edit] = new_element;
+									new_element.setName(new_name);
+									homeless_elements.add(new_element);
+									break;
 								case 'Abstraction':
 									new_element = ele_factory.createAbstractionInstance();
 									temp_ids[item_to_edit] = new_element.getID();
@@ -1161,7 +1238,6 @@ try {
 							// ================================================
 
 							create_list.add([old_name, new_element]);
-
 							if (new_stereo != null && new_stereo != "") {
 
 								StereotypesHelper.createStereotypeInstance(new_element);
@@ -1183,25 +1259,50 @@ try {
 									//lookup profile from the given id
 									profile = live_project.getElementByID(stereo_dict['profile'])
 									//get the stereotype object to apply
-									apply_stereo = StereotypesHelper.getStereotype(live_project, stereo_name, profile)
-									//add the stereotype to the list of classifiers for the applied stereotype instance
-									class_list.add(apply_stereo)
 
-									// if stereotype is a particular SysML stereotype, see if it is generating additional elements
+									//if list of multiple stereotypes, apply all sterotypes in the list
+									if (stereo_name.class == ArrayList) {
+										for (int i = 0; i < stereo_name.size(); i++) {
+											apply_stereo = StereotypesHelper.getStereotype(live_project, stereo_name[i], profile)
+											//add the stereotype to the list of classifiers for the applied stereotype instance
+											class_list.add(apply_stereo)
 
-									if (stereo_name.equals("Block") && new_assoc) {
-										execution_status_log.add("Making AssociationBlock");
-										for (attr in new_element.getOwnedAttribute()) {
-											execution_status_log.add("Have an owned attribute called " + attr.getName());
+											// if stereotype is a particular SysML stereotype, see if it is generating additional elements
+
+											if (stereo_name[i].equals("Block") && new_assoc) {
+												execution_status_log.add("Making AssociationBlock");
+												for (attr in new_element.getOwnedAttribute()) {
+													execution_status_log.add("Have an owned attribute called " + attr.getName());
+												}
+												assocs_to_clean.add(new_element);
+											}
+
+											if (stereo_name[i].equals("ParticipantProperty") && new_prop) {
+												execution_status_log.add("Making ParticipantProperty");
+												pps_to_save.add(new_element);
+											}
 										}
-										assocs_to_clean.add(new_element);
 									}
+									else {
+										apply_stereo = StereotypesHelper.getStereotype(live_project, stereo_name, profile)
+										//add the stereotype to the list of classifiers for the applied stereotype instance
+										class_list.add(apply_stereo)
 
-									if (stereo_name.equals("ParticipantProperty") && new_prop) {
-										execution_status_log.add("Making ParticipantProperty");
-										pps_to_save.add(new_element);
+										// if stereotype is a particular SysML stereotype, see if it is generating additional elements
+
+										if (stereo_name.equals("Block") && new_assoc) {
+											execution_status_log.add("Making AssociationBlock");
+											for (attr in new_element.getOwnedAttribute()) {
+												execution_status_log.add("Have an owned attribute called " + attr.getName());
+											}
+											assocs_to_clean.add(new_element);
+										}
+
+										if (stereo_name.equals("ParticipantProperty") && new_prop) {
+											execution_status_log.add("Making ParticipantProperty");
+											pps_to_save.add(new_element);
+										}
 									}
-
 								}
 
 								//execution_status_log.add("Got stereotype " + new_stereo +  " from project");
@@ -1380,7 +1481,5 @@ finally {
 	}
 
 	// render created names and id's into a file for slotting into other files
-
-
 
 }

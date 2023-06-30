@@ -1,0 +1,91 @@
+{
+    "Columns to Navigation Map": {
+        "CapConfig": [
+            "MiddleInter",
+            "owner",
+            "CapConfig"
+        ],
+        "MiddleInter": [
+            "RInter",
+            "owner",
+            "MiddleInter"
+        ],
+        "System1": [
+            "MiddleInter",
+            "context",
+            "Sys1"
+        ],
+        "System2": [
+            "Sys2"
+        ],
+        "Message": [
+            "Async"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "MiddleInter",
+            "CapConfig",
+            "owner"
+        ],
+        [
+            "Sys1",
+            "CapConfig",
+            "owner"
+        ],
+        [
+            "Sys2",
+            "CapConfig",
+            "owner"
+        ],
+        [
+            "Async",
+            "MiddleInter",
+            "owner"
+        ]
+    ],
+    "Root Node": "CapConfig",
+    "Vertex MetaTypes": {
+        "CapConfig": "Class",
+        "MiddleInter": "Interaction",
+        "Sys1": "Property",
+        "Sys2": "Property",
+        "Async": "Message" 
+    },
+    "Vertex Settings": {
+        "CapConfig": null,
+        "MiddleInter": null,
+        "Sys1": null,
+        "Sys2": null,
+        "Async": {
+            "Message Sort": "asynchSignal"
+        }
+    },
+    "Vertex Stereotypes": {
+        "CapConfig": [
+            {
+                "stereotype": "CapabilityConfiguration"
+            }
+        ],
+        "Sys1": [
+            {
+                "stereotype": ["PartProperty", "ResourceRole"]
+            }
+        ],
+        "Sys2": [
+            {
+                "stereotype": ["PartProperty", "ResourceRole"]
+            }
+        ],
+        "MiddleInter": [
+            {
+                "stereotype": null
+            }
+        ],
+        "Async": [
+            {
+                "stereotype": "ResourceMessage"
+            }
+        ]
+    }
+}

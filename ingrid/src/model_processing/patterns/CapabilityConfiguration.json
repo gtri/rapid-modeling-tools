@@ -1,0 +1,94 @@
+{
+    "Columns to Navigation Map": {
+        "Mission Thread": [
+            "Connection",
+            "owner",
+            "CapConfig"
+        ],
+        "OrganizationEchelon": [
+            "Connection",
+            "type",
+            "Org"
+        ],
+        "Interaction": [
+            "Connection"
+        ]
+
+    },
+    "Pattern Graph Edges": [
+        [
+            "composite owner",
+            "CapConfig",
+            "type"
+        ],
+        [
+            "Connection",
+            "Org",
+            "type"
+        ],
+        [
+            "A_composite owner_Connection",
+            "composite owner",
+            "memberEnd"
+        ],
+        [
+            "A_composite owner_Connection",
+            "Connection",
+            "memberEnd"
+        ],
+        [
+            "Connection",
+            "CapConfig",
+            "owner"
+        ],
+        [
+            "composite owner",
+            "A_composite owner_Connection",
+            "owner"
+        ]
+    ],
+    "Root Node": "Connection",
+    "Vertex MetaTypes": {
+        "CapConfig": "Class",
+        "Org": "Class",
+        "A_composite owner_Connection": "Association",
+        "composite owner": "Property",
+        "Connection": "Property"
+    },
+    "Vertex Settings": {
+        "CapConfig": null,
+        "Org": null,
+        "A_composite owner_Connection": null,
+        "composite owner": null,
+        "Connection": {
+            "aggregation": "composite"
+        }
+    },
+    "Vertex Stereotypes": {
+        "CapConfig": [
+            {
+                "stereotype": "CapabilityConfiguration"
+            }
+        ],
+        "Org": [
+            {
+                "stereotype": "Organization"
+            }
+        ],
+        "A_composite owner_Connection": [
+            {
+                "stereotype": "ResourceAssociation"
+            }
+        ],
+        "composite owner": [
+            {
+                "stereotype": null
+            }
+        ],
+        "Connection":[
+            {
+                "stereotype": null
+            }
+        ]
+    }
+}
