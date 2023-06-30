@@ -1,0 +1,93 @@
+{
+    "Columns to Navigation Map": {
+        "Organization1": [
+            "First Connection",
+            "owner",
+            "First Owner"
+        ],
+        "Organization2": [
+            "First Connection",
+            "type",
+            "Second Owner"
+        ],
+        "Composition": [
+            "First Connection"
+        ]
+    },
+    "Pattern Graph Edges": [
+        [
+            "composite owner1",
+            "First Owner",
+            "type"
+        ],
+        [
+            "First Connection",
+            "Second Owner",
+            "type"
+        ],
+        [
+            "A_composite owner1_First Connection",
+            "composite owner1",
+            "memberEnd"
+        ],
+        [
+            "A_composite owner1_First Connection",
+            "First Connection",
+            "memberEnd"
+        ],
+        [
+            "First Connection",
+            "First Owner",
+            "owner"
+        ],
+        [
+            "composite owner1",
+            "A_composite owner1_First Connection",
+            "owner"
+        ]
+    ],
+    "Root Node": "First Connection",
+    "Vertex MetaTypes": {
+        "First Owner": "Class",
+        "Second Owner": "Class",
+        "A_composite owner1_First Connection": "Association",
+        "composite owner1": "Property",
+        "First Connection": "Property"
+    },
+    "Vertex Settings": {
+        "First Owner": null,
+        "Second Owner": null,
+        "A_composite owner1_First Connection": null,
+        "composite owner1": null,
+        "First Connection": {
+            "aggregation": "composite"
+        }
+    },
+    "Vertex Stereotypes": {
+        "First Owner": [
+            {
+                "stereotype": "Organization"
+            }
+        ],
+        "Second Owner": [
+            {
+                "stereotype": "Organization"
+            }
+        ],
+        "A_composite owner1_First Connection": [
+            {
+                "stereotype": "ResourceAssociation"
+            }
+        ],
+        "composite owner1": [
+            {
+                "stereotype": null
+            }
+        ],
+        "First Connection": [
+            {
+                "stereotype": null
+            }
+        ]
+    }
+}
