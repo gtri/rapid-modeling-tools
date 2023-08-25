@@ -64,8 +64,13 @@
         "ucend": null
     },
     "Vertex Stereotypes": {
-        "context": "Block",
-        "usecase": "requirementUseCase",
+        "context": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "usecase": null,
         "actor": null,
         "relation": null,
         "actorend": null,

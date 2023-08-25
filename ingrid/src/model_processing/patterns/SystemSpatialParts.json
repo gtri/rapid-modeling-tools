@@ -150,7 +150,7 @@
         ],
         "component": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "PartProperty"
             }
         ],
@@ -169,7 +169,7 @@
         ],
         "spatial": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "ValueProperty"
             }
         ],

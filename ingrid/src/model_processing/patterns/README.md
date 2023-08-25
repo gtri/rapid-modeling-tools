@@ -66,12 +66,12 @@ Since both the UML-based modeling pattern and the spreadsheet template share the
         [
             "Graph Edge 1 source name",
             "Graph Edge 1 target name",
-          	"UML metaproperty"
+            "UML metaproperty"
         ],
         [
             "Graph Edge N source name",
             "Graph Edge N target name",
-          	"UML metaproperty"
+            "UML metaproperty"
         ]
     ],
     "Root Node": "Root Node name",
@@ -81,15 +81,20 @@ Since both the UML-based modeling pattern and the spreadsheet template share the
     },
     "Vertex Settings": {
         "Graph Node 1 name": {
-          	"pattern element UML metaproperty setting 1, e.g. 'aggregation : composite'":  "value",
+            "pattern element UML metaproperty setting 1, e.g. 'aggregation : composite'":  "value",
             "pattern element UML metaproperty setting N": "value2"
         },
         "Graph Node N name": null //use null type if no settings applied
         },
-  	"Vertex Stereotypes": {
-        "Graph Node 1 name": "pattern element applied stereotype name, e.g. Block",
+    "Vertex Stereotypes": {
+        "Graph Node 1 name":[
+            {
+                "profile": "name of profile with the applied stereotype, e.g. SysML",
+                "stereotype": "pattern element applied stereotype name, e.g. Block",
+            }
+        ],
         "Graph Node N name": null //use null type if no applied stereotypes
-  			//currently only supports one applied stereotype
+            //currently only supports one applied stereotype
     }
 }
 ```
@@ -164,13 +169,40 @@ The JSON for the Composition pattern is shown below:
     },
     "Vertex Stereotypes": {
         "A_composite owner_component": null,
-        "Atomic Thing": "Block",
-        "Composite Thing": "Block",
-        "component": "PartProperty",
+        "Atomic Thing": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "Composite Thing": [
+            {
+                "profile": "SysML",
+                "stereotype": "Block"
+            }
+        ],
+        "component": [
+            {
+                "profile": "MD Customization for SysML::additional_stereotypes",
+                "stereotype": "PartProperty"
+            }
+        ],
         "composite owner": null
     }
 }
 ```
+
+## Applying Stereotypes
+
+(discuss how to apply stereotypes first)
+
+The stereotypes applied to an element are called out by profile and stereotype name. For example, see how the SysML "Block" stereotype is applied to "Atomic Thing" and "Composite Thing" in the Composition pattern (above). Using stereotype names in combination with full qualified profile names eliminates ambiguity when applying stereotypes.  For example, see how the "PartProperty" stereotype is applied to "component" in the Composition pattern (above). Since the "additional_stereotypes" profile name is not unique in MagicDraw/Cameo Systems Modeler-produced SysML models, the profile containing the "PartProperty" stereotype is called out with the full qualified name: "MD Customization for SysML::additional_stereotypes."
+
+Using a pattern successfully requires that all profiles used in the pattern are already available in the model through usages.
+
+### Limitations
+
+The intent of the JSON pattern format is to capture any UML-based modeling pattern, independent of the tool used to actually model elements with the pattern (e.g. Cameo Systems Modeler). However, implementation of the SysML v1.x metamodel varies between tools. Since Rapid Modeling Tools currently only support MagicDraw/Cameo Systems Modeler, the profiles and stereotypes shown are tool-specific. Future support of any other tools would require additional tool-specific information.
 
 ## Pattern Builder
 

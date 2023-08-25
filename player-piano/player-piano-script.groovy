@@ -45,6 +45,9 @@ try {
 	live_log = live_app.getGUILog();
 	live_project = live_app.getProject();
 
+	//grab all profiles in the project to help with identifying stereotypes
+	all_profiles = StereotypesHelper.getAllProfiles(live_project)
+
 	// dictionary to hold the ids discovered as we go
 	temp_ids = {};
 	temp_elements = {};
@@ -57,6 +60,7 @@ try {
 	assocs_to_clean = [];
 
 	create_list = [];
+
 
 	// try to make the element picker
 	try {
@@ -1180,10 +1184,27 @@ try {
 								new_stereo.each { stereo_dict ->
 									//get stereotype
 									stereo_name = stereo_dict['stereotype']
-									//lookup profile from the given id
-									profile = live_project.getElementByID(stereo_dict['profile'])
+									//lookup profile from the given name
+									profile_name = stereo_dict['profile']
+									profile = null
+									all_profiles.each { prof ->
+										if(prof.getName() == profile_name) {
+											profile = prof
+										} else if(prof.getQualifiedName() == profile_name) {
+											profile = prof
+										}
+									}
+									// add in logging info as well to help catch if stereotypes/profiles are not found successfully
+									if(profile == null) {
+										execution_status_log.add('Profile: "' + profile_name + 
+											'" not found while attempting to apply stereotype: "' + stereo_name)
+										execution_status_log.add('Verify that the correct profile name or qualified name is populated '+
+											' for the stereotype in the input file. Profiles with non-unique names' +
+											' should be idenfied by their qualified name.')
+									}
 									//get the stereotype object to apply
-									apply_stereo = StereotypesHelper.getStereotype(live_project, stereo_name, profile)
+									apply_stereo = StereotypesHelper.getStereotype(live_project, stereo_name, profile) 
+
 									//add the stereotype to the list of classifiers for the applied stereotype instance
 									class_list.add(apply_stereo)
 

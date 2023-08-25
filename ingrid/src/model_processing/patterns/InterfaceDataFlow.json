@@ -254,14 +254,14 @@
         ],
         "Comp A": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "PartProperty"
             }
         ],
         "Comp A Context": null,
         "Comp B": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "PartProperty"
             }
         ],

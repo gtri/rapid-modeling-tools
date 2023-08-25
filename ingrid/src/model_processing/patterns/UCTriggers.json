@@ -34,7 +34,7 @@
         "trigger": null
     },
     "Vertex Stereotypes": {
-        "usecase": "requirementUseCase",
+        "usecase": null,
         "activity": null,
         "trigger": null
     }

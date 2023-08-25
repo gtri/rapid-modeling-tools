@@ -144,7 +144,7 @@
         ],
         "Comp A": [
             {
-                "profile": "SysML",
+                "profile": "MD Customization for SysML::additional_stereotypes",
                 "stereotype": "PartProperty"
             }
         ],
